@@ -83,7 +83,6 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         paddingBottom: 25,
         paddingHorizontal: 30
-
     },
     optionButtonCancel: {
         paddingRight: 30
