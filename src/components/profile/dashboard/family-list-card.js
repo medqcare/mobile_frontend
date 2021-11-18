@@ -22,7 +22,8 @@ import { deleteFamily, GetUser } from '../../../stores/action'
 
 //component
 import EditFamilyProfile from '../../../components/profile/dashboard/editFamilyData'
-import SettingModal from '../../modals/setModal'
+// import SettingModal from '../../modals/setModal'
+import ConfirmationModal from '../../modals/ConfirmationModal'
 
 //Icon
 import IconAD from 'react-native-vector-icons/AntDesign'
@@ -52,18 +53,15 @@ const familyList = (props) => {
         setModalF(true)
     }
     return (
-        <View style={viewStyles.outer}>
-            <TouchableOpacity
-                ref={ref => {
-                    setTouchable(ref)
-                }}
-                onPress={() => {
-                    // console.log('dipencet lama untuk emngeluarkan pop up buat edit dan delete')
-                    setVisible(true)
-                }}
-                style={{ alignSelf: 'flex-end' }}>
-            </TouchableOpacity>
+        <View
+            style={viewStyles.outer}    
+        >
+       
+      
             <TouchableOpacity style={{padding:15}}
+            isVisible={isVisible}
+            fromView={touchable}
+            onRequestClose={() => setVisible(false)}
             ref={ref => {
                 setTouchable(ref)
             }}
@@ -71,10 +69,16 @@ const familyList = (props) => {
             onPress={() => 
                 props.move.navigate('EditFamilyForm', { data: props.member })
             }
-            onLongPress={() => {
-                // console.log('dipencet lama untuk emngeluarkan pop up buat edit dan delete')
-                setVisible(true)
-            }}> 
+
+            onLongPress={async () => {
+                await setTimeout(() => {
+                    setModalW(true)
+                }, 100);
+                setVisible(false)
+            }}
+                
+            > 
+            
             <View style={{ position: 'absolute', right: -15, top: 5}}>
                 {props.member.gender == 'Female' &&
                 <Icon name={'md-female'}  style={{backgroundColor:'#91107E', borderRadius:50, padding: 4 }} size={14} color={'white'} />}
@@ -96,40 +100,32 @@ const familyList = (props) => {
             <Modal
                 animationType="slide"
                 transparent={false}
-                visible={modalVisible}>
+                visible={modalVisible}
+                >
                 <EditFamilyProfile closeModal={setModalVisible} data={props.member} />
             </Modal>
-            {modalW &&
-                <SettingModal
-                    _visible={modalW}
-                    _iconId={'warning'}
-                    _message={'This family member will be deleted from your relation'}
-                    _navigationLeft={async () => {
-                        let token = await AsyncStorage.getItem('token')
-                        await props.deleteFamily(props.member._id, JSON.parse(token), modals)
-                        setModalW(false)
-                    }}
-                    _navigationRight={() => {
-                        setModalW(false)
-                    }}
-                    _textRight={'Cancel'}
-                    _textLeft={'Ok'}
-                />
-            }
+           
+            <ConfirmationModal
+                modal={modalW}
+                warning={'Yakin ingin menghapus anggota keluarga?'}
+                optionLeftText={'BATAL'}
+                optionRightText={'HAPUS'}
+                optionLeftFunction={() => setModalW (false)}
+                optionRightFunction={async () => {
+                    let token = await AsyncStorage.getItem('token')
+                    await props.deleteFamily(props.member._id, JSON.parse(token), modals)
+                    setModalW(false)
+                }}
+
+            />
+        
             {
-                modalF &&
-                <SettingModal
-                    _visible={modalF}
-                    _iconId={'failed'}
-                    _message={message}
-                    _navigationRight={() => {
-                        setDelete(false)
-                        setModalF(false)
-                    }}
-                    _textRight={'Ok'}
-                />
+                isDelete ? (
+                    setDelete(false),
+                    setModalW(true)
+                ) : null
             }
-        </View>
+            </View>
     )
 }
 
@@ -183,14 +179,11 @@ const viewStyles = StyleSheet.create({
         justifyContent: 'center'
     },
     delete: {
-        backgroundColor: 'red',
-        borderWidth: 1,
         borderRadius: 6,
         padding: 5,
-        margin: 5,
-        minWidth: 90,
-        alignItems: 'center',
-        justifyContent: 'center'
+        margin:7,
+        minWidth: 10,
+      
     },
     popover: {
         padding: 15,
