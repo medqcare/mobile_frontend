@@ -53,12 +53,12 @@ export default function SetsModal({modal,setModal,selection,iconLeft,iconMid,ico
                                                     >
                                                     <View style={styles.cardName}>
                                                         <View style={styles.profileName}>
-                                                            <ImageBackground 
-                                                                source={require('../../assets/png/ic_trash.png')}
+                                                            <Image
+                                                                source={item.url}
                                                                 style={{marginTop:10,width:30,height:30}}    
                                                             >
                                                                   
-                                                            </ImageBackground>
+                                                            </Image>
                                                             <Text style={styles.name}> {item.label || item} </Text>                  
                                                         </View>
                                                     </View>
