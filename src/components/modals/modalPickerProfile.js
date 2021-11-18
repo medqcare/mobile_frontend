@@ -115,8 +115,6 @@ const styles = StyleSheet.create({
     },
     cardName: {
         marginTop:10,
-        borderColor: '#757575',
-        borderWidth:1,
         borderRadius: 3,
         minHeight:50,
         flexDirection: 'row',
