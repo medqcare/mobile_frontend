@@ -1,0 +1,827 @@
+import axios from 'axios';
+import function_apaan from './function_apaan';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
+import { baseURL } from '../../config';
+
+const instance = axios.create({
+  baseURL: `${baseURL}/api`,
+});
+
+const _storeData = async data => {
+  console.log(data, 'ini _storeData sebelum try');
+  try {
+    await AsyncStorage.setItem('token', JSON.stringify(data));
+    console.log(
+      await AsyncStorage.getItem('token'),
+      'ini _storeData setelah try',
+    );
+  } catch (error) {
+    // Error saving data
+    console.log(error);
+  }
+};
+
+export function addDoctorFavorite(data) {
+  // console.log(data, 'ini di action')
+  return async dispatch => {
+    await dispatch({
+      type: 'AFTER_SIGNIN',
+      payload: data
+    })
+  }
+
+
+  // return async dispatch => {
+  //   try {
+  //     await AsyncStorage.setItem('doctorFavorite', JSON.stringify(data));
+  //     console.log(
+  //       await AsyncStorage.getItem('doctorFavorite'),
+  //       'ini docFav setelah try',
+  //     );
+  //   } catch (error) {
+  //     // Error saving data
+  //     console.log(error);
+  //   }
+  // }
+
+}
+
+export function changeLogin(status) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      // console.log('masuk action');
+      await dispatch({
+        type: 'CHANGE_LOGIN',
+        payload: status,
+      });
+      resolve();
+    });
+  };
+}
+
+export function getDataHospital(location) {
+  // console.log('ini location', location);
+  // console.log(page, 'ini page')
+  return async dispatch => {
+    try {
+      console.log(location, 'ini dari actionnya');
+      let { data } = await axios({
+        method: 'POST',
+        url: `${baseURL}/api/hospitals/get`,
+        data: {
+          lat: location.lat,
+          lng: location.lng,
+        },
+      });
+      console.log(data, 'ini data dati action')
+      dispatch({
+        type: 'FETCH_DATA_HOSPITAL',
+        payload: data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function getDataDoctor(page) {
+  // console.log('masuk sini data doctor');
+  return async dispatch => {
+    try {
+      let { data } = await instance.get(`/doctors`);
+      // console.log(data, 'in data dari action')
+      dispatch({
+        type: 'FETCH_DATA_DOCTOR',
+        payload: data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function setCurrentLocation(myLocation) {
+  return async dispatch => {
+    dispatch({
+      type: 'SET_MY_LOCATION',
+      payload: myLocation,
+    });
+  };
+}
+
+export function setLoading(loading) {
+  return async dispatch => {
+    dispatch({
+      type: 'TOGGLE_LOADING',
+      payload: loading
+    })
+  }
+}
+
+export function retrieveData(data, navigation) {
+  return async dispatch => {
+    let storage = JSON.parse(data);
+    let token = storage.token;
+    console.log(token, 'ini token pak');
+    instance({
+      url: '/v1/members/dataLogged',
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
+    })
+      .then(async ({ data }) => {
+        // console.log(data)
+        try {
+          if (data.data === null) {
+            console.log('masuk if');
+            await dispatch({
+              type: 'GET_USER_DATA',
+              payload: data.data,
+            });
+            navigation.navigate('RegistrationUser');
+          } else {
+            console.log('masuk else');
+            await dispatch({
+              type: 'AFTER_SIGNIN',
+              payload: data.data,
+            });
+            await dispatch({
+              type: 'SET_MY_LOCATION',
+              payload: {
+                lat: data.data.location.coordinates[0],
+                lng: data.data.location.coordinates[1],
+              },
+            });
+            console.log(navigation.state.params.data)
+            // navigation.navigate('ProfileSwitch');
+          }
+        } catch (error) {
+          console.log(error)
+          // modalF(error.message)
+        }
+      })
+      .catch(err => {
+        // console.log('servernya mattiiiiiii')
+        ToastAndroid.show(
+          `Please check your internet connection`,
+          ToastAndroid.SHORT,
+        );
+        console.log(err);
+      });
+  };
+}
+
+export function SignIn(userData, navigation, modalF) {
+  return dispatch => {
+    console.log(userData, 'ini user datanya');
+    // console.log(navigation, 'ini navigationnya')
+    instance({
+      url: '/v1/members/signin',
+      method: 'POST',
+      data: userData,
+    },{timeout:3000})
+      .then(({ data }) => {
+        console.log(data, 'ini yang pertama');
+        if (data.token) {
+          _storeData({ token: data.token });
+          return instance({
+            url: '/v1/members/dataLogged',
+            method: 'GET',
+            headers: {
+              Authorization: data.token,
+            },
+          },{timeout:3000});
+        } else if (data.message) {
+          console.log(data)
+          console.log('masuk else')
+          throw ({ message: data.message })
+        }
+      })
+      .then(async ({ data }) => {
+        console.log(data, 'ini yang kedua');
+        try {
+          if (data.data === null) {
+            console.log('masuk if');
+            await dispatch({
+              type: 'GET_USER_DATA',
+              payload: data.data,
+            });
+            navigation.navigate('RegistrationUser');
+          } else {
+            console.log('masuk else');
+            await dispatch({
+              type: 'AFTER_SIGNIN',
+              payload: data.data,
+            });
+            await dispatch({
+              type: 'SET_MY_LOCATION',
+              payload: {
+                lat: data.data.location.coordinates[1],
+                lng: data.data.location.coordinates[0],
+              },
+            });
+            navigation.navigate('ProfileSwitch');
+          }
+        } catch (error) {
+          console.log(error, '229 ================')
+          modalF(error.message)
+        }
+      })
+      .catch(err => {
+        modalF(err.response ?
+          err.response.status == 401 ? "Email and password not match" : err.message
+          :
+          err.message)
+      });
+  };
+}
+
+export function SignUp(userData, navigation, modalFailed) {
+  console.log('masuk sini')
+  return dispatch => {
+    instance({
+      url: '/v1/members/signup',
+      method: 'POST',
+      data: userData,
+    },{timeout: 3000})
+      .then(async ({ data }) => {
+        console.log(data, 'ini hasil creatednya');
+        // _storeData({ token: data.token });
+        dispatch({
+          type: 'TOGGLE_LOADING',
+          payload: false
+        })
+        // navigation.navigate('Sign')
+        navigation.navigate('SuccessSignUp')
+      })
+      .catch(error => {
+        console.log(error.response)
+        dispatch({
+          type: 'TOGGLE_LOADING',
+          payload: false
+        })
+        modalFailed(error.response ? error.response.data.err.message : error.message);
+      });
+  };
+}
+
+export function SignInGoogle(token, navigation) {
+  console.log('ini di panggi diaction');
+  return dispatch => {
+    // console.log(navigation, 'ini navigationnya')
+    instance({
+      url: '/v1/members/signinGoogle',
+      method: 'POST',
+      data: { token },
+    })
+      .then(({ data }) => {
+        console.log('ini datanya dari backend', data);
+        if (data.token == null) {
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false
+          })
+          alert(data.message);
+        } else {
+          _storeData({ token: data.token });
+          return instance({
+            url: '/v1/members/dataLogged',
+            method: 'GET',
+            headers: {
+              Authorization: data.token,
+            },
+          });
+        }
+      })
+      .then(async ({ data }) => {
+        console.log(data, 'ini yang kedua');
+        try {
+          if (data.data === null) {
+            console.log('masuk if');
+            await dispatch({
+              type: 'GET_USER_DATA',
+              payload: data.data,
+            });
+            navigation.navigate('RegistrationUser');
+          } else {
+            console.log('masuk else');
+            await dispatch({
+              type: 'AFTER_SIGNIN',
+              payload: data.data,
+            });
+            dispatch({
+              type: 'TOGGLE_LOADING',
+              payload: false
+            })
+            navigation.navigate('ProfileSwitch');
+          }
+        } catch (error) {
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false
+          })
+          ToastAndroid.show(
+            `${error.response.data.errors}`,
+            ToastAndroid.SHORT,
+          );
+        }
+      })
+      .catch(err => {
+        dispatch({
+          type: 'TOGGLE_LOADING',
+          payload: false
+        })
+        console.log('idihhh kenapa nihhhh');
+        console.log(err);
+        // ToastAndroid.show(`${err.response.data.errors}`, ToastAndroid.SHORT)
+        // console.log(err.response.data)
+      });
+  };
+}
+
+export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
+  return async dispatch => {
+    let token = await AsyncStorage.getItem('token')
+    instance({
+      url: '/v1/members/createProfile',
+      method: 'POST',
+      headers: { Authorization: JSON.parse(token).token },
+      data: dataUser,
+    })
+      .then(async ({ data }) => {
+        if (data.data !== null) {
+          if (data.message == 'NIK already registered') {
+            ToastAndroid.show(
+              data.message,
+              ToastAndroid.LONG,
+            );
+          } else {
+            try {
+              // console.log('masuk after signIn', data);
+              await dispatch({
+                type: 'GET_USER_DATA',
+                payload: data.data,
+              });
+              modalSuccess(data.message)
+            }
+            catch (error) {
+              modalFailed(error)
+              console.log('e1', error.message)
+            }
+          }
+        } else if (data.error !== null) {
+          modalFailed(data.error)
+          console.log('e2', data.error)
+        }
+      })
+      .catch(err => {
+        modalFailed(err.message)
+        console.log('e3,', err.message);
+        console.log('Error Create Patient as User');
+      });
+  };
+}
+
+export function GetUser(token, navigation) {
+  console.log(token, 'token --------------------------------------')
+  return dispatch => {
+    return new Promise(async (res, rej) => {
+
+      try {
+        console.log('masuk try getUser Action.js')
+        let { data } = await axios({
+          method: 'GET',
+          url: `${baseURL}/api/v1/members/dataLogged`,
+          headers: { Authorization: token },
+        }, { timeout: 100 });
+        if (data.data) {
+          console.log('masuk IF getUser Action')
+          let temp = data.data
+          let docFav = await AsyncStorage.getItem('doctorFavorite')
+          if (docFav) {
+            temp.doctorFavorites = JSON.parse(docFav)
+          }
+          dispatch({
+            type: 'GET_USER_DATA',
+            payload: data.data,
+          });
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false
+          })
+          res(data.data)
+        } else {
+          console.log('Masuk else getUser Action')
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false
+          })
+          res()
+          // modalW()
+        }
+      } catch (error) {
+        ToastAndroid.show(
+          `Please check your internet connection`,
+          ToastAndroid.LONG,
+        );
+        console.log(error.message, 'action getUser')
+        rej(error)
+      }
+
+    })
+  };
+}
+
+export function Logout(navigation) {
+  return async dispatch => {
+    try {
+      await AsyncStorage.removeItem('docterFavorite');
+      await AsyncStorage.removeItem('token');
+      await dispatch({
+        type: 'GET_USER_DATA',
+        payload: null,
+      });
+      navigation.navigate('Sign');
+      ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
+      console.log('Habis Logout');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
+
+export function addFamily(dataFamily, navigation, loadFalse) {
+  return async dispatch => {
+    let token = await AsyncStorage.getItem('token');
+    try {
+      let { data } = await instance({
+        url: '/v1/members/addFamily',
+        method: 'POST',
+        data: dataFamily,
+        headers: { Authorization: JSON.parse(token).token },
+      })
+
+      // console.log('ni mau create data di add family',data)
+      if (data && data.message && data.message.includes('family NIK already registered')) {
+        console.log('gabisa boss NIKnya udah kepake')
+        if (data.data == 'cannot add same family twice') {
+          ToastAndroid.show('NIK sudah menjadi anggota keluarga !', ToastAndroid.SHORT);
+        } else {
+          let { data } = await instance({
+            url: '/v1/members/dataLogged',
+            method: 'GET',
+            headers: { Authorization: JSON.parse(token).token },
+          })
+          // console.log('ini hail data yang balikannya add family kedua',data)
+
+          await dispatch({
+            type: 'GET_USER_DATA',
+            payload: data.data,
+          })
+          navigation.navigate('FamilyList')
+          ToastAndroid.show('NIK sudah terdaftar, Berhasil menambahkan data sebelumnya', ToastAndroid.LONG);
+        }
+      } else if (data && data.error) {
+        // console.log('masuk sini eror beroohhh')
+        console.log(data.error)
+        if (data.error.message.includes('Request failed with status code')) {
+          loadFalse()
+          ToastAndroid.show('NIK sama dengan Pemilik akun !', ToastAndroid.SHORT);
+        }
+      } else {
+        // console.log('silahkan nik baru mah sok ajaaa atuuhh')
+        let { data } = await instance({
+          url: '/v1/members/dataLogged',
+          method: 'GET',
+          headers: { Authorization: JSON.parse(token).token },
+        })
+        // console.log('ini hail data yang balikannya add family kedua',data)
+        await dispatch({
+          type: 'GET_USER_DATA',
+          payload: data.data,
+        })
+        navigation.navigate('FamilyList')
+        ToastAndroid.show('Berhasil menambahkan keluarga !', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.log(error, 'ini errornya add family');
+      loadFalse()
+      ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG);
+    }
+  };
+}
+
+export function deleteFamily(userId, { token }, modalF) {
+  // console.log(userId, "<===== ini userID, token ini ====>", token)
+  return async dispatch => {
+    try {
+      let Data = await instance({
+        url: `/v1/members/deleteFamily`,
+        method: 'PUT',
+        headers: {
+          Authorization: token,
+        },
+        data: {
+          patientId: userId
+        }
+      });
+      let newUserData = await instance({
+        url: `/v1/members/dataLogged`,
+        method: 'GET',
+        headers: { Authorization: token },
+      });
+      console.log('ini new user data', newUserData)
+      dispatch({
+        type: 'GET_USER_DATA',
+        payload: newUserData.data.data,
+      });
+    } catch (error) {
+      console.log(error);
+      modalF(error.message)
+    }
+  };
+}
+
+export function edit_profile(userData, userID, token) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // console.log(userID, 'ini userIDnya');
+        let data = await instance({
+          url: `/v1/members/editProfile/${userID}`,
+          method: 'PATCH',
+          data: userData,
+          headers: { Authorization: token },
+        });
+        console.log(
+          'ini data dari update', data
+        );
+        let dataUpdate = await instance({
+          url: '/v1/members/dataLogged',
+          method: 'GET',
+          headers: { Authorization: token },
+        })
+        resolve({ ...dataUpdate, message: 'success' });
+        dispatch({
+          type: 'GET_USER_DATA',
+          payload: dataUpdate.data.data,
+        });
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  };
+}
+
+export function bookDoctor(bookData, token) {
+  return dispatch => {
+    // console.log(bookData, 'ini book datanya di action')
+    dispatch({
+      type: 'TOGGLE_LOADING',
+      payload: true,
+    })
+    let d2ate = new Date(bookData.bookingSchedule);
+    let month = '' + (d2ate.getMonth() + 1),
+      day = '' + d2ate.getDate(),
+      year = d2ate.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+    bookData.bookingSchedule = `${day}/${month}/${year}`
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log('masuk sini dari book dokter');
+        // console.log(bookData);
+        // console.log(token);
+        let data = await instance({
+          url: '/v1/members/makeReservation',
+          method: 'POST',
+          data: bookData,
+          headers: { Authorization: token },
+        });
+        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        resolve({ message: data.data.message })
+      } catch (error) {
+        console.log(error);
+        reject(error);
+      }
+    });
+  };
+}
+
+export function findPatientFacility(dataPatient, token, createPatient) {
+  // console.log(createPatient, 'ini createPatient untuk find')
+  // console.log(dataPatient, 'ini datapatient untuk find')
+  // console.log(token, "ini token find")
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let { data, status } = await instance({
+          url: '/v1/members/facilityMedrec',
+          method: 'POST',
+          headers: { Authorization: token },
+          data: dataPatient,
+        });
+        console.log(data, status, 'ini data hasil find');
+        if (status === 204) {
+          let { data } = await instance({
+            url: '/v1/members/addPatientToFacility',
+            method: 'POST',
+            headers: { Authorization: token },
+            data: createPatient,
+          });
+          console.log(data, 'ini data hasil create');
+          resolve(data, status);
+        } else {
+          resolve(status);
+        }
+      } catch (error) {
+        console.log(error, 'error di findPatientFaciity');
+        reject(error);
+      }
+    });
+  };
+}
+
+export function createPatientFacility(createPatient, token) {
+  console.log(createPatient, 'ini datapatient untuk create');
+  console.log(token, 'ini token create patientFacility');
+  return new Promise(async (resolve, reject) => {
+    try {
+      let { data } = await instance({
+        url: '/v1/members/addPatientToFacility',
+        method: 'POST',
+        headers: { Authorization: token },
+        data: createPatient,
+      });
+      console.log(data, 'ini data hasil create');
+      resolve(data);
+    } catch (error) {
+      console.log(error, 'error di findPatientFaciity');
+      reject(error);
+    }
+  });
+}
+
+export function getCurrentQueueingNumber(queueId) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let token = await AsyncStorage.getItem('token');
+        // console.log(JSON.parse(token).token,'ini token yang dari get current queue')
+        console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
+        let { data } = await instance({
+          method: 'POST',
+          url: '/v1/members/getQueueById',
+          data: { queueID: JSON.parse(queueId) },
+          headers: { Authorization: JSON.parse(token).token },
+        });
+        console.log(
+          'ini data balikan dari ambil queue number',
+          data.data.currentQueueingNumber,
+        );
+        resolve(data.data.currentQueueingNumber);
+      } catch (error) {
+        console.log('gagal bro di getCurrentQueueingNumber');
+        console.log(error);
+        reject(error);
+      }
+    });
+  };
+}
+
+export function cancelRecervation(reservationID) {
+  return async dispatch => {
+    let token = await AsyncStorage.getItem('token')
+    try {
+      let data = await instance({
+        url: `/v1/members/cancelReservation`,
+        method: 'PATCH',
+        headers: {
+          Authorization: JSON.parse(token).token
+        },
+        data: {
+          reservationID: reservationID
+        }
+      })
+    } catch (error) {
+      ToastAndroid.show(error.message, ToastAndroid.SHORT,
+      );
+    }
+  }
+}
+
+export function getTodayRegistration(userID) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let access_token = await AsyncStorage.getItem('token')
+
+        // console.log('ini userIDnya boss', userID)
+        // console.log('ini tokennya boss', access_token)
+        let { data } = await axios({
+          method: 'POST',
+          url: baseURL + '/api/v1/members/getTodayRegistration',
+          data: {
+            userID
+          },
+          headers: {
+            Authorization: JSON.parse(access_token).token
+          }
+        })
+        // console.log('ini hasil balikan dari get today registration',data)
+
+        dispatch({
+          type: 'SET_TODAY_ACTIVITY',
+          payload: data ? data.data : [],
+        });
+        resolve(data)
+      } catch (error) {
+        console.log('gagal di get Today registration')
+        console.log(error)
+        reject(error)
+        Alert.alert(error)
+      }
+    })
+  }
+}
+
+export function setAlergie( patientId, alergie, token) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let data = await instance({
+          url: `/v1/members/alergies/${patientId}`,
+          method: 'POST',
+          data: alergie,
+          headers: { Authorization: token },
+        })
+        resolve(data.data)
+      } catch (error) {
+        console.log(error, 'ini kembalian data alergie')
+        ToastAndroid.show('Gagal menambahkan alergi', ToastAndroid.SHORT)
+        reject(error.message)
+      }
+    })
+  }
+}
+
+export function getAlergie(patientId, token) {
+  console.log(patientId, 'ini id di action')
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let data = await instance({
+          url: `/v1/members/alergies/${patientId}`,
+          method: 'GET',
+          headers: { Authorization: token },
+        })
+        resolve(data.data)
+      } catch (err) {
+        console.log(err.response.status, 'ini kembalian data get alergie')
+        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
+        reject(err.response.status)
+      }
+    })
+  }
+}
+
+export function deleteAlergie(_id, token) {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log('kepanggil di try')
+        let data = await instance({
+          url: `/v1/members/alergies/${_id}`,
+          method: 'PUT',
+          headers: { Authorization: token },
+        })
+        resolve(data.data)
+      } catch (error) {
+        console.log(error, 'ini kembalian data delete alergie')
+        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
+        reject(error.message)
+      }
+    })
+  }
+}
+
+export function getDataMedicine() {
+  return dispatch => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let data = await axios({
+          url: `http://api-medqcare.applimetis.id:8888/api/v1/master/barangMedis/getAll`,
+          method: 'GET',
+        })
+        resolve(data.data)
+      } catch (error) {
+        console.log(error, 'ini kembalian data Obat')
+        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
+        reject(error.message)
+      }
+    })
+  }
+}
