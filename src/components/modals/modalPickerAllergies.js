@@ -12,7 +12,9 @@ import {
   TouchableWithoutFeedback,
 
 } from 'react-native'
-import RadioForm from 'react-native-radio-form';
+// import RadioForm from 'react-native-radio-form';
+import RadioForm from 'react-native-simple-radio-button'
+
 
 
 export default function SelectModalAllergies({ modal, setModal, selection, title, subtitle, placeholder, setSelectedValue, inputAlergies, setInputAlergies, load, addAlergies, setSelectedLabel, changeKey} ){
@@ -41,19 +43,17 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
                         </View>
                         <View style={{paddingLeft: 10}}>
                             <RadioForm
-                                style={styles.radioForm}
-                                dataSource={selection}
-                                itemShowKey="label"
-                                itemRealKey="value"
-                                innerColor='#FDFDFF'
-                                color='#fff'
-                                outerColor='#145DDD'
-                                circleSize={16}
+                                radio_props={selection}
                                 initial={0}
                                 formHorizontal={true}
                                 labelHorizontal={true}
+                                animation={''}
+                                labelColor={'#fff'}
+                                labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
+                                style={styles.radioForm}
+                                buttonOuterSize={20}
                                 onPress={(item) => {
-                                    setSelectedValue(item.value)
+                                    setSelectedValue(item)
                                 }}
                             />
                         </View>
@@ -68,7 +68,7 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
                             autoCapitalize={'none'}
                             autoFocus={false}
                             placeholder={placeholder || 'Cth: Udang,kacang,Dingin'}
-                            keyboardType={'sentences'}
+                            keyboardType={'default'}
                             placeholderTextColor="#DDDDDD" 
                             onChangeText={text => {
                                 setInputAlergies(text)
