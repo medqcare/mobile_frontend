@@ -58,7 +58,7 @@ const Allergies = props => {
         .then(backData => {
           _fetchDataAlergi();
           setInputAlergies('');
-          setType('');
+          setType('Cuaca');
         });
     } else {
       ToastAndroid.show(
@@ -100,7 +100,7 @@ const Allergies = props => {
     props
       .getAlergie(idUser._id, JSON.parse(token).token)
       .then(allAlergi => {
-        console.log(allAlergi, 'then yang ke 2');
+        // console.log(allAlergi, 'then yang ke 2');
         allAlergi.data.map((el, idx) => {
           return el.status == 'Active' ? tempt.push(el) : null;
         });
@@ -116,7 +116,7 @@ const Allergies = props => {
   async function _DeleteAlergi(_idAlergie) {
     let token = await AsyncStorage.getItem('token');
     props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
-      console.log('delete', backData);
+      // console.log('delete', backData);
       _fetchDataAlergi();
     });
   }
