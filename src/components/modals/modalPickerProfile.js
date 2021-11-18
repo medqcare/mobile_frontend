@@ -55,7 +55,7 @@ export default function SetsModal({modal,setModal,selection,iconLeft,iconMid,ico
                                                         <View style={styles.profileName}>
                                                             <Image
                                                                 source={item.url}
-                                                                style={{marginTop:10,width:30,height:30}}    
+                                                                style={{marginTop:5,width:45,height:45}}    
                                                             >
                                                                   
                                                             </Image>
@@ -114,18 +114,19 @@ const styles = StyleSheet.create({
         marginLeft:5
     },
     cardName: {
-        marginTop:10,
+        marginTop:5,
         borderRadius: 3,
-        minHeight:50,
+        minHeight:70,
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 10
     },
     profileName: {
-        flexDirection:'row'
+        flexDirection:'row',
+        marginBottom:'10%'
     },
     name: {
-        marginTop: 15,
+        marginTop: 20,
         marginLeft:6,
         color:'#DDDDDD'
     },
