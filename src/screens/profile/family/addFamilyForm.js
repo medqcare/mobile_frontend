@@ -359,7 +359,7 @@ const familyForm = (props) => {
                                 <Image
                                     style={{width:12,height:10.2}} 
                                     source={require('../../../assets/png/ArrowDown.png')}
-                            />
+                                 />
                             </TouchableOpacity>
 
                             <SelectModal

@@ -11,6 +11,8 @@ import { connect } from 'react-redux'
 import EditProfile from '../../../components/editProfile'
 
 import capitalFirst from '../../../helpers/capitalFirst' // for proper case full name
+import SetsModal from '../../modals/modalPickerProfile'
+import SelectModal from '../../modals/modalPicker'
 
 const mapStateToProps = state => {
     return state
@@ -20,6 +22,26 @@ const profileInfo = (props) => {
     // console.log(props.userData, 'ini user Datanya==~~')
     const [modalVisibility, setModalVisibility] = useState(false)
     const [userData, setUserData] = useState(props.userData)
+    const [profileStatusModal, setProfileStatusModal] = useState(false)
+    const profileStatusSelection =[
+        {   
+            label:'Hapus',
+            
+            url: require('../../../assets/png/ic_trash.png'),
+
+        },
+        {
+            label:'Kamera',
+            
+            url: require('../../../assets/png/ic_kamera.png'),
+        },
+        {
+            label:'Galeri',
+            
+            url: require('../../../assets/png/ic_galeri.png'),
+
+        }
+    ]
 
     function modalvisible() {
         setModalVisibility(!modalVisibility)
@@ -33,15 +55,47 @@ const profileInfo = (props) => {
 
     }
 
+    async function setSelectedValue(value,uri, changeKey){
+        setUserData({
+            ...dataProfile,
+            [changeKey] :value,uri
+        })
+        
+    }
+
+    const [selectedProfileLabel,setselectedProfileLabel] = useState(false)
+
     return (
         <View style={styles.container}>
+        
             <View style={styles.profilePicture}>   
                 <Image
                     source={{ uri: props.userData.photo ? props.userData.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                     style={styles.userImage}
                 />  
+                
+                <TouchableOpacity style={{marginTop:-17,zIndex:1,marginLeft:30}}
+                    onPress={()=>setProfileStatusModal(true)}
+                   
+                >
+                    
+                    <Image source={ require('../../../assets/png/ic_camera.png') } style={{width: 28, height: 30}} />
+                </TouchableOpacity>
+                
+                <SetsModal
+                        modal={profileStatusModal}
+                        setModal={setProfileStatusModal}
+                        selection={profileStatusSelection}
+                        title='Silahkan Pilih Apa yang anda Ubah'
+                        subtitle='Pilihan yang tersedia'
+                        setSelectedValue={setSelectedValue}
+                        setSelectedLabel={setselectedProfileLabel}
+                >
+                </SetsModal>        
+
                 {/* <Text>Profile Picture</Text> */}
             </View>
+           
             <View style={styles.profileData}>
                 <View style={styles.fullName}>
                     <Text style={styles.fullNameText}>{fullName()}</Text>
@@ -61,13 +115,15 @@ const profileInfo = (props) => {
                 </View>
             </View>
         </View>
+        
+        
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         width: wp('100%'),
-        height: hp('12%'),
+        height: hp('14%'),
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'flex-start',
@@ -78,12 +134,14 @@ const styles = StyleSheet.create({
 
     profilePicture: {
         // flex: 0.1,
-        flexDirection: 'column'
+        flexDirection: 'column',
+        position:'absolute',
+        marginLeft:15
     },
 
     userImage: {
-        width: 50,
-        height: 50,
+        width: 55,
+        height: 55,
         borderRadius: 150 / 2,
         overflow: "hidden",
         borderWidth: 3,
@@ -92,7 +150,7 @@ const styles = StyleSheet.create({
 
     profileData: {
         justifyContent: 'space-around',
-        paddingLeft: 25,
+        paddingLeft: 70,
     },
 
     fullName: {
