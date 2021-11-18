@@ -15,10 +15,10 @@ import {connect} from 'react-redux';
 import SetModals from '../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
 import {LinearGradient} from 'expo-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
 import SelectPatient from '../../components/modals/selectPatient';
 import SelectModalAllergies from '../../components/modals/modalPickerAllergies';
 import ArrowBack from '../../assets/svg/ArrowBack'
+import ConfirmationModal from '../../components/modals/ConfirmationModal'
 
 const Allergies = props => {
   const [Load, setLoad] = useState(false);
@@ -317,23 +317,19 @@ const Allergies = props => {
               </View>
             </View>
           )}
-
-          {modalW && (
-            <SetModals
-              _visible={modalW}
-              _navigationRight={() => {
-                setModalW(false);
-              }}
-              _textRight={'Cancel'}
-              _navigationLeft={() => {
-                _DeleteAlergi(idAlergie);
-                setModalW(false);
-              }}
-              _textLeft={'Yes'}
-              _message={'Are you sure want to delete this allergie ?'}
-              _iconId={'warning'}
-            />
-          )}
+          <ConfirmationModal
+            modal={modalW}
+            optionLeftFunction={() => {
+                setModalW(false)
+            }}
+            optionLeftText={'BATAL'}
+            optionRightFunction={() => {
+                _DeleteAlergi(idAlergie)
+                setModalW(false)
+            }}
+            optionRightText={'HAPUS'}
+            warning={'Yakin ingin menghapus alergi?'}
+          />
         </>
       )}
     </View>
