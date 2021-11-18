@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Modal from 'react-native-modal';
 import {
   View, 
@@ -6,13 +6,10 @@ import {
   Text, 
   TextInput,
   TouchableOpacity, 
-  ScrollView,
-  SafeAreaView,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
 
 } from 'react-native'
-import RadioForm from 'react-native-radio-form';
+import RadioForm from 'react-native-simple-radio-button'
+
 
 
 export default function SelectModalAllergies({ modal, setModal, selection, title, subtitle, placeholder, setSelectedValue, inputAlergies, setInputAlergies, load, addAlergies, setSelectedLabel, changeKey} ){
@@ -41,26 +38,20 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
                         </View>
                         <View style={{paddingLeft: 10}}>
                             <RadioForm
-                                style={styles.radioForm}
-                                dataSource={selection}
-                                itemShowKey="label"
-                                itemRealKey="value"
-                                innerColor='#FDFDFF'
-                                color='#fff'
-                                outerColor='#145DDD'
-                                circleSize={16}
+                                radio_props={selection}
                                 initial={0}
                                 formHorizontal={true}
                                 labelHorizontal={true}
+                                animation={''}
+                                labelColor={'#fff'}
+                                labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
+                                style={styles.radioForm}
+                                buttonOuterSize={20}
                                 onPress={(item) => {
-                                    setSelectedValue(item.value)
+                                    setSelectedValue(item)
                                 }}
                             />
                         </View>
-
-                        {/* <Text style={styles.titleP}>
-                            {placeholder || 'Cth: Udang,kacang,Dingin'}
-                        </Text> */}
                     </View>
                     <View style={styles.inputTextArea}>
                         <TextInput
@@ -68,7 +59,7 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
                             autoCapitalize={'none'}
                             autoFocus={false}
                             placeholder={placeholder || 'Cth: Udang,kacang,Dingin'}
-                            keyboardType={'sentences'}
+                            keyboardType={'default'}
                             placeholderTextColor="#DDDDDD" 
                             onChangeText={text => {
                                 setInputAlergies(text)
@@ -97,117 +88,74 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
 }
 
 const styles = StyleSheet.create({
-    modal: {
-        justifyContent: 'flex-end',
-        margin: 0,
-    },
-    container: {
-        maxHeight: '100%',
-        backgroundColor: '#2F2F2F',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-      },
-      header: {
-        marginTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 20,
-      },
-      toogle: {
-        position: 'absolute',
-        borderWidth: 2,
-        width: 50,
-        borderColor: '#6C6C6C',
-        alignContent: 'center',
-        marginBottom: 20,
-      },
-      title: {
-        color: '#DDDDDD',
-        fontSize: 13,
-        textAlign: 'center',
-        marginTop: 20,
-      },
-      lowerContainer: {
-        marginHorizontal: 15,
-        marginBottom: 20,
-        flexDirection: 'column'
-      },
-      subtitle: {
-        color: '#B5B5B5',
-        fontSize: 12,
-        justifyContent: 'center',
-        alignItems: 'center'
-      },
-      allergyTypes: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingLeft: 15
-      },
-      radioForm: {
-        color: '#DDDDDD',
-      },
-      inputTextArea: {
-        height: 150,
-        borderWidth: 1,
-        paddingHorizontal: 20,
-        borderRadius: 3,
-        backgroundColor: '#2F2F2F',
-        borderColor: '#545454'
-    },
-
-        inputText: {
-            color: '#DDDDDD'
-        },
-        button: {
-            height: 50,
-            width: '85%',
-            backgroundColor: '#005ea2',
-            borderRadius: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginVertical: 10,
-        },
-
-      cardName: {
-        marginTop: 10,
-        borderColor: '#757575',
-        borderWidth: 1,
-        borderRadius: 3,
-        minHeight: 50,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-      },
-      familyName: {
-        flexDirection: 'row',
-      },
-      photo: {
-        marginVertical: 7,
-        width: 35,
-        height: 35,
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: '#4fe39b',
-      },
-      name: {
-        marginTop: 15,
-        marginLeft: 15,
-        color: '#DDDDDD',
-      },
-      vector: {
-        marginVertical: 20,
-      },
-      buttonAdd: {
-        marginTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-      },
-      vectorPlus: {
-        marginTop: 5,
-        marginRight: 5,
-      },
-      addTitle: {
-        color: '#4398D1',
-      },
+  modal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  container: {
+    maxHeight: '100%',
+    backgroundColor: '#2F2F2F',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  header: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  toogle: {
+    position: 'absolute',
+    borderWidth: 2,
+    width: 50,
+    borderColor: '#6C6C6C',
+    alignContent: 'center',
+    marginBottom: 20,
+  },
+  title: {
+    color: '#DDDDDD',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  lowerContainer: {
+    marginHorizontal: 15,
+    marginBottom: 20,
+    flexDirection: 'column'
+  },
+  subtitle: {
+    color: '#B5B5B5',
+    fontSize: 12,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  allergyTypes: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 15
+  },
+  radioForm: {
+    color: '#DDDDDD',
+  },
+  inputTextArea: {
+    height: 150,
+    borderWidth: 1,
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    backgroundColor: '#2F2F2F',
+    borderColor: '#545454'
+  },
+  inputText: {
+    color: '#DDDDDD'
+  },
+  button: {
+    height: 50,
+    width: '85%',
+    backgroundColor: '#005ea2',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
 })
