@@ -1,29 +1,26 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Modal from 'react-native-modal';
 import {
   View, 
   StyleSheet, 
   Text, 
-  Image, 
   TouchableOpacity, 
-  Dimensions,
   ScrollView,
   SafeAreaView,
   TouchableHighlight,
   TouchableWithoutFeedback,
-
 } from 'react-native'
 
 
 export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey} ){
 
     return(
-
         <Modal
             isVisible={modal}
             swipeDirection={'down'}
             style={styles.modal}
             animationType="slide"
+            onBackdropPress={() => setModal(false)}
             onSwipeComplete={() => setModal(false)}
             onRequestClose={() => setModal(false)}
         >
