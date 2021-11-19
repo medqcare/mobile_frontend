@@ -35,6 +35,7 @@ import LottieLoader from 'lottie-react-native'
 import {LinearGradient} from 'expo-linear-gradient'
 import Modal from 'react-native-modal';
 import ArrowBack from '../../assets/svg/ArrowBack'
+import SelectPatient from '../../components/modals/selectPatient';
 
 
 const card = props => {
@@ -143,31 +144,31 @@ const card = props => {
 		</LinearGradient>
       	<View 
 		  	style={{
-				backgroundColor: '#2F2F2F',
+				backgroundColor: '#1F1F1F',
 				padding: 10,
 				flexDirection: 'row',
 				justifyContent: 'center',
-				shadowColor: '#C2C2C2',
-				shadowOffset: { height: 5, width: 5 },
-				shadowOpacity: 0.61,
-				shadowRadius: 9.11,
-				elevation: 9
 			}}>
-
           	
-
 			{/* Picker for family members */}
-			<TouchableOpacity 
-				onPress={() => setModalPatient(true)}
-				style={styles.button}
-			>
-				<View style={{ padding: 5, justifyContent: 'center' }}>
-					<IconFA name='user-o' size={25} color='#fff' />
-				</View>
-				<View style={{paddingLeft: 15}}>
-					<Text style={styles.buttonText}>{selectedValue}</Text>
-				</View>
-			</TouchableOpacity>
+			<View style={styles.boxContainer}>
+				<TouchableOpacity
+					onPress={() => setModalPatient(true)}
+					style={{...styles.box, height: 50}}>
+					<Text style={styles.inputText}>{selectedValue}</Text>
+					<Image source={require('../../assets/png/ArrowDown.png')} />
+				</TouchableOpacity>
+
+				{/* <SelectPatient
+					modal={modalPatient}
+					setModal={setModalPatient}
+					patient={patient}
+					setPatient={setPatient}
+					family={family}
+					title="Siapa yang ingin anda periksa kartunya?"
+					setSelectedValue={setSelectedValue}
+				/> */}
+			</View>
 			<Modal
           		isVisible={modalPatient}
 				swipeDirection={'down'}
@@ -200,7 +201,6 @@ const card = props => {
 								setModalPatient(false)
 								getDataHospital(props.userData._id)
 									.then(async data => {
-										// console.log(data, 'datanya');
 										setHospital(data.data);
 										setLoad(false);
 									})
@@ -224,11 +224,7 @@ const card = props => {
 									</Text>
 								</View>
 								<View style={viewModalP.vector}>
-									{/* <SvgUri
-										width="10"
-										height="10"
-										source={require('../../assets/svg/Vector.svg')}
-									/> */}
+									
 								</View>
 							</View>
 						</TouchableOpacity>
@@ -258,7 +254,6 @@ const card = props => {
 																	setLoad(true);
 																	getDataHospital(family[itemIndex]._id)
 																		.then(async data => {
-																			// console.log(data, 'datanya');
 																			setHospital(data.data);
 																			setLoad(false);
 																		})
@@ -285,11 +280,6 @@ const card = props => {
 																		</Text>
 																	</View>
 																	<View style={viewModalP.vector}>
-																		{/* <SvgUri
-																			width="10"
-																			height="10"
-																			source={require('../../assets/svg/Vector.svg')}
-																		/> */}
 																	</View>
 																</View>
 															</TouchableOpacity>
@@ -300,11 +290,7 @@ const card = props => {
 
 											<View style={viewModalP.buttonAdd}>
 												<View style={viewModalP.vectorPlus}>
-													{/* <SvgUri
-														width="10"
-														height="10"
-														source={require('../../assets/svg/VectorPlus.svg')}
-													/> */}
+													
 												</View>
 												<Text style={viewModalP.addTitle}>
 													Tambah Keluarga
@@ -318,44 +304,10 @@ const card = props => {
 					</View>
 				</View>
         	</Modal>
-            {/* <Picker
-				mode={'dropdown'}
-				selectedValue={book.firstName}
-				style={{ flex:1}}
-				onValueChange={(itemValue, itemIndex) => {
-				// console.log(itemValue, 'ini valuenya');
-                setBook({
-					...book,
-					_id: family[itemIndex]._id,
-					firstName: itemValue,
-                });
-                setLoad(true);
-                getDataHospital(family[itemIndex]._id)
-					.then(async data => {
-						// console.log(data, 'datanya');
-						setHospital(data.data);
-						setLoad(false);
-					})
-					.catch(err => {
-						console.log(err);
-						setHospital(null);
-						setLoad(false);
-					});
-			}}>
-				{family.map((el, i) => {
-					return (
-						<Picker.Item
-							key={i}
-							label={el.lastName ? el.firstName + " " + el.lastName : el.firstName}
-							value={el.lastName ? el.firstName + " " + el.lastName : el.firstName}
-						/>
-					);
-				})}
-            </Picker> */}
 		</View>
 
 		{/* Choose which institute to look from */}
-		<View style={styles.instituteContainer}>
+		{/* <View style={styles.instituteContainer}>
             <TouchableOpacity 
 				onPress={() => setFacility('Hospital')} 
 				style={{...styles.instituteTouchable, backgroundColor: (facility == 'Hospital' ? '#005ea2' : '#FFF')
@@ -376,7 +328,7 @@ const card = props => {
             }}>
               	<Text style={{ color: (facility == 'Private' ? '#FFF' : '#000') }}>Private</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
           
 		{/* Card components */}
       	<View style={styles.cardContainer}>
@@ -390,6 +342,9 @@ const card = props => {
 				showCard.length ? (
 					<ScrollView style={styles.innerCardContainer}>
 						{showCard.map((regHos, index) => {
+							const fullName = regHos.patient.patientName || 'John Doe'
+							const RM = regHos.medrecNumber || 'P00000052'
+							const dob = regHos.patient.dob || '27 Oktober 1964'
 							return (
 								<TouchableOpacity
 									activeOpacity={0.7}
@@ -397,7 +352,6 @@ const card = props => {
 									style={styles.cardTouchable}
 								>
 									<View style={styles.card}>
-										<View style={{ position: 'absolute', width: '100%', }}>
 											<View style={styles.cardHeader}>
 												<Text style={styles.cardHospitalName}>
 													{regHos.facilityID.facilityName}
@@ -406,30 +360,53 @@ const card = props => {
 													{regHos.facilityID.address}
 												</Text>
 											</View>
-											<View style={{ height: '100%', padding: 10 }}>
-												<Text style={styles.cardPatientName}>{regHos.patient.patientName}</Text>
-												{regHos.medrecNumber ? (
-													<Text style={styles.cardNumberText}>MR Number : {regHos.medrecNumber}</Text>
-													) : (
-														<View
-														style={{
-															flexDirection: 'row',
-															justifyContent: 'space-between',
-															alignItems: 'center'
-														}}>
-														<Text style={styles.cardNumberText}>MR Number : -</Text>
-														<IconFA
-															name="warning"
-															size={15}
-															color="red"
-															style={{ marginRight: 10 }}
-														/>
-														</View>
-													)
-												}
+											<View style={styles.cardContent}>
+													<ImageBackground
+														source={require('../../assets/png/DoctorImage.png')} 
+														resizeMode='cover'
+														style={{ height: '100%', width: '100%' }}
+													>
+														<LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#696B6C",  "#696B6C00"]} style={{height: '100%'}}>
+															<View style={styles.cardContentText}>
+																<View>
+																	<Text style={{...styles.cardText, fontWeight: 'bold', fontSize: 17}}>{fullName}</Text>
+																</View>
+																<View style={{paddingTop: 7}}>
+																	<Text style={styles.cardText}>Nomor RM</Text>
+																	<Text style={{...styles.cardText, fontSize: 17, fontWeight: 'bold', paddingTop: 2.5}}>{RM}</Text>
+																</View>
+																<View style={{paddingTop: 7}}>
+																	<Text style={styles.cardText}>Tanggal Lahir</Text>
+																	<Text style={{...styles.cardText, paddingTop: 2.5}}>{dob}</Text>
+																</View>
+																<View style={{paddingTop: 7}}>
+																	<Text style={{...styles.cardText, paddingTop: 2.5}}>QR COde</Text>
+																</View>
+
+																{/* {regHos.medrecNumber ? (
+																	<Text style={styles.cardNumberText}>MR Number : {regHos.medrecNumber}</Text>
+																	) : (
+																		<View
+																		style={{
+																			flexDirection: 'row',
+																			justifyContent: 'space-between',
+																			alignItems: 'center'
+																		}}>
+																		<Text style={styles.cardNumberText}>MR Number : -</Text>
+																		<IconFA
+																			name="warning"
+																			size={15}
+																			color="red"
+																			style={{ marginRight: 10 }}
+																		/>
+																		</View>
+																	)
+																} */}
+															</View>
+														</LinearGradient>
+													</ImageBackground>
 											</View>
 										</View>
-									</View>
 								</TouchableOpacity>
 							)
 							})}
@@ -458,6 +435,30 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'flex-end'
     },
+	boxContainer: {
+		padding: 10,
+		flexDirection: 'row',
+		justifyContent: 'center',
+		shadowColor: '#C2C2C2',
+		shadowOffset: {height: 5, width: 5},
+		shadowOpacity: 0.61,
+		shadowRadius: 9.11,
+		elevation: 9,
+		width: '100%',
+	},
+	box: {
+		width: '100%',
+		borderWidth: 1,
+		paddingHorizontal: 20,
+		borderRadius: 3,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		backgroundColor: '#2F2F2F',
+	},
+	inputText: {
+		color: '#DDDDDD',
+	},
 	button: {
 		flexDirection: 'row',
 		width: '100%',
@@ -512,35 +513,35 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		borderRadius: 10,
 		marginBottom: 10,
-		borderWidth: 1,
-		borderColor: '#8D8D8D',
-		maxHeight: Dimensions.get('screen').height * 0.23,
+		// maxHeight: Dimensions.get('screen').height * 0.23,
 	  },
 	card: {
 		width: '100%',
-		minHeight: Dimensions.get('screen').height * 0.23,
+		height: '100%',
 	},
 	cardHeader: { 
 		maxHeight: 80, 
-		backgroundColor: '#005ea2', 
+		backgroundColor: '#484848', 
 		padding: 10 
 	},
 	cardHospitalName: {
 		fontWeight: 'bold',
-		color: '#FFF'
+		color: '#F37335'
 	},
 	cardHospitalAddress: {
-		color: '#FFF',
+		color: '#B5B5B5',
 		fontSize: 10
 	},
-	cardPatientName: { 
-		fontWeight: 'bold', 
-		fontSize: 16, 
+	cardContent: {
+		height: '100%',
+	},
+	cardContentText: {
+		paddingLeft: 20.,
+		paddingVertical: 14
+	},
+	cardText: { 
 		color: '#DDDDDD' 
 	},
-	cardNumberText: { 
-		color: '#DDDDDD' 
-	}
 })
 
 const viewModalP = StyleSheet.create({
