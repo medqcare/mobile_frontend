@@ -60,7 +60,7 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
                             autoFocus={false}
                             placeholder={placeholder || 'Cth: Udang,kacang,Dingin'}
                             keyboardType={'default'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text => {
                                 setInputAlergies(text)
                             }}
@@ -133,7 +133,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingLeft: 15
+    paddingLeft: 15,
+    paddingBottom: 8
   },
   radioForm: {
     color: '#DDDDDD',
@@ -142,12 +143,13 @@ const styles = StyleSheet.create({
     height: 150,
     borderWidth: 1,
     paddingHorizontal: 20,
+    paddingTop: 14,
     borderRadius: 3,
     backgroundColor: '#2F2F2F',
     borderColor: '#545454'
   },
   inputText: {
-    color: '#DDDDDD'
+    color: '#DDDDDD',
   },
   button: {
     height: 50,
