@@ -5,35 +5,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  FlatList,
   Image,
-  Picker,
   ImageBackground,
   Dimensions,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  SafeAreaView,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import RadioForm from 'react-native-radio-form'
-// { RadioButton, RadioButtonInput, RadioButtonLabel } 
-
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { baseURL } from '../../config';
-
 import { setLoading } from '../../stores/action';
-
-import Icon from 'react-native-vector-icons/Ionicons';
-import { Header } from 'react-native/Libraries/NewAppScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import IconFA from 'react-native-vector-icons/FontAwesome';
 import LottieLoader from 'lottie-react-native'
-import {LinearGradient} from 'expo-linear-gradient'
-import Modal from 'react-native-modal';
+import { LinearGradient } from 'expo-linear-gradient'
 import ArrowBack from '../../assets/svg/ArrowBack'
 import SelectPatient from '../../components/modals/selectPatient';
 
@@ -42,9 +24,10 @@ const card = props => {
   const [hospital, setHospital] = useState(null);
   const [book, setBook] = useState({
     _id: null,
-    firstName: 'Name', 
+    fullName: 'Name', 
   });
   const [family, setFamily] = useState([]);
+  const [accountOwner, setAccountOwner] = useState(props.userData);
 
   const [facility, setFacility] = useState(null)
   const [aktif, setAktif] = useState('Hospital')
@@ -56,7 +39,27 @@ const card = props => {
 
   const [load, setLoad] = useState(false)
   const [modalPatient, setModalPatient] = useState(false)
-  const [selectedValue, setSelectedValue] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+
+  function setSelectedValue(data){
+	const fullName = data.lastName ? data.firstName + " " + data.lastName : data.firstName
+	const _id = data._id
+	setDisplayName(fullName)
+	setBook({
+		_id,
+		fullName
+	});
+	setLoad(true);
+	getDataHospital(_id)
+		.then(async data => {
+			setHospital(data.data);
+			setLoad(false);
+		})
+		.catch(err => {
+			setHospital(null);
+			setLoad(false);
+		});
+  }
 
   useEffect(() => {
     setLoad(true)
@@ -155,155 +158,19 @@ const card = props => {
 				<TouchableOpacity
 					onPress={() => setModalPatient(true)}
 					style={{...styles.box, height: 50}}>
-					<Text style={styles.inputText}>{selectedValue}</Text>
+					<Text style={styles.inputText}>{displayName}</Text>
 					<Image source={require('../../assets/png/ArrowDown.png')} />
 				</TouchableOpacity>
 
-				{/* <SelectPatient
+				<SelectPatient
 					modal={modalPatient}
 					setModal={setModalPatient}
-					patient={patient}
-					setPatient={setPatient}
+					accountOwner={accountOwner}
 					family={family}
 					title="Siapa yang ingin anda periksa kartunya?"
 					setSelectedValue={setSelectedValue}
-				/> */}
+				/>
 			</View>
-			<Modal
-          		isVisible={modalPatient}
-				swipeDirection={'down'}
-				onSwipeComplete={() => setModalPatient(false)}
-				style={{
-					justifyContent: 'flex-end',
-					margin: 0,
-				}}
-				animationType="slide"
-				onRequestClose={() => setModalPatient(false)}
-			>
-				<View style={viewModalP.container}>
-					<View style={viewModalP.header}>
-						<View style={viewModalP.toogle} />
-						<Text style={viewModalP.title}>
-							Siapa yang ingin anda periksa kartunya?
-						</Text>
-					</View>
-					<View style={viewModalP.patient}>
-						<Text style={viewModalP.titleP}>MySelf</Text>
-						<TouchableOpacity
-							onPress={() => {
-								setSelectedValue(props.userData.lastName ? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
-								setBook({
-									...book,
-									_id: book._id,
-									firstName: selectedValue,
-								});
-								setLoad(true);
-								setModalPatient(false)
-								getDataHospital(props.userData._id)
-									.then(async data => {
-										setHospital(data.data);
-										setLoad(false);
-									})
-									.catch(err => {
-										console.log(err);
-										setHospital(null);
-										setLoad(false);
-									});
-							}}>
-							<View style={viewModalP.cardName}>
-								<View style={viewModalP.familyName}>
-									<Image
-										style={viewModalP.photo}
-										source={{
-											uri:
-											'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
-										}}
-									/>
-									<Text style={viewModalP.name}>
-										{props.userData.lastName ? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName}
-									</Text>
-								</View>
-								<View style={viewModalP.vector}>
-									
-								</View>
-							</View>
-						</TouchableOpacity>
-					</View>
-					<View style={viewModalP.patient}>
-						<Text style={viewModalP.titleP}>
-							My Family ({family.length - 1})
-						</Text>
-						<SafeAreaView>
-							<ScrollView>
-								<TouchableHighlight>
-									<TouchableWithoutFeedback>
-										<View>
-											{family.map((lang, itemIndex) => {
-												return (
-													<View key={itemIndex}>
-														{itemIndex !== 0 ? (
-															<TouchableOpacity
-																onPress={() => {
-																	setSelectedValue(lang.lastName ? lang.firstName + " " + lang.lastName : lang.firstName)
-																	setBook({
-																		...book,
-																		_id: family[itemIndex]._id,
-																		firstName: lang.lastName ? lang.firstName + " " + lang.lastName : lang.firstName,
-																	});
-																	setModalPatient(false)
-																	setLoad(true);
-																	getDataHospital(family[itemIndex]._id)
-																		.then(async data => {
-																			setHospital(data.data);
-																			setLoad(false);
-																		})
-																		.catch(err => {
-																			console.log(err);
-																			setHospital(null);
-																			setLoad(false);
-																		});
-																}}
-															>
-																<View style={viewModalP.cardName}>
-																	<View style={viewModalP.familyName}>
-																		<Image
-																			style={viewModalP.photo}
-																			source={{
-																			uri:
-																				'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
-																			}}
-																		/>
-																		<Text style={viewModalP.name}>
-																			{lang.lastName
-																			? lang.firstName + ' ' + lang.lastName
-																			: lang.firstName}
-																		</Text>
-																	</View>
-																	<View style={viewModalP.vector}>
-																	</View>
-																</View>
-															</TouchableOpacity>
-														) : null}
-													</View>
-												);
-											})}
-
-											<View style={viewModalP.buttonAdd}>
-												<View style={viewModalP.vectorPlus}>
-													
-												</View>
-												<Text style={viewModalP.addTitle}>
-													Tambah Keluarga
-												</Text>
-											</View>
-										</View>
-									</TouchableWithoutFeedback>
-								</TouchableHighlight>
-							</ScrollView>
-						</SafeAreaView>
-					</View>
-				</View>
-        	</Modal>
 		</View>
 
 		{/* Choose which institute to look from */}
@@ -382,26 +249,6 @@ const card = props => {
 																<View style={{paddingTop: 7}}>
 																	<Text style={{...styles.cardText, paddingTop: 2.5}}>QR COde</Text>
 																</View>
-
-																{/* {regHos.medrecNumber ? (
-																	<Text style={styles.cardNumberText}>MR Number : {regHos.medrecNumber}</Text>
-																	) : (
-																		<View
-																		style={{
-																			flexDirection: 'row',
-																			justifyContent: 'space-between',
-																			alignItems: 'center'
-																		}}>
-																		<Text style={styles.cardNumberText}>MR Number : -</Text>
-																		<IconFA
-																			name="warning"
-																			size={15}
-																			color="red"
-																			style={{ marginRight: 10 }}
-																		/>
-																		</View>
-																	)
-																} */}
 															</View>
 														</LinearGradient>
 													</ImageBackground>
