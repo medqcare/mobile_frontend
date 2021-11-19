@@ -264,8 +264,7 @@ const editProfile = (props) => {
                     <View style={{...style.input, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row'}}>
                         <Text style={style.inputText}>{chosenDate}</Text>
                         <DatePicker
-                            // style={{ fontWeight:'bold',fontSize:14,color:'#DDDDDD',width: '100%',backgroundColor: '#2F2F2F' }}
-                            date={userData.dob} //initial date from state
+                            date={chosenDate} //initial date from state
                             mode="date" //The enum of date, datetime and time                            
                             format='DD/MMMM/YYYY'
                             maxDate={new Date()}
@@ -282,16 +281,15 @@ const editProfile = (props) => {
                                 },
                                 dateInput: {
                                     marginLeft: 0,
-                                    // marginLeft: 36,
                                     borderWidth: 0,
                                     borderColor: '#D5EDE1',
                                 },
                                 dateText: {
-                                    color: '#2F2F2F'
+                                    display: 'none',
                                 }
                             }}
                             onDateChange={date => {
-                                // setUserData({ ...userData, dob: date });
+                                setUserData({ ...userData, dob: date });
                                 console.log(date);
                             }}
                         />
