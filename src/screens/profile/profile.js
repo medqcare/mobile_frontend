@@ -102,9 +102,11 @@ const profile = (props) => {
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
+                        
                         style={styles.upperMenu}
+                        onPress={() => props.navigation.navigate('ResetPassword')}
                     >
-                        <Text style={styles.menuText}>Ubah Kata Sandi</Text>
+                        <Text style={styles.menuText}>Ubah Kata Sandi </Text>
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
