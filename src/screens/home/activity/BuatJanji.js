@@ -127,6 +127,10 @@ const buatJanji = props => {
   const [modalL, setModalL] = useState(false);
 
   const [dompet, setDompet] = useState('');
+  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+
+
 
   async function gobookDoctor(dataSend, dataCreate) {
     setLoad(true);
@@ -281,6 +285,23 @@ const buatJanji = props => {
     return arrDate.join('-');
   }
 
+  function setSelectedValue(data){
+    setPatient({
+        patient: {
+          patientID: data._id,
+          patientName: data.lastName
+            ? data.firstName + ' ' + data.lastName
+            : data.firstName,
+          nik: data.nik,
+          dob: data.dob,
+          gender: data.gender,
+          photo: data.photo,
+          insuranceStatus: data.insuranceStatus,
+        },
+      })
+      setDisplayName(data.lastName? data.firstName + " " + data.lastName : data.firstName)
+  }
+
   return (
     <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
       <ScrollView>
@@ -336,7 +357,7 @@ const buatJanji = props => {
                 <View style={{flexDirection: 'row'}}>
                   <Text style={{color: '#B5B5B5'}}>Pasien :</Text>
                   <Text style={{color: '#DDDDDD', marginLeft: 5}}>
-                    {patient.patient.patientName}
+                    {displayName}
                   </Text>
                 </View>
                 <View>
@@ -671,124 +692,6 @@ const buatJanji = props => {
             </View>
           </View>
         )}
-
-        <View style={viewStyle.container}>
-          <View style={{marginHorizontal: 10}}>
-            {/* <Text style={[{marginVertical: 10}, textStyles.name]}>
-              Date & Time
-            </Text>
-            <View style={viewStyle.choose}>
-              <DatePicker
-                date={book.bookingSchedule} //initial date from state
-                mode="date" //The enum of date, datetime and time
-                placeholder="Select date"
-                // minDate={moment().add(1, "day")}
-                minDate={new Date()}
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={{
-                  dateIcon: {
-                    display: 'none',
-                    // position: 'absolute',
-                    height: '100%',
-                    left: 0,
-                    top: 4,
-                    marginLeft: 0,
-                  },
-                  dateInput: {
-                    marginLeft: 0,
-                    // marginLeft: 36,
-                    width: '90%',
-                    height: '100%',
-                    borderRadius: 3,
-                    borderColor: '#707070',
-                  },
-                }}
-                onDateChange={date => {
-                  datadoctor.facility.forEach(item => {
-                    if (
-                      item.facilityName === book.healthFacility.facilityName
-                    ) {
-                      let _day = new Date(date);
-                      let x = Object.keys(item.facilitySchedule).includes(
-                        day[_day.getDay()],
-                      );
-                      if (x) {
-                        setGetDay(day[_day.getDay()]);
-                        console.log(_day.getDay(), date, 'iniiiiiiii');
-                        setBook({...book, bookingSchedule: date});
-                      } else {
-                        setGetDay(day[_day.getDay()]);
-                        console.log(day[_day.getDay()], date, 'iniiiiiiii else');
-                        setGetDay('');
-                        setBook({...book, bookingSchedule: null});
-                        ToastAndroid.show(
-                          'Tidak ada jadwal praktik',
-                          ToastAndroid.LONG,
-                        );
-                      }
-                    }
-                  });
-                }}
-              />
-              {time !== null && (
-                <View style={viewStyle.choose}>
-                  <Text style={{marginHorizontal: 5}}> - </Text>
-                  <View
-                    style={{
-                      height: 45,
-                      borderWidth: 1,
-                      borderColor: 'grey',
-                      borderRadius: 3,
-                      margin: 2,
-                    }}>
-                    <Picker
-                      mode="dropdown"
-                      selectedValue={book.bookingTime}
-                      style={{
-                        height: 40,
-                        width: wp('50%'),
-                      }}
-                      onValueChange={(itemValue, itemIndex) => {
-                        setBook({
-                          ...book,
-                          bookingTime: itemValue,
-                        });
-                      }}>
-                      {time.map((item, index) => {
-                        return (
-                          <Picker.Item label={item} value={item} key={index} />
-                        );
-                      })}
-                    </Picker>
-                  </View>
-                </View>
-              )}
-            </View> */}
-            {/* <Text style={[textStyles.name, {marginVertical: 10}]}>
-              Insurance
-            </Text>
-            <View style={viewStyle.pickerContainer}>
-              <Picker
-                mode="dropdown"
-                selectedValue={patient.patient.insuranceStatus}
-                style={viewStyle.picker}
-                onValueChange={(itemValue, itemIndex) => {
-                  setPatient({
-                    ...patient,
-                    patient: {
-                      ...patient.patient,
-                      insuranceStatus: itemValue,
-                    },
-                  });
-                }}>
-                <Picker.Item label="Umum" value="UMUM" key={0} />
-                <Picker.Item label="BPJS" value="BPJS" key={1} />
-                <Picker.Item label="Asuransi" value="ASURANSI" key={2} />
-              </Picker>
-            </View> */}
-          </View>
-        </View>
       </ScrollView>
       <View
         style={{
@@ -869,149 +772,19 @@ const buatJanji = props => {
           _iconId={'failed'}
         />
       )}
-      {
-        // modal choose family
-        // <SelectPatient
-        //   modalP={modalP}
-        //   setModalP={setModalP}
-        //   patient={patient}
-        //   setPatient={setPatient}
-        //   family={family}
-        // />
-        <Modal
-          isVisible={modalP}
-          swipeDirection={'down'}
-          onSwipeComplete={() => setModalP(false)}
-          style={{
-            justifyContent: 'flex-end',
-            margin: 0,
-          }}
-          animationType="slide"
-          onRequestClose={() => setModalP(false)}>
-          <View style={viewModalP.container}>
-            <View style={viewModalP.header}>
-              <View style={viewModalP.toogle} />
-              <Text style={viewModalP.title}>
-                Siapa yang ingin anda periksa?
-              </Text>
-            </View>
-            <View style={viewModalP.patient}>
-              <Text style={viewModalP.titleP}>MySelf</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setPatient({
-                    ...patient,
-                    patient: {
-                      ...patient?.patient,
-                      patientID: family[0]?._id,
-                      patientName: family[0]?.lastName
-                        ? family[0]?.firstName + ' ' + family[0]?.lastName
-                        : family[0]?.firstName,
-                      nik: family[0]?.nik,
-                      dob: family[0]?.dob,
-                      gender: family[0]?.gender,
-                      photo: family[0]?.photo,
-                      insuranceStatus: family[0]?.insuranceStatus,
-                    },
-                  });
-                  setModalP(false);
-                }}>
-                <View style={viewModalP.cardName}>
-                  <View style={viewModalP.familyName}>
-                    <Image
-                      style={viewModalP.photo}
-                      source={{
-                        uri:
-                          'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
-                      }}
-                    />
-                    <Text style={viewModalP.name}>
-                      {family[0]?.lastName
-                        ? family[0]?.firstName + ' ' + family[0]?.lastName
-                        : family[0]?.firstName}
-                    </Text>
-                  </View>
-                  <View style={viewModalP.vector}>
-                    <Vector />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={viewModalP.patient}>
-              <Text style={viewModalP.titleP}>
-                My Family ({family.length - 1})
-              </Text>
-              <SafeAreaView>
-                <ScrollView>
-                  <TouchableHighlight>
-                    <TouchableWithoutFeedback>
-                      <View>
-                        {family.map((lang, itemIndex) => {
-                          return (
-                            <View key={itemIndex}>
-                              {itemIndex !== 0 ? (
-                                <TouchableOpacity
-                                  onPress={() => {
-                                    setPatient({
-                                      ...patient,
-                                      patient: {
-                                        ...patient.patient,
-                                        patientID: family[itemIndex]._id,
-                                        patientName: lang.lastName
-                                          ? lang.firstName + ' ' + lang.lastName
-                                          : lang.firstName,
-                                        nik: family[itemIndex].nik,
-                                        dob: family[itemIndex].dob,
-                                        gender: family[itemIndex].gender,
-                                        photo: family[itemIndex].photo,
-                                        insuranceStatus:
-                                          family[itemIndex].insuranceStatus,
-                                      },
-                                    });
-                                    setModalP(false);
-                                  }}>
-                                  <View style={viewModalP.cardName}>
-                                    <View style={viewModalP.familyName}>
-                                      <Image
-                                        style={viewModalP.photo}
-                                        source={{
-                                          uri:
-                                            'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
-                                        }}
-                                      />
-                                      <Text style={viewModalP.name}>
-                                        {lang.lastName
-                                          ? lang.firstName + ' ' + lang.lastName
-                                          : lang.firstName}
-                                      </Text>
-                                    </View>
-                                    <View style={viewModalP.vector}>
-                                      <Vector />
-                                    </View>
-                                  </View>
-                                </TouchableOpacity>
-                              ) : null}
-                            </View>
-                          );
-                        })}
-
-                        <View style={viewModalP.buttonAdd}>
-                          <View style={viewModalP.vectorPlus}>
-                            <VectorPlus />
-                          </View>
-                          <Text style={viewModalP.addTitle}>
-                            Tambah Keluarga
-                          </Text>
-                        </View>
-                      </View>
-                    </TouchableWithoutFeedback>
-                  </TouchableHighlight>
-                </ScrollView>
-              </SafeAreaView>
-            </View>
-          </View>
-        </Modal>
-      }
+        <SelectPatient
+          modal={modalP}
+          setModal={setModalP}
+          accountOwner={accountOwner}
+          family={family}
+          title="Siapa yang ingin anda periksa?"
+          setSelectedValue={setSelectedValue}
+          modalP={modalP}
+          setModalP={setModalP}
+          patient={patient}
+          setPatient={setPatient}
+          family={family}
+        />
       {
         // modal Pilih Insurance
         <Modal
