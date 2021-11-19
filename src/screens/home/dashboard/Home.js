@@ -40,7 +40,7 @@ function HomePage(props) {
   const [promos, setPromos] = useState([
     {
       id: 1,
-      url: require('../../../assets/png/Promo1.png'),
+      url:  require('../../../assets/png/Promo1.png'),
     },
     {
       id: 2,
