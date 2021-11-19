@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Modal from 'react-native-modal';
 import {
   View, 
@@ -6,7 +6,6 @@ import {
   Text, 
   Image, 
   TouchableOpacity, 
-  Dimensions,
   ScrollView,
   SafeAreaView,
   TouchableHighlight,
@@ -14,9 +13,8 @@ import {
 
 } from 'react-native'
 
-// import SvgUri from 'react-native-svg-uri';
 
-export default function SelectPatient({modal, setModal, patient, setPatient, family, title, setSelectedValue } ){
+export default function SelectPatient({modal, setModal, title, accountOwner, family, setSelectedValue } ){
 
     return (
         <Modal
@@ -38,7 +36,7 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
               <Text style={styles.titleP}>MySelf</Text>
               <TouchableOpacity
                 onPress={() => {
-                  setSelectedValue(patient.firstName, patient._id)
+                  setSelectedValue(accountOwner)
                   setModal(false);
                 }}>
                 <View style={styles.cardName}>
@@ -51,7 +49,11 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
                       }}
                     />
                     <Text style={styles.name}>
-                      {patient.firstName}
+                    {
+                      accountOwner.lastName ? 
+                      accountOwner.firstName + ' ' + accountOwner.lastName : 
+                      accountOwner.firstName
+                    }
                     </Text>
                   </View>
                   <View style={styles.vector}>
@@ -79,7 +81,7 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
                               {itemIndex !== 0 ? (
                                 <TouchableOpacity
                                   onPress={() => {
-                                   setSelectedValue(lang.firstName, lang._id)
+                                   setSelectedValue(lang)
                                     setModal(false);
                                   }}>
                                   <View style={styles.cardName}>
