@@ -55,7 +55,7 @@ const addFamily = (props) => {
                     }}    
                     style={viewStyles.outer}>
                         <View style={viewStyles.toAdd} >
-                            <IconFont5 name={'plus'} size={22} style={{ paddingVertical:12,color: '#1380C3'}}/>
+                            <IconFont5 name={'plus'} size={22} style={{ paddingVertical:8,color: '#1380C3'}}/>
                         </View>
                     </TouchableOpacity>
                     {
