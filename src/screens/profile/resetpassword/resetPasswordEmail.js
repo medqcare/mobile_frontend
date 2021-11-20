@@ -38,7 +38,7 @@ const resetPasswdEmail = (props) => {
             <View style={style.content}>
                 <TouchableOpacity 
                     onPress={() => props.navigation.navigate('ResetPassword')}> 
-                    <View style={{ marginLeft:10,flexDirection:'row',marginTop:60 }}>
+                    <View style={{ marginLeft:10,flexDirection:'row',marginTop:40 }}>
                     <ArrowBack/>
                     <Text style={{ marginHorizontal:15,paddingHorizontal:7 ,fontSize: 20, color: '#ffff', position: 'relative', }}> Reset Password</Text>
                     </View>
@@ -158,7 +158,7 @@ const style= StyleSheet.create({
     button:{
         width: '95%',
 		height: 50,
-		marginTop: '85%',
+		marginTop: '65%',
 		marginBottom: 10,
 		backgroundColor: 'rgba(31, 198, 188, 0.3)',
 		borderRadius: 50,

@@ -36,7 +36,7 @@ const resetPasswd = (props) => {
             <View style={style.content}>
                 <TouchableOpacity 
                     onPress={() => props.navigation.navigate('ProfileSwitch')}> 
-                    <View style={{ marginLeft:10,flexDirection:'row',marginTop:60 }}>
+                    <View style={{ marginLeft:10,flexDirection:'row',marginTop:40 }}>
                     <ArrowBack/>
                     <Text style={{ marginHorizontal:15,paddingHorizontal:7 ,fontSize: 20, color: '#ffff', position: 'relative', }}> Reset Password</Text>
                     </View>
