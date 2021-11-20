@@ -83,13 +83,6 @@ const familyForm = (props) => {
         }
     ]
 
-    async function setSelectedValue(value, changeKey){
-        setUserData({
-            ...dataFamily,
-            [changeKey] :value
-        })
-        
-    }
 
 
     const [dataFamily, setDataFamily] = useState({
@@ -98,7 +91,7 @@ const familyForm = (props) => {
         lastName: null,
         gender: null,
         // dob: null,
-        dob: moment(props.userData.dob).format('DD/MM/YYYY'),
+        dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
         bloodType: null,
         resus: null,
         phoneNumber: null,
@@ -131,6 +124,14 @@ const familyForm = (props) => {
         }
     }
 
+    async function setSelectedValue(value, changeKey){
+        setUserData({
+            ...dataFamily,
+            [changeKey] :value
+        })
+    }
+
+
     function Finalvalidation(_sendData) {
         // Methode
         Object.filter = (obj, predicate) =>
@@ -159,6 +160,7 @@ const familyForm = (props) => {
     const[selectedRhesusLabel,setSelectedRhesusLabel] = useState(dataFamily.resus)
     const[selectedInsuranceLabel,setselectedInsuranceLabel] = useState(dataFamily.insuranceStatus)
     const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.statusFamily)
+   
     const chosenDate = fullMonthFormat(dataFamily.dob)
     return (
         <View style={style.container}>
@@ -173,6 +175,7 @@ const familyForm = (props) => {
                     </TouchableOpacity>
                 </View>
             </LinearGradient>
+
               <View style={container.base}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                 {/* NIK Input */}
@@ -192,13 +195,13 @@ const familyForm = (props) => {
                         {dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 &&
                             <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
                         }
-                {/* First Namme Error Input */}            
+                {/* First Name Error Input */}            
                         <View style={{  flexDirection: 'row', }}>
                             {!dataFamily.firstName && valid &&
                                 <Text style={{ color: 'red', marginVertical: 10, marginLeft: 5, fontSize: 14 }}>*</Text>
                             }
                         </View>
-                {/* First Namme Input */}    
+                {/* First Name Input */}    
                     <View style={{ flexDirection: 'row', width: '100%' }}>
                         <TextInput
                             style={{ ...container.input, width: '100%' }}
@@ -212,7 +215,7 @@ const familyForm = (props) => {
                             value={dataFamily.firstName}
                         />
                     </View>
-                {/* Last Namme Input */}        
+                {/* Last Name Input */}        
                     <TextInput
                             style={{ ...container.input, width: '100%' }}
                             autoCapitalize={'sentences'}
@@ -294,14 +297,14 @@ const familyForm = (props) => {
                         }
                         value={dataFamily.phoneNumber}
                     />
-                    {/* Gol Darah Input */} 
-                    <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
+                    {/* Blood Input */} 
+                    <View style={{ width: '100%', flexDirection: 'row' }}>
                         <View style={{ ...container.pickerContainer, width: '50%' }}>
                             <TouchableOpacity
                                 onPress={()=>setBloodTypeModal(true)}
                                 style={container.buttonModal}
                                 >
-                                <Text style={container.inputText} >  Gol Darah : {selectedBloodTypeLabel} </Text>
+                                <Text style={container.inputText}> Gol Darah:  {selectedBloodTypeLabel} </Text>
                                 <Image
                                     style={{width:12,height:10.2}} 
                                     source={require('../../../assets/png/ArrowDown.png')}
@@ -316,6 +319,7 @@ const familyForm = (props) => {
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setselectedBloodTypeLabel}
                                 changeKey='bloodType'
+                                
                             >
                             </SelectModal>
                         </View>

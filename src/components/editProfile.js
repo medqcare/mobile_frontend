@@ -152,7 +152,7 @@ const editProfile = (props) => {
             </LinearGradient>
 
             {/* Starts here */}
-
+                    
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* NIK */}
                 <View style={style.inputTopContainer}>
