@@ -68,18 +68,22 @@ const familyForm = (props) => {
     const statusfamilySelection = [
         {   
             url: require('../../../assets/png/ic_profile0.png'),
-            label: 'Suami',
+            label: 'Gunawan Irawan',
             value: 'SUAMI'
-        },
-        {
+        }
+    ]
+
+    const statusfamilySelectionFamily = [
+        {   
             url: require('../../../assets/png/ic_profile1.png'),
-            label: 'Istri',
-            value: 'ISTRI'
+            label1: 'Yuliana Rosa',
+            value1: 'SUAMI'
         },
-        {
+
+        {   
             url: require('../../../assets/png/ic_profile2.png'),
-            label: 'Anak',
-            value: 'ANAK'
+            label1: 'Dewi Rosa',
+            value1: 'SUAMI'
         }
     ]
 
@@ -92,7 +96,8 @@ const familyForm = (props) => {
         gender: null,
         // dob: null,
         dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
-        bloodType: null,
+        // bloodType: null,
+        bloodTypeSelection:null,
         resus: null,
         phoneNumber: null,
         // statusFamily: null,
@@ -113,7 +118,9 @@ const familyForm = (props) => {
         if (dataFamily.firstName == null ||
             dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 ||
             dataFamily.firstName !== null && dataFamily.firstName.length == 0 ||
-            dataFamily.dob == null) {
+            dataFamily.dob == null
+            
+            ) {
             console.log(dataFamily, 'ini data family')
             setValid(true)
             ToastAndroid.show('Please check the Data', ToastAndroid.LONG)
@@ -311,6 +318,7 @@ const familyForm = (props) => {
                                 />
                             </TouchableOpacity>
                             <SelectModal
+                                dataFamily={dataFamily}
                                 modal={bloodTypeModal}
                                 setModal={setBloodTypeModal}
                                 selection={bloodTypeSelection}
@@ -319,7 +327,6 @@ const familyForm = (props) => {
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setselectedBloodTypeLabel}
                                 changeKey='bloodType'
-                                
                             >
                             </SelectModal>
                         </View>
@@ -367,8 +374,10 @@ const familyForm = (props) => {
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusfamilySelection}
+                                selectionFamily={statusfamilySelectionFamily}
                                 title='Silahkan pilih golongan keluarga anda'
-                                subtitle='Pilihan yang tersedia'
+                                subtitle='Myself'
+                                thirdtitle='My Family'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
                                 changeKey='statusfamilyType'

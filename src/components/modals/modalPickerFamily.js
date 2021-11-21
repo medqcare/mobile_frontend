@@ -13,9 +13,10 @@ import {
   TouchableWithoutFeedback,
 
 } from 'react-native'
+import VectorPlus from '../../assets/svg/VectorPlus'
 
 
-export default function SelectModalFamily({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey} ){
+export default function SelectModalFamily({ modal, setModal, selection, selectionFamily,title, subtitle, thirdtitle,fourtitle,setSelectedValue, setSelectedLabel, changeKey} ){
 
     return(
 
@@ -56,26 +57,69 @@ export default function SelectModalFamily({ modal, setModal, selection, title, s
                                                     <View style={styles.cardName}>
                                                         <View style={styles.familyName}>
                                                         <Image
+                                                        source={require('../../assets/png/ic_profile0.png')}
+                                                        style={{marginTop:5,width:35,height:35}}    
+                                                        >
+                                                          
+                                                        </Image>
+                                                            <Text style={styles.name}> Gunawan Irawan</Text>
+                                                        </View>
+                                                    </View>
+                                                </TouchableOpacity>  
+                                                  
+                                             </View>
+                                            )
+                                        })}
+                                        <Text style={styles.titleP}>
+                                                {thirdtitle}
+                                                </Text>
+                                        {selectionFamily.map((item,index)=> {
+                                            return(
+                                             <View key={index}>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        setSelectedLabel(item.label || item)
+                                                        setSelectedValue(item.value || item, changeKey)
+                                                        setModal(false)
+                                                    }}
+                                                >
+                                                
+                                                    <View style={styles.cardName}>
+                                                        <View style={styles.familyName}>
+                                                        <Image
                                                         source={item.url}
                                                         style={{marginTop:5,width:35,height:35}}    
                                                         >
                                                           
                                                         </Image>
-                                                            <Text style={styles.name}> {item.label || item}</Text>
+                                                            <Text style={styles.name}> {item.label1 || item}</Text>
                                                         </View>
                                                     </View>
-                                                </TouchableOpacity>    
+                                                </TouchableOpacity>  
+                                                  
                                              </View>
                                             )
                                         })}
+
+                                        <View style={styles.buttonAdd}>
+                                        <View style={styles.vectorPlus}>
+                                            <VectorPlus />
+                                        </View>
+                                        <Text style={styles.addTitle}>
+                                            Tambah Keluarga
+                                        </Text>
+                                        </View>
+
+                                        
                                     </View>
+                                    
                                 </TouchableWithoutFeedback>
                             </TouchableHighlight>
                             </ScrollView>
                         </SafeAreaView>
                 </View>
             </View>
-        </Modal>    
+        </Modal>        
 
     )
 

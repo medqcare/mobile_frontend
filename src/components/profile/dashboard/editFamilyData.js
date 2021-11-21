@@ -32,6 +32,7 @@ import ArrowBack from '../../../assets/svg/ArrowBack'
 
 import LottieLoader from 'lottie-react-native'
 import { color } from 'react-native-reanimated';
+import SelectModalFamily from '../../modals/modalPickerFamily';
 
 const editFamilyData = (props) => {
     let dataFamily = props.navigation.state.params.data
@@ -66,16 +67,24 @@ const editFamilyData = (props) => {
 
     const statusfamilySelection = [
         {
+            url: require('../../../assets/png/ic_profile0.png'),
             label: 'Suami',
             value: 'SUAMI'
+        }
+    ]
+
+    
+    const statusfamilySelectionFamily = [
+        {   
+            url: require('../../../assets/png/ic_profile1.png'),
+            label1: 'Yuliana Rosa',
+            value1: 'SUAMI'
         },
-        {
-            label: 'Istri',
-            value: 'ISTRI'
-        },
-        {
-            label: 'Anak',
-            value: 'ANAK'
+
+        {   
+            url: require('../../../assets/png/ic_profile2.png'),
+            label1: 'Dewi Rosa',
+            value1: 'SUAMI'
         }
     ]
 
@@ -436,10 +445,11 @@ const editFamilyData = (props) => {
                                     source={require('../../../assets/png/ArrowDown.png')}
                                 />
                            </TouchableOpacity>
-                           <SelectModal
+                           <SelectModalFamily
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusfamilySelection}
+                                selectionFamily={statusfamilySelectionFamily}
                                 title='Silahkan pilih Hubungan Keluarga anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
@@ -447,7 +457,7 @@ const editFamilyData = (props) => {
                                 changeKey='statusFamily'
                            >
                         
-                           </SelectModal>             
+                           </SelectModalFamily>             
                         </View>
                     <TextInput
                         style={{   
