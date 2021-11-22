@@ -31,39 +31,39 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
                         {title}
                     </Text>
                 </View>
-                <View style={styles.patient}>
-                    <Text style={styles.titleP}>
+                <View style={styles.subtitleContainer}>
+                    <Text style={styles.subtitleText}>
                         {subtitle}
                     </Text>
-                        <SafeAreaView>
-                            <ScrollView>
-                            <TouchableHighlight>
-                                <TouchableWithoutFeedback>
-                                    <View>
-                                        {selection.map((item,index)=> {
-                                            return(
-                                             <View key={index}>
-                                                <TouchableOpacity
-                                                    onPress={() => {
-                                                        setSelectedLabel(item.label || item)
-                                                        setSelectedValue(item.value || item, changeKey)
-                                                        setModal(false)
-                                                    }}
-                                                >
-                                                    <View style={styles.cardName}>
-                                                        <View style={styles.familyName}>
-                                                            <Text style={styles.name}> {item.label || item}</Text>
-                                                        </View>
+                    <SafeAreaView>
+                        <ScrollView>
+                        <TouchableHighlight>
+                            <TouchableWithoutFeedback>
+                                <View>
+                                    {selection.map((item,index)=> {
+                                        return(
+                                            <View key={index}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setSelectedLabel(item.label || item)
+                                                    setSelectedValue(item.value || item, changeKey)
+                                                    setModal(false)
+                                                }}
+                                            >
+                                                <View style={styles.selectionContainer}>
+                                                    <View style={styles.selectionTextContainer}>
+                                                        <Text style={styles.selectionText}> {item.label || item}</Text>
                                                     </View>
-                                                </TouchableOpacity>    
-                                             </View>
-                                            )
-                                        })}
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            </TouchableHighlight>
-                            </ScrollView>
-                        </SafeAreaView>
+                                                </View>
+                                            </TouchableOpacity>    
+                                            </View>
+                                        )
+                                    })}
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </TouchableHighlight>
+                        </ScrollView>
+                    </SafeAreaView>
                 </View>
             </View>
         </Modal>    
@@ -102,12 +102,16 @@ const styles = StyleSheet.create({
         color:'white',
         fontSize:12
     },
-    subtitle: {
-        color:'white',
-        fontSize:12,
-        marginLeft:5
+    subtitleContainer: {
+        marginHorizontal: 15,
+        marginBottom: 20,
     },
-    cardName: {
+    subtitleText: {
+        color: 'white',
+        fontSize: 12,
+    },
+    
+    selectionContainer: {
         marginTop:10,
         borderColor: '#757575',
         borderWidth:1,
@@ -117,33 +121,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 10
     },
-    familyName: {
-        flexDirection:'row'
+    selectionTextContainer: {
+        flexDirection:'row',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    name: {
-        marginTop: 20,
-        marginLeft:15,
+    selectionText: {
         color:'#DDDDDD'
     },
-    patient: {
-        marginHorizontal: 15,
-        marginBottom: 20,
-      },
-      titleP: {
-        color: 'white',
-        fontSize: 12,
-      },
-      buttonAdd: {
-        marginTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-      },
-      vectorPlus: {
-        marginTop: 5,
-        marginRight: 5,
-      },
-      addTitle: {
-        color: '#4398D1',
-      },
-    
+   
+   
 })
