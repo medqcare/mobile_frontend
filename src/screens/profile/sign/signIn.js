@@ -78,6 +78,7 @@ const signIn = props => {
 				},
 				props.navigation,
 				modalFalse,
+				props.navigation.state.params.navigateTo
 			);
 		}
 	}
