@@ -19,6 +19,7 @@ export default function SelectModalAllergies({ modal, setModal, selection, title
             swipeDirection={'down'}
             style={styles.modal}
             animationType="slide"
+            onBackdropPress={() => setModal(false)}
             onSwipeComplete={() => setModal(false)}
             onRequestClose={() => setModal(false)}
         >

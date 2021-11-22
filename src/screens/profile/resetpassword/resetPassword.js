@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import {
     View,
@@ -35,7 +35,7 @@ const resetPasswd = (props) => {
         <View style={style.container} >
             <View style={style.content}>
                 <TouchableOpacity 
-                    onPress={() => props.navigation.navigate('ProfileSwitch')}> 
+                    onPress={() => props.navigation.pop()}> 
                     <View style={{ marginLeft:10,flexDirection:'row',marginTop:40 }}>
                     <ArrowBack/>
                     <Text style={{ marginHorizontal:15,paddingHorizontal:7 ,fontSize: 20, color: '#ffff', position: 'relative', }}> Reset Password</Text>

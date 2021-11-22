@@ -3,25 +3,14 @@ import { createAppContainer } from "react-navigation";
 import { createBottomTabNavigator } from "react-navigation-tabs"
 import { TouchableOpacity, Text, Image, View } from 'react-native'
 import HomeStack from './home'
-import ProfileStack from "./profile"
-import ActivityStack from "./activity"
-import CardStack from './card'
 import LoadingStack from './switchNavigation'
-
-import IconHome from '../assets/svg/home'
-import IconActivity from '../assets/svg/activity'
-import IconMyCard from '../assets/svg/my-card'
-import IconProfile from '../assets/svg/profile'
-
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const TabNavigator = createBottomTabNavigator({
   Home: {
     screen: HomeStack,
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ tintColor, focused }) => {
-        // return <Ionicons name="md-home" size={30} color={tintColor} />
-        
         return (<TouchableOpacity onPress={() => {
           navigation.navigate('Home', { date: new Date() })
         }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -34,13 +23,16 @@ const TabNavigator = createBottomTabNavigator({
   },
   Card: {
     screen: LoadingStack,
-    navigationOptions: ({ navigation }) => ({
+    navigationOptions: ({ navigation, userData }) => ({
       tabBarIcon: ({ tintColor , focused}) => {
-        // return <Ionicons name="ios-american-football" size={30} color={tintColor} />
         return (
-          <TouchableOpacity onPress={() => {
-            navigation.navigate('Home')
-            navigation.navigate('Loading', { date: new Date(), data: 'CardStack' })
+          <TouchableOpacity onPress={ async () => {
+            // navigation.navigate('Home')
+            // navigation.navigate('Loading', { date: new Date(), data: 'CardStack' })
+            const token = await AsyncStorage.getItem('token')
+            token ? 
+            navigation.navigate('Loading', { date: new Date(), data: 'CardStack' }) 
+            : navigation.navigate('Sign', {navigateTo: 'CardStack'})
           }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             
             <Image source={focused ?  require('../assets/png/ic_kartu.png'): require('../assets/png/ic_kartu_inactive.png') } style={{width: 18, height: 20}} />
@@ -90,29 +82,29 @@ const TabNavigator = createBottomTabNavigator({
       tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ActivityStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Activity</Text></TouchableOpacity>
     })
   },
-  Profile: {
-    screen: LoadingStack,
-    navigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ tintColor , focused}) => {
-        // return <Ionicons name="ios-baseball" size={30} color={tintColor} />
-        return (
-          <TouchableOpacity onPress={() => {
-            navigation.navigate('Home')
-            // navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })
-            navigation.navigate('Loading', { date: new Date(), data: 'Undefined' })
-          }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  // Profile: {
+  //   screen: LoadingStack,
+  //   navigationOptions: ({ navigation }) => ({
+  //     tabBarIcon: ({ tintColor , focused}) => {
+  //       // return <Ionicons name="ios-baseball" size={30} color={tintColor} />
+  //       return (
+  //         <TouchableOpacity onPress={() => {
+  //           navigation.navigate('Home')
+  //           // navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })
+  //           navigation.navigate('Loading', { date: new Date(), data: 'Undefined' })
+  //         }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             
-            <Image source={ focused ? require('../assets/png/ic_pengingat.png') : require('../assets/png/ic_pengingat_inactive.png') } style={{width: 18, height: 20}} />
-            <Text style={{ color: tintColor, fontSize: 12, marginTop: 5 }}>Pengingat</Text>
-          </TouchableOpacity>
-        )
-      },
+  //           <Image source={ focused ? require('../assets/png/ic_pengingat.png') : require('../assets/png/ic_pengingat_inactive.png') } style={{width: 18, height: 20}} />
+  //           <Text style={{ color: tintColor, fontSize: 12, marginTop: 5 }}>Pengingat</Text>
+  //         </TouchableOpacity>
+  //       )
+  //     },
 
-      // tabBarVisible: false,
+  //     // tabBarVisible: false,
 
-      tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Pengingat</Text></TouchableOpacity>
-    })
-  }
+  //     tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Pengingat</Text></TouchableOpacity>
+  //   })
+  // }
 }, {
   tabBarOptions: {
 

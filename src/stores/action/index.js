@@ -173,7 +173,7 @@ export function retrieveData(data, navigation) {
   };
 }
 
-export function SignIn(userData, navigation, modalF) {
+export function SignIn(userData, navigation, modalF, navigateTo) {
   return dispatch => {
     console.log(userData, 'ini user datanya');
     // console.log(navigation, 'ini navigationnya')
@@ -183,7 +183,7 @@ export function SignIn(userData, navigation, modalF) {
       data: userData,
     },{timeout:3000})
       .then(({ data }) => {
-        console.log(data, 'ini yang pertama');
+        // console.log(data, 'ini yang pertama');
         if (data.token) {
           _storeData({ token: data.token });
           return instance({
@@ -194,23 +194,23 @@ export function SignIn(userData, navigation, modalF) {
             },
           },{timeout:3000});
         } else if (data.message) {
-          console.log(data)
-          console.log('masuk else')
+          // console.log(data)
+          // console.log('masuk else')
           throw ({ message: data.message })
         }
       })
       .then(async ({ data }) => {
-        console.log(data, 'ini yang kedua');
+        // console.log(data, 'ini yang kedua');
         try {
           if (data.data === null) {
-            console.log('masuk if');
+            // console.log('masuk if');
             await dispatch({
               type: 'GET_USER_DATA',
               payload: data.data,
             });
             navigation.navigate('RegistrationUser');
           } else {
-            console.log('masuk else');
+            // console.log('masuk else');
             await dispatch({
               type: 'AFTER_SIGNIN',
               payload: data.data,
@@ -222,10 +222,11 @@ export function SignIn(userData, navigation, modalF) {
                 lng: data.data.location.coordinates[0],
               },
             });
-            navigation.navigate('ProfileSwitch');
+            navigation.pop()
+            navigateTo ? navigation.navigate(navigateTo) : navigation.navigate('Home');
           }
         } catch (error) {
-          console.log(error, '229 ================')
+          console.log(error, 'Ini adalah error ketika sign in')
           modalF(error.message)
         }
       })
@@ -434,18 +435,18 @@ export function GetUser(token, navigation) {
   };
 }
 
-export function Logout(navigation) {
+export function logout(navigation) {
   return async dispatch => {
     try {
+      navigation.pop()
+      navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
         type: 'GET_USER_DATA',
         payload: null,
       });
-      navigation.navigate('Sign');
       ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
-      console.log('Habis Logout');
     } catch (error) {
       console.log(error);
     }
@@ -485,7 +486,7 @@ export function addFamily(dataFamily, navigation, loadFalse) {
         }
       } else if (data && data.error) {
         // console.log('masuk sini eror beroohhh')
-        console.log(data.error)
+        console.log(data.error,'ini data.error')
         if (data.error.message.includes('Request failed with status code')) {
           loadFalse()
           ToastAndroid.show('NIK sama dengan Pemilik akun !', ToastAndroid.SHORT);
