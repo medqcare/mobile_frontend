@@ -39,7 +39,7 @@ const card = props => {
 
   const [load, setLoad] = useState(false)
   const [modalPatient, setModalPatient] = useState(false)
-  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+  const [displayName, setDisplayName] = useState(props.userData?.lastName? props.userData?.firstName + " " + props.userData?.lastName : props.userData?.firstName)
 
   function setSelectedValue(data){
 	const fullName = data.lastName ? data.firstName + " " + data.lastName : data.firstName
