@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "react-navigation-tabs"
 import { TouchableOpacity, Text, Image, View } from 'react-native'
 import HomeStack from './home'
 import LoadingStack from './switchNavigation'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const TabNavigator = createBottomTabNavigator({
   Home: {
@@ -25,9 +26,13 @@ const TabNavigator = createBottomTabNavigator({
     navigationOptions: ({ navigation, userData }) => ({
       tabBarIcon: ({ tintColor , focused}) => {
         return (
-          <TouchableOpacity onPress={() => {
-            userData ? navigation.navigate('Loading', { date: new Date(), data: 'CardStack' }) : navigation.navigate('Sign', {navigateTo: 'CardStack'})
-            // navigation.navigate('Home')navigation.navigate('Loading', { date: new Date(), data: 'CardStack' })
+          <TouchableOpacity onPress={ async () => {
+            // navigation.navigate('Home')
+            // navigation.navigate('Loading', { date: new Date(), data: 'CardStack' })
+            const token = await AsyncStorage.getItem('token')
+            token ? 
+            navigation.navigate('Loading', { date: new Date(), data: 'CardStack' }) 
+            : navigation.navigate('Sign', {navigateTo: 'CardStack'})
           }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             
             <Image source={focused ?  require('../assets/png/ic_kartu.png'): require('../assets/png/ic_kartu_inactive.png') } style={{width: 18, height: 20}} />
