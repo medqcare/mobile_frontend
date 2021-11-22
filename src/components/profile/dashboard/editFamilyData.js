@@ -32,7 +32,7 @@ import ArrowBack from '../../../assets/svg/ArrowBack'
 
 import LottieLoader from 'lottie-react-native'
 import { color } from 'react-native-reanimated';
-import SelectModalFamily from '../../modals/modalPickerFamily';
+
 
 const editFamilyData = (props) => {
     let dataFamily = props.navigation.state.params.data
@@ -83,6 +83,8 @@ const editFamilyData = (props) => {
     
 
 
+    
+   
     const [changeData, setChangeData] = useState({
         nik: '',
         title: '' ,
@@ -449,6 +451,7 @@ const editFamilyData = (props) => {
                            <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
+
                                 selection={statusFamily}
                                 title='Silahkan pilih Hubungan Keluarga anda'
                                 subtitle='Pilihan yang tersedia'
