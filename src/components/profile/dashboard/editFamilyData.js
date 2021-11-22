@@ -67,38 +67,33 @@ const editFamilyData = (props) => {
 
     const statusFamily = [
         {
-            url: require('../../../assets/png/ic_profile0.png'),
             label: 'Suami',
             value: 'SUAMI'
-        }
+        },
+        {
+            label: 'Istri',
+            value: 'ISTRI'
+        },
+        {
+            label: 'Anak',
+            value: 'ANAK'
+        },
     ]
 
     
-    const statusfamilySelectionFamily = [
-        {   
-            url: require('../../../assets/png/ic_profile1.png'),
-            label1: 'Yuliana Rosa',
-            value1: 'SUAMI'
-        },
 
-        {   
-            url: require('../../../assets/png/ic_profile2.png'),
-            label1: 'Dewi Rosa',
-            value1: 'SUAMI'
-        }
-    ]
 
     const [changeData, setChangeData] = useState({
-        nik: '' || null && props.changeData,
-        title: '' || null && props.changeData,
-        firstName: '' || null && props.changeData,
-        lastName: '' || null && props.changeData,
-        gender: '' || null && props.changeData,
-        dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
-        bloodType: '' || null && props,changeData,
-        resus: '' || null && props.changeData,
-        phoneNumber: '' || null && props.changeData,
-        insuranceStatus: '' || null && props.changeData, 
+        nik: '',
+        title: '' ,
+        firstName: '', 
+        lastName: '', 
+        gender: '', 
+        dob: moment(props.userData.dob).format('DD/MM/YYYY') ,
+        bloodType: '' ,
+        resus: '', 
+        phoneNumber: '', 
+        insuranceStatus: '' 
         // statusFamily: '',
         // address: '',
     }) 
@@ -451,7 +446,7 @@ const editFamilyData = (props) => {
                                     source={require('../../../assets/png/ArrowDown.png')}
                                 />
                            </TouchableOpacity>
-                           <SelectModalFamily
+                           <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusFamily}
@@ -462,7 +457,7 @@ const editFamilyData = (props) => {
                                 changeKey='statusFamily'
                            >
                         
-                           </SelectModalFamily>             
+                           </SelectModal>             
                         </View>
                     <TextInput
                         style={{   

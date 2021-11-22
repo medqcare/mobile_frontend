@@ -400,12 +400,12 @@ const familyForm = (props) => {
                         />
                         </TouchableOpacity>
 
-                        <SelectModalFamily
+                        <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusFamily}
                                 title='Silahkan pilih golongan keluarga anda'
-                                subtitle='Myself'
+                                subtitle='Pilihan yang tersedia'
                                 thirdtitle='My Family'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
