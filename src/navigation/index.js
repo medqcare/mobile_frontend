@@ -90,29 +90,29 @@ const TabNavigator = createBottomTabNavigator({
       tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ActivityStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Activity</Text></TouchableOpacity>
     })
   },
-  Profile: {
-    screen: LoadingStack,
-    navigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ tintColor , focused}) => {
-        // return <Ionicons name="ios-baseball" size={30} color={tintColor} />
-        return (
-          <TouchableOpacity onPress={() => {
-            navigation.navigate('Home')
-            // navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })
-            navigation.navigate('Loading', { date: new Date(), data: 'Undefined' })
-          }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  // Profile: {
+  //   screen: LoadingStack,
+  //   navigationOptions: ({ navigation }) => ({
+  //     tabBarIcon: ({ tintColor , focused}) => {
+  //       // return <Ionicons name="ios-baseball" size={30} color={tintColor} />
+  //       return (
+  //         <TouchableOpacity onPress={() => {
+  //           navigation.navigate('Home')
+  //           // navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })
+  //           navigation.navigate('Loading', { date: new Date(), data: 'Undefined' })
+  //         }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             
-            <Image source={ focused ? require('../assets/png/ic_pengingat.png') : require('../assets/png/ic_pengingat_inactive.png') } style={{width: 18, height: 20}} />
-            <Text style={{ color: tintColor, fontSize: 12, marginTop: 5 }}>Pengingat</Text>
-          </TouchableOpacity>
-        )
-      },
+  //           <Image source={ focused ? require('../assets/png/ic_pengingat.png') : require('../assets/png/ic_pengingat_inactive.png') } style={{width: 18, height: 20}} />
+  //           <Text style={{ color: tintColor, fontSize: 12, marginTop: 5 }}>Pengingat</Text>
+  //         </TouchableOpacity>
+  //       )
+  //     },
 
-      // tabBarVisible: false,
+  //     // tabBarVisible: false,
 
-      tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Pengingat</Text></TouchableOpacity>
-    })
-  }
+  //     tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ProfileStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Pengingat</Text></TouchableOpacity>
+  //   })
+  // }
 }, {
   tabBarOptions: {
 
