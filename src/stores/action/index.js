@@ -222,6 +222,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
                 lng: data.data.location.coordinates[0],
               },
             });
+            navigation.pop()
             navigateTo ? navigation.navigate(navigateTo) : navigation.navigate('Home');
           }
         } catch (error) {
