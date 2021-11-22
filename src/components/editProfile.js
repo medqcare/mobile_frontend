@@ -33,7 +33,6 @@ import capitalFirst from '../helpers/capitalFirst'
 import ArrowBack from '../assets/svg/ArrowBack'
 
 const editProfile = (props) => {
-    // console.log(props.userData, 'ini propsnya rwaktu di edit profile')
     var moment = require('moment')
     const [load, setLoad] = useState(false)
     const [modalF, setModalF] = useState(false)
@@ -59,16 +58,6 @@ const editProfile = (props) => {
         }
     ]
 
-    const [genderlist, setGender] = useState([
-        'Male',
-        'Female',
-    ])
-    const [listTitle, setTitle] = useState([
-        'Mr.',
-        'Mrs.',
-        'Miss.',
-        'Ms.'
-    ])
     const [userData, setUserData] = useState({
         photo: props.userData.photo || '',
         nik: props.userData.nik.toString(),
@@ -121,16 +110,11 @@ const editProfile = (props) => {
     }
 
     async function sendData(data) {
-        console.log(data, 'yang mau dikirim')
-        // console.log('masuk ke sendData')
         setLoad(true)
-        // props.edit_profile(userData, props.setmodal)
         let token = await AsyncStorage.getItem('token')
-        // console.log(JSON.parse(token).token)
         console.log(data.dob, 'ini dob');
         let wantedDate = data.dob.split('/')
         wantedDate = `${wantedDate[1]}/${wantedDate[0]}/${wantedDate[2]}`
-        // console.log(new Date(wantedDate));
         data.dob = new Date(wantedDate)
         props.edit_profile(data, props.userData._id, JSON.parse(token).token)
             .then(backData => {
@@ -168,7 +152,7 @@ const editProfile = (props) => {
             </LinearGradient>
 
             {/* Starts here */}
-
+                    
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* NIK */}
                 <View style={style.inputTopContainer}>
@@ -179,7 +163,7 @@ const editProfile = (props) => {
                             autoFocus={false}
                             placeholder={'NIK'}
                             keyboardType={'numeric'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text =>
                                 setUserData({ ...userData, nik: text })
                             }
@@ -207,7 +191,7 @@ const editProfile = (props) => {
                             autoCapitalize={'sentences'}
                             autoFocus={false}
                             placeholder={'Nama Depan'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text =>
                                 setUserData({ ...userData, firstName: text })
                             }
@@ -225,7 +209,7 @@ const editProfile = (props) => {
                             autoCapitalize={'sentences'}
                             autoFocus={false}
                             placeholder={'Nama Belakang'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text =>
                                 setUserData({ ...userData, lastName: text })
                             }
@@ -246,7 +230,6 @@ const editProfile = (props) => {
                             animation={true}
                             labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
                             style={style.inputText}
-                            // style={{justifyContent:'center', color: '#DDDDDD'}}
                             buttonOuterSize={20}
                         />
                     </View>
@@ -275,9 +258,9 @@ const editProfile = (props) => {
                                     display: 'none',
                                     position: 'absolute',
                                     right: 0,
-                                    top: 5,
                                     justifyContent: 'center',
                                     alignItems: 'center',
+                                    shadowColor: 'black',
                                 },
                                 dateInput: {
                                     marginLeft: 0,
@@ -304,7 +287,7 @@ const editProfile = (props) => {
                             autoCapitalize={'none'}
                             autoFocus={false}
                             placeholder={'Nomor Hp'}
-                            placeholderTextColor="#DDDDDD"
+                            placeholderTextColor="#8b8b8b"
                             keyboardType={'numeric'}
                             onChangeText={text =>
                                 setUserData({ ...userData, phoneNumber: text })
@@ -324,23 +307,7 @@ const editProfile = (props) => {
                             <Image
                                 source={require('../assets/png/ArrowDown.png')}
                             />
-                            {/* <View style={{...style.input, flex: 0.5}}>
-                        <Picker
-                            selectedValue={userData.bloodType}
-                            placeholderTextColor="#DDDDDD"
-                            style={style.inputText}
-                            mode={'dropdown'}
-                            onValueChange={(itemValue, itemIndex) => {
-                                setUserData({ ...userData, bloodType: itemValue });
-                                console.log(userData)
-                            }}>
-                            <Picker.Item label="Gol Darah" value="Blodd Type" key={0}/>
-                            <Picker.Item label="A" value="A" key={1}/>
-                            <Picker.Item label="AB" value="AB" key={2}/>
-                            <Picker.Item label="B" value="B" key={3}/>
-                            <Picker.Item label="O" value="O" key={4}/>
-                        </Picker>
-                        </View> */}
+                        
                     </TouchableOpacity>
                     <SelectModal
                         modal={bloodTypeModal}
@@ -387,13 +354,12 @@ const editProfile = (props) => {
                 </View>
 
                 {/* Relation form */}
-                <View style={style.inputMiddleContainer}>
+                {/* <View style={style.inputMiddleContainer}>
                     <View style={style.input}>
-                {/* <View style={{ ...container.pickerContainer, width: '100%' }}> */}
                         <Picker
                             selectedValue={userData.statusFamily}
                             style={{ color: '#DDDDDD', height: 45, width: '100%' }}
-                            placeholderTextColor="#DDDDDD"
+                            placeholderTextColor="#8b8b8b"
                             mode={'dropdown'}
                             onValueChange={(itemValue, itemIndex) => {
                                 setUserData({ ...userData, statusFamily: itemValue });
@@ -413,7 +379,7 @@ const editProfile = (props) => {
                             <Picker.Item label="Istri" value="istri" key={12}/>
                         </Picker>
                     </View>
-                </View>
+                </View> */}
 
                 <View style={style.inputMiddleContainer}>
                         <TouchableOpacity 
@@ -458,7 +424,7 @@ const editProfile = (props) => {
                             style={style.inputText}
                             autoFocus={false}
                             placeholder={'Alamat....'}
-                            placeholderTextColor="#DDDDDD"
+                            placeholderTextColor="#8b8b8b"
                             onChangeText={
                                 text => setUserData({ ...userData, address: text })
                             }
@@ -504,7 +470,8 @@ const style = StyleSheet.create({
         borderWidth: 1,
         paddingHorizontal: 20,
         borderRadius: 3,
-        backgroundColor: '#2F2F2F'
+        backgroundColor: '#2F2F2F',
+        justifyContent: 'center'
     },
 
     inputText: {

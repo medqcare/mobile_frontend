@@ -14,8 +14,6 @@ import {
     ImageBackground,
     ActivityIndicator,
 } from 'react-native'
-
-
 import {LinearGradient} from 'expo-linear-gradient'
 import DatePicker from 'react-native-datepicker';
 import { connect } from 'react-redux';
@@ -24,6 +22,7 @@ import { edit_profile, setLoading } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker'
+import { fullMonthFormat } from '../../../helpers/dateFormat';
 
 //Icon
 import IconAD from 'react-native-vector-icons/AntDesign'
@@ -32,9 +31,12 @@ import ArrowBack from '../../../assets/svg/ArrowBack'
 //Modal
 
 import LottieLoader from 'lottie-react-native'
+import { color } from 'react-native-reanimated';
+import SelectModalFamily from '../../modals/modalPickerFamily';
 
 const editFamilyData = (props) => {
     let dataFamily = props.navigation.state.params.data
+    var moment = require('moment')
     const [genderlist, setGender] = useState(['Male', 'Female',])
     const [listTitle, setTitle] = useState(['Mr.', 'Mrs.', 'Miss.', 'Ms.'])
     const [load, setLoad] = useState(false)
@@ -65,16 +67,24 @@ const editFamilyData = (props) => {
 
     const statusFamily = [
         {
+            url: require('../../../assets/png/ic_profile0.png'),
             label: 'Suami',
             value: 'SUAMI'
+        }
+    ]
+
+    
+    const statusfamilySelectionFamily = [
+        {   
+            url: require('../../../assets/png/ic_profile1.png'),
+            label1: 'Yuliana Rosa',
+            value1: 'SUAMI'
         },
-        {
-            label: 'Istri',
-            value: 'ISTRI'
-        },
-        {
-            label: 'Anak',
-            value: 'ANAK'
+
+        {   
+            url: require('../../../assets/png/ic_profile2.png'),
+            label1: 'Dewi Rosa',
+            value1: 'SUAMI'
         }
     ]
 
@@ -219,7 +229,7 @@ const editFamilyData = (props) => {
     const[selectedRhesusLabel,setSelectedRhesusLabel] = useState(dataFamily.resus)
     const[selectedInsuranceLabel,setselectedInsuranceLabel] = useState(dataFamily.insuranceStatus)
     const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.statusFamily)
-
+    const chosenDate = fullMonthFormat(changeData.dob)
     console.log('ini adlah change datanya', changeData)
     return (
         <View style={{ flex: 1 }}>
@@ -240,6 +250,7 @@ const editFamilyData = (props) => {
                     {/* <TouchableOpacity style={container.editphoto}>
                     <Text style={textStyle.editphoto}>Edit Photo</Text>
                     </TouchableOpacity> */}
+                    {/* NIK Input Edit */}
                     <TextInput
                         style={{ ...container.input, width: '100%' }}
                         autoCapitalize={'none'}
@@ -251,12 +262,15 @@ const editFamilyData = (props) => {
                         }
                         value={changeData.nik}
                     />
+                    {/* NIK Input Edit Error */}
                         {changeData.nik !== null && changeData.nik.length > 0 && changeData.nik.length !== 16 &&
                             <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
                         }
+                    {/* First Name Input Edit Error */}    
                         {!changeData.firstName &&
                             <Text style={textStyle.start}>*</Text>
                         }
+                    {/* First Name Input Edit */}   
                     <View style={{ flexDirection: 'row', width: '100%' }}>
                         <TextInput
                             style={{ ...container.input, width: '100%' }}
@@ -269,6 +283,7 @@ const editFamilyData = (props) => {
                             value={changeData.firstName}
                         />
                     </View>
+                     {/* Last Name Input Edit */}
                     <TextInput
                             style={{ ...container.input, width: '100%' }}
                             autoCapitalize={'sentences'}
@@ -279,6 +294,7 @@ const editFamilyData = (props) => {
                             }
                             value={changeData.lastName}
                      />
+                    {/* Gender Input Edit */}
                     <View style={{marginTop:20}}>
                         <RadioForm
                             initial={0,1}
@@ -292,13 +308,14 @@ const editFamilyData = (props) => {
                             buttonOuterSize={20}
                         />
                     </View>
-                    <View style={{...container.dob, color: '#DDDDDD'}}>
+                     {/* DOB Input Edit */}
+                    <View style={container.dobMiddleContainer}>
+                    <View style={container.dob}>
+                    <Text style={{marginLeft:5,marginTop:30,color:'#DDDDDD'}}> {chosenDate}</Text>
                         <DatePicker
-                            style={{ color:'#DDDDDD',fontWeight:'bold',fontSize:14, width: '100%',backgroundColor: '#2F2F2F' }}
-                            date={changeData.dob} //initial date from state
+                            style={{ width: '100%' }}
+                            date={chosenDate.dob} //initial date from state
                             mode="date" //The enum of date, datetime and time
-                            placeholder="Select date"
-                            placeholderTextColor="#DDDDDD"
                             maxDate={new Date()}
                             format='DD/MM/YYYY'
                             confirmBtnText="Confirm"
@@ -306,52 +323,64 @@ const editFamilyData = (props) => {
                             customStyles={{
                                 dateIcon: {
                                     display: 'none',
-                                    // position: 'absolute',
-                                    left: 0,
-                                    top: 4,
-                                    marginLeft: 0,
+                                    position: 'absolute',
+                                    right: 1,
+                                    bottom:30,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    shadowColor: 'black',
                                 },
                                 dateInput: {
                                     marginLeft: 0,
-                                    // marginLeft: 36,
                                     borderWidth: 0,
                                     borderColor: '#D5EDE1',
                                 },
+                                dateText: {
+                                    display: 'none',
+                                }
                             }}
                             onDateChange={date => {
                                 setChangeData({ ...changeData, dob: date });
                             }}
                         />
                         </View>
+                        </View>
+                         {/* DOB Input Edit Error */}
                             {!changeData.dob &&
                                 <Text style={{ color: 'red' }}>DoB Don't Empty</Text>
                             }
-                                                
+                         {/* Phone Number Input Edit */}                    
                             <TextInput
                             style={{ ...container.input, width: '100%' }}
                             autoCapitalize={'none'}
                             autoFocus={false}
-                            placeholder={'Phone Number'}
+                            placeholderTextColor={'white'}
                             keyboardType={'numeric'}
                             onChangeText={text =>
                                 setChangeData({ ...changeData, phoneNumber: text })
                             }
                             value={changeData.phoneNumber}
-                        />    
+                            />    
+                            
                         <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View style={{ ...container.pickerContainer, width: '50%' }}>
-                               <TouchableOpacity
+                        {/* Blood Input Edit */}
+                            <View style={{ ...container.pickerContainer, width: '50%' }}
+                            
+                            >
+                               
+                                <TouchableOpacity
                                     onPress={()=>setBloodTypeModal(true)}
                                     style={container.buttonModal}
                                  
                                >
-                                    <Text style={container.inputText} >    {selectedBloodTypeLabel} </Text>
+                                    <Text style={container.inputText} >  {selectedBloodTypeLabel} </Text>
                                     <Image
                                         style={{width:12,height:10.2}} 
                                         source={require('../../../assets/png/ArrowDown.png')}
                                     />
                                </TouchableOpacity>
                                <SelectModal
+                                    
                                     modal={bloodTypeModal}
                                     setModal={setBloodTypeModal}
                                     selection={bloodType}
@@ -360,13 +389,14 @@ const editFamilyData = (props) => {
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setselectedBloodTypeLabel}
                                     changeKey='bloodType'
-                               >
-                               </SelectModal>
+                               />
+                              
                             </View>
                             {/* Rhesus Edit Input */} 
                             <View style={{ ...container.pickerContainer, width: '50%' }}>
+                   
                                 <TouchableOpacity
-                                    onPress={()=>setRhesusModal(true)}
+                                    onPress={() => setRhesusModal(true)}
                                     style={container.buttonModal}
                                 >
                                     <Text style={container.inputText}> {selectedRhesusLabel} </Text>
@@ -384,10 +414,8 @@ const editFamilyData = (props) => {
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setSelectedRhesusLabel}
                                     changeKey='resus'
-                                >
-                                </SelectModal>
-                         </View>
-                            
+                                />
+                         </View>   
                         </View>    
                         <View style={{ ...container.pickerContainer, width: '100%' }}>
                                 <TouchableOpacity
@@ -423,7 +451,7 @@ const editFamilyData = (props) => {
                                     source={require('../../../assets/png/ArrowDown.png')}
                                 />
                            </TouchableOpacity>
-                           <SelectModal
+                           <SelectModalFamily
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusFamily}
@@ -434,7 +462,7 @@ const editFamilyData = (props) => {
                                 changeKey='statusFamily'
                            >
                         
-                           </SelectModal>             
+                           </SelectModalFamily>             
                         </View>
                     <TextInput
                         style={{   
@@ -507,7 +535,6 @@ const container = StyleSheet.create({
     buttonModal:{
         flex: 0.5,
         height: 70,
-        
         paddingHorizontal: 20,
         borderRadius: 3,
 		flexDirection: 'row',
@@ -515,7 +542,10 @@ const container = StyleSheet.create({
 		justifyContent: 'space-between',
         backgroundColor: '#2F2F2F'
 	},
-
+    dobMiddleContainer:{
+        paddingTop: 0,
+        paddingHorizontal: 0
+    },
 	buttonText: {
 		fontSize: 15,
 		color: '#DDDDDD',
@@ -531,17 +561,13 @@ const container = StyleSheet.create({
         marginTop:20
     },
     dob: {
-        flexDirection: 'row',
-        width: '100%',
-        height: 50,
-        borderWidth: 1,
-        borderRadius: 3,
-        marginTop:10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#DDDDDD',
-        fontWeight:'bold',
-        fontSize:14
+            height: 50,
+            borderWidth: 1,
+            paddingHorizontal: 10,
+            borderRadius: 3,
+            backgroundColor: '#2F2F2F',
+            justifyContent: 'center',
+            marginTop:20
     },
     button: {
         height: 50,

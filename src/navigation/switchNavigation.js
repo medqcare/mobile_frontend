@@ -17,9 +17,9 @@ const Switch = createSwitchNavigator({
     CardStack: {
         screen: Card_Stack,
     },
-    ProfileStack: {
-        screen: Profile_Stack,
-    }
+    // ProfileStack: {
+    //     screen: Profile_Stack,
+    // }
 }, {
     initialRouteName: 'Loading',
     // initialRouteName: 'RegistrationUser'

@@ -159,7 +159,7 @@ const MedicalStats = props => {
       <View style={styles.nameContainer}>
         <Text style={styles.nameText}>Gunawan Irawan</Text>
         <TouchableOpacity>
-          <Text style={{...styles.nameText, color: '#F37335'}}>Ubah</Text>
+          <Text style={{...styles.nameText2, color: '#F37335'}}>Ubah</Text>
         </TouchableOpacity>
       </View>
 
@@ -478,12 +478,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 5,
   },
   nameText: {
     fontSize: 14,
     color: 'white',
-    marginHorizontal: 15,
+    marginHorizontal: 12,
+    marginVertical:-18
+  },
+  nameText2: {
+    fontSize: 14,
+    color: 'white',
+    marginHorizontal: 12,
+    marginVertical:-10
   },
   menuContainer: {
     // height: '50%',

@@ -21,6 +21,9 @@ import ArrowBack from '../../assets/svg/ArrowBack'
 import ConfirmationModal from '../../components/modals/ConfirmationModal'
 
 const Allergies = props => {
+  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+
   const [Load, setLoad] = useState(false);
   const [inputAlergies, setInputAlergies] = useState('');
   const allergieTypeSelection = [
@@ -130,14 +133,11 @@ const Allergies = props => {
     }
   }, [idUser]);
 
-  const [patient, setPatient] = useState({
-    _id: props.userData._id,
-    firstName: props.userData.lastName
-      ? props.userData.firstName + ' ' + props.userData.lastName
-      : props.userData.firstName,
-  });
-  function setSelectedValue(firstName, _id) {
-    setIduser({firstName, _id});
+  function setSelectedValue(data) {
+    const fullName = data.lastName ? data.firstName + " " + data.lastName : data.firstName
+    const _id = data._id
+    setDisplayName(fullName)
+    setIduser({fullName, _id});
   }
 
   return (
@@ -173,15 +173,14 @@ const Allergies = props => {
         <TouchableOpacity
           onPress={() => setModalPatient(true)}
           style={{...styles.box, height: 50}}>
-          <Text style={styles.inputText}>{idUser.firstName}</Text>
+          <Text style={styles.inputText}>{displayName}</Text>
           <Image source={require('../../assets/png/ArrowDown.png')} />
         </TouchableOpacity>
 
         <SelectPatient
           modal={modalPatient}
           setModal={setModalPatient}
-          patient={patient}
-          setPatient={setPatient}
+          accountOwner={accountOwner}
           family={family}
           title="Siapa yang ingin anda check?"
           setSelectedValue={setSelectedValue}

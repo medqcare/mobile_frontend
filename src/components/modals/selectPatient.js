@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Modal from 'react-native-modal';
 import {
   View, 
@@ -6,17 +6,14 @@ import {
   Text, 
   Image, 
   TouchableOpacity, 
-  Dimensions,
   ScrollView,
   SafeAreaView,
   TouchableHighlight,
   TouchableWithoutFeedback,
-
 } from 'react-native'
 
-// import SvgUri from 'react-native-svg-uri';
 
-export default function SelectPatient({modal, setModal, patient, setPatient, family, title, setSelectedValue } ){
+export default function SelectPatient({modal, setModal, title, accountOwner, family, setSelectedValue } ){
 
     return (
         <Modal
@@ -24,45 +21,43 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
             swipeDirection={'down'}
             style={styles.modal}
             animationType="slide"
+            onBackdropPress={() => setModal(false)}
             onSwipeComplete={() => setModal(false)}
             onRequestClose={() => setModal(false)}
         >
             <View style={styles.container}>
-            <View style={styles.header}>
-              <View style={styles.toogle} />
-              <Text style={styles.title}>
-                {title}
-              </Text>
-            </View>
+				<View style={styles.header}>
+					<View style={styles.toogle} />
+					<Text style={styles.title}>
+						{title}
+					</Text>
+				</View>
             <View style={styles.patient}>
-              <Text style={styles.titleP}>MySelf</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedValue(patient.firstName, patient._id)
-                  setModal(false);
-                }}>
-                <View style={styles.cardName}>
-                  <View style={styles.familyName}>
-                    <Image
-                      style={styles.photo}
-                      source={{
-                        uri:
-                          'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
-                      }}
-                    />
-                    <Text style={styles.name}>
-                      {patient.firstName}
-                    </Text>
-                  </View>
-                  <View style={styles.vector}>
-                    {/* <SvgUri
-                      width="10"
-                      height="10"
-                      source={require('../../assets/svg/Vector.svg')}
-                    /> */}
-                  </View>
-                </View>
-              </TouchableOpacity>
+              	<Text style={styles.titleP}>MySelf</Text>
+				<TouchableOpacity
+					onPress={() => {
+					setSelectedValue(accountOwner)
+					setModal(false);
+					}}>
+						<View style={styles.cardName}>
+							<View style={styles.familyName}>
+								<Image
+								style={styles.photo}
+								source={{
+									uri:
+									'https://www.mbrsg.ae/MBRSG/media/Images/no-image-icon-6.png',
+								}}
+								/>
+								<Text style={styles.name}>
+								{
+								accountOwner.lastName ? 
+								accountOwner.firstName + ' ' + accountOwner.lastName : 
+								accountOwner.firstName
+								}
+								</Text>
+							</View>
+						</View>
+				</TouchableOpacity>
             </View>
             <View style={styles.patient}>
               <Text style={styles.titleP}>
@@ -79,7 +74,7 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
                               {itemIndex !== 0 ? (
                                 <TouchableOpacity
                                   onPress={() => {
-                                   setSelectedValue(lang.firstName, lang._id)
+                                   setSelectedValue(lang)
                                     setModal(false);
                                   }}>
                                   <View style={styles.cardName}>
@@ -97,13 +92,6 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
                                           : lang.firstName}
                                       </Text>
                                     </View>
-                                    <View style={styles.vector}>
-                                      {/* <SvgUri
-                                        width="10"
-                                        height="10"
-                                        source={require('../../assets/svg/Vector.svg')}
-                                      /> */}
-                                    </View>
                                   </View>
                                 </TouchableOpacity>
                               ) : null}
@@ -113,11 +101,7 @@ export default function SelectPatient({modal, setModal, patient, setPatient, fam
 
                         <View style={styles.buttonAdd}>
                           <View style={styles.vectorPlus}>
-                            {/* <SvgUri
-                              width="10"
-                              height="10"
-                              source={require('../../assets/svg/VectorPlus.svg')}
-                            /> */}
+                           
                           </View>
                           <Text style={styles.addTitle}>
                             Tambah Keluarga

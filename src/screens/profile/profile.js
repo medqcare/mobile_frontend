@@ -22,11 +22,11 @@ import Icon5 from 'react-native-vector-icons/FontAwesome5'
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info'
 
-import { changeLogin, Logout } from '../../stores/action'
+import { changeLogin, logout } from '../../stores/action'
 import { SafeAreaView } from 'react-navigation';
 
 const mapDispatchToProps = {
-    changeLogin, Logout
+    changeLogin, logout
 }
 
 const mapStateToProps = state => {
@@ -39,16 +39,8 @@ const profile = (props) => {
         return true
     })
 
-    const logout = async () => {
-        // await props.changeLogin()
-
-        AsyncStorage.removeItem('token')
-            .then(async function () {
-                props.Logout(props.navigation.navigate('Sign'))
-            })
-            .catch(err => {
-                console.log(err);
-            })
+    const logoutButton = async () => {
+        props.logout(props.navigation)
     }
 
     return (
@@ -102,9 +94,11 @@ const profile = (props) => {
                         />
                     </TouchableOpacity>
                     <TouchableOpacity
+                        
                         style={styles.upperMenu}
+                        onPress={() => props.navigation.navigate('ResetPassword')}
                     >
-                        <Text style={styles.menuText}>Ubah Kata Sandi</Text>
+                        <Text style={styles.menuText}>Ubah Kata Sandi </Text>
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
@@ -121,7 +115,7 @@ const profile = (props) => {
                 <View style={styles.separator}/>
                 <View style={styles.logoutMenu}>
                     <TouchableOpacity
-                        onPress={() => logout()}
+                        onPress={() => logoutButton()}
                         style={styles.logout}
                     >
                         <Text style={styles.logoutText}>Keluar</Text>
