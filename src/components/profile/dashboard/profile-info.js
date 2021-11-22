@@ -48,10 +48,12 @@ const profileInfo = (props) => {
     }
     function fullName() {
         // console.log( 'ini user data =====>', Object.keys(props.userData), '<====')
-        return props.userData.lastName ?
-            capitalFirst(props.userData.firstName) + ' ' + capitalFirst(props.userData.lastName)
-            :
-            capitalFirst(props.userData.firstName)
+        return props.userData ? 
+            props.userData?.lastName ?
+                capitalFirst(props.userData?.firstName) + ' ' + capitalFirst(props.userData?.lastName)
+                :
+                capitalFirst(props.userData?.firstName)
+            : ''
 
     }
 
@@ -70,7 +72,7 @@ const profileInfo = (props) => {
         
             <View style={styles.profilePicture}>   
                 <Image
-                    source={{ uri: props.userData.photo ? props.userData.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                    source={{ uri: props.userData?.photo ? props.userData?.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                     style={styles.userImage}
                 />  
                 
@@ -101,7 +103,7 @@ const profileInfo = (props) => {
                     <Text style={styles.fullNameText}>{fullName()}</Text>
                 </View>
                 <View style={styles.phoneNumber}>
-                    <Text style={styles.phoneNumberText}>{props.userData.phoneNumber}</Text>
+                    <Text style={styles.phoneNumberText}>{props.userData?.phoneNumber}</Text>
                 </View>
                 <View style={styles.verified}>
                     <View style={styles.innerVerified}>
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
 //                     }}>
 //                         <Image
 //                             // source={require('../../../assets/irs.png')}
-//                             source={{ uri: props.userData.photo ? props.userData.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+//                             source={{ uri: props.userData?.photo ? props.userData?.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
 //                             style={viewStyles.userImage} />
 //                     </View>
 //                     {/* <TouchableOpacity onPress={() => alert('to gallery')}>
