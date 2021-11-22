@@ -434,18 +434,17 @@ export function GetUser(token, navigation) {
   };
 }
 
-export function Logout(navigation) {
+export function logout(navigation) {
   return async dispatch => {
     try {
+      navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
         type: 'GET_USER_DATA',
         payload: null,
       });
-      navigation.navigate('Sign');
       ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
-      console.log('Habis Logout');
     } catch (error) {
       console.log(error);
     }

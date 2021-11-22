@@ -12,6 +12,7 @@ import medicalStats from './medresStack'
 import AllergyStack from './allergystack'
 import Undefined from '../../screens/404'
 import Regist from '../../screens/profile/sign/registration'
+import profileStack from '../profile/profileStack'
 
 export default StackHome = createStackNavigator({
   Home: {
@@ -56,6 +57,12 @@ export default StackHome = createStackNavigator({
       headerShown: false
     }
   },
+  ProfileStack: {
+    screen: profileStack,
+    navigationOptions: {
+      headerShown: false
+    }
+  },
   Undefined: {
     screen: Undefined,
     navigationOptions: {
@@ -67,7 +74,6 @@ export default StackHome = createStackNavigator({
 })
 
 StackHome.navigationOptions = ({ navigation }) => {
-  // console.log(navigation.state, 'sjhfkusghfjhsdfj');
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
