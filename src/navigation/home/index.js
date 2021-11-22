@@ -1,8 +1,4 @@
-import React from 'react'
-import { Text, TouchableOpacity, View, Image, StyleSheet, } from 'react-native'
 import { createStackNavigator } from "react-navigation-stack"
-// import clinicStack from './clinicStack'
-// import hospitalStack from './hospitalStack'
 import doctorStack from './doctorStack'
 import hospitalStack from './hospitalStack'
 import Home from '../../screens/home/dashboard/Home'
@@ -11,8 +7,8 @@ import Appointment from '../../screens/home/appointment/AppointmentList'
 import medicalStats from './medresStack'
 import AllergyStack from './allergystack'
 import Undefined from '../../screens/404'
-import Regist from '../../screens/profile/sign/registration'
-import profileStack from '../profile/profileStack'
+import profileStack from '../profile'
+import SignStack from '../profile/signStack'
 
 export default StackHome = createStackNavigator({
   Home: {
@@ -63,6 +59,12 @@ export default StackHome = createStackNavigator({
       headerShown: false
     }
   },
+  Sign: {
+    screen: SignStack,
+    navigationOptions: {
+        headerShown: false
+    }
+},
   Undefined: {
     screen: Undefined,
     navigationOptions: {
@@ -74,6 +76,7 @@ export default StackHome = createStackNavigator({
 })
 
 StackHome.navigationOptions = ({ navigation }) => {
+  console.log(navigation.state.index, 'Ini adalah jumlah stack di home')
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;
