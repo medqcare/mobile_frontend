@@ -22,7 +22,7 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
             animationType="slide"
             onBackdropPress={() => setModal(false)}
             onSwipeComplete={() => setModal(false)}
-            onRequestClose={() => setModal(false)}
+            onRequestClose={() => setModal(false)}   
         >
             <View style={styles.container}>
                 <View style={styles.header}>
