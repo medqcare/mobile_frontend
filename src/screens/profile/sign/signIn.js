@@ -144,10 +144,6 @@ const signIn = props => {
 	// 	}
 	// };
 
-  	const forgotPassword = () => {
-		console.log('Ini untuk forgot password')
-  	}
-
 	BackHandler.addEventListener('hardwareBackPress', () => {
 		props.navigation.navigate('Home');
 		return true;
@@ -176,7 +172,7 @@ const signIn = props => {
 			<View style={viewStyles.action}>
 				<TextInput
 					placeholder="Username / Email"
-					placeholderTextColor="#fff"
+					placeholderTextColor="#8b8b8b"
 					style={viewStyles.textInput}
 					autoCapitalize="none"
 					onChangeText={text => setEmail(text)}
@@ -185,7 +181,7 @@ const signIn = props => {
 			<View style={viewStyles.action_below}>
 				<TextInput
 					placeholder="Password"
-					placeholderTextColor="#fff"
+					placeholderTextColor="#8b8b8b"
 					secureTextEntry={secureTextEntry ? true : false}
 					style={viewStyles.textInput}
 					autoCapitalize="none"
@@ -211,7 +207,7 @@ const signIn = props => {
 			
 			<View style={viewStyles.forgotPassword}>
         		<TouchableOpacity
-					onPress={() => forgotPassword()}
+					onPress={() => props.navigation.navigate('ResetPassword')}
 				>
 					<Text style={viewStyles.forgotPasswordText}>Lupa password?</Text>
 				</TouchableOpacity>
@@ -231,7 +227,9 @@ const signIn = props => {
         </View>
 		<View style={style.callToAction}>
 			<Text style={style.callToActionText}>Belum punya akun?</Text>
-			<TouchableOpacity>
+			<TouchableOpacity
+				onPress={() => props.navigation.navigate('Undefined')}	
+			>
 				<Text style={{...style.callToActionText, fontWeight: 'bold', paddingLeft: 5}}>Daftar</Text>
 			</TouchableOpacity>
 		</View>
