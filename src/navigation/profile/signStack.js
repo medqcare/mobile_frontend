@@ -3,28 +3,15 @@ import { createStackNavigator } from 'react-navigation-stack'
 
 import SignInPage from '../../screens/profile/sign/signIn'
 import SignUpPage from '../../screens/profile/sign/signUp'
-import SignPage from '../../screens/profile/sign/sign'
 import SuccessSignUpPage from '../../screens/profile/sign/successSignup'
 
 const SignStack = createStackNavigator({
-    // SignStack: {
-    //     screen: SignPage,
-    //     navigationOptions: {
-    //         headerShown: false
-    //     }
-    // },
-    SignStack: {
+    SignIn: {
         screen: SignInPage,
         navigationOptions: {
             headerShown: false
         }
     },
-    // SignIn: {
-    //     screen: SignInPage,
-    //     navigationOptions: {
-    //         headerShown: false,
-    //     },
-    // },
     SignUp: {
         screen: SignUpPage,
         navigationOptions: {
@@ -36,8 +23,9 @@ const SignStack = createStackNavigator({
         navigationOptions: {
             headerShown: false
         }
-    }
-    
+    },
+}, {
+    initialRouteName: 'SignIn'
 })
 
 
