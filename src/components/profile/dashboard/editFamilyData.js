@@ -47,10 +47,10 @@ const editFamilyData = (props) => {
     const [insuranceStatusModal, setInsuranceStatusModal] = useState(false)
     const [statusfamilyModal, setStatusFamilyModal] = useState(false)
 
-    const bloodTypeSelection = ['A', 'AB', 'B', 'O']
-    const rhesusTypeSelection = ['+', '-']
+    const bloodType = ['A', 'AB', 'B', 'O']
+    const resus = ['+', '-']
 
-    const insuranceStatusSelection = [
+    const insuranceStatus = [
         {
             label: 'Umum',
             value: 'UMUM'
@@ -65,7 +65,7 @@ const editFamilyData = (props) => {
         }
     ]
 
-    const statusfamilySelection = [
+    const statusFamily = [
         {
             url: require('../../../assets/png/ic_profile0.png'),
             label: 'Suami',
@@ -89,20 +89,20 @@ const editFamilyData = (props) => {
     ]
 
     const [changeData, setChangeData] = useState({
-        nik: '',
-        title: '',
-        firstName: '',
-        lastName: '',
-        gender: '',
-        dob: moment(props.userData.dob).format('DD/MM/YYYY'),
-        bloodType: '',
-        resus: '',
-        phoneNumber: '',
-        insuranceStatus: '',
-        statusFamily: '',
-        address: '',
+        nik: '' || null && props.changeData,
+        title: '' || null && props.changeData,
+        firstName: '' || null && props.changeData,
+        lastName: '' || null && props.changeData,
+        gender: '' || null && props.changeData,
+        dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
+        bloodType: '' || null && props,changeData,
+        resus: '' || null && props.changeData,
+        phoneNumber: '' || null && props.changeData,
+        insuranceStatus: '' || null && props.changeData, 
+        // statusFamily: '',
+        // address: '',
     }) 
-
+    // console.log('Ini data Family nya',dataFamily)
 
     async function setSelectedValue(value, changeKey){
         setUserData({
@@ -154,6 +154,12 @@ const editFamilyData = (props) => {
                 setLoad(false)
             })
     }
+
+    // function createdData (changeData) {
+    //     let dataFamily = await AsyncStorage.getItem('token')
+    //     props.edit_profile
+        
+    // }
 
     useEffect(() => {
         console.log(dataFamily,'panggilan ketika dibuka')
@@ -377,7 +383,7 @@ const editFamilyData = (props) => {
                                     
                                     modal={bloodTypeModal}
                                     setModal={setBloodTypeModal}
-                                    selection={bloodTypeSelection}
+                                    selection={bloodType}
                                     title='Silahkan pilih golongan darah anda'
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
@@ -386,7 +392,7 @@ const editFamilyData = (props) => {
                                />
                               
                             </View>
-
+                            {/* Rhesus Edit Input */} 
                             <View style={{ ...container.pickerContainer, width: '50%' }}>
                    
                                 <TouchableOpacity
@@ -402,7 +408,7 @@ const editFamilyData = (props) => {
                                 <SelectModal
                                     modal={rhesusTypeModal}
                                     setModal={setRhesusModal}
-                                    selection={rhesusTypeSelection}
+                                    selection={resus}
                                     title='Silahkan pilih golongan resus anda'
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
@@ -425,7 +431,7 @@ const editFamilyData = (props) => {
                                 <SelectModal
                                     modal={insuranceStatusModal}
                                     setModal={setInsuranceStatusModal}
-                                    selection={insuranceStatusSelection}
+                                    selection={insuranceStatus}
                                     title='Silahkan pilih golongan resus anda'
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
@@ -448,8 +454,7 @@ const editFamilyData = (props) => {
                            <SelectModalFamily
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
-                                selection={statusfamilySelection}
-                                selectionFamily={statusfamilySelectionFamily}
+                                selection={statusFamily}
                                 title='Silahkan pilih Hubungan Keluarga anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
@@ -477,10 +482,10 @@ const editFamilyData = (props) => {
                             autoFocus={false}
                             placeholder={'Alamat....'}
                             placeholderTextColor="#DDDDDD"
-                            onChangeText={
-                                text => setDataFamily({ ...dataFamily, address: text })
-                            }
-                            value={dataFamily.address}
+                            // onChangeText={
+                            //     text => setDataFamily({ ...dataFamily, address: text })
+                            // }
+                            // value={dataFamily.address}
                         />
                     </ScrollView>
                     <View style={{ alignItems: 'flex-end', marginTop: 20, marginBottom: 5 }}>    
@@ -611,5 +616,6 @@ const mapDispatchToProps = {
 const mapStateToProps = state => {
     return state
 }
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(editFamilyData)
