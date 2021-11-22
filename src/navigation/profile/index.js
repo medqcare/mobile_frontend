@@ -1,13 +1,14 @@
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import settingStack from '../../navigation/profile/settingStack'
-import ProfilePage from './profileStack'
+import ProfilePage from '../../screens/profile/profile'
 import AddFamilyPage from './addFamilyStack'
 import InsurancePage from './paymentStack'
 import MedicalHistoryPage from './medicalHistoryStack'
 import SchedulePage from './scheduleStack'
 import HistoryPage from '../../components/profile/dashboard/historyRegistration'
 import ResetPasswordPage from  '../../navigation/profile/resetPasswordStack'
+import SignStack from '../../navigation/profile/signStack'
 
 
 export default ProfileTab = createStackNavigator({
@@ -80,7 +81,13 @@ export default ProfileTab = createStackNavigator({
         navigationOptions: {
             headerShown: false,
         }
-    }
+    },
+    // Sign: {
+    //     screen: SignStack,
+    //     navigationOptions: {
+    //         headerShown: false
+    //     }
+    // }
 }, {
     initialRouteName: 'ProfileStack'
 })

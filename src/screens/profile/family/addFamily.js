@@ -38,7 +38,7 @@ const addFamily = (props) => {
             <LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={style.content}>
                 <View style={style.section}>
                     <TouchableOpacity
-                        onPress={() => props.navigation.navigate('ProfileSwitch')}>
+                        onPress={() => props.navigation.navigate('ProfileStack')}>
                         <View style={{ flexDirection: 'row'}} >
                         <ArrowBack />
                         <Text style={{ paddingHorizontal:7 ,fontSize: 20, color: '#ffff', position: 'relative', }}> Daftar Keluarga</Text>
