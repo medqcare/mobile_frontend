@@ -55,6 +55,7 @@ const signIn = props => {
 	const [secureTextEntry, setSecureTextEntry] = useState(true)
 
 	useEffect(() => {
+		// console.log(props.navigation.state.params, 'ini adalah params yang dikirim dari tab button')
 	// PushNotification.configure({
 	// 	onRegister: function(token) {
 	// 	setToken(token.token)
@@ -69,6 +70,7 @@ const signIn = props => {
 				ToastAndroid.SHORT,
 			);
 		} else {
+			const navigateTo = props.navigation.state?.params?.navigateTo ? props.navigation.state?.params?.navigateTo : null
 			setload(true);
 			props.SignIn(
 				{
@@ -78,7 +80,7 @@ const signIn = props => {
 				},
 				props.navigation,
 				modalFalse,
-				props.navigation.state.params.navigateTo
+				navigateTo
 			);
 		}
 	}
