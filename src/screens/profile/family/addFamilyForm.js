@@ -34,7 +34,6 @@ import { ToastAndroid } from 'react-native';
 
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import { fullMonthFormat } from '../../../helpers/dateFormat';
-import SelectModalFamily from '../../../components/modals/modalPickerFamily';
 
 const familyForm = (props) => {
     // console.log(props, 'ini data yang di addFamily')
@@ -67,24 +66,17 @@ const familyForm = (props) => {
 
     const statusfamilySelection = [
         {   
-            url: require('../../../assets/png/ic_profile0.png'),
-            label: 'Gunawan Irawan',
+            label: 'Suami',
             value: 'SUAMI'
-        }
-    ]
-
-    const statusfamilySelectionFamily = [
-        {   
-            url: require('../../../assets/png/ic_profile1.png'),
-            label1: 'Yuliana Rosa',
-            value1: 'SUAMI'
         },
-
         {   
-            url: require('../../../assets/png/ic_profile2.png'),
-            label1: 'Dewi Rosa',
-            value1: 'SUAMI'
-        }
+            label: 'Istri',
+            value: 'SUAMI'
+        },
+        {   
+            label: 'Anak',
+            value: 'SUAMI'
+        },
     ]
 
 
@@ -370,19 +362,17 @@ const familyForm = (props) => {
                         />
                         </TouchableOpacity>
 
-                        <SelectModalFamily
+                        <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusfamilySelection}
-                                selectionFamily={statusfamilySelectionFamily}
                                 title='Silahkan pilih golongan keluarga anda'
-                                subtitle='Myself'
-                                thirdtitle='My Family'
+                                subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
                                 changeKey='statusfamilyType'
                         >
-                        </SelectModalFamily>
+                        </SelectModal>
                 
                     </View>
                 {/* Golongan Status Input */}     
