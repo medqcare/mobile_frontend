@@ -62,6 +62,7 @@ const familyForm = (props) => {
             label: 'Asuransi',
             value: 'ASURANSI'
         }
+        
     ]
 
     const statusfamilySelection = [
