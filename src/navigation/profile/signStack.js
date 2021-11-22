@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack'
 import SignInPage from '../../screens/profile/sign/signIn'
 import SignUpPage from '../../screens/profile/sign/signUp'
 import SuccessSignUpPage from '../../screens/profile/sign/successSignup'
+import resetPasswordStack from './resetPasswordStack'
 
 const SignStack = createStackNavigator({
     SignIn: {
@@ -24,6 +25,12 @@ const SignStack = createStackNavigator({
             headerShown: false
         }
     },
+    ResetPassword: {
+        screen: resetPasswordStack,
+        navigationOptions: {
+            headerShown: false
+        }
+    }
 }, {
     initialRouteName: 'SignIn'
 })
