@@ -409,7 +409,7 @@ const editProfile = (props) => {
                             <Picker.Item label="Nenek" value="Nenek" key={8}/>
                             <Picker.Item label="Anak" value="Anak" key={9}/>
                             <Picker.Item label="Sepupu" value="sepupu" key={10}/>
-                            <Picker.Item label="Suami" value="suami" key={11}/>
+                    `        <Picker.Item label="Suami" value="suami" key={11}/>
                             <Picker.Item label="Istri" value="istri" key={12}/>
                         </Picker>
                     </View>
@@ -536,7 +536,8 @@ const style = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom:60
     }
 })
 
