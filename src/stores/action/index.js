@@ -485,7 +485,7 @@ export function addFamily(dataFamily, navigation, loadFalse) {
         }
       } else if (data && data.error) {
         // console.log('masuk sini eror beroohhh')
-        console.log(data.error)
+        console.log(data.error,'ini data.error')
         if (data.error.message.includes('Request failed with status code')) {
           loadFalse()
           ToastAndroid.show('NIK sama dengan Pemilik akun !', ToastAndroid.SHORT);

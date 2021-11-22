@@ -46,13 +46,20 @@ const familyForm = (props) => {
     const [rhesusTypeModal, setRhesusModal] = useState(false)
     const [insuranceStatusModal, setInsuranceStatusModal] = useState(false)
     const [statusfamilyModal, setStatusFamilyModal] = useState(false)
-    
-    
-    const bloodTypeSelection = ['A', 'AB', 'B', 'O']
-    const rhesusTypeSelection = ['+', '-']
-
-    const insuranceStatusSelection = [
-        {
+    const bloodType =
+    [
+            'A', 
+            'AB', 
+            'B', 
+            'O'
+    ]
+    const resus = 
+    [
+             '+',     
+             '-'
+    ]
+    const insuranceStatus = [
+        {   
             label: 'Umum',
             value: 'UMUM'
         },
@@ -66,8 +73,8 @@ const familyForm = (props) => {
         }
     ]
 
-    const statusfamilySelection = [
-        {
+    const statusFamily = [
+        {   
             label: 'Suami',
             value: 'SUAMI'
         },
@@ -78,7 +85,7 @@ const familyForm = (props) => {
         {
             label: 'Anak',
             value: 'ANAK'
-        }
+        },
     ]
 
     async function setSelectedValue(value, changeKey){
@@ -94,20 +101,24 @@ const familyForm = (props) => {
         firstName: null,
         lastName: null,
         gender: null,
-        dob: null,
-        bloodType: null,
-        resus: null,
+        // dob: null,
+        dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
+        bloodType :null,
+        resus:null,
         phoneNumber: null,
         // statusFamily: null,
-        insuranceStatus: '',
+        insuranceStatus: null,
+        // address: null
     })
 
     const [gender , setGender] = useState  ({
     })
+
     var radio_props = [
         {label: 'Laki-laki', value: 'Male' },
         {label: 'Perempuan', value: 'Female' }
     ]; 
+
 
     const validation = () => {
         console.log(dataFamily, 'log======');
@@ -115,7 +126,8 @@ const familyForm = (props) => {
         if (dataFamily.firstName == null ||
             dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 ||
             dataFamily.firstName !== null && dataFamily.firstName.length == 0 ||
-            dataFamily.dob == null) {
+            dataFamily.dob == null
+            ) {
             console.log(dataFamily, 'ini data family')
             setValid(true)
             ToastAndroid.show('Please check the Data', ToastAndroid.LONG)
@@ -123,8 +135,17 @@ const familyForm = (props) => {
             setValid(false)
             setLoad(true)
             Finalvalidation(dataFamily)
+            console.log('ini data familyy', dataFamily)
         }
     }
+
+    async function setSelectedValue(value, changeKey){
+        setDataFamily({
+            ...dataFamily,
+            [changeKey] :value
+        })
+    }
+
 
     function Finalvalidation(_sendData) {
         // Methode
@@ -290,7 +311,7 @@ const familyForm = (props) => {
                             <SelectModal
                                 modal={bloodTypeModal}
                                 setModal={setBloodTypeModal}
-                                selection={bloodTypeSelection}
+                                selection={bloodType}
                                 title='Silahkan pilih golongan darah anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
@@ -314,17 +335,43 @@ const familyForm = (props) => {
                            <SelectModal
                                 modal={rhesusTypeModal}
                                 setModal={setRhesusModal}
-                                selection={rhesusTypeSelection}
+                                selection={resus}
                                 title='Silahkan pilih golongan resus anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedRhesusLabel}
-                                changeKey='rhesusType'
+                                changeKey='resus'
                            >
                            
                            </SelectModal>
                         </View>
                     </View>
+                  {/* Golongan Status Input */}     
+                  <View style={[container.pickerContainer]}>
+                        <TouchableOpacity
+                            onPress={()=>setInsuranceStatusModal(true)}
+                            style={container.buttonModal}
+                            >
+                            <Text style={container.inputText}>  Status : {selectedInsuranceLabel} </Text>
+                            <Image
+                                style={{width:12,height:10.2}} 
+                                source={require('../../../assets/png/ArrowDown.png')}
+                            />
+                        </TouchableOpacity>
+
+                        <SelectModal
+                                modal={insuranceStatusModal}
+                                setModal={setInsuranceStatusModal}
+                                selection={insuranceStatus}
+                                title='Silahkan pilih golongan Status anda'
+                                subtitle='Pilihan yang tersedia'
+                                setSelectedValue={setSelectedValue}
+                                setSelectedLabel={setselectedInsuranceLabel}
+                                changeKey='insuranceStatus'
+                        >
+                        </SelectModal>
+                 </View>    
+                {/* Status Family Input */}     
                     <View style={{ ...container.pickerContainer, width: '100%' }}>
                         <TouchableOpacity
                             onPress={()=>setStatusFamilyModal(true)}
@@ -340,39 +387,15 @@ const familyForm = (props) => {
                         <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
-                                selection={statusfamilySelection}
+                                selection={statusFamily}
                                 title='Silahkan pilih golongan keluarga anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
-                                changeKey='statusfamilyType'
+                                changeKey='statusFamily'
+                            
                         >
                         </SelectModal>
-                
-                    </View>
-                    <View style={[container.pickerContainer]}>
-                            <TouchableOpacity
-                                onPress={()=>setInsuranceStatusModal(true)}
-                                style={container.buttonModal}
-                                >
-                                <Text style={container.inputText}>  Status : {selectedInsuranceLabel} </Text>
-                                <Image
-                                    style={{width:12,height:10.2}} 
-                                    source={require('../../../assets/png/ArrowDown.png')}
-                                 />
-                            </TouchableOpacity>
-
-                            <SelectModal
-                                    modal={insuranceStatusModal}
-                                    setModal={setInsuranceStatusModal}
-                                    selection={insuranceStatusSelection}
-                                    title='Silahkan pilih golongan Status anda'
-                                    subtitle='Pilihan yang tersedia'
-                                    setSelectedValue={setSelectedValue}
-                                    setSelectedLabel={setselectedInsuranceLabel}
-                                    changeKey='insurancestatusType'
-                            >
-                            </SelectModal>
                     </View>
                 <TextInput
                     style={{   
@@ -396,6 +419,7 @@ const familyForm = (props) => {
                         //     text => setDataFamily({ ...dataFamily, address: text })
                         // }
                         // value={dataFamily.address}
+                      
                      />
                 </ScrollView>
                 <View style={{ alignItems: 'flex-end', marginTop: 20, marginBottom: 5 }}>
