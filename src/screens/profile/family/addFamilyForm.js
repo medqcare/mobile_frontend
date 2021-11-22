@@ -418,31 +418,6 @@ const familyForm = (props) => {
    
                 
                     </View>
-                {/* Golongan Status Input */}     
-                    <View style={[container.pickerContainer]}>
-                            <TouchableOpacity
-                                onPress={()=>setInsuranceStatusModal(true)}
-                                style={container.buttonModal}
-                                >
-                                <Text style={container.inputText}>  Status : {selectedInsuranceLabel} </Text>
-                                <Image
-                                    style={{width:12,height:10.2}} 
-                                    source={require('../../../assets/png/ArrowDown.png')}
-                                 />
-                            </TouchableOpacity>
-
-                            <SelectModal
-                                    modal={insuranceStatusModal}
-                                    setModal={setInsuranceStatusModal}
-                                    selection={insuranceStatusSelection}
-                                    title='Silahkan pilih golongan Status anda'
-                                    subtitle='Pilihan yang tersedia'
-                                    setSelectedValue={setSelectedValue}
-                                    setSelectedLabel={setselectedInsuranceLabel}
-                                    changeKey='insurancestatusType'
-                            >
-                            </SelectModal>
-                    </View>
                 <TextInput
                     style={{   
                         height: 80,
