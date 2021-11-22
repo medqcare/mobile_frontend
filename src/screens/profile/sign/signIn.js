@@ -228,7 +228,7 @@ const signIn = props => {
 		<View style={style.callToAction}>
 			<Text style={style.callToActionText}>Belum punya akun?</Text>
 			<TouchableOpacity
-				onPress={() => props.navigation.navigate('Undefined')}	
+				onPress={() => props.navigation.navigate('SignUp')}	
 			>
 				<Text style={{...style.callToActionText, fontWeight: 'bold', paddingLeft: 5}}>Daftar</Text>
 			</TouchableOpacity>
