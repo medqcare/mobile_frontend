@@ -34,7 +34,6 @@ import { ToastAndroid } from 'react-native';
 
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import { fullMonthFormat } from '../../../helpers/dateFormat';
-import SelectModalFamily from '../../../components/modals/modalPickerFamily';
 
 const familyForm = (props) => {
     // console.log(props, 'ini data yang di addFamily')
@@ -80,15 +79,18 @@ const familyForm = (props) => {
             label: 'Suami',
             value: 'SUAMI'
         },
-        {
+        {   
             label: 'Istri',
             value: 'ISTRI'
         },
-        {
+        {   
             label: 'Anak',
             value: 'ANAK'
         },
+
     ]
+
+
 
 
 
@@ -400,12 +402,12 @@ const familyForm = (props) => {
                         />
                         </TouchableOpacity>
 
-                        <SelectModalFamily
+                        <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusFamily}
                                 title='Silahkan pilih golongan keluarga anda'
-                                subtitle='Myself'
+                                subtitle='Pilihan yang tersedia'
                                 thirdtitle='My Family'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
