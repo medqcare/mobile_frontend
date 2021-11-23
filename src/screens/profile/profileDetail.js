@@ -48,7 +48,7 @@ function ProfileDetail({ navigation, userData }){
     const address = userData.address || 'Jl. Pengasinan Tengah Raya No.98 RT 3/11 Bekasi Utara'
 
     BackHandler.addEventListener("hardwareBackPress", () => {
-        navigation.navigate('ProfileStack')
+        navigation.pop()
         return true
     })
 

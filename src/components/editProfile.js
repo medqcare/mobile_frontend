@@ -126,7 +126,8 @@ const editProfile = (props) => {
     }
 
     BackHandler.addEventListener('hardwareBackPress', () => {
-        return (props.navigation.navigate('ProfileDetail'))
+        props.navigation.pop()
+        return true
     })
 
     var radio_props = [
