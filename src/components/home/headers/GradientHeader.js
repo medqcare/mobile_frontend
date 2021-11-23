@@ -14,7 +14,11 @@ import {
     heightPercentageToDP as hp 
 } from 'react-native-responsive-screen'
 
-export default function GradientHeader({navigate, navigateTo, title}){
+export default function GradientHeader({
+    navigate, 
+    navigateBack = 'Home', 
+    title = 'Enter Title Here'
+}){
     const start = {
         x: 0, 
         y: 0
@@ -26,9 +30,6 @@ export default function GradientHeader({navigate, navigateTo, title}){
     }
 
     const colors = ["#073B88",  "#048FBB"]
-    
-    navigateTo ? navigateTo = navigateTo : navigateTo = 'Home'
-    title ? title = title : title = 'enter title here'
 
     return (
         <LinearGradient  
@@ -40,7 +41,7 @@ export default function GradientHeader({navigate, navigateTo, title}){
             <StatusBar hidden/>
             <View style={styles.innerContainer}>
                 <TouchableOpacity
-                    onPress={() => navigate(navigateTo)}
+                    onPress={() => navigate(navigateBack)}
                 >
                     <View style={styles.content} >
                         <Ionicons 
