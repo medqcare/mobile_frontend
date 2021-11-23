@@ -16,8 +16,8 @@ import { setLoading } from '../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import LottieLoader from 'lottie-react-native'
 import { LinearGradient } from 'expo-linear-gradient'
-import ArrowBack from '../../assets/svg/ArrowBack'
 import SelectPatient from '../../components/modals/selectPatient';
+import GradientHeader from '../../components/headers/GradientHeader';
 
 
 const card = props => {
@@ -134,17 +134,11 @@ const card = props => {
 
   return (
     <View style={styles.container}>
-     	<LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={style.content}>
-			<View style={styles.header}>
-				<TouchableOpacity
-					onPress={() => props.navigation.navigate('Home')}>
-					<View style={{ flexDirection: 'row', marginBottom: 15}} >
-						<ArrowBack />
-						<Text style={{ fontSize: 20, color: '#ffff', position: 'relative', }}>Digital Card</Text>
-					</View>
-				</TouchableOpacity>
-			</View>
-		</LinearGradient>
+		<GradientHeader
+			navigate={props.navigation.navigate}
+			navigateBack={'Home'}
+			title='Digital Card'    
+		/>
       	<View 
 		  	style={{
 				backgroundColor: '#1F1F1F',
