@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import LottieLoader from 'lottie-react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import SelectPatient from '../../components/modals/selectPatient';
-import GradientHeader from '../../components/home/headers/GradientHeader';
+import GradientHeader from '../../components/headers/GradientHeader';
 
 
 const card = props => {

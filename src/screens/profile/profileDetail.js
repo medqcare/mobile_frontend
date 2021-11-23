@@ -26,7 +26,7 @@ import { changeLogin, Logout } from '../../stores/action'
 import { SafeAreaView } from 'react-navigation';
 
 import secureEmail from '../../helpers/secureEmail';
-import GreyHeader from '../../components/home/headers/GreyHeader';
+import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapStateToProps = state => {
     return state

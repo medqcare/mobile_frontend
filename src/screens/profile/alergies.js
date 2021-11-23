@@ -17,7 +17,7 @@ import LottieLoader from 'lottie-react-native';
 import SelectPatient from '../../components/modals/selectPatient';
 import SelectModalAllergies from '../../components/modals/modalPickerAllergies';
 import ConfirmationModal from '../../components/modals/ConfirmationModal'
-import GradientHeader from '../../components/home/headers/GradientHeader';
+import GradientHeader from '../../components/headers/GradientHeader';
 
 const Allergies = props => {
   const [accountOwner, setAccountOwner] = useState(props.userData);

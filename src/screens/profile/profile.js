@@ -24,7 +24,7 @@ import ProfileInfo from '../../components/profile/dashboard/profile-info'
 
 import { changeLogin, logout } from '../../stores/action'
 import { SafeAreaView } from 'react-navigation';
-import GreyHeader from '../../components/home/headers/GreyHeader';
+import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapDispatchToProps = {
     changeLogin, logout

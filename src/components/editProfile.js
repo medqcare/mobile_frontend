@@ -27,7 +27,7 @@ import SettingModal from '../components/modals/setModal'
 import { fullMonthFormat } from '../helpers/dateFormat'
 import SelectModal from './modals/modalPicker'
 import capitalFirst from '../helpers/capitalFirst'
-import GradientHeader from './home/headers/GradientHeader'
+import GradientHeader from './headers/GradientHeader'
 
 const editProfile = (props) => {
     var moment = require('moment')
