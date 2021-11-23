@@ -41,12 +41,10 @@ const editFamilyData = (props) => {
     const [listTitle, setTitle] = useState(['Mr.', 'Mrs.', 'Miss.', 'Ms.'])
     const [load, setLoad] = useState(false)
     const [modalS, setModalS] = useState(false)
-
     const [bloodTypeModal, setBloodTypeModal] = useState(false)
     const [rhesusTypeModal, setRhesusModal] = useState(false)
     const [insuranceStatusModal, setInsuranceStatusModal] = useState(false)
     const [statusfamilyModal, setStatusFamilyModal] = useState(false)
-
     const bloodType = ['A', 'AB', 'B', 'O']
     const resus = ['+', '-']
 
@@ -79,20 +77,15 @@ const editFamilyData = (props) => {
             value: 'ANAK'
         },
     ]
-
-    
-
-
-    
    
     const [changeData, setChangeData] = useState({
-        nik: '',
-        title: '' ,
-        firstName: '', 
-        lastName: '', 
-        gender: '', 
-        dob: moment(props.userData.dob).format('DD/MM/YYYY') ,
-        bloodType: '' ,
+        nik:  '',
+        title: '',
+        firstName:  '', 
+        lastName:  '', 
+        gender:  '', 
+        dob: moment(props.userData.dob).format('DD/MM/YYYY'),
+        bloodType: '',
         resus: '', 
         phoneNumber: '', 
         insuranceStatus: '' 
@@ -102,7 +95,7 @@ const editFamilyData = (props) => {
     // console.log('Ini data Family nya',dataFamily)
 
     async function setSelectedValue(value, changeKey){
-        setUserData({
+        setChangeData({
             ...changeData,
             [changeKey] :value
         })
@@ -385,7 +378,7 @@ const editFamilyData = (props) => {
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setselectedBloodTypeLabel}
-                                    changeKey='bloodType'
+                                    changeValue='bloodType'
                                />
                               
                             </View>
@@ -410,7 +403,7 @@ const editFamilyData = (props) => {
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setSelectedRhesusLabel}
-                                    changeKey='resus'
+                                    changeValue='resus'
                                 />
                          </View>   
                         </View>    
@@ -433,7 +426,7 @@ const editFamilyData = (props) => {
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setselectedInsuranceLabel}
-                                    changeKey='insuranceStatus'
+                                    changeValue='insuranceStatus'
                                 >
                                 </SelectModal>
                         </View>
@@ -451,13 +444,12 @@ const editFamilyData = (props) => {
                            <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
-
                                 selection={statusFamily}
                                 title='Silahkan pilih Hubungan Keluarga anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
-                                changeKey='statusFamily'
+                                changeValue='statusFamily'
                            >
                         
                            </SelectModal>             

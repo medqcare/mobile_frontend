@@ -223,6 +223,7 @@ function HomePage(props) {
                         color: '#A2A2A2',
                       }}
                       placeholder="cari dokter atau spesialis"
+                      placeholderTextColor={'#A2A2A2'}
                       onFocus={() => {
                         props.navigation.navigate('Doctor', {
                           query: 'SearchFromHome',

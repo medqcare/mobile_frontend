@@ -426,6 +426,7 @@ function SearchDoctorPage(props) {
                     color: '#A2A2A2',
                   }}
                   placeholder="cari dokter atau spesialis"
+                  placeholderTextColor={'#A2A2A2'}
                   onChangeText={text => _textChange(text)}
                 />
               </View>
