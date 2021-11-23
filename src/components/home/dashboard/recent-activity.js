@@ -34,7 +34,7 @@ const RecentActivity = ({ navigation }) => {
 
       <View style={[style.container],{marginRight: 10}}>
         <View style={style.borderIcon}>
-          <TouchableOpacity style={style.clickArea} onPress={() => { navigation.navigate('Undefined') }}>
+          <TouchableOpacity style={style.clickArea} onPress={() => { navigation.navigate('Activity_landing') }}>
           <Image source={require('../../../assets/png/ic_antrian.png')} style={{width: 25, height: 25}} />
             <Text style={{ fontSize:12, color:'#DDDDDD', marginTop: 8, textAlign: 'center' }}>Antrian</Text>
           </TouchableOpacity>

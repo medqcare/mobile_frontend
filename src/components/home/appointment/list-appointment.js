@@ -11,17 +11,13 @@ import CloseButton from '../../../assets/svg/CloseButton'
 
 
 const ListApointment = (props) => {
-    // console.log(props,'--ini props--')
+    
     const [address, setAddres] = useState(false)
     const [dataPatient, setPatient] = useState(null)
     const [modal, setmodal] = useState(false)
     var moment = require('moment')
 
     useEffect(() => {
-        // const alamat = props.data.address
-        // if (alamat.length < 65) {
-        //     setAddres(true)
-        // }
         console.log('ini masuk useeffect -----------------------------------')
         setPatient(props.data)
     }, [props.data])
@@ -37,32 +33,25 @@ const ListApointment = (props) => {
 
     //function 
     function socketConnection() {
-        let socketIO = `${baseURL}`
+        // let socketIO = `${baseURL}` //use this for production
+        let socketIO = `http://192.168.43.100:3004` // only development
         let socket = io(socketIO)
+        
         // let {healthFacility, doctor, bookingSchedule, bookingTime} = dataPatient
 
         socket.on(`regP-${dataPatient._id}`, async data => {
-            // console.log('hello world', data)
-            // socketTrigger(data)
             setmodal(false)
+            // console.log(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}" <<====`),
 
-            console.log(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}" <<====`),
-
-                await AsyncStorage.setItem(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}"`, JSON.stringify(data))
+            await AsyncStorage.setItem(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}"`, JSON.stringify(data))
             AsyncStorage.setItem(`${dataPatient._id}`, JSON.stringify(data.queueID))
             // console.log('mau pindah screen ========>')
             props.route.navigate('Home')
             props.route.navigate('Activity_landing', { flag: dataPatient._id, bookingID: dataPatient.bookingCode, reservationID: dataPatient._id })
+            socket.close()
         })
     }
-    // console.log('===>',dataPatient && dataPatient.status)
-    // function socketTrigger(data) {
-    //     setmodal(false)
-    //     AsyncStorage.setItem(`flag-async-${dataPatient.bookingCode}-${dataPatient._id}`, JSON.stringify(data))
-    //     props.route.navigate('Activity_landing', { flag: true, bookingID: dataPatient.bookingCode, reservationID: dataPatient._id })
-    // }
 
-    // console.log(props.data, 'ini data Patient')
     return (
         <View>
             {dataPatient && dataPatient.status !== "canceled" &&
@@ -139,13 +128,15 @@ const ListApointment = (props) => {
                                             <View style={{ padding: 10, borderRadius: 10, marginTop: 20, backgroundColor: '#2F2F2F' }}>
                                                 <QRCode
                                                     size={180}
-                                                    value={JSON.stringify({
-                                                        data: {
-                                                            patientID: dataPatient.patient.patientID,
-                                                            facilityID: dataPatient.healthFacility.facilityID,
-                                                            reservationID: dataPatient._id,
-                                                        }
-                                                    })} />
+                                                    value={dataPatient._id} //reservationId
+                                                    // value={JSON.stringify({
+                                                    //     data: {
+                                                    //         patientID: dataPatient.patient.patientID,
+                                                    //         facilityID: dataPatient.healthFacility.facilityID,
+                                                    //         reservationID: dataPatient._id,
+                                                    //     }
+                                                    // })} 
+                                                    />
                                             </View>
                                             <Text style={{ color: '#B5B5B5', textAlign: 'center', marginTop: 20, }}>Show the QR to the registration section when you arrive and get the queue number </Text>
                                             <Text style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20, }}>SCAN QR CODE</Text>
