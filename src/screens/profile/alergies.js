@@ -14,11 +14,10 @@ import {setAlergie, getAlergie, deleteAlergie} from '../../stores/action';
 import {connect} from 'react-redux';
 import SetModals from '../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
-import {LinearGradient} from 'expo-linear-gradient';
 import SelectPatient from '../../components/modals/selectPatient';
 import SelectModalAllergies from '../../components/modals/modalPickerAllergies';
-import ArrowBack from '../../assets/svg/ArrowBack'
 import ConfirmationModal from '../../components/modals/ConfirmationModal'
+import GradientHeader from '../../components/home/headers/GradientHeader';
 
 const Allergies = props => {
   const [accountOwner, setAccountOwner] = useState(props.userData);
@@ -143,30 +142,11 @@ const Allergies = props => {
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <LinearGradient
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        colors={['#073B88', '#048FBB']}
-        style={styles.content}>
-        <View
-          style={{
-            flex: 1,
-            marginTop: 32,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
-            <View style={{flexDirection: 'row', marginBottom: 15}}>
-              <ArrowBack
-              />
-              <Text
-                style={{fontSize: 20, color: '#ffff', position: 'relative'}}>
-                Alergi Pasien
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
+      <GradientHeader
+        navigate={props.navigation.navigate}
+        navigateTo={'Home'}
+        title='Alergi Pasien'    
+      />
 
       {/* Name box */}
       <View style={styles.boxContainer}>
