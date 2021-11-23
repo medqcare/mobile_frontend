@@ -138,8 +138,8 @@ const editProfile = (props) => {
         <KeyboardAvoidingView style={viewStyles.container} behavior={'padding'} enabled>
             <GradientHeader
                 navigate={props.navigation.navigate}
-                navigateTo={'ProfileDetail'}
-                title='Ubah Data'    
+                navigateBack={'ProfileDetail'}
+                title='Ubah Data'
             />
 
             {/* Starts here */}

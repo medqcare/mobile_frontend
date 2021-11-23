@@ -136,7 +136,7 @@ const card = props => {
     <View style={styles.container}>
 		<GradientHeader
 			navigate={props.navigation.navigate}
-			navigateTo={'Home'}
+			navigateBack={'Home'}
 			title='Digital Card'    
 		/>
       	<View 

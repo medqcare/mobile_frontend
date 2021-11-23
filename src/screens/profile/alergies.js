@@ -144,7 +144,7 @@ const Allergies = props => {
       {/* Back Button */}
       <GradientHeader
         navigate={props.navigation.navigate}
-        navigateTo={'Home'}
+        navigateBack={'Home'}
         title='Alergi Pasien'    
       />
 
