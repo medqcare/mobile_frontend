@@ -9,21 +9,15 @@ import {
     StyleSheet,
     Image,
     BackHandler,
+    ActivityIndicator,
 } from 'react-native'
-
-import {LinearGradient} from 'expo-linear-gradient'
 
 //action
 import { resetPasswordEmail,resetPasswordPhone, setLoading } from '../../../stores/action'
-
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import resetPasswd from './resetPassword'
 import { color } from 'react-native-reanimated'
-
-//mapTopProps
-// const mapStateToProps = state => {
-//     return state
-// }
+import { ToastAndroid } from 'react-native';
 
 const resetPasswdPhone = (props) => {
     BackHandler.addEventListener("hardwareBackPress",()=>{
@@ -31,6 +25,49 @@ const resetPasswdPhone = (props) => {
         return true
     })
 
+    const [load, setLoad ] = useState(false)
+    const [valid, setValid] = useState(false)
+    const [changePasswordPhone, setPasswordPhone] = useState ({
+        phoneNumber: null,
+    })      
+
+ 
+
+    const validation = () => {
+        console.log(changePasswordPhone, 'Ini data Phone Number User')
+
+        if (
+            changePasswordPhone.phoneNumber == null
+            ){
+            console.log(changePasswordPhone,'Ini data Phone user')
+            setValid(true)
+            ToastAndroid.show('Mohon untuk mengisi nomor telephone terlebih dahulu.', ToastAndroid.LONG)
+
+        }else if (
+            changePasswordPhone.phoneNumber.length <= 8 
+           ){
+            setValid(true)
+            ToastAndroid.show('Mohon untuk mengisi nomor hanphone dengan benar',ToastAndroid.LONG)
+            console.log('ini data phone user', changePasswordPhone)
+        }else {
+            
+            setValid(false)
+            setLoad(false)
+            Finalvalidation(changePasswordPhone)
+            console.log('Ini data phone', changePasswordPhone)
+            ToastAndroid.show('Berhasil Menambahkan Nomor Handphone',ToastAndroid.LONG)
+            
+        }
+    }
+
+
+    function Finalvalidation(phoneNumber) {
+        // Methode
+       
+        props.navigation.navigate('Ottp',{data:phoneNumber},setValid(false))
+    }
+
+    
     return (
 
         <View style={style.container}>
@@ -62,26 +99,34 @@ const resetPasswdPhone = (props) => {
 
                 <View style={style.txtInput}>
                       <View style={style.txtInput2}>
-                      <TextInput
-                        autoFocus={false}
-                        placeholder={'Nomor Hp'}
-                        placeholderTextColor="#DDDDDD" 
-                        style={style.txtInputTeks}
-                        keyboardType={'numeric'}
-                        autoCapitalize={'none'}
-
-                      />
-
+                        <TextInput
+                            autoFocus={false}
+                            placeholder={'Nomor Hp'}
+                            placeholderTextColor="#DDDDDD" 
+                            style={style.txtInputTeks}
+                            keyboardType={'numeric'}
+                            autoCapitalize={'none'}
+                            onChangeText={text => 
+                                setPasswordPhone({ ...changePasswordPhone, phoneNumber: text})
+                            } 
+                            value = {changePasswordPhone.phoneNumber}
+                        />
+                      
                       </View>  
                 </View>
 
                 
                 <TouchableOpacity 
                     style={style.button}
+                    onPress={()=> {validation(props.navigation.navigate('otp'))}}
                   
                 >
                     <View>
-                        <Text style={{fontSize:16,color:'#00FFEC'}}>Kirim Kode</Text>
+                        {
+                            load ?
+                            <ActivityIndicator size={'small'} color={'#FFF'} /> :
+                            <Text style={{fontSize:16,color:'#00FFEC'}}>Kirim Kode</Text>
+                        }
                     </View>   
                    
                 </TouchableOpacity>
