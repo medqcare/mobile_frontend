@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import io from 'socket.io-client';
-
+import getAge from '../../helpers/getAge'
+import IcPatient from '../../assets/svg/ic_pasien'
 import {baseURL} from '../../config';
 
 const activeActivity = props => {
@@ -33,6 +34,17 @@ const activeActivity = props => {
   }
   return (
     <View style={Styles.containerComponent}>
+      <View style={{marginBottom: 20, paddingHorizontal: 20}}>
+        <Text style={{color: '#B5B5B5'}}>Pasien </Text>
+        <View style={{flexDirection: 'row',marginTop: 10}}>
+          <View style={{marginTop: 2}}>
+            <IcPatient />
+          </View>
+          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.registration.patient.patientName}</Text>
+        </View>
+      </View>
+      
+          
       <View
         style={{
           flexDirection: 'row',
@@ -73,11 +85,11 @@ const activeActivity = props => {
           </Text>
         </View>
       </View>
-      <View style={Styles.bookingCodeBox}>
+      {/* <View style={Styles.bookingCodeBox}>
         <Text style={{color: '#DDDDDD', paddingHorizontal: 5, fontSize: 13}}>
           {props.data.registration.bookingCode}
         </Text>
-        {/* <Text
+        <Text
           style={{
             color: '#fff',
             paddingHorizontal: 5,
@@ -85,8 +97,8 @@ const activeActivity = props => {
             fontWeight: 'bold',
           }}>
           {props.data.registration.bookingTime}
-        </Text> */}
-      </View>
+        </Text>
+      </View> */}
     </View>
   );
 };
@@ -94,16 +106,16 @@ const activeActivity = props => {
 const Styles = StyleSheet.create({
   containerComponent: {
     // height: 150,
-    width: '90%',
-    borderRadius: 6,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    width: '100%',
+    borderRadius: 10,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     backgroundColor: '#2F2F2F',
-    alignSelf: 'center',
-    alignItems: 'center',
+    // alignSelf: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
-    marginTop: 20,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
   bookingCodeBox: {
     // paddingHorizontal: 25,
