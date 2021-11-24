@@ -90,10 +90,6 @@ const familyForm = (props) => {
 
     ]
 
-
-
-
-
     const [dataFamily, setDataFamily] = useState({
         nik: null,
         firstName: null,
