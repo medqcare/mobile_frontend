@@ -74,7 +74,7 @@ function SearchDoctorPage(props) {
           },
           {timeout: 4000},
         );
-        console.log(data,'ini datanya');
+        console.log(`Found ${data.data.length} selection of doctors`);
         if (currentPage == 0) {
           setShow(data.data);
         } else {

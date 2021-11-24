@@ -5,6 +5,7 @@ import SignInPage from '../../screens/profile/sign/signIn'
 import SignUpPage from '../../screens/profile/sign/signUp'
 import SuccessSignUpPage from '../../screens/profile/sign/successSignup'
 import resetPasswordStack from './resetPasswordStack'
+import DataCompletion from '../../screens/profile/sign/registration'
 
 const SignStack = createStackNavigator({
     SignIn: {
@@ -27,6 +28,12 @@ const SignStack = createStackNavigator({
     },
     ResetPassword: {
         screen: resetPasswordStack,
+        navigationOptions: {
+            headerShown: false
+        }
+    },
+    UserDataCompletion: {
+        screen: DataCompletion,
         navigationOptions: {
             headerShown: false
         }
