@@ -44,7 +44,7 @@ const signUp = props => {
   const [signUpData, setSignUpData] = useState({
     email: '',
     password: '',
-    firebaseNotificationToken: ''
+    firebaseNotificationToken: 'false'
   });
 	const [secureTextEntry, setSecureTextEntry] = useState(true)
 	const [confirmSecureTextEntry, setConfirmSecureTextEntry] = useState(true)
@@ -70,7 +70,7 @@ const signUp = props => {
   };
   
   function validatePassword(input) {
-    if ((input === confirmPassword && input !== '') || input.length < 6) {
+    if ((input === confirmPassword && input == '') || input.length < 6) {
       return true
 	} else {
       return false
