@@ -22,18 +22,18 @@ const activity = (props) => {
 
   useEffect(() => {
     checkAsync()
-    console.log(scannedData?.registration.healthFacility);
-  }, [props.navigation.state.params?.flag])
+  }, [props.navigation.state.params.flag])
 
   async function checkAsync() {
 
     try {
-      let bookingID = props.bookingID ? props.bookingID : props.navigation.state?.params?.bookingID
-      let reservationID = props.reservationID ? props.reservationID : props.navigation.state?.params?.reservationID
-      let queueID = await AsyncStorage.getItem(`${reservationID}`)
+      let bookingID = props.bookingID ? props.bookingID : props.navigation.state.params.bookingID
+      let reservationID = props.reservationID ? props.reservationID : props.navigation.state.params.reservationID
+      // let queueID = props.navigation.state.params.queueId ? props.navigation.state.params.queueId : await AsyncStorage.getItem(`${reservationID}`) 
+      let queueID = props.navigation.state.params.queueId ? props.navigation.state.params.queueId : await AsyncStorage.getItem(`${reservationID}`)
       let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
       let getCurrentQueue = await props.getCurrentQueueingNumber(queueID)
-
+      
       if (savedData) {
         setFlag(true)
         setqueueID(queueID)

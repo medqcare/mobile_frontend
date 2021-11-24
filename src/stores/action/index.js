@@ -672,7 +672,7 @@ export function getCurrentQueueingNumber(queueId) {
       try {
         let token = await AsyncStorage.getItem('token');
         // console.log(JSON.parse(token).token,'ini token yang dari get current queue')
-        console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
+        // console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
         let { data } = await instance({
           method: 'POST',
           url: '/v1/members/getQueueById',

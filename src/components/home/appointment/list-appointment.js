@@ -37,15 +37,12 @@ const ListApointment = (props) => {
         let socketIO = `http://192.168.43.100:3004` // only development
         let socket = io(socketIO)
         
-        // let {healthFacility, doctor, bookingSchedule, bookingTime} = dataPatient
-
         socket.on(`regP-${dataPatient._id}`, async data => {
             setmodal(false)
-            // console.log(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}" <<====`),
-
+            
             await AsyncStorage.setItem(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}"`, JSON.stringify(data))
-            AsyncStorage.setItem(`${dataPatient._id}`, JSON.stringify(data.queueID))
-            // console.log('mau pindah screen ========>')
+            await AsyncStorage.setItem(`${dataPatient._id}`, JSON.stringify(data.queueID))
+            
             props.route.navigate('Home')
             props.route.navigate('Activity_landing', { flag: dataPatient._id, bookingID: dataPatient.bookingCode, reservationID: dataPatient._id })
             socket.close()
