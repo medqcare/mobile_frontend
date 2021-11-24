@@ -9,6 +9,7 @@ import AllergyStack from './allergystack'
 import Undefined from '../../screens/404'
 import profileStack from '../profile'
 import SignStack from '../profile/signStack'
+import Activity_Stack from '../activity'
 
 export default StackHome = createStackNavigator({
   Home: {
@@ -51,6 +52,12 @@ export default StackHome = createStackNavigator({
     screen: AllergyStack,
     navigationOptions: {
       headerShown: false
+    }
+  },
+  ActivityStack: {
+      screen: Activity_Stack,
+      navigationOptions: {
+        headerShown: false
     }
   },
   ProfileStack: {
