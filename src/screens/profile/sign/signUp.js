@@ -121,7 +121,7 @@ const signUp = props => {
 			)
     } 
 	else if(
-		validatePassword(signUpData.password) == false
+		validatePassword(signUpData.password) == true
 	) {
 		ToastAndroid.show(
 			'Password must be longer than 6 characters',
