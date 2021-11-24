@@ -26,6 +26,7 @@ import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Search from '../../../assets/svg/Search';
+import SearchBar from '../../../components/headers/SearchBar'
 
 import Lonceng from '../../../assets/svg/home-blue/lonceng';
 import LottieLoader from 'lottie-react-native';
@@ -195,55 +196,7 @@ function HomePage(props) {
                     </View>
                   )}
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginBottom: 20,
-                  }}>
-                  <View
-                    style={{
-                      borderColor: '#DDDDDD',
-                      borderWidth: 0.5,
-                      height: 40,
-                      marginTop: 20,
-                      borderRadius: 25,
-                      flexDirection: 'row',
-                      width: '90%',
-                    }}>
-                    <View style={{marginTop: 12, marginLeft: 20}}>
-                      <Search />
-                    </View>
-
-                    <TextInput
-                      style={{
-                        marginStart: 10,
-                        fontSize: 14,
-                        flex: 1,
-                        color: '#A2A2A2',
-                      }}
-                      placeholder="cari dokter atau spesialis"
-                      placeholderTextColor='#A2A2A2'
-                      onFocus={() => {
-                        props.navigation.navigate('Doctor', {
-                          query: 'SearchFromHome',
-                        });
-                      }}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      marginTop: 30,
-                    }}>
-                    <Image
-                      style={{
-                        height: 20,
-                        width: 20,
-                      }}
-                      source={require('../../../assets/png/ic_filter.png')}
-                    />
-                  </View>
-                </View>
+                <SearchBar placeholder={"cari dokter atau spesialis"} onFocus={() =>  props.navigation.navigate("Doctor", {query: "SearchFromHome"})}/>
               </View>
             </ImageBackground>
           </View>
