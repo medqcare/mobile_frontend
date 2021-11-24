@@ -17,6 +17,7 @@ import {baseURL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {connect} from 'react-redux';
+import Header from '../../../components/headers/GradientHeader'
 import ArrowBack from '../../../assets/svg/ArrowBack'
 
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -116,45 +117,7 @@ const MedicalStats = props => {
 
   return (
     <View style={{backgroundColor: '#1F1F1F', flex: 1}}>
-      <LinearGradient
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        colors={['#073B88', '#048FBB']}
-        style={{height: 85}}>
-        <View
-          style={{
-            flex: 1,
-            marginTop: 32,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity
-            onPress={() =>
-              props.navigation.state.params.goback !== 'Home'
-                ? (props.navigation.navigate('Home'),
-                  props.navigation.navigate(
-                    props.navigation.state.params.goback,
-                  ))
-                : props.navigation.navigate('Home')
-            }>
-            <View style={{flexDirection: 'row'}}>
-              <ArrowBack
-              />
-              <Text
-                style={{
-                  paddingHorizontal: 12,
-                  fontSize: 16,
-                  top: 2,
-                  color: '#ffff',
-                  
-                  position: 'relative',
-                }}>
-                Resume Medis
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </LinearGradient>
+      <Header title={'Resume Medis'} navigate={props.navigation.navigate}/>
 
       <View style={styles.nameContainer}>
         <Text style={styles.nameText}>Gunawan Irawan</Text>

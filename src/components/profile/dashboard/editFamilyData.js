@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker'
 import { fullMonthFormat } from '../../../helpers/dateFormat';
+import Header from '../../../components/headers/GradientHeader'
 
 //Icon
 import IconAD from 'react-native-vector-icons/AntDesign'
@@ -230,18 +231,8 @@ const editFamilyData = (props) => {
     console.log('ini adlah change datanya', changeData)
     return (
         <View style={{ flex: 1 }}>
-            <LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={container.content}>
-                <View style={{ flex: 1, marginTop: 32, flexDirection: 'row', alignItems: 'center', }}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('FamilyList')}>
-                        <View style={{ flexDirection: 'row', }} >
-                            <ArrowBack />
-                            <Text style={{ paddingHorizontal:7,fontSize: 20, color: '#ffff', position: 'relative', }}>Ubah Data</Text>
-                        </View>
-
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
+            <Header title={'Ubah Data'} navigate={props.navigation.navigate} navigateBack={'FamilyList'}/>
+            
                 <View style={container.base}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                     {/* <TouchableOpacity style={container.editphoto}>
