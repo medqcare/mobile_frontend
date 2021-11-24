@@ -9,12 +9,12 @@ const instance = axios.create({
 });
 
 const _storeData = async data => {
-  console.log(data, 'ini _storeData sebelum try');
+  console.log(data, 'This is the token after signing in');
   try {
     await AsyncStorage.setItem('token', JSON.stringify(data));
     console.log(
       await AsyncStorage.getItem('token'),
-      'ini _storeData setelah try',
+      'This is the token in AsyncStorage',
     );
   } catch (error) {
     // Error saving data
@@ -175,7 +175,7 @@ export function retrieveData(data, navigation) {
 
 export function SignIn(userData, navigation, modalF, navigateTo) {
   return dispatch => {
-    console.log(userData, 'ini user datanya');
+    console.log(userData, 'Email and password of the user trying to sign in');
     // console.log(navigation, 'ini navigationnya')
     instance({
       url: '/v1/members/signin',
@@ -200,7 +200,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
         }
       })
       .then(async ({ data }) => {
-        // console.log(data, 'ini yang kedua');
+        // console.log(`User's data is`, data);
         try {
           if (data.data === null) {
             // console.log('masuk if');
@@ -208,7 +208,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
               type: 'GET_USER_DATA',
               payload: data.data,
             });
-            navigation.navigate('RegistrationUser');
+            navigation.navigate('UserDataCompletion');
           } else {
             // console.log('masuk else');
             await dispatch({
@@ -366,6 +366,7 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
                 payload: data.data,
               });
               modalSuccess(data.message)
+              navigation.navigate('Home')
             }
             catch (error) {
               modalFailed(error)
@@ -386,19 +387,20 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
 }
 
 export function GetUser(token, navigation) {
-  console.log(token, 'token --------------------------------------')
+  console.log(token)
+  console.log('Above is the token that is already in AsyncStorage')
   return dispatch => {
     return new Promise(async (res, rej) => {
 
       try {
-        console.log('masuk try getUser Action.js')
+        console.log('Application is trying to GET dataLogged')
         let { data } = await axios({
           method: 'GET',
           url: `${baseURL}/api/v1/members/dataLogged`,
           headers: { Authorization: token },
         }, { timeout: 100 });
         if (data.data) {
-          console.log('masuk IF getUser Action')
+          console.log('Application Found dataLogged')
           let temp = data.data
           let docFav = await AsyncStorage.getItem('doctorFavorite')
           if (docFav) {
@@ -414,7 +416,7 @@ export function GetUser(token, navigation) {
           })
           res(data.data)
         } else {
-          console.log('Masuk else getUser Action')
+          console.log(`Application didn't find dataLogged`)
           dispatch({
             type: 'TOGGLE_LOADING',
             payload: false
@@ -427,7 +429,7 @@ export function GetUser(token, navigation) {
           `Please check your internet connection`,
           ToastAndroid.LONG,
         );
-        console.log(error.message, 'action getUser')
+        console.log(error.message, 'Error found in function GetUser')
         rej(error)
       }
 

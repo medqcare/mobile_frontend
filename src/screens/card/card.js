@@ -123,7 +123,7 @@ const card = props => {
     {
       hospital &&
         hospital.map(item => {
-          if (item.facilityID.facilityMainType == facility) {
+          if (item.facilityID?.facilityMainType == facility) {
             setAktif(item.facilityID.facilityMainType)
             temp.push(item)
           }

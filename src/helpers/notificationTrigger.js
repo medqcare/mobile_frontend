@@ -6,7 +6,7 @@ import localTrigger from '../worker/createLocalNotification';
 import notifHandler from './notifHandler';
 
 export default () => {
-  console.log('masuk sini dari trigger');
+  console.log('Application triggered notificationTrigger.js');
 
   // PushNotification.configure({
   //   // (optional) Called when Token is generated (iOS and Android)
