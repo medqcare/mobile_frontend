@@ -31,8 +31,6 @@ const activity = (props) => {
       let bookingID = props.bookingID ? props.bookingID : props.navigation.state?.params?.bookingID
       let reservationID = props.reservationID ? props.reservationID : props.navigation.state?.params?.reservationID
       let queueID = await AsyncStorage.getItem(`${reservationID}`)
-      console.log(bookingID, 'ini booking id ');
-      console.log(reservationID, 'ini reservation id ');
       let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
       let getCurrentQueue = await props.getCurrentQueueingNumber(queueID)
 

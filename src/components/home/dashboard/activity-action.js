@@ -13,7 +13,7 @@ return (
         
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
            <Image style={style.Image}source={require('../../../assets/png/ic_statusNav.png')} style={{width: 55, height: 55}} />
-           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Status </Text>
+           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
        </View>
 
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
@@ -23,7 +23,7 @@ return (
 
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
           <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 55, height: 55}} />
-          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
+          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Penunjang </Text>
        </View>
 
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
@@ -44,7 +44,7 @@ return (
 
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
          <Image style={style.Image}source={require('../../../assets/png/ic_examNav.png')} style={{width: 55, height: 55}} />
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Exam </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
       </View>
 
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
@@ -53,7 +53,6 @@ return (
       </View>
 
       <TouchableOpacity onPress={() => {
-         data ? navigation.navigate('Filter') : navigation.navigate('Sign')
          // navigation.navigate('Home')
          // navigation.navigate('Loading', { date: new Date(), data: 'Filter' })
       }}
@@ -61,7 +60,7 @@ return (
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
          <Image style={style.Image}source={require('../../../assets/png/ic_dokterNav.png')} style={{width: 55, height: 55}} />
         <View style={{width:50, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokter Favorit </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Home Care </Text>
         </View>
       </View>
       </TouchableOpacity>

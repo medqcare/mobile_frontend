@@ -13,7 +13,7 @@ const mapStateToProps = state => ({
   isLoading: state.isLoading
 })
 
-function MenuNavigator({ navigation }) {
+function MenuNavigator({ navigation, data }) {
   // console.log(navigation,'ini navigationnya')
   // console.log(navigation,'ini navigationnya')
 
@@ -46,10 +46,10 @@ function MenuNavigator({ navigation }) {
       </View>
 
       <TouchableOpacity style={style.borderIcon}
-        onPress={() => navigation.navigate('Undefined')}>
+        onPress={() => data ? navigation.navigate('Filter') : navigation.navigate('Sign')}>
         <Image navigation={navigation} source={require('../../../assets/png/ic_keluarga.png')} style={{width: 25, height: 24}} />
         <Text
-          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Keluarga</Text>
+          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Dokter Favorit</Text>
       </TouchableOpacity>
       {/* <View style={{
         backgroundColor: '#A2A2A2',
