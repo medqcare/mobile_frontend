@@ -9,17 +9,15 @@ import {
     StyleSheet,
     Image,
     BackHandler,
+    ActivityIndicator,
 } from 'react-native'
-
-import {LinearGradient} from 'expo-linear-gradient'
 
 //action
 import { resetPasswordEmail,resetPasswordPhone, setLoading } from '../../../stores/action'
-
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import resetPasswd from './resetPassword'
 import { color } from 'react-native-reanimated'
-
+import { ToastAndroid } from 'react-native';
 //mapTopProps
 // const mapStateToProps = state => {
 //     return state
@@ -28,9 +26,43 @@ import { color } from 'react-native-reanimated'
 const resetPasswdEmail = (props) => {
     
     BackHandler.addEventListener("hardwareBackPress",()=>{
-    props.navigation.pop()
-    return true
+        props.navigation.pop()
+        return true
     })
+
+    const [load, setLoad ] = useState(false)
+    const [valid, setValid] = useState(false)
+    const [changePasswordEmail, setPasswordEmail] = useState ({
+        emailConfirm: null,
+    })      
+
+    const validation = () => {
+        console.log(changePasswordEmail, 'Ini data Email User')
+        
+        if(
+            changePasswordEmail.emailConfirm == null
+          ){
+           
+            setValid(true)
+            Finalvalidation(changePasswordEmail)
+            ToastAndroid.show('Mohon untuk mengisi alamat email terlebih dahulu.', ToastAndroid.LONG) 
+        }else {
+
+            setValid(false)
+            setLoad(true)
+            Finalvalidation(changePasswordEmail)
+            ToastAndroid.show('Berhasil Mengirim Email.', ToastAndroid.LONG)
+            console.log('Ini data email kita bro', changePasswordEmail)
+        }
+    }
+
+    function Finalvalidation(emailConfirm) {
+        // Methode
+       
+        props.navigation.navigate('allertEmail',{data:emailConfirm},setLoad(false))
+    }
+
+        
 
     return (
 
@@ -67,7 +99,10 @@ const resetPasswdEmail = (props) => {
                         placeholder={'Email'}
                         placeholderTextColor="#DDDDDD" 
                         style={style.txtInputTeks}
-
+                        onChangeText={text => 
+                            setPasswordEmail({ ...changePasswordEmail, emailConfirm: text})
+                        } 
+                        value = {changePasswordEmail.emailConfirm}
                       />
 
                       </View>  
@@ -76,11 +111,15 @@ const resetPasswdEmail = (props) => {
                 
                 <TouchableOpacity 
                     style={style.button}
-                  
+                    onPress={()=> {validation(props.navigation.navigate('allertEmail'))}}
                 >
-                    <View>
+                <View>
+                    {
+                        load ?
+                        <ActivityIndicator size={'small'} color={'#FFF'} /> :
                         <Text style={{fontSize:16,color:'#00FFEC'}}>Kirim Kode</Text>
-                    </View>   
+                    }
+                </View> 
                    
                 </TouchableOpacity>
 
@@ -169,6 +208,7 @@ const style= StyleSheet.create({
 		width: 0,
 		height: 3,
 		},
+
 		shadowOpacity: 0.23,
 		shadowRadius: 6,
 		elevation: 4,
