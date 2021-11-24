@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { StyleSheet, Text, View, StatusBar, Button, ActivityIndicator, ScrollView, FlatList, TouchableOpacity, BackHandler } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 //action
 import { getTodayRegistration, getCurrentQueueingNumber } from '../../stores/action'
@@ -20,7 +21,7 @@ const activityList = (props,{route}) => {
                 .then(({data}) => {
                     setRefresh(false)
                     // console.log('ini today activitynya =====>',props.todayActivity)
-                    // console.log('ini datanya ===>',data)
+                    console.log('ini datanya ===>',data)
                     if(!dateRef){
                         setDateRef(new Date())
                     }
@@ -39,8 +40,8 @@ const activityList = (props,{route}) => {
     }
 
     BackHandler.addEventListener("hardwareBackPress", () => {
-        console.log('back handler')
-        return props.navigation.navigate('Home')
+        props.navigation.navigate('Home')
+        return true
     })
     // console.log('====> ini props.today activity ===>', props.todayActivity)
     return (
