@@ -200,7 +200,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
         }
       })
       .then(async ({ data }) => {
-        // console.log(data, 'ini yang kedua');
+        // console.log(`User's data is`, data);
         try {
           if (data.data === null) {
             // console.log('masuk if');
@@ -208,7 +208,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
               type: 'GET_USER_DATA',
               payload: data.data,
             });
-            navigation.navigate('RegistrationUser');
+            navigation.navigate('UserDataCompletion');
           } else {
             // console.log('masuk else');
             await dispatch({
@@ -366,6 +366,7 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
                 payload: data.data,
               });
               modalSuccess(data.message)
+              navigation.navigate('Home')
             }
             catch (error) {
               modalFailed(error)
