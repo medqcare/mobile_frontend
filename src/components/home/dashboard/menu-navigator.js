@@ -28,6 +28,19 @@ function MenuNavigator({ navigation, data }) {
       <View style={{
         backgroundColor: '#0C6292',
         height: '80%',
+        width: 1,
+        backgroundColor: '#0C6292'
+      }}>
+      </View>
+      <TouchableOpacity style={style.borderIcon}
+        onPress={() => data ? navigation.navigate('Filter') : navigation.navigate('Sign')}>
+        <Image navigation={navigation} source={require('../../../assets/png/ic_keluarga.png')} style={{width: 25, height: 24}} />
+        <Text
+          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Dokter Favorit</Text>
+      </TouchableOpacity>
+      <View style={{
+        backgroundColor: '#0C6292',
+        height: '80%',
         width: 1
       }}>
       </View>
@@ -49,8 +62,9 @@ function MenuNavigator({ navigation, data }) {
         onPress={() => data ? navigation.navigate('Filter') : navigation.navigate('Sign')}>
         <Image navigation={navigation} source={require('../../../assets/png/ic_keluarga.png')} style={{width: 25, height: 24}} />
         <Text
-          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Dokter Favorit</Text>
+          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Penunjang</Text>
       </TouchableOpacity>
+      
       {/* <View style={{
         backgroundColor: '#A2A2A2',
         height: '80%',
@@ -73,7 +87,7 @@ const style = StyleSheet.create({
     position: 'absolute',
     marginTop: 25,
     width: '92%',
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
     height: heightDim * 0.1,
     top: heightDim * 0.14,
     flexDirection: 'row',

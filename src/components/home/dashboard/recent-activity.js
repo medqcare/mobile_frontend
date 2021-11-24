@@ -41,14 +41,14 @@ const RecentActivity = ({ navigation }) => {
       </View>
       </View>
 
-      {/* <View style={[style.container],{marginRight: 10}}>
+      <View style={[style.container],{marginRight: 10}}>
         <View style={style.borderIcon}>
           <TouchableOpacity style={style.clickArea} onPress={() => { navigation.navigate('MedicalStats', {goback : 'Home'}) }}>
           <Image source={require('../../../assets/png/Medical.png')} style={{width: 25, height: 25}} />
             <Text style={{ fontSize:12, color:'#DDDDDD', marginTop: 8, textAlign: 'center' }}>Medical Resume</Text>
           </TouchableOpacity>
         </View>
-      </View> */}
+      </View>
       </ScrollView>
       </View>
   )
@@ -70,7 +70,7 @@ const style = StyleSheet.create({
  
   borderIcon: {
     height: '75%',
-    width: 180,
+    width: 110,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
