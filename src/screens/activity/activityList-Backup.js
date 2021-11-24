@@ -46,18 +46,35 @@ const activityList = (props) => {
     // console.log('====> ini props.today activity ===>', props.todayActivity)
     return (
         <View style={styles.container}>
-            <Header title={'Antrian'} navigate={props.navigation.navigate}/>
+            <Header title={'Today Activity'} navigate={props.navigation.navigate}/>
             <View style={{paddingHorizontal: 20, flex:1}}>
                     {props.todayActivity && props.todayActivity.length === 0 && <View style={{justifyContent:'center',alignItems: "center", height: '90%'}}>
-                            <Text style={{color: '#fff'}}>You have no ongoing activity today</Text>
+                            <Text>You have no ongoing activity today</Text>
                         </View>}
                     {refresh && <ActivityIndicator size="large" color="#0000ff" />}
                 <ScrollView>
                     {
                         props.todayActivity && props.todayActivity.map((el, idx) => {
+                            // console.log('===> ',el)
                             return (
-                                <Activity key={idx} flag={true} bookingID={el.bookingCode} reservationID={el.reservationID} queueId={JSON.stringify(el.queueID)}  />
-                            
+                                <Activity flag={true} bookingID={el.bookingCode} reservationID={el.reservationID} queueId={JSON.stringify(el.queueID)}  />
+                            // <TouchableOpacity key={idx}  onPress={() => {
+                            //     props.navigation.navigate('Activity_landing', {flag: true, bookingID: el.bookingCode, reservationID: el.reservationID, queueId:  JSON.stringify(el.queueID)})
+                            // }}>
+                            //     <View style={[styles.activityCard, {marginTop: idx === 0 ? 20 : 10}]}>
+                            //         <View style={styles.leftActivityCard}>
+                            //             <Text style={{color: '#000', fontSize: 50, fontWeight: 'bold'}}>{el.queuingNumber}</Text>
+                            //             <Text style={{color: '#000'}}>My Queue</Text>
+                            //         </View>
+                            //         <View style={styles.rightActivityCard}>
+                            //             <Text style={{color: '#000', textTransform : 'capitalize'}}>{el.patient.patientName}</Text>
+                            //             <Text style={{color: '#000', textTransform : 'capitalize'}}>{el.doctor.tilte}{el.doctor.doctorName}</Text>
+                            //             <Text style={{color: '#000', textTransform : 'capitalize', flexWrap: 'wrap'}}>{el.healthFacility.facilityName}</Text>
+                            //             <View style={{height:1, width: '100%', backgroundColor: '#000', opacity: 0.3, marginVertical: 13}}/>
+                            //             <Text style={{color: '#000', textTransform : 'capitalize'}}>{el.bookingTime}</Text>
+                            //         </View>
+                            //     </View>
+                            // </TouchableOpacity>
                             )
                         })
                     }

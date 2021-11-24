@@ -1,8 +1,7 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   TouchableOpacity,
   ImageBackground,
@@ -13,7 +12,6 @@ import {
   StyleSheet,
   ToastAndroid,
   ScrollView,
-  Image,
 } from 'react-native';
 import {connect} from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
@@ -21,24 +19,14 @@ import {getDataDoctor, setLoading} from '../../../stores/action';
 import axios from 'axios';
 import {baseURL} from '../../../config';
 import {specialistName} from '../../../assets/specialist/specialist';
-
-// import SkeletonContent from 'react-native-skeleton-content';
-
-import IconEntypo from 'react-native-vector-icons/Entypo';
-import IconFontisto from 'react-native-vector-icons/Fontisto';
-import Icon from 'react-native-vector-icons/Ionicons';
-import IconAnt from 'react-native-vector-icons/AntDesign';
-import IconMI from 'react-native-vector-icons/MaterialIcons';
+import SearchBar from '../../../components/headers/SearchBar'
 
 import Shortby from '../../../components/modals/doctors/modalSortBy';
-import SpecialistBy from '../../../components/modals/doctors/modalSpecialist';
-import FilterBottom from '../../../components/home/doctor/filter-bottom';
-import FilterStack from '../../../navigation/activity/filterDokterStack';
-import Search from '../../../assets/svg/Search';
 import ArrowBack from '../../../assets/svg/ArrowBack'
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
+  // const [searchFromHome, setSearchFromHome] = useState(true)
   const [location, setLocation] = useState(props.myLocation);
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -184,194 +172,6 @@ function SearchDoctorPage(props) {
     _fetchDataDoctorPagination('All');
   }, [loader]);
 
-  const layoutSkeleton = [
-    {
-      key: 'image',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text2',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-    {
-      key: 'image2',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text21',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text22',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line2',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-    {
-      key: 'image3',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text31',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text32',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line3',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-    {
-      key: 'image4',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text41',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text42',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line4',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-    {
-      key: 'image5',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text51',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text52',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line5',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-    {
-      key: 'image6',
-      width: 80,
-      height: 80,
-      marginTop: 10,
-      marginBottom: 8,
-      marginLeft: 20,
-      borderRadius: 80,
-      flexDirection: 'row',
-    },
-    {
-      key: 'text61',
-      width: dimWidth * 0.6,
-      height: 30,
-      marginTop: -86,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'text62',
-      width: dimWidth * 0.6,
-      height: 50,
-      marginBottom: 6,
-      marginLeft: 120,
-    },
-    {
-      key: 'line6',
-      width: dimWidth,
-      height: 2,
-      marginVertical: 6,
-    },
-  ];
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.pop();
@@ -386,64 +186,24 @@ function SearchDoctorPage(props) {
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{flex: 1}}>
-          <View style={{marginTop: 31, flex: 1}}>
+          <View style={{marginTop: 50, marginHorizontal: 20, flex: 1}}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{flexDirection: 'row'}}>
-                <ArrowBack />
+                <View style={{marginTop: 3}}>
+                  <ArrowBack />
+                </View>
                 <Text
                   style={{
                     fontSize: 18,
                     color: '#ffff',
                     position: 'relative',
                     marginLeft: 10,
-                    marginBottom: 10,
                   }}>
                   Pilih Dokter
                 </Text>
               </View>
             </TouchableOpacity>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginHorizontal: 15,
-              }}>
-              <View style={styles.searchBar}>
-                <View style={{marginLeft: 20, marginTop: 12}}>
-                  <Search />
-                </View>
-
-                <TextInput
-                  autoFocus={
-                    props.navigation.state.params
-                      ? props.navigation.state.params.query === 'SearchFromHome'
-                      : false
-                  }
-                  style={{
-                    marginStart: 10,
-                    fontSize: 14,
-                    flex: 1,
-                    color: '#A2A2A2',
-                  }}
-                  placeholder="cari dokter atau spesialis"
-                  placeholderTextColor='#A2A2A2'
-                  onChangeText={text => _textChange(text)}
-                />
-              </View>
-              <View
-                style={{
-                  marginTop: 30,
-                  marginRight: 10,
-                }}>
-                <Image
-                  style={{
-                    height: 20,
-                    width: 20,
-                  }}
-                  source={require('../../../assets/png/ic_filter.png')}
-                />
-              </View>
-            </View>
+            <SearchBar placeholder={"cari dokter atau spesialis"} onChangeText={text => _textChange(text)}/>
           </View>
         </ImageBackground>
       </View>
@@ -693,6 +453,196 @@ const stylesF = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+
+const layoutSkeleton = [
+  {
+    key: 'image',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text2',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+  {
+    key: 'image2',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text21',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text22',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line2',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+  {
+    key: 'image3',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text31',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text32',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line3',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+  {
+    key: 'image4',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text41',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text42',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line4',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+  {
+    key: 'image5',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text51',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text52',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line5',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+  {
+    key: 'image6',
+    width: 80,
+    height: 80,
+    marginTop: 10,
+    marginBottom: 8,
+    marginLeft: 20,
+    borderRadius: 80,
+    flexDirection: 'row',
+  },
+  {
+    key: 'text61',
+    width: dimWidth * 0.6,
+    height: 30,
+    marginTop: -86,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'text62',
+    width: dimWidth * 0.6,
+    height: 50,
+    marginBottom: 6,
+    marginLeft: 120,
+  },
+  {
+    key: 'line6',
+    width: dimWidth,
+    height: 2,
+    marginVertical: 6,
+  },
+];
 
 const mapStateToProps = state => {
   return state;

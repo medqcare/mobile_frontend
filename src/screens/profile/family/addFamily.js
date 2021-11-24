@@ -14,6 +14,8 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen'
+
+import Header from '../../../components/headers/GradientHeader'
 import IconFont5 from 'react-native-vector-icons/FontAwesome5'
 import Icon from 'react-native-vector-icons/Ionicons'
 import ArrowBack from '../../../assets/svg/ArrowBack'
@@ -35,17 +37,7 @@ const addFamily = (props) => {
     })
     return (
         <View style={style.container}>
-            <LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={style.content}>
-                <View style={style.section}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('ProfileStack')}>
-                        <View style={{ flexDirection: 'row'}} >
-                        <ArrowBack />
-                        <Text style={{ paddingHorizontal:7 ,fontSize: 20, color: '#ffff', position: 'relative', }}> Daftar Keluarga</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
+            <Header title={'Daftar Keluarga'} navigate={props.navigation.navigate} navigateBack={'ProfileStack'}/>
             <ScrollView style={{flex:1, flexGrow:1}} >
                 <View style={style.familyMember}>
                     <TouchableOpacity 

@@ -43,8 +43,9 @@ const ListApointment = (props) => {
             await AsyncStorage.setItem(`flag-async-"${dataPatient.bookingCode}"-"${dataPatient._id}"`, JSON.stringify(data))
             await AsyncStorage.setItem(`${dataPatient._id}`, JSON.stringify(data.queueID))
             
-            props.route.navigate('Home')
-            props.route.navigate('Activity_landing', { flag: dataPatient._id, bookingID: dataPatient.bookingCode, reservationID: dataPatient._id })
+            props.route.navigate('ActivityStack')
+            // props.route.navigate('Home')
+            // props.route.navigate('Activity_landing', { flag: dataPatient._id, bookingID: dataPatient.bookingCode, reservationID: dataPatient._id })
             socket.close()
         })
     }
