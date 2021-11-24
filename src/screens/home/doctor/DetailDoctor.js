@@ -356,13 +356,14 @@ function DetailDoctorPage(props) {
               }}>
               <TouchableOpacity
                 onPress={() => props.navigation.navigate(_back)}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center', marginHorizontal: 20}}>
                   <ArrowBack />
                   <Text
                     style={{
                       fontSize: 20,
                       color: '#ffff',
                       position: 'relative',
+                      marginLeft: 20
                     }}>
                     Profil Dokter
                   </Text>
