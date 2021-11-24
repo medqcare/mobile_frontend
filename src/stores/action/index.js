@@ -672,21 +672,19 @@ export function getCurrentQueueingNumber(queueId) {
       try {
         let token = await AsyncStorage.getItem('token');
         // console.log(JSON.parse(token).token,'ini token yang dari get current queue')
-        console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
+        // console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
         let { data } = await instance({
           method: 'POST',
           url: '/v1/members/getQueueById',
           data: { queueID: JSON.parse(queueId) },
           headers: { Authorization: JSON.parse(token).token },
         });
-        console.log(
-          'ini data balikan dari ambil queue number',
-          data.data.currentQueueingNumber,
-        );
-        resolve(data.data.currentQueueingNumber);
+        if (data){
+          resolve(data.data.currentQueueingNumber);
+        } else {
+          throw {error: 'no data'}
+        }
       } catch (error) {
-        console.log('gagal bro di getCurrentQueueingNumber');
-        console.log(error);
         reject(error);
       }
     });

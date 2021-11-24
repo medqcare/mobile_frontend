@@ -9,25 +9,31 @@ const ActivityAction = ({ navigation, data }) => {
 return (
 
     <View style={style.container}>
-      <View style={{flexDirection:'row',alignItems:'center',alignContent:'center',justifyContent:'space-between',width:'100%',marginBottom:40}}>
+      <View style={{flexDirection:'row',alignItems:'center',alignContent:'center',justifyContent:'space-between',width:'100%',marginBottom:50}}>
         
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-           <Image style={style.Image}source={require('../../../assets/png/ic_statusNav.png')} style={{width: 55, height: 55}} />
-           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Status </Text>
+           <Image style={style.Image}source={require('../../../assets/png/ic_statusNav.png')} style={{width: 50, height: 50}} />
+           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
        </View>
 
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_riwayatNav.png')} style={{width: 55, height: 55}} />
+          <Image style={style.Image}source={require('../../../assets/png/ic_riwayatNav.png')} style={{width: 50, height: 50}} />
           <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
        </View>
 
+       {/* <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
+          <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 50, height: 50}} />
+          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
+       </View> */}
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 55, height: 55}} />
-          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
-       </View>
+         <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 50, height: 50}} />
+        <View style={{width:60, alignItems:'center',justifyContent:'center'}}>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
+        </View>
+      </View>
 
        <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_rujukanNav.png')} style={{width: 55, height: 55}} />
+          <Image style={style.Image}source={require('../../../assets/png/ic_rujukanNav.png')} style={{width: 50, height: 50}} />
           <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:13}}> Rujukan </Text>
        </View>
 
@@ -37,31 +43,30 @@ return (
       
       <TouchableOpacity onPress={() => data ? navigation.navigate('Allergy') : navigation.navigate('Sign')}>
          <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-            <Image style={style.Image}source={require('../../../assets/png/ic_alergiNav.png')} style={{width: 55, height: 55}} />
+            <Image style={style.Image}source={require('../../../assets/png/ic_alergiNav.png')} style={{width: 50, height: 50}} />
             <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Alergi</Text>
          </View>
       </TouchableOpacity>
 
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_examNav.png')} style={{width: 55, height: 55}} />
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Exam </Text>
+         <Image style={style.Image}source={require('../../../assets/png/ic_examNav.png')} style={{width: 50, height: 50}} />
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
       </View>
 
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_resepNav.png')} style={{width: 55, height: 55}} />
+         <Image style={style.Image}source={require('../../../assets/png/ic_resepNav.png')} style={{width: 50, height: 50}} />
          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Resep </Text>
       </View>
 
       <TouchableOpacity onPress={() => {
-         data ? navigation.navigate('Filter') : navigation.navigate('Sign')
          // navigation.navigate('Home')
          // navigation.navigate('Loading', { date: new Date(), data: 'Filter' })
       }}
          >
       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_dokterNav.png')} style={{width: 55, height: 55}} />
+         <Image style={style.Image}source={require('../../../assets/png/ic_dokterNav.png')} style={{width: 50, height: 50}} />
         <View style={{width:50, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokter Favorit </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Home Care </Text>
         </View>
       </View>
       </TouchableOpacity>

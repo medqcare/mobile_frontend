@@ -19,7 +19,8 @@ const activeActivity = props => {
   }, []);
 
   function socketers() {
-    let socketIO = `${baseURL}`;
+    // let socketIO = `${baseURL}`;
+    let socketIO = `http://192.168.43.100:3004` // only development
     let socket = io(socketIO);
 
     socket.on(`que-${JSON.parse(props.queueId)}`, data => {
@@ -45,8 +46,8 @@ const activeActivity = props => {
             marginLeft: '4%',
             alignItems: 'center',
           }}>
-          <Text style={{color: '#fff'}}>Current Queue</Text>
-          <Text style={{fontSize: 55, color: '#fff', fontWeight: 'bold'}}>
+          <Text style={{color: '#B5B5B5'}}>Antrian Saat Ini</Text>
+          <Text style={{fontSize: 55, color: '#B5B5B5', fontWeight: 'bold'}}>
             {' '}
             {quesekarang}{' '}
           </Text>
@@ -55,8 +56,7 @@ const activeActivity = props => {
           style={{
             width: 1,
             height: '80%',
-            backgroundColor: '#000',
-            opacity: 0.6,
+            backgroundColor: '#757575'
           }}
         />
         <View
@@ -66,18 +66,18 @@ const activeActivity = props => {
             marginRight: '4%',
             alignItems: 'center',
           }}>
-          <Text style={{color: '#fff'}}>My Queue</Text>
-          <Text style={{fontSize: 55, color: '#fff', fontWeight: 'bold'}}>
+          <Text style={{color: '#FFBD00'}}>Antrian Saya</Text>
+          <Text style={{fontSize: 55, color: '#FFBD00', fontWeight: 'bold'}}>
             {' '}
             {queuingNumber}{' '}
           </Text>
         </View>
       </View>
       <View style={Styles.bookingCodeBox}>
-        <Text style={{color: '#fff', paddingHorizontal: 5, fontSize: 13}}>
+        <Text style={{color: '#DDDDDD', paddingHorizontal: 5, fontSize: 13}}>
           {props.data.registration.bookingCode}
         </Text>
-        <Text
+        {/* <Text
           style={{
             color: '#fff',
             paddingHorizontal: 5,
@@ -85,7 +85,7 @@ const activeActivity = props => {
             fontWeight: 'bold',
           }}>
           {props.data.registration.bookingTime}
-        </Text>
+        </Text> */}
       </View>
     </View>
   );
@@ -98,23 +98,21 @@ const Styles = StyleSheet.create({
     borderRadius: 6,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
-    backgroundColor: '#00b386',
+    backgroundColor: '#2F2F2F',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 10,
-    paddingBottom: 20,
+    padding: 20,
     marginTop: 20,
   },
   bookingCodeBox: {
     // paddingHorizontal: 25,
-    width: '70%',
+    width: '50%',
     paddingVertical: 10,
-    backgroundColor: '#19a119',
+    backgroundColor: '#067019',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 6,
-    opacity: 0.8,
+    borderRadius: 20,
     margin: 8,
   },
   clockBox: {

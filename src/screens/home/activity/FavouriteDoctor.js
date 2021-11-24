@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, StyleSheet, Text, ImageBackground, TouchableOpacity, FlatList, BackHandler } from 'react-native'
 import { connect } from 'react-redux';
+import Header from '../../../components/headers/GradientHeader'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import IconAD from 'react-native-vector-icons/AntDesign'
@@ -39,17 +40,7 @@ const Favourite = (props) => {
     console.log(favorit.length, 'fap')
     return (
         <View style={styles.container}>
-            <ImageBackground source={require('../../../assets/background/RectangleHeader.png')} style={{ height: 100, }}>
-                <View style={{ flex: 1, marginTop: 32, flexDirection: 'row', alignItems: 'center', }}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('Home')}>
-                        <View style={{ flexDirection: 'row', }} >
-                            <ArrowBack />
-                            <Text style={{ fontSize: 20, color: '#ffff', position: 'relative', }}>Dokter Favorit</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </ImageBackground>
+            <Header title={'Dokter Favorit'} navigate={props.navigation.navigate}/>
             {favorit.length > 0 ?
                 <FlatList
                 data={favorit}

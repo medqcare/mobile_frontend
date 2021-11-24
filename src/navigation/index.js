@@ -62,7 +62,7 @@ const TabNavigator = createBottomTabNavigator({
   //     tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ActivityStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Activity</Text></TouchableOpacity>
   //   })
   // },
-  Activity: {
+  Chat: {
     screen: LoadingStack,
     navigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ tintColor , focused}) => {
@@ -79,7 +79,7 @@ const TabNavigator = createBottomTabNavigator({
           </TouchableOpacity>
         )
       },
-      tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ActivityStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Activity</Text></TouchableOpacity>
+      tabBarLabel: ({ tintColor }) => <TouchableOpacity onPress={() => navigation.navigate('Loading', { date: new Date(), data: 'ActivityStack' })} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text>Chat</Text></TouchableOpacity>
     })
   },
   // Profile: {

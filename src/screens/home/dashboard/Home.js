@@ -248,7 +248,7 @@ function HomePage(props) {
             </ImageBackground>
           </View>
 
-          <MenuNavigator navigation={props.navigation} />
+          <MenuNavigator navigation={props.navigation} data={props.userData}/>
           <View style={style.container}>
             {props.userData && (
               <View >
