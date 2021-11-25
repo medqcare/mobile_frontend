@@ -16,6 +16,7 @@ import {
   BackHandler,
   RefreshControl,
   ToastAndroid,
+  StatusBar
 } from 'react-native';
 import { connect } from 'react-redux';
 import CardHospital from '../../../components/home/hospital/card-hospital';
@@ -109,11 +110,12 @@ function SearchDoctorPage(props) {
       style={styles.Container}
       behavior="height"
       enabled={false}>
-      <View style={{ height: 150 }}>
+      <StatusBar hidden/>
+      <View style={{ height: '15%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{ flex: 1 }}>
-          <View style={{ marginTop: 50, marginHorizontal: 20, flex: 1, }}>
+          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1, }}>
             <TouchableOpacity
               onPress={() => props.navigation.pop()} >
               <View style={{ flexDirection: 'row' }}>
