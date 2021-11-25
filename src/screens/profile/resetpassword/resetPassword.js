@@ -24,14 +24,12 @@ import ArrowBack from '../../../assets/svg/ArrowBack'
 
 const resetPasswd = (props) => {
     // const { resetpassword } = props.userData
-
     BackHandler.addEventListener("hardwareBackPress", () => {
         props.navigation.pop()
         return true
     })
 
     return (
-
         <View style={style.container} >
             <View style={style.content}>
                 <TouchableOpacity 
@@ -77,10 +75,8 @@ const resetPasswd = (props) => {
             
             </TouchableOpacity>
             </ScrollView>
+          </View>
         </View>
-        </View>
-
-        
     )
 }
 

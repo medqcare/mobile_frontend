@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 
 
-export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey} ){
+export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeV} ){
 
     return(
         <Modal
