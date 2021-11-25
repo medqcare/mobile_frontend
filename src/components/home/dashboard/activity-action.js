@@ -9,66 +9,54 @@ const ActivityAction = ({ navigation, data }) => {
 return (
 
     <View style={style.container}>
-      <View style={{flexDirection:'row',alignItems:'center',alignContent:'center',justifyContent:'space-between',width:'100%',marginBottom:50}}>
+      <View style={style.rowContent}>
         
-       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-           <Image style={style.Image}source={require('../../../assets/png/ic_statusNav.png')} style={{width: 50, height: 50}} />
+       <TouchableOpacity style={style.content}>
+           <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
            <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
-       </View>
+       </TouchableOpacity>
 
-       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_riwayatNav.png')} style={{width: 50, height: 50}} />
+       <TouchableOpacity style={style.content}>
+          <Image style={style.image}source={require('../../../assets/png/ic_riwayatNav.png')}/>
           <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
-       </View>
+       </TouchableOpacity>
 
-       {/* <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 50, height: 50}} />
-          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
-       </View> */}
-       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_biayaNav.png')} style={{width: 50, height: 50}} />
+       <TouchableOpacity style={style.content}>
+         <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
         <View style={{width:60, alignItems:'center',justifyContent:'center'}}>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
         </View>
-      </View>
-
-       <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-          <Image style={style.Image}source={require('../../../assets/png/ic_rujukanNav.png')} style={{width: 50, height: 50}} />
-          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:13}}> Rujukan </Text>
-       </View>
-
-      </View>
-
-      <View style={{flexDirection:'row',alignItems:'center',alignContent:'center',justifyContent:'space-between',width:'100%',marginBottom:5}}>
-      
-      <TouchableOpacity onPress={() => data ? navigation.navigate('Allergy') : navigation.navigate('Sign')}>
-         <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-            <Image style={style.Image}source={require('../../../assets/png/ic_alergiNav.png')} style={{width: 50, height: 50}} />
-            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Alergi</Text>
-         </View>
       </TouchableOpacity>
 
-      <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_examNav.png')} style={{width: 50, height: 50}} />
+       <TouchableOpacity style={style.content}>
+          <Image style={style.image}source={require('../../../assets/png/ic_rujukanNav.png')}/>
+          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:13}}> Rujukan </Text>
+       </TouchableOpacity>
+
+      </View>
+
+      <View style={style.rowContent}>
+      
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Allergy') : navigation.navigate('Sign')}>
+            <Image style={style.image}source={require('../../../assets/png/ic_alergiNav.png')}/>
+            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Alergi</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={style.content}>
+         <Image style={style.image}source={require('../../../assets/png/ic_examNav.png')}/>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
-      </View>
+      </TouchableOpacity>
 
-      <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_resepNav.png')} style={{width: 50, height: 50}} />
+      <TouchableOpacity style={style.content}>
+         <Image style={style.image}source={require('../../../assets/png/ic_resepNav.png')}/>
          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Resep </Text>
-      </View>
+      </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => {
-         // navigation.navigate('Home')
-         // navigation.navigate('Loading', { date: new Date(), data: 'Filter' })
-      }}
-         >
-      <View style={{flexDirection:'column',height:60,justifyContent:'space-between'}}>
-         <Image style={style.Image}source={require('../../../assets/png/ic_dokterNav.png')} style={{width: 50, height: 50}} />
-        <View style={{width:50, alignItems:'center',justifyContent:'center'}}>
+      <TouchableOpacity style={style.content} onPress={() => {}}>
+         <Image style={style.image}source={require('../../../assets/png/ic_dokterNav.png')}/>
+        <View style={{width:70, alignItems:'center',justifyContent:'center'}}>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Home Care </Text>
         </View>
-      </View>
       </TouchableOpacity>
 
      </View>
@@ -81,11 +69,26 @@ return (
 const heightDim = Dimensions.get('screen').height
 const style = StyleSheet.create({
     container: {
-      flexDirection: 'row',
-      flexWrap:'wrap',
-      marginBottom: 45,
       marginTop: -60,
-      marginHorizontal: 5
+      marginHorizontal: -20
+    },
+    rowContent: {
+      flexDirection:'row',
+      alignItems:'center',
+      alignContent:'center',
+      justifyContent:'space-between',
+      width:'100%',
+      marginBottom:10
+    },
+    content: {
+      flexDirection:'column',
+      height: 100,
+      width: '25%',
+      alignItems: 'center',
+    },
+    image: {
+      height: 50,
+      width: 50
     }
 })
 
