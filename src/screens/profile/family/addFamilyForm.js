@@ -24,7 +24,7 @@ import {
 import getDay from '../../../helpers/getDay'
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import SelectModal from '../../../components/modals/modalPicker'
-
+import Header from '../../../components/headers/GradientHeader'
 //action
 import { addFamily, setLoading } from '../../../stores/action'
 //Icon
@@ -173,19 +173,8 @@ const familyForm = (props) => {
     const chosenDate = fullMonthFormat(dataFamily.dob)
     return (
         <View style={style.container}>
-            <LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={style.content}>
-                <View style={{ flex: 1, marginTop: 32, flexDirection: 'row', alignItems: 'center', }}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('FamilyList')}>
-                        <View style={{ flexDirection: 'row', }} >
-                            <ArrowBack />
-                            <Text style={{ paddingHorizontal:7,fontSize: 20, color: '#ffff', position: 'relative', }}>Tambah Keluarga</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
-
-              <View style={container.base}>
+            <Header title={'Tambah Keluarga'} navigate={props.navigation.navigate} navigateBack={'FamilyList'}/>
+            <View style={container.base}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                 {/* NIK Input */}
                     <TextInput

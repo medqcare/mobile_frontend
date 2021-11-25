@@ -20,6 +20,7 @@ import {
 import { connect } from 'react-redux';
 import CardHospital from '../../../components/home/hospital/card-hospital';
 import { getDataHospital } from '../../../stores/action';
+import SearchBar from '../../../components/headers/SearchBar'
 
 import axios from 'axios';
 
@@ -112,48 +113,25 @@ function SearchDoctorPage(props) {
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{ flex: 1 }}>
-          <View style={{ marginTop: 31, flex: 1, }}>
+          <View style={{ marginTop: 50, marginHorizontal: 20, flex: 1, }}>
             <TouchableOpacity
-              onPress={() => props.navigation.navigate('Home')}
-              style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10 }}>
-              <ArrowBack
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  color: '#ffff',
-                  position: 'relative',
-                  marginLeft: 10, 
-                  marginBottom: 10
-                }}>
-                Daftar Klinik
-                </Text>
-            </TouchableOpacity>
-            <View style={{flexDirection: 'row', justifyContent:'space-between', marginHorizontal: 15, marginTop: -10}}>
-              <View style={styles.searchBar}>
-                <View style={{marginLeft: 20, marginTop:12}}>
-                  <Search />
+              onPress={() => props.navigation.pop()} >
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{marginTop: 3}}>
+                  <ArrowBack />
                 </View>
-                <TextInput
-                  style={{ marginStart: 10, fontSize: 14, flex: 1, color: '#A2A2A2' }}
-                  placeholder="Search Facility"
-                  // onEndEditing={text => _textChange(text.nativeEvent.text)}
-                  onChangeText={text => _textChange(text)}
-                />
-              </View>
-              <View style={{
-                marginTop: 30,
-                marginRight: 10
-              }}>
-              <Image 
-              style={{
-                height: 20,
-                width: 20
-              }}
-              source={require('../../../assets/png/ic_filter.png')}
-              />
-            </View>
-            </View>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: '#ffff',
+                    position: 'relative',
+                    marginLeft: 10
+                  }}>
+                  Daftar Klinik
+                  </Text>
+                </View>
+            </TouchableOpacity>
+            <SearchBar placeholder={'cari klinik'} onChangeText={text => _textChange(text)}/>
           </View>
         </ImageBackground>
       </View>

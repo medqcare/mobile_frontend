@@ -24,6 +24,7 @@ import ProfileInfo from '../../components/profile/dashboard/profile-info'
 
 import { changeLogin, logout } from '../../stores/action'
 import { SafeAreaView } from 'react-navigation';
+import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapDispatchToProps = {
     changeLogin, logout
@@ -45,17 +46,11 @@ const profile = (props) => {
 
     return (
         <SafeAreaView style={styles.container}>
-             <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('Home')}>
-                        <View style={{ flexDirection: 'row', }} >
-                            <ArrowBack />
-                            <Text style={styles.headerText}>Profil Saya</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <GreyHeader
+                navigate={props.navigation.navigate}
+                navigateTo={'Home'}
+                title='Profil Saya'
+            />
             <ProfileInfo />
             <View style={{flex: 1, backgroundColor: '#1F1F1F', width: '100%'}}>
                 <View style={styles.menu}>

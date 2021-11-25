@@ -32,6 +32,7 @@ import Vector from '../../../assets/svg/Vector';
 import VectorPlus from '../../../assets/svg/VectorPlus';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import formatRP from '../../../helpers/rupiah';
+import Header from '../../../components/headers/GradientHeader'
 
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import SettingModal from '../../../components/modals/setModal';
@@ -305,31 +306,8 @@ const buatJanji = props => {
   return (
     <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
       <ScrollView>
-        <View>
-          <ImageBackground
-            style={{
-              height: 100,
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-            resizeMode="stretch"
-            source={require('../../../assets/background/RectangleHeader.png')}>
-            <TouchableOpacity onPress={() => props.navigation.pop()}>
-              <View style={{flexDirection: 'row'}}>
-                <ArrowBack />
-                <Text
-                  style={{
-                    fontSize: 20,
-                    position: 'relative',
-                    color: '#DDDDDD',
-                    marginLeft: 20,
-                  }}>
-                  Detail Pemesanan
-                </Text>
-              </View>
-            </TouchableOpacity>
-          </ImageBackground>
-        </View>
+      <Header title={'Detail Pemesanan'} navigate={props.navigation.navigate} navigateBack={'DetailDoctor'}/>
+      
         <View style={cardStyle.container}>
           <View style={cardStyle.card}>
             <View style={{flex: 0.2, alignItems: 'center'}}>

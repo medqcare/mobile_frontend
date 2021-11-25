@@ -19,7 +19,10 @@ import IconFontA from 'react-native-vector-icons/FontAwesome5';
 
 import Feather from 'react-native-vector-icons/Feather' // Made for password visibility
 
-import {LinearGradient} from 'expo-linear-gradient'; // Made for background linear gradient
+import { LinearGradient } from 'expo-linear-gradient'; // Made for background linear gradient
+
+import * as Google from 'expo-google-app-auth'
+
 
 import {
 	changeLogin,
@@ -108,41 +111,56 @@ const signIn = props => {
 		// });
 	}, []);
 
-	// const googleLogin = async () => {
-	// 	console.log('ini masuk sini');
-	// 	try {
-	// 		console.log('masuk try');
-	// 		// add any configuration settings here:
-	// 		// await GoogleSignin.hasPlayServices();
-	// 		const userInfo = await GoogleSignin.signIn();
-	// 		const data = await GoogleSignin.getTokens({
-	// 			idToken: 'string',
-	// 			accessToken: 'string',
-	// 		});
-	// 		console.log('ini user info', userInfo.serverAuthCode);
-	// 		console.log('ini id token ', data);
+	const googleLogin = async () => {
+		console.log('User is trying to login via Google Account');
+		try {
+			const config = {
+				iosClientId: `419286487519-d4c4k85hmnlspuv44mj9khp5ve3jrgpo.apps.googleusercontent.com`,
+				androidClientId : `419286487519-4i12628srp870gflea4i4qfe5adjnbl0.apps.googleusercontent.com`,
+				scopes: [`profile`, `email`]
+			}
+			const loginResult = await Google.logInAsync(config)
+			console.log(loginResult, 'this is the login result')
+			const { type, user, accessToken } = loginResult
 
-	// 		// create a new firebase credential with the token
-	// 		const credential = firebase.auth.GoogleAuthProvider.credential(
-	// 			userInfo.idToken,
-	// 			userInfo.accessToken,
-	// 		);
-	// 		// login with credential
-	// 		const firebaseUserCredential = await firebase
-	// 			.auth()
-	// 			.signInWithCredential(credential);
+			if(type === 'success'){
+				const { email, mname, photoUrl, givenName, familyName } = user
+				console.log(user, 'This account has successfully logged in via Google')
+			} else {
+				console.log('Google sign in was cancelled')
+			}
+			// add any configuration settings here:
+			// await GoogleSignin.hasPlayServices();
+			// const userInfo = await GoogleSignin.signIn();
+			// const data = await GoogleSignin.getTokens({
+			// 	idToken: 'string',
+			// 	accessToken: 'string',
+			// });
+			// console.log('ini user info', userInfo.serverAuthCode);
+			// console.log('ini id token ', data);
 
-	// 		console.log(await firebaseUserCredential.user.getIdToken(), 'ini sudah');
-	// 		let tokenDikirim = await firebaseUserCredential.user.getIdToken();
+			// // create a new firebase credential with the token
+			// const credential = firebase.auth.GoogleAuthProvider.credential(
+			// 	userInfo.idToken,
+			// 	userInfo.accessToken,
+			// );
+			// // login with credential
+			// const firebaseUserCredential = await firebase
+			// 	.auth()
+			// 	.signInWithCredential(credential);
 
-	// 		props.SignInGoogle(tokenDikirim, props.navigation);
-	// 		// console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
-	// 	} catch (e) {
-	// 		setLoading(false);
-	// 		console.log(e, 'ini error google');
-	// 		console.error(e);
-	// 	}
-	// };
+			// console.log(await firebaseUserCredential.user.getIdToken(), 'ini sudah');
+			// let tokenDikirim = await firebaseUserCredential.user.getIdToken();
+
+			// props.SignInGoogle(tokenDikirim, props.navigation);
+			// // console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
+		} catch (error) {
+			console.log(error, 'Error in google sign in')
+			// setLoading(false);
+			// console.log(e, 'ini error google');
+			// console.error(e);
+		}
+	};
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
 		props.navigation.navigate('Home');
@@ -234,9 +252,27 @@ const signIn = props => {
 			</TouchableOpacity>
 		</View>
 
-		{/* <View style={{paddingVertical: 10}}/>
+		<View 
+			style={style.or}
+		>
+			<Text style={style.orText}>Atau daftar dengan</Text>
+		</View>
+		<TouchableOpacity
+			onPress={() => googleLogin()}
+			style={style.googleLogin}
+		>
+			<Image
+				source={require('../../../assets/png/GoogleLogo.png')}	
+			>
+			</Image>
+			
+		</TouchableOpacity>
 		
-        <View style={style.bottom_buttons}>
+
+
+		{/* <View style={{paddingVertical: 10}}/> */}
+		
+        {/* <View style={style.bottom_buttons}>
           <View style={style.separator} />
           <View style={style.or}>
             <Text> Atau sign in dengan  </Text>
@@ -249,8 +285,6 @@ const signIn = props => {
             </TouchableOpacity>
           </View>
         </View> */}
-
-		{/* Foto di bawah belom ditambahin dan belom ada punch in hole */}
 
 		<View style={viewStyles.elipse}>
 			<Image
@@ -307,15 +341,13 @@ const style = StyleSheet.create({
 		paddingTop: 20
 	},
 	or: {
-		paddingHorizontal: 15,
-		height: 40,
-		width: '40%',
-		borderRadius: 20,
-		position: 'relative',
-		zIndex: 2,
-		backgroundColor: '#FFF',
-		alignItems: 'center',
-		paddingTop: 10
+		// paddingTop: 10,
+	},
+	orText: {
+		color: 'rgba(255, 255, 255, 0.76)'
+	},
+	googleLogin: {
+		paddingTop: 25
 	},
 	sso: {
 		marginVertical: '5%',

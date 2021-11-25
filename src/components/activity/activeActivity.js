@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import io from 'socket.io-client';
-
+import getAge from '../../helpers/getAge'
+import IcPatient from '../../assets/svg/ic_pasien'
 import {baseURL} from '../../config';
 
 const activeActivity = props => {
@@ -19,7 +20,8 @@ const activeActivity = props => {
   }, []);
 
   function socketers() {
-    let socketIO = `${baseURL}`;
+    // let socketIO = `${baseURL}`;
+    let socketIO = `http://192.168.43.100:3004` // only development
     let socket = io(socketIO);
 
     socket.on(`que-${JSON.parse(props.queueId)}`, data => {
@@ -32,6 +34,17 @@ const activeActivity = props => {
   }
   return (
     <View style={Styles.containerComponent}>
+      <View style={{marginBottom: 20, paddingHorizontal: 20}}>
+        <Text style={{color: '#B5B5B5'}}>Pasien </Text>
+        <View style={{flexDirection: 'row',marginTop: 10}}>
+          <View style={{marginTop: 2}}>
+            <IcPatient />
+          </View>
+          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.registration.patient.patientName}</Text>
+        </View>
+      </View>
+      
+          
       <View
         style={{
           flexDirection: 'row',
@@ -45,8 +58,8 @@ const activeActivity = props => {
             marginLeft: '4%',
             alignItems: 'center',
           }}>
-          <Text style={{color: '#fff'}}>Current Queue</Text>
-          <Text style={{fontSize: 55, color: '#fff', fontWeight: 'bold'}}>
+          <Text style={{color: '#B5B5B5'}}>Antrian Saat Ini</Text>
+          <Text style={{fontSize: 55, color: '#B5B5B5', fontWeight: 'bold'}}>
             {' '}
             {quesekarang}{' '}
           </Text>
@@ -55,8 +68,7 @@ const activeActivity = props => {
           style={{
             width: 1,
             height: '80%',
-            backgroundColor: '#000',
-            opacity: 0.6,
+            backgroundColor: '#757575'
           }}
         />
         <View
@@ -66,15 +78,15 @@ const activeActivity = props => {
             marginRight: '4%',
             alignItems: 'center',
           }}>
-          <Text style={{color: '#fff'}}>My Queue</Text>
-          <Text style={{fontSize: 55, color: '#fff', fontWeight: 'bold'}}>
+          <Text style={{color: '#FFBD00'}}>Antrian Saya</Text>
+          <Text style={{fontSize: 55, color: '#FFBD00', fontWeight: 'bold'}}>
             {' '}
             {queuingNumber}{' '}
           </Text>
         </View>
       </View>
-      <View style={Styles.bookingCodeBox}>
-        <Text style={{color: '#fff', paddingHorizontal: 5, fontSize: 13}}>
+      {/* <View style={Styles.bookingCodeBox}>
+        <Text style={{color: '#DDDDDD', paddingHorizontal: 5, fontSize: 13}}>
           {props.data.registration.bookingCode}
         </Text>
         <Text
@@ -86,7 +98,7 @@ const activeActivity = props => {
           }}>
           {props.data.registration.bookingTime}
         </Text>
-      </View>
+      </View> */}
     </View>
   );
 };
@@ -94,27 +106,25 @@ const activeActivity = props => {
 const Styles = StyleSheet.create({
   containerComponent: {
     // height: 150,
-    width: '90%',
-    borderRadius: 6,
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-    backgroundColor: '#00b386',
-    alignSelf: 'center',
-    alignItems: 'center',
+    width: '100%',
+    borderRadius: 10,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    backgroundColor: '#2F2F2F',
+    // alignSelf: 'center',
+    // alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 10,
     paddingBottom: 20,
-    marginTop: 20,
   },
   bookingCodeBox: {
     // paddingHorizontal: 25,
-    width: '70%',
+    width: '50%',
     paddingVertical: 10,
-    backgroundColor: '#19a119',
+    backgroundColor: '#067019',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 6,
-    opacity: 0.8,
+    borderRadius: 20,
     margin: 8,
   },
   clockBox: {

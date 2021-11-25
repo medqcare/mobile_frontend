@@ -13,7 +13,7 @@ const mapStateToProps = state => ({
   isLoading: state.isLoading
 })
 
-function MenuNavigator({ navigation }) {
+function MenuNavigator({ navigation, data }) {
   // console.log(navigation,'ini navigationnya')
   // console.log(navigation,'ini navigationnya')
 
@@ -24,6 +24,19 @@ function MenuNavigator({ navigation }) {
       >
         <Stethoscope />
         <Text style={{ marginTop: 10, fontSize:12, color: '#B5B5B5' }}>Dokter</Text>
+      </TouchableOpacity>
+      <View style={{
+        backgroundColor: '#0C6292',
+        height: '80%',
+        width: 1,
+        backgroundColor: '#0C6292'
+      }}>
+      </View>
+      <TouchableOpacity style={style.borderIcon}
+        onPress={() => data ? navigation.navigate('Filter') : navigation.navigate('Sign')}>
+        <Image navigation={navigation} source={require('../../../assets/png/ic_keluarga.png')} style={{width: 25, height: 24}} />
+        <Text
+          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Dokter Favorit</Text>
       </TouchableOpacity>
       <View style={{
         backgroundColor: '#0C6292',
@@ -46,11 +59,12 @@ function MenuNavigator({ navigation }) {
       </View>
 
       <TouchableOpacity style={style.borderIcon}
-        onPress={() => navigation.navigate('Undefined')}>
+        onPress={() => data ? navigation.navigate('Filter') : navigation.navigate('Sign')}>
         <Image navigation={navigation} source={require('../../../assets/png/ic_keluarga.png')} style={{width: 25, height: 24}} />
         <Text
-          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Keluarga</Text>
+          style={{ marginTop: 10, fontSize:12, color: '#B5B5B5'}}>Penunjang</Text>
       </TouchableOpacity>
+      
       {/* <View style={{
         backgroundColor: '#A2A2A2',
         height: '80%',
@@ -73,7 +87,7 @@ const style = StyleSheet.create({
     position: 'absolute',
     marginTop: 25,
     width: '92%',
-    paddingHorizontal: 30,
+    paddingHorizontal: 10,
     height: heightDim * 0.1,
     top: heightDim * 0.14,
     flexDirection: 'row',

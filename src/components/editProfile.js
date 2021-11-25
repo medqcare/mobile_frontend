@@ -19,18 +19,15 @@ import IfontAwesome from 'react-native-vector-icons/FontAwesome'
 import RadioForm from 'react-native-simple-radio-button'
 import DatePicker from 'react-native-datepicker'
 import LottieLoader from 'lottie-react-native'
-import {LinearGradient} from 'expo-linear-gradient'
 import { edit_profile, setLoading } from '../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-//ICON
-import Icon from 'react-native-vector-icons/Ionicons'
 //Modal
 import SettingModal from '../components/modals/setModal'
 import { fullMonthFormat } from '../helpers/dateFormat'
 import SelectModal from './modals/modalPicker'
 import capitalFirst from '../helpers/capitalFirst'
-import ArrowBack from '../assets/svg/ArrowBack'
+import GradientHeader from './headers/GradientHeader'
 
 const editProfile = (props) => {
     var moment = require('moment')
@@ -129,7 +126,8 @@ const editProfile = (props) => {
     }
 
     BackHandler.addEventListener('hardwareBackPress', () => {
-        return (props.navigation.navigate('ProfileDetail'))
+        props.navigation.pop()
+        return true
     })
 
     var radio_props = [
@@ -139,17 +137,11 @@ const editProfile = (props) => {
     const chosenDate = fullMonthFormat(userData.dob)
     return (
         <KeyboardAvoidingView style={viewStyles.container} behavior={'padding'} enabled>
-            <LinearGradient  start={{x: 0, y: 0}} end={{x: 1, y: 0}} colors={["#073B88",  "#048FBB"]} style={style.content}>
-                <View style={{ flex: 1, marginTop: 32, flexDirection: 'row', alignItems: 'center', }}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('ProfileDetail')}>
-                        <View style={{ flexDirection: 'row', marginBottom: 15}} >
-                            <ArrowBack />
-                            <Text style={{ fontSize: 20, color: '#ffff', position: 'relative', }}>Ubah Data</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </LinearGradient>
+            <GradientHeader
+                navigate={props.navigation.navigate}
+                navigateBack={'ProfileDetail'}
+                title='Ubah Data'
+            />
 
             {/* Starts here */}
                     

@@ -18,6 +18,7 @@ import ListAppointment from '../../../components/home/appointment/list-appointme
 import axios from 'axios';
 import {baseURL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Header from '../../../components/headers/GradientHeader'
 
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import {cancelRecervation} from '../../../stores/action';
@@ -94,28 +95,7 @@ const Appointment = props => {
 
   return (
     <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
-      <ImageBackground
-        source={require('../../../assets/background/RectangleHeader.png')}
-        style={{height: 100}}>
-        <View
-          style={{
-            flex: 1,
-            marginTop: 32,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
-            <View style={{flexDirection: 'row'}}>
-              <ArrowBack
-              />
-              <Text
-                style={{fontSize: 18, color: '#ffff', position: 'relative'}}>
-                Daftar Janji
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+      <Header title={'Daftar Janji'} navigate={props.navigation.navigate}/>
       {Load ? (
         <LottieLoader
           source={require('../../animation/loading.json')}

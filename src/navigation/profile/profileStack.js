@@ -1,37 +1,20 @@
-import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
-import ProfilePage from '../../screens/profile/profile'
-import SignPage from './signStack'
-import RegistUser from '../../screens/profile/sign/registration'
+import DetailPage from '../../screens/profile/profileDetail'
+import EditPage from '../../components/editProfile'
 
-const ProfileTab = createSwitchNavigator({
-    // Loading: {
-    //     screen: LoadingPage,
-    //     navigationOptions: {
-    //         headerShown: false
-    //     }
-    // },
-    RegistrationUser: {
-        screen: RegistUser,
+export default ProfileDetailStack = createStackNavigator({
+    ProfileDetail: {
+        screen: DetailPage,
         navigationOptions: {
             headerShown: false,
         },
     },
-    ProfileSwitch: {
-        screen: ProfilePage,
+    EditProfile: {
+        screen: EditPage,
         navigationOptions: {
-            headerShown: false
-        }
-    },
-    Sign: {
-        screen: SignPage,
-        navigationOptions: {
-            headerShown: false
-        }
-    },
-
+            headerShown: false,
+        },
+    }
 }, {
-    initialRouteName: 'ProfileSwitch',
-    // initialRouteName: 'RegistrationUser'
+    initialRouteName: 'ProfileDetail'
 })
-export default createAppContainer(ProfileTab)

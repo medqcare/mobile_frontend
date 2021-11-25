@@ -2,7 +2,8 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import LoadingPage from '../screens/profile/loading'
 import Card_Stack from './card'
 import Profile_Stack from "./profile"
-import Activity_Stack from './activity'
+import Undefined from '../screens/404'
+// import Activity_Stack from './activity'
 
 const Switch = createSwitchNavigator({
     Loading: {
@@ -11,8 +12,8 @@ const Switch = createSwitchNavigator({
             headerShown: false
         }
     },
-    ActivityStack: {
-        screen: Activity_Stack,
+    Chat: {
+        screen: Undefined,
     },
     CardStack: {
         screen: Card_Stack,

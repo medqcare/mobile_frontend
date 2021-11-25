@@ -26,6 +26,7 @@ import { changeLogin, Logout } from '../../stores/action'
 import { SafeAreaView } from 'react-navigation';
 
 import secureEmail from '../../helpers/secureEmail';
+import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapStateToProps = state => {
     return state
@@ -47,27 +48,34 @@ function ProfileDetail({ navigation, userData }){
     const address = userData.address || 'Jl. Pengasinan Tengah Raya No.98 RT 3/11 Bekasi Utara'
 
     BackHandler.addEventListener("hardwareBackPress", () => {
-        navigation.navigate('ProfileStack')
+        navigation.pop()
         return true
     })
 
     return(
         <ScrollView style={styles.container} contentContainerStyle={{alignItems: 'center'}}>
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
+            <GreyHeader
+                navigate={navigation.navigate}
+                navigateBack={'ProfileStack'}
+                navigateTo={'EditProfile'}
+                title='Profil Saya'
+                edit={true}
+            />
+            {/* <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <TouchableOpacity
+                            onPress={() => navigation.pop()}>
+                            <View style={{ flexDirection: 'row', }} >
+                                <ArrowBack />
+                                <Text style={styles.headerText}>Profil Saya</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                     <TouchableOpacity
-                        onPress={() => navigation.pop()}>
-                        <View style={{ flexDirection: 'row', }} >
-                            <ArrowBack />
-                            <Text style={styles.headerText}>Profil Saya</Text>
-                        </View>
+                        onPress={() => navigation.navigate('EditProfile')}>
+                        <Feather name="edit" color="#DDDDDD" size={20} style={{paddingRight: 20}}/>
                     </TouchableOpacity>
-                </View>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('EditProfile')}>
-                    <Feather name="edit" color="#DDDDDD" size={20} style={{paddingRight: 20}}/>
-                </TouchableOpacity>
-            </View>
+                </View> */}
             <ProfileInfo />
             <View style={{paddingVertical: 15}}>
                 <View style={styles.profileDetail}>
