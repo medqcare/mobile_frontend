@@ -105,7 +105,6 @@ const signUp = props => {
   }
 
   function Finalvalidation() {
-    console.log(signUpData.password, 'ini pass', signUpData.email);
     if (signUpData.email == '' || signUpData.password == '' || confirmPassword == '') {
 		ToastAndroid.show(
 			'Please enter all necessary data',
@@ -136,7 +135,7 @@ const signUp = props => {
 			ToastAndroid.SHORT
 		)
 	}else {
-		console.log(signUpData, 'signUpData');
+		console.log('All necessary data was entered and preparing to sign up');
 		props.setLoading(true);
 		setload(true)
 		props.SignUp(signUpData, props.navigation, setModalFalse);
