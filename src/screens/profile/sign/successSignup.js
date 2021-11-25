@@ -4,19 +4,14 @@ import { StyleSheet, Text, View } from 'react-native'
 const successSignup = (props) => {
     
     useEffect(() => {
-        console.log('memanggil set timeout')
+        console.log('Set timeout called')
         // redirect()
         setTimeout(() => {
+            console.log('Navigating to sign in page...')
             props.navigation.navigate('SignIn')
         }, 4000);
     }, [])
 
-    function redirect () {
-        setTimeout(() => {
-            props.navigation.navigate('signIn')
-        }, 2000);
-    }
-    console.log('masuk ke halaman ini boss')
     return (
         <View style={styles.container}>
             <Text>success sign up, {'\n'}please confirm email to continue registration</Text>

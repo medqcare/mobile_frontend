@@ -240,7 +240,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
 }
 
 export function SignUp(userData, navigation, modalFailed) {
-  console.log('masuk sini')
+  console.log(userData.email, 'is signing up')
   return dispatch => {
     instance({
       url: '/v1/members/signup',
@@ -248,7 +248,7 @@ export function SignUp(userData, navigation, modalFailed) {
       data: userData,
     },{timeout: 3000})
       .then(async ({ data }) => {
-        console.log(data, 'ini hasil creatednya');
+        console.log('Message from server:', data.message)
         // _storeData({ token: data.token });
         dispatch({
           type: 'TOGGLE_LOADING',
@@ -258,7 +258,7 @@ export function SignUp(userData, navigation, modalFailed) {
         navigation.navigate('SuccessSignUp')
       })
       .catch(error => {
-        console.log(error.response)
+        console.log('Error from server:', error.response)
         dispatch({
           type: 'TOGGLE_LOADING',
           payload: false
