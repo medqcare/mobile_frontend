@@ -106,7 +106,7 @@ const ListApointment = (props) => {
 
             <Modal visible={modal} animationType='fade' transparent={true} onRequestClose={() => setmodal(false)}>
                 <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', flex: 1, justifyContent: 'center', padding: 20 }}>
-                    <View style={{ maxHeight: '60%', minHeight: '50%', padding: 10, borderRadius: 5, backgroundColor: '#2F2F2F' }}>
+                    <View style={{ maxHeight: '60%', minHeight: '50%',  padding: 10, borderRadius: 5, backgroundColor: '#2F2F2F' }}>
                         
                         {/* {dataPatient && dataPatient.status == 'need confirmation' ? <Text>need</Text> : dataPatient.status == "cenceled" ? <Text>cenceled</Text> : <Text>booked</Text> } */}
                         {dataPatient &&
@@ -123,7 +123,7 @@ const ListApointment = (props) => {
                                             margin: 5,
                                             // justifyContent: 'space-between'
                                         }}>
-                                            <View style={{ padding: 10, borderRadius: 10, marginTop: 20, backgroundColor: '#2F2F2F' }}>
+                                            <View style={{ padding: 3, borderRadius: 10, marginTop: 20,borderColor:'#fff', borderWidth: 5, backgroundColor: '#2F2F2F' }}>
                                                 <QRCode
                                                     size={180}
                                                     value={dataPatient._id} //reservationId
