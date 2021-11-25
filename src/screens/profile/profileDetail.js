@@ -44,8 +44,9 @@ function ProfileDetail({ navigation, userData }){
         }
     }
     const gender = genderIndonesian(userData.gender)
+    console.log(userData.location.city, userData.location.province);
     const payment = userData.payment || 'Umum'
-    const address = userData.address || 'Jl. Pengasinan Tengah Raya No.98 RT 3/11 Bekasi Utara'
+    const address = `${userData.location.city}, ${userData.location.province}` 
 
     BackHandler.addEventListener("hardwareBackPress", () => {
         navigation.pop()
@@ -162,7 +163,8 @@ const styles = StyleSheet.create({
         color: '#DDDDDD',
         paddingTop: 10,
         fontSize: 14,
-        width: '80%'
+        width: '80%',
+        textTransform: 'capitalize'
     }
 })
 
