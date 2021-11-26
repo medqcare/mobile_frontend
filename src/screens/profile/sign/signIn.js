@@ -74,6 +74,7 @@ const signIn = props => {
 			);
 		} else {
 			const navigateTo = props.navigation.state?.params?.navigateTo ? props.navigation.state?.params?.navigateTo : null
+			console.log(navigateTo);
 			setload(true);
 			props.SignIn(
 				{
@@ -113,6 +114,8 @@ const signIn = props => {
 
 	const googleLogin = async () => {
 		console.log('User is trying to login via Google Account');
+		const navigateTo = props.navigation.state?.params?.navigateTo ? props.navigation.state?.params?.navigateTo : null
+		console.log(navigateTo);
 		try {
 			const config = {
 				iosClientId: `419286487519-d4c4k85hmnlspuv44mj9khp5ve3jrgpo.apps.googleusercontent.com`,
@@ -121,10 +124,10 @@ const signIn = props => {
 			}
 			const loginResult = await Google.logInAsync(config)
 			console.log(loginResult, 'this is the login result')
-			const { type, user, accessToken } = loginResult
+			const { type, user, accessToken, idToken } = loginResult
 
 			if(type === 'success'){
-				const { email, mname, photoUrl, givenName, familyName } = user
+				const { email, name, photoUrl, givenName, familyName } = user
 				console.log(user, 'This account has successfully logged in via Google')
 			} else {
 				console.log('Google sign in was cancelled')
@@ -153,6 +156,7 @@ const signIn = props => {
 			// let tokenDikirim = await firebaseUserCredential.user.getIdToken();
 
 			// props.SignInGoogle(tokenDikirim, props.navigation);
+			props.SignInGoogle(idToken, props.navigation, navigateTo);
 			// // console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
 		} catch (error) {
 			console.log(error, 'Error in google sign in')
