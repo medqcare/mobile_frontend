@@ -37,8 +37,6 @@ const SuccessSignUp = ({navigation}) => {
         setDisplayTime(30)
     }
 
-    console.log(timeCreated)
-
      return(
         <View style={style.container}>
 
