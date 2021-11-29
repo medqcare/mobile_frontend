@@ -13,7 +13,6 @@ import {
 
 
 export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeInnerKey, changeV} ){
-
     return(
         <Modal
             isVisible={modal}
@@ -37,34 +36,34 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
                     </Text>
                     <SafeAreaView>
                         <ScrollView>
-                        <TouchableHighlight>
-                            <TouchableWithoutFeedback>
-                                <View>
-                                    {selection.map((item,index)=> {
-                                        const label = item.name || null
-                                        const value = changeInnerKey === 'city' ? item.name : item.id
-                                        const coordinates = item.longitude? [item.longitude, item.latitude] : null
-                                        return(
-                                            <View key={index}>
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    setSelectedLabel(label)
-                                                    setSelectedValue(value, changeKey, changeInnerKey, label, coordinates)
-                                                    setModal(false)
-                                                }}
-                                            >
-                                                <View style={styles.selectionContainer}>
-                                                    <View style={styles.selectionTextContainer}>
-                                                        <Text style={styles.selectionText}> {label}</Text>
-                                                    </View>
+                            <TouchableHighlight>
+                                <TouchableWithoutFeedback>
+                                    <View>
+                                        {selection.map((item,index)=> {
+                                            const label = item.name || null
+                                            const value = changeInnerKey === 'city' ? item.name : item.id
+                                            const coordinates = item.longitude? [item.longitude, item.latitude] : null
+                                            return(
+                                                <View key={index}>
+                                                    <TouchableOpacity
+                                                        onPress={() => {
+                                                            setSelectedLabel(label)
+                                                            setSelectedValue(value, changeKey, changeInnerKey, label, coordinates)
+                                                            setModal(false)
+                                                        }}
+                                                    >
+                                                        <View style={styles.selectionContainer}>
+                                                            <View style={styles.selectionTextContainer}>
+                                                                <Text style={styles.selectionText}> {label}</Text>
+                                                            </View>
+                                                        </View>
+                                                    </TouchableOpacity>
                                                 </View>
-                                            </TouchableOpacity>    
-                                            </View>
-                                        )
-                                    })}
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </TouchableHighlight>
+                                            )
+                                        })}
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            </TouchableHighlight>
                         </ScrollView>
                     </SafeAreaView>
                 </View>
@@ -78,7 +77,8 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
 const styles = StyleSheet.create({
     modal: {
         justifyContent : 'flex-end',
-        margin: 0
+        margin: 0,
+        flex: 1
     },
     container: {
         maxHeight: '100%',
