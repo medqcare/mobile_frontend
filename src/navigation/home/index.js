@@ -4,12 +4,14 @@ import hospitalStack from './hospitalStack'
 import Home from '../../screens/home/dashboard/Home'
 import ScanMe from '../../screens/home/dashboard/ScanMe'
 import Appointment from '../../screens/home/appointment/AppointmentList'
+import Tagihan from '../../screens/home/activity/Tagihan'
 import medicalStats from './medresStack'
 import AllergyStack from './allergystack'
 import Undefined from '../../screens/404'
 import profileStack from '../profile'
 import SignStack from '../profile/signStack'
 import Activity_Stack from '../activity'
+import riwayatStack from "./riwayatStack"
 
 export default StackHome = createStackNavigator({
   Home: {
@@ -54,6 +56,12 @@ export default StackHome = createStackNavigator({
       headerShown: false
     }
   },
+  Tagihan: {
+    screen: Tagihan,
+    navigationOptions: {
+      headerShown: false
+    }
+  },
   ActivityStack: {
       screen: Activity_Stack,
       navigationOptions: {
@@ -62,6 +70,12 @@ export default StackHome = createStackNavigator({
   },
   ProfileStack: {
     screen: profileStack,
+    navigationOptions: {
+      headerShown: false
+    }
+  },
+  RiwayatStack: {
+    screen: riwayatStack,
     navigationOptions: {
       headerShown: false
     }

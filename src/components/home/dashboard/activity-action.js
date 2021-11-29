@@ -11,12 +11,12 @@ return (
     <View style={style.container}>
       <View style={style.rowContent}>
         
-       <TouchableOpacity style={style.content}>
+       <TouchableOpacity style={style.content} onPress={() => navigation.navigate('Tagihan')}>
            <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
-           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Biaya </Text>
+           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Tagihan </Text>
        </TouchableOpacity>
 
-       <TouchableOpacity style={style.content}>
+       <TouchableOpacity style={style.content} onPress={() => navigation.navigate('RiwayatStack')}>
           <Image style={style.image}source={require('../../../assets/png/ic_riwayatNav.png')}/>
           <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
        </TouchableOpacity>
