@@ -27,7 +27,7 @@ const RecentActivity = ({ navigation }) => {
           <TouchableOpacity style={style.clickArea}
             onPress={() => navigation.navigate('Appointment')}>
             <Image source={require('../../../assets/png/ic_aplist.png')} style={{width: 25, height: 25}} />
-            <Text style={{fontSize:12, color:'#DDDDDD', marginTop: 8, textAlign: 'center' }}>Appointment List</Text>
+            <Text style={{fontSize:12, color:'#DDDDDD', marginTop: 8, textAlign: 'center' }}>Appointment</Text>
           </TouchableOpacity>
       </View>
       </View>

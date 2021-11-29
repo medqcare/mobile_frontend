@@ -95,6 +95,7 @@ const MedicalStats = props => {
   }
 
   useEffect(() => {
+    console.log('jalan');
     getFamily();
     _fetchDataMedrec(patient.patientID);
   }, []);

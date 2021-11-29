@@ -53,7 +53,7 @@ const Appointment = props => {
         let datakebalik = data.data.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
-          if (item.status !== 'canceled') {
+          if (item.status !== 'canceled' && item.status !== 'registered') {
             newAppoinment.push(item);
           }
         });
