@@ -75,7 +75,7 @@ const DataCompletion = props => {
         phoneNumber: '',
         location: '',
         insuranceStatus: 'UMUM',
-		address: '',
+		// address: '',
 		location: {
 			province: selectedProvinceLabel,
 			city: selectedDistrictLabel,
@@ -500,7 +500,7 @@ const DataCompletion = props => {
                 </View>
 
 				{/* Address Form */}
-                <View style={styles.inputBottomContainer}>
+                {/* <View style={styles.inputBottomContainer}>
                     <View style={styles.input}>
                         <TextInput
                             autoCapitalize={'sentences'}
@@ -514,7 +514,7 @@ const DataCompletion = props => {
                             value={userData.address}
                             />
                     </View>
-                </View>
+                </View> */}
 
 				{/* Submit button */}
                 <View style={styles.buttonContainer}>
