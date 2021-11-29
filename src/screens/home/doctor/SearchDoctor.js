@@ -12,6 +12,7 @@ import {
   StyleSheet,
   ToastAndroid,
   ScrollView,
+  StatusBar
 } from 'react-native';
 import {connect} from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
@@ -182,11 +183,12 @@ function SearchDoctorPage(props) {
       style={styles.Container}
       behavior="height"
       enabled={false}>
-      <View style={{height: 150}}>
+      <StatusBar hidden/>
+      <View style={{height: '15%'}}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{flex: 1}}>
-          <View style={{marginTop: 50, marginHorizontal: 20, flex: 1}}>
+          <View style={{marginTop: 20, marginHorizontal: 20, flex: 1}}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{flexDirection: 'row'}}>
                 <View style={{marginTop: 3}}>
@@ -303,7 +305,7 @@ function SearchDoctorPage(props) {
                   alignItems: 'center',
                   padding: 20,
                 }}>
-                <Text>There is no doctor nearby</Text>
+                <Text style={{color: '#fff'}}>There is no doctor nearby</Text>
               </View>
             </ScrollView>
           )}

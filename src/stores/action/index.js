@@ -135,7 +135,7 @@ export function retrieveData(data, navigation) {
         // console.log(data)
         try {
           if (data.data === null) {
-            console.log('masuk if');
+            console.log('masuk if ini donnng');
             await dispatch({
               type: 'GET_USER_DATA',
               payload: data.data,
@@ -268,7 +268,7 @@ export function SignUp(userData, navigation, modalFailed) {
   };
 }
 
-export function SignInGoogle(token, navigation) {
+export function SignInGoogle(token, navigation, navigateTo) {
   console.log('ini di panggi diaction');
   return dispatch => {
     // console.log(navigation, 'ini navigationnya')
@@ -300,23 +300,23 @@ export function SignInGoogle(token, navigation) {
         console.log(data, 'ini yang kedua');
         try {
           if (data.data === null) {
-            console.log('masuk if');
-            await dispatch({
-              type: 'GET_USER_DATA',
-              payload: data.data,
-            });
-            navigation.navigate('RegistrationUser');
+            console.log('masuk if yg ini');
+            navigation.navigate('UserDataCompletion');
           } else {
             console.log('masuk else');
             await dispatch({
               type: 'AFTER_SIGNIN',
               payload: data.data,
             });
-            dispatch({
-              type: 'TOGGLE_LOADING',
-              payload: false
-            })
-            navigation.navigate('ProfileSwitch');
+            await dispatch({
+              type: 'SET_MY_LOCATION',
+              payload: {
+                lat: data.data.location.coordinates[1],
+                lng: data.data.location.coordinates[0],
+              },
+            });
+            navigation.pop()
+            navigateTo ? navigation.navigate(navigateTo) : navigation.navigate('Home');
           }
         } catch (error) {
           dispatch({
