@@ -342,7 +342,7 @@ export function SignInGoogle(token, navigation) {
   };
 }
 
-export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
+export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed, navigateTo) {
   return async dispatch => {
     let token = await AsyncStorage.getItem('token')
     instance({
@@ -366,7 +366,8 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
                 payload: data.data,
               });
               modalSuccess(data.message)
-              navigation.navigate('Home')
+              navigateTo('Home')
+              ToastAndroid.show('Data saved, redirecting you to our home screen...', ToastAndroid.SHORT)
             }
             catch (error) {
               modalFailed(error)
@@ -422,6 +423,7 @@ export function GetUser(token, navigation) {
             payload: false
           })
           res()
+          navigation.navigate('UserDataCompletion')
           // modalW()
         }
       } catch (error) {
@@ -429,7 +431,7 @@ export function GetUser(token, navigation) {
           `Please check your internet connection`,
           ToastAndroid.LONG,
         );
-        console.log(error.message, 'Error found in function GetUser')
+        console.log('Error found in function GetUser ==>', error.message, )
         rej(error)
       }
 

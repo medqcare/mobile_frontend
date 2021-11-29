@@ -41,18 +41,21 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
                             <TouchableWithoutFeedback>
                                 <View>
                                     {selection.map((item,index)=> {
+                                        const label = item.name || null
+                                        const value = changeInnerKey === 'city' ? item.name : item.id
+                                        const coordinates = item.longitude? [item.longitude, item.latitude] : null
                                         return(
                                             <View key={index}>
                                             <TouchableOpacity
                                                 onPress={() => {
-                                                    setSelectedLabel(item.label || item)
-                                                    setSelectedValue(item.value || item, changeKey, changeInnerKey)
+                                                    setSelectedLabel(label)
+                                                    setSelectedValue(value, changeKey, changeInnerKey, label, coordinates)
                                                     setModal(false)
                                                 }}
                                             >
                                                 <View style={styles.selectionContainer}>
                                                     <View style={styles.selectionTextContainer}>
-                                                        <Text style={styles.selectionText}> {item.label || item}</Text>
+                                                        <Text style={styles.selectionText}> {label}</Text>
                                                     </View>
                                                 </View>
                                             </TouchableOpacity>    
