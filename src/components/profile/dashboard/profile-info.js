@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     },
 
     phoneNumber: {
-        paddingVertical: 10
+        paddingVertical: 10,
     },
 
     phoneNumberText: {
@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
     },
 
     verified: {
-        backgroundColor: '#3C3C3C'
+        backgroundColor: '#3C3C3C',
+        alignSelf: 'flex-start'
     },
 
     innerVerified: {
