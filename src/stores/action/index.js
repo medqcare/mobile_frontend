@@ -365,9 +365,9 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed, navigat
                 type: 'GET_USER_DATA',
                 payload: data.data,
               });
+              ToastAndroid.show('Data saved, redirecting you to our home screen...', ToastAndroid.SHORT)
               modalSuccess(data.message)
               navigateTo('Home')
-              ToastAndroid.show('Data saved, redirecting you to our home screen...', ToastAndroid.SHORT)
             }
             catch (error) {
               modalFailed(error)
