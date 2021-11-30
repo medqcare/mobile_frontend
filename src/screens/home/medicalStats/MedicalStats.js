@@ -53,17 +53,16 @@ const MedicalStats = props => {
   const _fetchDataMedrec = async patientID => {
     setLoad(true);
     let token = await AsyncStorage.getItem('token');
-    console.log('masuk sini ', patientID);
     try {
       let {data, status} = await axios({
-        url: `${baseURL}/api/v1/members/getMedicalResume`,
+        url: `${baseURL}/api/v1/members/getLastMedicalResume`,
         method: 'POST',
         headers: {Authorization: JSON.parse(token).token},
         data: {patientID: patientID},
       });
-      console.log(data.data, 'Ini data yang ');
+      console.log(data, 'Ini data yang ');
       if (data.data) {
-        setMedStats(data.data.reverse());
+        setMedStats(data);
         setLoad(false);
       } else {
         setMedStats(null);
@@ -95,7 +94,6 @@ const MedicalStats = props => {
   }
 
   useEffect(() => {
-    console.log('jalan');
     getFamily();
     _fetchDataMedrec(patient.patientID);
   }, []);
@@ -114,7 +112,6 @@ const MedicalStats = props => {
     }
     return true;
   });
-  console.log(props.navigation.state, 'ini nav');
 
   return (
     <View style={{backgroundColor: '#1F1F1F', flex: 1}}>

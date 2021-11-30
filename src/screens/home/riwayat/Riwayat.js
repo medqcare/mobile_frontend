@@ -12,15 +12,16 @@ import {
   StatusBar,
 } from "react-native";
 import { connect } from "react-redux";
-import SearchBar from "../../../components/headers/SearchBar";
 import ArrowBack from "../../../assets/svg/ArrowBack";
+import Header from "../../../components/headers/GradientHeader"
 
 import Pemesanan from "./Pemesanan";
 import Transaksi from "./Transaksi";
+import ResumeMedis from "./ResumeMedis";
 
 function RiwayatPage(props) {
-  const [page, setPage] = useState("Pemesanan");
-  const tipeRiwayat = ["Pemesanan", "Transaksi"];
+  const [page, setPage] = useState("Daftar Janji");
+  const tipeRiwayat = ["Daftar Janji", "Transaksi", "Resume Medis"];
 
   BackHandler.addEventListener("hardwareBackPress", () => {
     return props.navigation.pop();
@@ -34,37 +35,7 @@ function RiwayatPage(props) {
     >
       <StatusBar hidden />
 
-      {/* Header */}
-      <View style={{ height: "15%" }}>
-        <ImageBackground
-          source={require("../../../assets/background/RectangleHeader.png")}
-          style={{ flex: 1 }}
-        >
-          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1 }}>
-            <TouchableOpacity onPress={() => props.navigation.pop()}>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ marginTop: 3 }}>
-                  <ArrowBack />
-                </View>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    color: "#ffff",
-                    position: "relative",
-                    marginLeft: 10,
-                  }}
-                >
-                  Riwayat {page}
-                </Text>
-              </View>
-            </TouchableOpacity>
-            <SearchBar
-              placeholder={"cari riwayat"}
-              onChangeText={(text) => _textChange(text)}
-            />
-          </View>
-        </ImageBackground>
-      </View>
+      <Header title={'Riwayat ' + page} navigate={props.navigation.navigate} />
 
 
       <View style={{ height: 40, margin: 15 }}>
@@ -91,8 +62,9 @@ function RiwayatPage(props) {
         </ScrollView>
       </View>
 
-      { page === 'Pemesanan' && <Pemesanan /> }
+      { page === 'Daftar Janji' && <Pemesanan /> }
       { page === 'Transaksi' && <Transaksi /> }
+      { page === 'Resume Medis' && <ResumeMedis /> }
       
     </KeyboardAvoidingView>
   );

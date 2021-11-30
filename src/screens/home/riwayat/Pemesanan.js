@@ -165,8 +165,8 @@ function Pemesanan(props) {
                         </Text>
                       </View>
                     </View>
-                    <View style={{marginTop: 20, flexDirection: 'row', justifyContent: 'space-between'}}>
-                      <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text>
+                    <View style={{marginTop: 20, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                      {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
                       <TouchableOpacity>
                       <View style={{backgroundColor: '#005EA2', borderRadius: 5, paddingVertical: 8, paddingHorizontal: 15}}>
                         <Text style={{color: '#fff'}}>Buat Janji Lagi</Text>
