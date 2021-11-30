@@ -828,3 +828,29 @@ export function getDataMedicine() {
     })
   }
 }
+
+export function uploadImage(patientId, fileToUpload, token){
+  return async  dispatch => {
+      console.log('Application is trying to upload the image...')
+      try {
+        console.log(fileToUpload)
+        let { data } = await instance({
+          url: `/v1/members/updateAvatar`,
+          method: 'PATCH',
+          data: fileToUpload,
+          headers: { 
+            'Accept': 'application/json',
+            authorization: token,
+            id: patientId,
+            'content-type': 'multipart/form-data',
+            'X-Secret': '123456',
+
+          },
+        })
+        console.log(data)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      } catch (error) {
+        console.log(error.response, 'Error found when trying to upload avatar')
+      }
+  }
+}
