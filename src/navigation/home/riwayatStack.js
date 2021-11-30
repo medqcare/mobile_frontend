@@ -6,7 +6,7 @@ export default StackMedres = createStackNavigator(
     Riwayat: {
       screen: Riwayat,
       navigationOptions: {
-        headerShown: false,
+        headerShown: false
       },
     },
   },
