@@ -16,7 +16,7 @@ return (
            <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Tagihan </Text>
        </TouchableOpacity>
 
-       <TouchableOpacity style={style.content} onPress={() => navigation.navigate('RiwayatStack')}>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('RiwayatStack') : navigation.navigate('Sign')}>
           <Image style={style.image}source={require('../../../assets/png/ic_riwayatNav.png')}/>
           <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
        </TouchableOpacity>
