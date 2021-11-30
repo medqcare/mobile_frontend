@@ -11,6 +11,6 @@ export default StackMedres = createStackNavigator(
     },
   },
   {
-    initialRouteName: "Riwayat",
+    initialRouteName: "Riwayat"
   }
 );
