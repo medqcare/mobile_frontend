@@ -1,101 +1,170 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, ImageBackground, Dimensions } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome'
-import Icon5 from 'react-native-vector-icons/FontAwesome5'
+import { 
+    View, 
+    Text, 
+    Image, 
+    StyleSheet, 
+    TouchableOpacity,
+    Platform,
+} from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen'
 import { connect } from 'react-redux'
-
-import EditProfile from '../../../components/editProfile'
-
 import capitalFirst from '../../../helpers/capitalFirst' // for proper case full name
-import SetsModal from '../../modals/modalPickerProfile'
-import SelectModal from '../../modals/modalPicker'
+import PictureModal from '../../modals/profilePictureModal'// modal for profile picture options
+import CameraComponent from '../imagePicker/camera'
+import GalleryComponent from '../imagePicker/gallery'
+import * as ImagePicker from 'expo-image-picker';
+import createFormData from '../../../helpers/formData'
+import { uploadImage } from '../../../stores/action'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const mapStateToProps = state => {
     return state
 }
 
+const mapDispatchToProps = {
+	uploadImage
+};
 const profileInfo = (props) => {
-    // console.log(props.userData, 'ini user Datanya==~~')
-    const [modalVisibility, setModalVisibility] = useState(false)
+    // Camera
+    // const [hasPermission, setHasPermission] = useState(null);
+    // const [type, setType] = useState(Camera.Constants.Type.back);
+
+    const [image, setImage] = useState(null);
+
+
+
     const [userData, setUserData] = useState(props.userData)
-    const [profileStatusModal, setProfileStatusModal] = useState(false)
+
+    // Profile Picture
+    const [profilePictureModal, setProfilePictureModal] = useState(false)
     const profileStatusSelection =[
         {   
             label:'Hapus',
-            
             url: require('../../../assets/png/ic_trash.png'),
-
         },
         {
             label:'Kamera',
-            
             url: require('../../../assets/png/ic_kamera.png'),
         },
         {
             label:'Galeri',
-            
             url: require('../../../assets/png/ic_galeri.png'),
-
         }
     ]
 
-    function modalvisible() {
-        setModalVisibility(!modalVisibility)
-    }
     function fullName() {
-        // console.log( 'ini user data =====>', Object.keys(props.userData), '<====')
-        return props.userData ? 
-            props.userData?.lastName ?
-                capitalFirst(props.userData?.firstName) + ' ' + capitalFirst(props.userData?.lastName)
+        return userData ? 
+            userData?.lastName ?
+                capitalFirst(userData?.firstName) + ' ' + capitalFirst(userData?.lastName)
                 :
-                capitalFirst(props.userData?.firstName)
+                capitalFirst(userData?.firstName)
             : ''
 
     }
 
-    async function setSelectedValue(value,uri, changeKey){
-        setUserData({
-            ...dataProfile,
-            [changeKey] :value,uri
-        })
+    async function setSelectedValue(label){
+        switch (label) {
+            case 'Kamera':
+                (async () => {
+                    if (Platform.OS !== 'web') {
+                      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                      console.log(status)
+                      if (status !== 'granted') {
+                        alert('Sorry, we need camera roll permissions to make this work!');
+                      }
+                    }
+                  })();
+                  takePicture()
+                break;
+
+            case 'Galeri':
+                (async () => {
+                    if (Platform.OS !== 'web') {
+                      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                      if (status !== 'granted') {
+                        alert('Sorry, we need camera roll permissions to make this work!');
+                      }
+                    }
+                  })();
+                  pickImage()
+                break;
+
+            case 'Hapus':
+                console.log('Hapus')
+                break;
         
+            default:
+                break;
+        }
     }
 
-    const [selectedProfileLabel,setselectedProfileLabel] = useState(false)
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+          exif: true,
+        //   base64: true
+        });
+        const fileToUpload = createFormData(result)
+        let token = await AsyncStorage.getItem('token')
+        token = JSON.parse(token).token
+        
+        console.log('Application is sending data to store/action...')
+
+        props.uploadImage(userData._id, fileToUpload, token)
+
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
+    };
+
+    const takePicture = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+            // base64: true
+        });
+        console.log(result)
+
+        if (!result.cancelled) {
+            setImage(result.uri);
+        }
+    }
+
+    
 
     return (
         <View style={styles.container}>
-        
             <View style={styles.profilePicture}>   
                 <Image
-                    source={{ uri: props.userData?.imageUrl ? props.userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                    source={{ uri: userData?.imageUrl ? userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                     style={styles.userImage}
                 />  
                 
                 <TouchableOpacity style={{marginTop:-17,zIndex:1,marginLeft:30}}
-                    onPress={()=>setProfileStatusModal(true)}
+                    onPress={()=>setProfilePictureModal(true)}
                    
                 >
                     
                     <Image source={ require('../../../assets/png/ic_camera.png') } style={{width: 28, height: 30}} />
                 </TouchableOpacity>
                 
-                <SetsModal
-                        modal={profileStatusModal}
-                        setModal={setProfileStatusModal}
+                <PictureModal
+                        modal={profilePictureModal}
+                        setModal={setProfilePictureModal}
                         selection={profileStatusSelection}
-                        title='Silahkan Pilih Apa yang anda Ubah'
-                        subtitle='Pilihan yang tersedia'
                         setSelectedValue={setSelectedValue}
-                        setSelectedLabel={setselectedProfileLabel}
                 >
-                </SetsModal>        
-
-                {/* <Text>Profile Picture</Text> */}
+                </PictureModal>        
             </View>
            
             <View style={styles.profileData}>
@@ -103,7 +172,7 @@ const profileInfo = (props) => {
                     <Text style={styles.fullNameText}>{fullName()}</Text>
                 </View>
                 <View style={styles.phoneNumber}>
-                    <Text style={styles.phoneNumberText}>{props.userData?.phoneNumber}</Text>
+                    <Text style={styles.phoneNumberText}>{userData?.phoneNumber}</Text>
                 </View>
                 <View style={styles.verified}>
                     <View style={styles.innerVerified}>
@@ -112,6 +181,8 @@ const profileInfo = (props) => {
                             <Image
                                 source={require('../../../assets/png/VerifiedLogo.png')}
                             />
+            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+
                         </View>
                     </View>
                 </View>
@@ -194,6 +265,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     }
 })
+
+export default connect(
+    mapStateToProps, 
+    mapDispatchToProps
+)(profileInfo)
 
 //     return (
 //         <View style={viewStyles.container}>
@@ -350,4 +426,3 @@ const styles = StyleSheet.create({
 //         fontFamily: 'NunitoSans-Regular'
 //     }
 // })
-export default connect(mapStateToProps)(profileInfo)
