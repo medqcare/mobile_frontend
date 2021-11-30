@@ -72,7 +72,7 @@ const profileInfo = (props) => {
         
             <View style={styles.profilePicture}>   
                 <Image
-                    source={{ uri: props.userData?.photo ? props.userData?.photo : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                    source={{ uri: props.userData?.imageUrl ? props.userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                     style={styles.userImage}
                 />  
                 
