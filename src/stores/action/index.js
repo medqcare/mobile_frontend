@@ -843,14 +843,59 @@ export function uploadImage(patientId, fileToUpload, token, navigateTo){
             authorization: token,
             id: patientId,
             'content-type': 'multipart/form-data',
-
           },
         })
-        console.log(data)
+		console.log('server has successfully updated Image Url')
+        let result = await instance({
+			method: 'GET',
+			url: `/v1/members/dataLogged`,
+			headers: { Authorization: token },
+        })
+        if (result.data) {
+			console.log('Application Found dataLogged')
+			await dispatch({
+				type: 'GET_USER_DATA',
+				payload: result.data.data,
+			});
+		}
         ToastAndroid.show(data.message, ToastAndroid.SHORT)
         navigateTo('ProfileStack')
       } catch (error) {
-        console.log(error, 'Error found when trying to upload avatar')
+        console.log(error.response, 'Error found when trying to upload avatar')
       }
+  }
+
+}
+export function deleteImage(patientId, token, navigateTo){
+  return async dispatch => {
+    console.log('Application is sending command to server....')
+    try {
+        let { data } = await instance({
+			url: `/v1/members/deleteAvatar`,
+			method: 'PATCH',
+			headers: {
+				id: patientId,
+				authorization: token,
+			}
+        })
+		console.log('Server has successfully deleted imageUrl')
+
+        let result = await instance({
+			method: 'GET',
+			url: `/v1/members/dataLogged`,
+			headers: { Authorization: token },
+        })
+        if (result.data) {
+			console.log('Application Found dataLogged')
+			await dispatch({
+				type: 'GET_USER_DATA',
+				payload: result.data.data,
+			});
+		}
+
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+    } catch (error) {
+      console.log(error.response, 'Error found when trying to delete avatar')
+    }
   }
 }

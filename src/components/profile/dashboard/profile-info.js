@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useDebugValue, useEffect, useState } from 'react'
 import { 
     View, 
     Text, 
@@ -10,18 +10,27 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen'
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import capitalFirst from '../../../helpers/capitalFirst' // for proper case full name
 import PictureModal from '../../modals/profilePictureModal'// modal for profile picture options
+import ConfirmationModal from '../../modals/ConfirmationModal'
+import { deleteImage } from '../../../stores/action'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
 const mapStateToProps = state => {
     return state
 }
 
-const profileInfo = (props) => {
+const mapDispatchToProps = {
+    deleteImage
+};
 
-    const [userData, setUserData] = useState(props.userData)
+const profileInfo = (props) => {
+    // const [userData, setUserData] = useState(props.userData)
+    const userData = useSelector(state => state.userData)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+
 
     // Profile Picture
     const [profilePictureModal, setProfilePictureModal] = useState(false)
@@ -43,25 +52,33 @@ const profileInfo = (props) => {
     function fullName() {
         return userData ? 
             userData?.lastName ?
-                capitalFirst(userData?.firstName) + ' ' + capitalFirst(userData?.lastName)
+                userData?.firstName + ' ' + userData?.lastName
                 :
-                capitalFirst(userData?.firstName)
+                userData?.firstName
             : ''
 
+    }
+
+    async function deleteProfilePicture(){
+        const patientId = userData._id
+        let token = await AsyncStorage.getItem('token')
+        token = JSON.parse(token).token
+        await props.deleteImage(patientId, token, props.navigation.navigate)
+        setConfirmationModal(false)
     }
 
     async function setSelectedValue(label){
         switch (label) {
             case 'Kamera':
-                props.navigation.navigate('ProfilePictureCamera')
+                await props.navigation.navigate('ProfilePictureCamera')
                 break;
 
             case 'Galeri':
-                props.navigation.navigate('ProfilePictureGallery')
+                await props.navigation.navigate('ProfilePictureGallery')
                 break;
 
             case 'Hapus':
-                console.log('Hapus')
+                setConfirmationModal(true)
                 break;
         
             default:
@@ -91,7 +108,19 @@ const profileInfo = (props) => {
                         selection={profileStatusSelection}
                         setSelectedValue={setSelectedValue}
                 >
-                </PictureModal>        
+                </PictureModal>
+                <ConfirmationModal
+                    modal={confirmationModal}
+                    optionLeftFunction={() => {
+                        setConfirmationModal(false)}
+                    }
+                    optionLeftText='Batal'
+                    optionRightFunction={() => {
+                        deleteProfilePicture()}
+                    }
+                    optionRightText='Hapus'
+                    warning='Apakah anda yakin ingin menghapus foto anda?'
+                />        
             </View>
            
             <View style={styles.profileData}>
@@ -157,7 +186,8 @@ const styles = StyleSheet.create({
 
     fullNameText: {
         color: '#DDDDDD',
-        fontSize: 16
+        fontSize: 16,
+        textTransform: 'capitalize'
     },
 
     phoneNumber: {
@@ -192,5 +222,6 @@ const styles = StyleSheet.create({
 })
 
 export default connect(
-    mapStateToProps, 
+    mapStateToProps,
+    mapDispatchToProps
 )(profileInfo)
