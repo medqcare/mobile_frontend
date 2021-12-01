@@ -5,6 +5,7 @@ import {
     Image, 
     StyleSheet, 
     TouchableOpacity,
+    ActivityIndicator
 } from 'react-native'
 import {
     widthPercentageToDP as wp,
@@ -30,6 +31,9 @@ const profileInfo = (props) => {
     // const [userData, setUserData] = useState(props.userData)
     const userData = useSelector(state => state.userData)
     const [confirmationModal, setConfirmationModal] = useState(false)
+
+    // Load
+    const [load, setLoad] = useState(false)
 
 
     // Profile Picture
@@ -60,10 +64,12 @@ const profileInfo = (props) => {
     }
 
     async function deleteProfilePicture(){
+        setLoad(true)
         const patientId = userData._id
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
         await props.deleteImage(patientId, token, props.navigation.navigate)
+        setLoad(false)
         setConfirmationModal(false)
     }
 
@@ -120,6 +126,7 @@ const profileInfo = (props) => {
                     }
                     optionRightText='Hapus'
                     warning='Apakah anda yakin ingin menghapus foto anda?'
+                    load={load}
                 />        
             </View>
            
