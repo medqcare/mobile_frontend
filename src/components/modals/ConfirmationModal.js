@@ -6,10 +6,10 @@ import {
     Text, 
     Dimensions,
     TouchableOpacity, 
-
+    ActivityIndicator
 } from 'react-native'
 
-export default function ConfirmationModal({modal, optionLeftFunction, optionLeftText, optionRightFunction, optionRightText, warning}){
+export default function ConfirmationModal({modal, optionLeftFunction, optionLeftText, optionRightFunction, optionRightText, warning, load}){
     return  (
         <Modal 
             transparent={true}
@@ -24,6 +24,7 @@ export default function ConfirmationModal({modal, optionLeftFunction, optionLeft
                         </View>
                         <View style={styles.option}>
                             <TouchableOpacity
+                                style={styles.optionButtonCancel}
                                 onPress={optionLeftFunction}
                             >
                                 <Text style={styles.optionTextCancel}>{optionLeftText}</Text>
@@ -31,8 +32,13 @@ export default function ConfirmationModal({modal, optionLeftFunction, optionLeft
                             <TouchableOpacity
                                 style={styles.optionButtonConfirm}
                                 onPress={optionRightFunction}
+                                disabled={load}
                             >
-                                <Text style={styles.optionTextConfirm}>{optionRightText}</Text>
+                            {load ? (
+                                <ActivityIndicator size={"small"} color="#FFF" style={styles.optionTextConfirm} />
+                                ) : (
+                                    <Text style={styles.optionTextConfirm}>{optionRightText}</Text>
+                                )}
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -82,18 +88,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingTop: 15,
         paddingBottom: 25,
-        paddingHorizontal: 30
+        paddingHorizontal: 30,
     },
     optionButtonCancel: {
-        paddingRight: 30
+        flex: 0.3,
+        alignItems: 'flex-end'
     },
     optionButtonConfirm: {
-        paddingLeft: 35,
+        flex: 0.3,
+        alignItems: 'flex-end'
     },
     optionTextCancel: {
-        color: '#B5B5B5'
+        color: '#B5B5B5',
     },
     optionTextConfirm: {
-        color: '#EA2E05'
+        color: '#EA2E05',
     }
 })

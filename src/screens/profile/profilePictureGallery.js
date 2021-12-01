@@ -5,7 +5,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
-    Image
+    Image,
+    ActivityIndicator,
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -27,6 +28,10 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
+
+    // Load
+    const [load, setLoad] = useState(false)
+
 
     // Use effect for asking permission
     useEffect(() => {
@@ -59,14 +64,16 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
         }
     }
 
-    const saveImage = async() => {
+    const saveImage = async () => {
+        setLoad(true)
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
         const id = userData._id
-
+        
         console.log('Application is sending data to store/action...')
-
-        uploadImage(id, imageToUpload, token, navigation.navigate)
+        
+        await uploadImage(id, imageToUpload, token, navigation.navigate)
+        setLoad(false)
     }
 
     return (
@@ -91,8 +98,13 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => saveImage()}
+                    disabled={load}
                 >
-                <Text style={styles.text}>Simpan</Text>
+                    {load ? (
+                        <ActivityIndicator size={"small"} color="#FFF" />
+                        ) : (
+                            <Text style={styles.text}>Simpan</Text>
+                        )}
                 </TouchableOpacity>
             </View>
         </View>

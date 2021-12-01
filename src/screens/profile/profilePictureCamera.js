@@ -5,7 +5,8 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
-    Image
+    Image,
+    ActivityIndicator,
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -13,7 +14,6 @@ import { uploadImage } from '../../stores/action'
 
 import createFormData from '../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
-
 
 const mapStateToProps = state => {
     return state
@@ -27,6 +27,9 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
+
+    // Load
+    const [load, setLoad] = useState(false)
 
     // Use effect for asking permission
     useEffect(() => {
@@ -61,13 +64,15 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
     }
 
     const saveImage = async() => {
+        setLoad(true)
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
         const id = userData._id
 
         console.log('Application is sending data to store/action...')
 
-        uploadImage(id, imageToUpload, token, navigation.navigate)
+        await uploadImage(id, imageToUpload, token, navigation.navigate)
+        setLoad(false)
     }
 
     return (
@@ -92,8 +97,13 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => saveImage()}
-                >
-                <Text style={styles.text}>Simpan</Text>
+                    disabled={load}
+                    >
+                        {load ? (
+                            <ActivityIndicator size={"small"} color="#FFF" />
+                            ) : (
+                                <Text style={styles.text}>Simpan</Text>
+                            )}
                 </TouchableOpacity>
             </View>
         </View>
