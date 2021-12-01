@@ -7,6 +7,8 @@ import MedicalHistoryPage from './medicalHistoryStack'
 import HistoryPage from '../../components/profile/dashboard/historyRegistration'
 import ResetPasswordPage from  '../../navigation/profile/resetPasswordStack'
 import ProfileDetailStack from './profileStack'
+import ProfilePictureGallery from '../../screens/profile/profilePictureGallery'
+import profilePictureCamera from '../../screens/profile/profilePictureCamera'
 
 
 export default ProfileTab = createStackNavigator({
@@ -14,6 +16,18 @@ export default ProfileTab = createStackNavigator({
         screen: ProfilePage,
         navigationOptions: {
             headerShown: false,
+        }
+    },
+    ProfilePictureGallery: {
+        screen: ProfilePictureGallery,
+        navigationOptions: {
+            headerShown: false
+        }
+    },
+    ProfilePictureCamera: {
+        screen: profilePictureCamera,
+        navigationOptions: {
+            headerShown: false
         }
     },
     ProfileDetail: {
