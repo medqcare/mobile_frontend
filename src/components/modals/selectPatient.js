@@ -11,9 +11,9 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
 } from 'react-native'
+import VectorPlus from '../../assets/svg/VectorPlus'
 
-
-export default function SelectPatient({modal, setModal, title, accountOwner, family, setSelectedValue } ){
+export default function SelectPatient({modal, setModal, title, accountOwner, family, setSelectedValue, navigateTo } ){
 	function smallLengthText(string){
 		let result = ''
 		for(let i = 0; i < string.length; i++){
@@ -75,6 +75,17 @@ export default function SelectPatient({modal, setModal, title, accountOwner, fam
 					);
 					})}
 				</View>
+				<TouchableOpacity
+					style={styles.buttonAdd}
+					onPress={() => navigateTo('AddFamilyForm')}
+				>
+					<View style={styles.vectorPlus}>
+						<VectorPlus />
+					</View>
+					<Text style={styles.addTitle}>
+						Tambah Keluarga
+					</Text>
+				</TouchableOpacity>
           </View>
         </Modal>
 
@@ -127,48 +138,27 @@ const styles = StyleSheet.create({
 		height: 65,
 	},
 
-    //   titleP: {
-    //     color: 'white',
-    //     fontSize: 12,
-    //   },
-    //   cardName: {
-    //     marginTop: 10,
-    //     borderColor: '#757575',
-    //     borderWidth: 1,
-    //     borderRadius: 3,
-    //     minHeight: 50,
-    //     flexDirection: 'row',
-    //     justifyContent: 'space-between',
-    //     paddingHorizontal: 10,
-    //   },
-    //   familyName: {
-    //     flexDirection: 'row',
-    //   },
-    //   photo: {
-    //     marginVertical: 7,
-    //     width: 35,
-    //     height: 35,
-    //     borderRadius: 50,
-    //     borderWidth: 1,
-    //     borderColor: '#4fe39b',
-    //   },
-      name: {
-        marginTop: 15,
-        color: '#DDDDDD',
-      },
-      vector: {
-        marginVertical: 20,
-      },
-      buttonAdd: {
-        marginTop: 20,
-        flexDirection: 'row',
-        justifyContent: 'center',
-      },
-      vectorPlus: {
-        marginTop: 5,
-        marginRight: 5,
-      },
-      addTitle: {
-        color: '#4398D1',
-      },
+	name: {
+		marginTop: 15,
+		color: '#DDDDDD',
+	},
+
+	vector: {
+		marginVertical: 20,
+	},
+
+	buttonAdd: {
+		padding: (20, 0, 30),
+		flexDirection: 'row',
+		justifyContent: 'center',
+	},
+
+	vectorPlus: {
+		marginTop: 5,
+		marginRight: 5,
+	},
+
+	addTitle: {
+		color: '#4398D1',
+	},
 })
