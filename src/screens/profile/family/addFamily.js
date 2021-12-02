@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import {
     View,
@@ -50,11 +50,7 @@ const addFamily = (props) => {
                             <IconFont5 name={'plus'} size={22} style={{ paddingVertical:8,color: '#1380C3'}}/>
                         </View>
                     </TouchableOpacity>
-                    {
-                        family.map((fam, index) => {
-                            return <FamilyList member={fam} key={index} move={props.navigation} />
-                        })
-                    }
+                    <FamilyList navigateTo={props.navigation.navigate} />
                 </View>
                     {/* <Text style={style.footer}>{JSON.stringify(family,null,2)}</Text> */}
             </ScrollView>
