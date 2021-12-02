@@ -24,6 +24,7 @@ const mapDispatchToProps = {
 };
 
 function ProfilePictureCamera({navigation, userData, uploadImage}){
+    const { destination } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
@@ -71,7 +72,7 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
 
         console.log('Application is sending data to store/action...')
 
-        await uploadImage(id, imageToUpload, token, navigation.navigate)
+        await uploadImage(id, imageToUpload, token, navigation.navigate, destination)
         setLoad(false)
     }
 
@@ -91,7 +92,7 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
             </View>
             <View style={styles.bottomContainer}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('ProfileStack')}
+                    onPress={() => navigation.navigate(destination)}
                 >
                     <Text style={styles.text}>Kembali</Text>  
                 </TouchableOpacity>

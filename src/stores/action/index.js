@@ -829,7 +829,7 @@ export function getDataMedicine() {
   }
 }
 
-export function uploadImage(patientId, fileToUpload, token, navigateTo){
+export function uploadImage(patientId, fileToUpload, token, navigateTo, destination){
   return async  dispatch => {
       console.log('Application is trying to upload the image...')
       try {
@@ -859,7 +859,7 @@ export function uploadImage(patientId, fileToUpload, token, navigateTo){
 			});
 		}
         ToastAndroid.show(data.message, ToastAndroid.SHORT)
-        navigateTo('ProfileStack')
+        navigateTo(destination)
       } catch (error) {
         console.log(error.response, 'Error found when trying to upload avatar')
       }

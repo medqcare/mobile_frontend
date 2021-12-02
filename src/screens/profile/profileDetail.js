@@ -49,7 +49,7 @@ function ProfileDetail({ navigation, userData }){
                 title='Profil Saya'
                 edit={true}
             />
-            <ProfileInfo />
+            <ProfileInfo navigation={navigation} destination='ProfileDetail'/>
             <View style={{paddingVertical: 15}}>
                 <View style={styles.profileDetail}>
                     <View style={styles.upperDetail}>

@@ -51,7 +51,7 @@ const profile = (props) => {
                 navigateTo={'Home'}
                 title='Profil Saya'
             />
-            <ProfileInfo navigation={props.navigation}/>
+            <ProfileInfo navigation={props.navigation} destination='ProfileStack'/>
             <View style={{flex: 1, backgroundColor: '#1F1F1F', width: '100%'}}>
                 <View style={styles.menu}>
                     <TouchableOpacity
