@@ -467,19 +467,16 @@ export function addFamily(dataFamily, navigation, loadFalse) {
         data: dataFamily,
         headers: { Authorization: JSON.parse(token).token },
       })
-
-      // console.log('ni mau create data di add family',data)
       if (data && data.message && data.message.includes('family NIK already registered')) {
-        console.log('gabisa boss NIKnya udah kepake')
         if (data.data == 'cannot add same family twice') {
-          ToastAndroid.show('NIK sudah menjadi anggota keluarga !', ToastAndroid.SHORT);
+          ToastAndroid.show('This NIK has already been registered!', ToastAndroid.SHORT);
+          loadFalse(false)
         } else {
           let { data } = await instance({
             url: '/v1/members/dataLogged',
             method: 'GET',
             headers: { Authorization: JSON.parse(token).token },
           })
-          // console.log('ini hail data yang balikannya add family kedua',data)
 
           await dispatch({
             type: 'GET_USER_DATA',
@@ -489,29 +486,28 @@ export function addFamily(dataFamily, navigation, loadFalse) {
           ToastAndroid.show('NIK sudah terdaftar, Berhasil menambahkan data sebelumnya', ToastAndroid.LONG);
         }
       } else if (data && data.error) {
-        // console.log('masuk sini eror beroohhh')
-        console.log(data.error,'ini data.error')
         if (data.error.message.includes('Request failed with status code')) {
           loadFalse()
-          ToastAndroid.show('NIK sama dengan Pemilik akun !', ToastAndroid.SHORT);
+          ToastAndroid.show(`This NIK is the same as the account owner's !`, ToastAndroid.SHORT);
         }
       } else {
-        // console.log('silahkan nik baru mah sok ajaaa atuuhh')
-        let { data } = await instance({
+        console.log('Successfully added family member')
+        console.log('Navigating back to family list...')
+        const successAddFamilyMessage = data.message 
+        let result = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
           headers: { Authorization: JSON.parse(token).token },
         })
-        // console.log('ini hail data yang balikannya add family kedua',data)
         await dispatch({
           type: 'GET_USER_DATA',
-          payload: data.data,
+          payload: result.data.data,
         })
         navigation.navigate('FamilyList')
-        ToastAndroid.show('Berhasil menambahkan keluarga !', ToastAndroid.SHORT);
+        ToastAndroid.show(successAddFamilyMessage, ToastAndroid.SHORT);
       }
     } catch (error) {
-      console.log(error, 'ini errornya add family');
+      console.log(error, 'Error found when adding a new family');
       loadFalse()
       ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG);
     }
