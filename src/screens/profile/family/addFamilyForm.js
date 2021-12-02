@@ -174,6 +174,7 @@ const familyForm = (props) => {
 
 
     function Finalvalidation(_sendData) {
+        console.log('Data validated')
         // Methode
         Object.filter = (obj, predicate) =>
             Object.keys(obj)
@@ -183,9 +184,6 @@ const familyForm = (props) => {
         var send = Object.filter(_sendData, value => value !== null)
         send = Object.filter(send, value => value !== '')
 
-        let str = _sendData.dob.split('/')
-        let newStr = [str[1], str[0], str[2]]
-        send.dob = newStr.join('/')
         if (typeof send.nik == 'string') {
             send.nik = Number(send.nik)
         }
@@ -208,7 +206,7 @@ const familyForm = (props) => {
 	const sendDate = `${withZero(newDate.getDate())}/${withZero(newDate.getMonth()+1)}/${withZero(newDate.getFullYear())}`
 	const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate))
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <Header title={'Tambah Keluarga'} navigate={props.navigation.navigate} navigateBack={'FamilyList'}/>
                 <ScrollView showsVerticalScrollIndicator={false}>
 
@@ -496,15 +494,18 @@ const familyForm = (props) => {
                 </ScrollView>
                 <View style={styles.buttonContainer}>
             
-                    <TouchableOpacity onPress={() => {validation() }}
-                        style={styles.submitButton}>
+                    <TouchableOpacity 
+                        onPress={() => {validation() }}
+                        style={styles.submitButton}
+                        disabled={load}
+                    >
                         {load ?
                             <ActivityIndicator size={'small'} color={'#FFF'} /> :
                             <Text style={{ fontSize: 18, color: '#FFF' }}>Tambah Keluarga</Text>
                         }
                     </TouchableOpacity>
                 </View>
-        </View>
+        </ScrollView>
     )
 }
 
