@@ -7,40 +7,28 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    KeyboardAvoidingView,
-    ImageBackground,
-    Picker,
     ActivityIndicator,
     Image
 } from 'react-native'
-import {LinearGradient} from 'expo-linear-gradient'
 import DatePicker from 'react-native-datepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen'
-import getDay from '../../../helpers/getDay'
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../../components/modals/modalPicker'
 import Header from '../../../components/headers/GradientHeader'
 //action
 import { addFamily, setLoading } from '../../../stores/action'
-//Icon
-import Icon from 'react-native-vector-icons/Ionicons'
 //Modal
 import { ToastAndroid } from 'react-native';
 
-import ArrowBack from '../../../assets/svg/ArrowBack'
 import { fullMonthFormat } from '../../../helpers/dateFormat';
+import withZero from '../../../helpers/withZero';
+import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 
 const familyForm = (props) => {
-    // console.log(props, 'ini data yang di addFamily')
-    //local state
     var moment = require('moment')
-    const genderlist = ['Male', 'Female']
-    const listTitle = ['Mr.', 'Mrs.', 'Miss.', 'Ms.', 'Children']
     const [load, setLoad] = useState(false)
     const [valid, setValid] = useState(false)
     const [bloodTypeModal, setBloodTypeModal] = useState(false)
@@ -90,23 +78,39 @@ const familyForm = (props) => {
 
     ]
 
+    // Region
+    const region = require('../../../assets/Region/province')
+
+    // Province 
+    const [province, setProvince] = useState(region.province)
+    const [provinceModal, setProvinceModal] = useState(false)
+    const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(province[0].name)
+    const provinceSelection = province
+
+    //District
+    const [district, setDistrict] = useState(region.kabupatenkota('11'))
+    const [districtModal, setDistrictModal] = useState(false)
+    const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(district[0].name)
+
     const [dataFamily, setDataFamily] = useState({
-        nik: null,
-        firstName: null,
-        lastName: null,
-        gender: null,
-        // dob: null,
-        dob: moment(props.userData.dob).format('DD/MM/YYYY') || null,
-        bloodType :null,
-        resus:null,
-        phoneNumber: null,
-        // statusFamily: null,
-        insuranceStatus: null,
-        // address: null
+        nik: '',
+        firstName: '',
+        lastName: '',
+        gender: 'Male',
+        dob: moment(new Date()).format('DD/MMMM/YYYY') || null,
+        bloodType :'A',
+        resus:'+',
+        phoneNumber: '',
+        relationship: 'SUAMI',
+        insuranceStatus: 'UMUM',
+        location: {
+			province: selectedProvinceLabel,
+			city: selectedDistrictLabel,
+			type: "Point",
+			coordinates: [district[0].longitude, district[0].latitude]
+		},
     })
     
-    const [gender , setGender] = useState  ({
-    })
 
     var radio_props = [
         {label: 'Laki-laki', value: 'Male' },
@@ -115,7 +119,7 @@ const familyForm = (props) => {
 
 
     const validation = () => {
-        console.log(dataFamily, 'log======');
+        console.log('Validating new family data...')
 
         if (dataFamily.firstName == null ||
             dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 ||
@@ -133,11 +137,39 @@ const familyForm = (props) => {
         }
     }
 
-    async function setSelectedValue(value, changeKey){
-        setDataFamily({
-            ...dataFamily,
-            [changeKey] :value
-        })
+    async function setSelectedValue(value, changeKey, changeInnerKey, name, coordinatesKey){
+        if(changeKey === 'location'){
+            const firstIndex = region.kabupatenkota(value)[0]
+            coordinatesKey =  coordinatesKey ? coordinatesKey: [firstIndex.longitude, firstIndex.latitude]
+            if(changeInnerKey === 'province'){
+                setDistrict(region.kabupatenkota(value))
+                setSelectedDistrictLabel(firstIndex.name)
+                setDataFamily({
+                    ...dataFamily,
+                    [changeKey]: {
+                        ...dataFamily[changeKey],
+                        [changeInnerKey]: name,
+                        city: firstIndex.name,
+                        coordinates: [coordinatesKey[0], coordinatesKey[1]],
+                    }
+                })
+            } else {
+                setSelectedDistrictLabel(name)
+                setDataFamily({
+                    ...dataFamily,
+                    [changeKey]: {
+                        ...dataFamily[changeKey],
+                        [changeInnerKey]: name,
+                        coordinates: [coordinatesKey[0], coordinatesKey[1]]
+                    }
+                })
+            }
+		} else {
+            setDataFamily({
+                ...dataFamily,
+                [changeKey] :value
+            })
+        }
     }
 
 
@@ -157,42 +189,52 @@ const familyForm = (props) => {
         if (typeof send.nik == 'string') {
             send.nik = Number(send.nik)
         }
-        console.log(send, 'data yang mau dikirim')
+        console.log('Sending data to store/index...')
         props.addFamily(send, props.navigation, setLoadFalse)
     }
 
     function setLoadFalse() {
         setLoad(false)
     }
+
+   
     
     const[selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(dataFamily.bloodType)
     const[selectedRhesusLabel,setSelectedRhesusLabel] = useState(dataFamily.resus)
     const[selectedInsuranceLabel,setselectedInsuranceLabel] = useState(dataFamily.insuranceStatus)
-    const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.statusFamily)
+    const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.relationship)
    
-    const chosenDate = fullMonthFormat(dataFamily.dob)
+    const newDate = new Date()
+	const sendDate = `${withZero(newDate.getDate())}/${withZero(newDate.getMonth()+1)}/${withZero(newDate.getFullYear())}`
+	const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate))
     return (
-        <View style={style.container}>
+        <View style={styles.container}>
             <Header title={'Tambah Keluarga'} navigate={props.navigation.navigate} navigateBack={'FamilyList'}/>
-            <View style={container.base}>
                 <ScrollView showsVerticalScrollIndicator={false}>
+
                 {/* NIK Input */}
-                    <TextInput
-                        style={{ ...container.input, color: '#DDDDDD', marginTop:25, width: '100%' }}
-                        autoCapitalize={'none'}
-                        autoFocus={false}
-                        placeholder={'NIK'}
-                        keyboardType={'numeric'}
-                        placeholderTextColor="#DDDDDD" 
-                        onChangeText={text =>
-                            setDataFamily({ ...dataFamily, nik: text })
-                        }
-                        value={dataFamily.nik}
-                    />
-                {/* NIK Error Input */}    
-                        {dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 &&
-                            <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
-                        }
+                <View style={styles.inputTopContainer}>
+                    <View style={styles.input}>
+                        <TextInput
+                            style={styles.inputText}
+                            autoCapitalize={'none'}
+                            autoFocus={false}
+                            placeholder={'NIK'}
+                            keyboardType={'numeric'}
+                            placeholderTextColor="#8b8b8b" 
+                            onChangeText={text =>
+                                setDataFamily({ ...dataFamily, nik: text })
+                            }
+                            value={dataFamily.nik}
+                        />
+                    </View>
+                    {/* NIK Error Input */}    
+                    {dataFamily.nik !== null && dataFamily.nik.length > 1 && dataFamily.nik.length !== 16 &&
+                        <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
+                    }
+                </View>
+
+               
                 {/* First Name Error Input */}            
                         <View style={{  flexDirection: 'row', }}>
                             {!dataFamily.firstName && valid &&
@@ -200,60 +242,70 @@ const familyForm = (props) => {
                             }
                         </View>
                 {/* First Name Input */}    
-                    <View style={{ flexDirection: 'row', width: '100%' }}>
+                <View style={styles.inputMiddleContainer}>
+                    <View style={styles.input}>
                         <TextInput
-                            style={{ ...container.input, width: '100%' }}
+                            style={styles.inputText}
                             autoCapitalize={'sentences'}
                             autoFocus={false}
                             placeholder={'Nama Depan'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text =>
                                 setDataFamily({ ...dataFamily, firstName: text })
                             }
                             value={dataFamily.firstName}
                         />
                     </View>
-                {/* Last Name Input */}        
-                    <TextInput
-                            style={{ ...container.input, width: '100%' }}
+                </View>
+
+                {/* Last Name Input */}      
+                <View style={styles.inputMiddleContainer}>
+                    <View style={styles.input}>
+                        <TextInput
+                            style={styles.inputText}
                             autoCapitalize={'sentences'}
                             autoFocus={false}
                             placeholder={'Nama Belakang'}
-                            placeholderTextColor="#DDDDDD" 
+                            placeholderTextColor="#8b8b8b" 
                             onChangeText={text =>
                                 setDataFamily({ ...dataFamily, lastName: text })
                             }
                             value={dataFamily.lastName}
                     />
-                {/* Gender Input */}               
-                    <View style={{marginTop:10}}>
+                    </View>
+                </View>  
+                {/* Gender Input */} 
+                <View style={styles.inputMiddleContainer}>
+                    <View style={{...styles.input, justifyContent: 'center', backgroundColor: 'transparent', borderWidth: 0,}}>
                         <RadioForm
                             radio_props={radio_props}
                             initial={0}
-                            onPress={(value) => {setDataFamily({ ...dataFamily, gender:value})}}
+                            onPress={(value) => {setDataFamily({ ...dataFamily, gender: value })}}
                             formHorizontal={true}
                             labelHorizontal={true}
-                            animation={true}
+                            animation={false}
                             labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
-                            style={{alignItems:'center',marginTop:10,paddingHorizontal:20,color: '#DDDDDD'}}
+                            style={styles.inputText}
                             buttonOuterSize={20}
-                    />      
+                        />
                     </View>
+                </View>       
+
                 {/* DOB Error */}    
                         <View style={{ flexDirection: 'row', }}>
                             {!dataFamily.dob && valid &&
                                 <Text style={{ color: 'red', marginVertical: 15, marginLeft: 5, fontSize: 14 }}>*</Text>
                             }
                         </View>
-                {/* DOB Form  */}      
-                  <View style={container.dobMiddleContainer}>   
-                    <View style={container.dob}>
-                        <Text style={{marginLeft:5,marginTop:30,color:'#DDDDDD'}}> {chosenDate}</Text>
+
+                {/* DOB Form  */} 
+                <View style={styles.inputMiddleContainer}>
+                    <View style={{...styles.input, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row'}}>
+                        <Text style={styles.inputText}>{chosenDate}</Text>
                         <DatePicker
-                            style={{ width: '100%' }}
-                            date={chosenDate.dob} //initial date from state
-                            mode="date" //The enum of date, datetime and time
-                            format='DD/MM/YYYY'
+                            date={chosenDate} //initial date from state
+                            mode="date" //The enum of date, datetime and time                            
+                            format='DD/MMMM/YYYY'
                             maxDate={new Date()}
                             confirmBtnText="Confirm"
                             cancelBtnText="Cancel"
@@ -261,8 +313,7 @@ const familyForm = (props) => {
                                 dateIcon: {
                                     display: 'none',
                                     position: 'absolute',
-                                    right: 1,
-                                    bottom:30,
+                                    right: 0,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     shadowColor: 'black',
@@ -278,290 +329,261 @@ const familyForm = (props) => {
                             }}
                             onDateChange={date => {
                                 setDataFamily({ ...dataFamily, dob: date });
+                                setChosenDate(fullMonthFormat(date))
                             }}
                         />
                     </View>
-                 </View>   
-                  {/* Phone Number Input */}        
-                    <TextInput
-                        style={{ ...container.input, marginTop:15, width: '100%' }}
-                        autoCapitalize={'none'}
-                        autoFocus={false}
-                        placeholder={'Nomor Hp'}
-                        placeholderTextColor="#DDDDDD"
-                        keyboardType={'numeric'}
-                        onChangeText={text =>
-                            setDataFamily({ ...dataFamily, phoneNumber: text })
-                        }
-                        value={dataFamily.phoneNumber}
-                    />
-                    {/* Blood Input */} 
-                    <View style={{ width: '100%', flexDirection: 'row' }}>
-                        <View style={{ ...container.pickerContainer, width: '50%' }}>
-                            <TouchableOpacity
-                                onPress={()=>setBloodTypeModal(true)}
-                                style={container.buttonModal}
-                                >
-                                <Text style={container.inputText}> Gol Darah:  {selectedBloodTypeLabel} </Text>
-                                <Image
-                                    style={{width:12,height:10.2}} 
-                                    source={require('../../../assets/png/ArrowDown.png')}
-                                />
-                            </TouchableOpacity>
-                            <SelectModal
-                                dataFamily={dataFamily}
-                                modal={bloodTypeModal}
-                                setModal={setBloodTypeModal}
-                                selection={bloodType}
-                                title='Silahkan pilih golongan darah anda'
-                                subtitle='Pilihan yang tersedia'
-                                setSelectedValue={setSelectedValue}
-                                setSelectedLabel={setselectedBloodTypeLabel}
-                                changeKey='bloodType'
-                            >
-                            </SelectModal>
-                        </View>
-                    {/* Rhesus Input */} 
-                        <View style={{ ...container.pickerContainer, width: '50%' }}>
-                            <TouchableOpacity
-                                onPress={()=>setRhesusModal(true)}
-                                style={container.buttonModal}
-                                >
-                                <Text style={container.inputText} >  Rhesus : {selectedRhesusLabel} </Text>
-                                <Image
-                                    style={{width:12,height:10.2}} 
-                                    source={require('../../../assets/png/ArrowDown.png')}
-                                />
-                           </TouchableOpacity>
+                </View>   
 
-                           <SelectModal
-                                modal={rhesusTypeModal}
-                                setModal={setRhesusModal}
-                                selection={resus}
-                                title='Silahkan pilih golongan resus anda'
-                                subtitle='Pilihan yang tersedia'
-                                setSelectedValue={setSelectedValue}
-                                setSelectedLabel={setSelectedRhesusLabel}
-                                changeKey='resus'
-                           >
-                           
-                           </SelectModal>
-                        </View>
+                {/* Phone Number Input */}        
+                <View style={styles.inputMiddleContainer}>
+                    <View style={styles.input}>
+                        <TextInput
+                            style={styles.inputText}
+                            autoCapitalize={'none'}
+                            autoFocus={false}
+                            placeholder={'Nomor Hp'}
+                            placeholderTextColor="#8b8b8b"
+                            keyboardType={'numeric'}
+                            onChangeText={text =>
+                                setDataFamily({ ...dataFamily, phoneNumber: text })
+                            }
+                            value={dataFamily.phoneNumber}
+                        />
                     </View>
+                </View>
 
-                  {/* Golongan Status Input */}     
-                  <View style={[container.pickerContainer]}>
-                        <TouchableOpacity
-                            onPress={()=>setInsuranceStatusModal(true)}
-                            style={container.buttonModal}
-                            >
-                            <Text style={container.inputText}>  Status : {selectedInsuranceLabel} </Text>
+                {/* Blood Input */} 
+                <View style={{...styles.inputMiddleContainer, flexDirection: 'row'}}>
+                    <TouchableOpacity 
+                            onPress={() => setBloodTypeModal(true)}
+                            style={styles.button}
+                        >
+                            <Text style={styles.inputText}>{selectedBloodTypeLabel}</Text>
                             <Image
-                                style={{width:12,height:10.2}} 
                                 source={require('../../../assets/png/ArrowDown.png')}
                             />
-                        </TouchableOpacity>
-
-                        <SelectModal
-                                modal={insuranceStatusModal}
-                                setModal={setInsuranceStatusModal}
-                                selection={insuranceStatus}
-                                title='Silahkan pilih golongan Status anda'
-                                subtitle='Pilihan yang tersedia'
-                                setSelectedValue={setSelectedValue}
-                                setSelectedLabel={setselectedInsuranceLabel}
-                                changeKey='insuranceStatus'
+                        
+                    </TouchableOpacity>
+                    <SelectModal
+                        modal={bloodTypeModal}
+                        setModal={setBloodTypeModal}
+                        selection={bloodType}
+                        title='Silahkan pilih golongan darah anda'
+                        subtitle='Pilihan yang tersedia'
+                        setSelectedValue={setSelectedValue}
+                        setSelectedLabel={setselectedBloodTypeLabel}
+                        changeKey='bloodType'
+                    />
+                        {/* Rhesus form */}
+                    <TouchableOpacity 
+                            onPress={() => setRhesusModal(true)}
+                            style={styles.button}
                         >
-                        </SelectModal>
-                 </View>    
-                {/* Status Family Input */}     
-                    <View style={{ ...container.pickerContainer, width: '100%' }}>
-                        <TouchableOpacity
-                            onPress={()=>setStatusFamilyModal(true)}
-                            style={container.buttonModal}
-                            >
-                            <Text style={container.inputText}>  Hubungan Keluarrga : {selectedStatusFamilyLabel} </Text>
+                            <Text style={styles.inputText}>{selectedRhesusLabel}</Text>
                             <Image
-                                style={{width:12,height:10.2}} 
                                 source={require('../../../assets/png/ArrowDown.png')}
-                        />
-                        </TouchableOpacity>
+                            />
+                    </TouchableOpacity>
+					<SelectModal
+						modal={rhesusTypeModal}
+						setModal={setRhesusModal}
+						selection={resus}
+						title='Silahkan pilih rhesus darah anda'
+						subtitle='Pilihan yang tersedia'
+						setSelectedValue={setSelectedValue}
+						setSelectedLabel={setSelectedRhesusLabel}
+						changeKey='resus'
+					/>
+                </View>
 
-                        <SelectModal
-                                modal={statusfamilyModal}
-                                setModal={setStatusFamilyModal}
-                                selection={statusFamily}
-                                title='Silahkan pilih golongan keluarga anda'
-                                subtitle='Pilihan yang tersedia'
-                                thirdtitle='My Family'
-                                setSelectedValue={setSelectedValue}
-                                setSelectedLabel={setSelectedStatusFamilyLabel}
-                                changeKey='statusFamily'
-                            
+                {/* Golongan Status Input */}     
+                <View style={styles.inputMiddleContainer}>
+                    <TouchableOpacity 
+                            onPress={() => setInsuranceStatusModal(true)}
+                            style={styles.button}
                         >
-                        </SelectModal>
-   
+                            <Text style={styles.inputText}>{selectedInsuranceLabel}</Text>
+                            <Image
+                                source={require('../../../assets/png/ArrowDown.png')}
+                            />
+                    </TouchableOpacity>
+                    
+                    <SelectModal
+                        modal={insuranceStatusModal}
+                        setModal={setInsuranceStatusModal}
+                        selection={insuranceStatus}
+                        title='Silahkan pilih tipe asuransi anda'
+                        subtitle='Pilihan yang tersedia'
+                        setSelectedValue={setSelectedValue}
+                        setSelectedLabel={setselectedInsuranceLabel}
+                        changeKey='insuranceStatus'
+                    />
+                </View>
+
+                {/* Status Family Input */}    
+                <View style={styles.inputMiddleContainer}>
+					<TouchableOpacity 
+						onPress={() => setStatusFamilyModal(true)}
+						style={styles.button}
+					>
+                        <Text style={styles.inputText}>{selectedStatusFamilyLabel} </Text>
+						<Image
+							source={require('../../../assets/png/ArrowDown.png')}
+						/>
+					</TouchableOpacity>
+					<SelectModal
+                        modal={statusfamilyModal}
+                        setModal={setStatusFamilyModal}
+                        selection={statusFamily}
+                        title='Silahkan pilih golongan keluarga anda'
+                        subtitle='Pilihan yang tersedia'
+                        setSelectedValue={setSelectedValue}
+                        setSelectedLabel={setSelectedStatusFamilyLabel}
+                        changeKey='relationship'
+                    >
+                    </SelectModal>
+				</View> 
                 
-                    </View>
-                <TextInput
-                    style={{   
-                        height: 80,
-                        borderWidth: 1,
-                        paddingHorizontal: 20,
-                        borderRadius: 3,
-                        color: '#DDDDDD',
-                        backgroundColor: '#2F2F2F',
-                        marginTop: 20, 
-                        color: '#DDDDDD',
-                        width: '100%',
-                        fontSize: 14,
-                        paddingBottom:50 
-                    }}
-                        autoCapitalize={'sentences'}
-                        autoFocus={false}
-                        placeholder={'Alamat....'}
-                        placeholderTextColor="#DDDDDD"
-                        // onChangeText={
-                        //     text => setDataFamily({ ...dataFamily, address: text })
-                        // }
-                        // value={dataFamily.address}
-                      
-                     />
+
+                {/* Province form */}
+				<View style={styles.inputMiddleContainer}>
+					<TouchableOpacity 
+						onPress={() => setProvinceModal(true)}
+						style={styles.button}
+					>
+						<Text style={styles.inputText}>{selectedProvinceLabel}</Text>
+						<Image
+							source={require('../../../assets/png/ArrowDown.png')}
+						/>
+					</TouchableOpacity>
+					<LocationModalPicker
+						modal={provinceModal}
+						setModal={setProvinceModal}
+						selection={provinceSelection}
+						title='Silahkan pilih lokasi provinsi anda'
+						subtitle='Pilihan yang tersedia'
+						setSelectedValue={setSelectedValue}
+						setSelectedLabel={setSelectedProvinceLabel}
+						changeKey='location'
+						changeInnerKey='province'
+					/>
+				</View>
+
+                {/* City form */}
+				<View style={styles.inputMiddleContainer}>
+					<TouchableOpacity 
+						onPress={() => setDistrictModal(true)}
+						style={styles.button}
+					>
+						<Text style={styles.inputText}>{selectedDistrictLabel}</Text>
+						<Image
+							source={require('../../../assets/png/ArrowDown.png')}
+						/>
+					</TouchableOpacity>
+                    <LocationModalPicker
+						modal={districtModal}
+						setModal={setDistrictModal}
+						selection={district}
+						title='Silahkan pilih lokasi kota anda'
+						subtitle='Pilihan yang tersedia'
+						setSelectedValue={setSelectedValue}
+						setSelectedLabel={setSelectedDistrictLabel}
+						changeKey='location'
+						changeInnerKey='city'
+					/>
+                </View>
                 </ScrollView>
-                <View style={{ alignItems: 'flex-end', marginTop: 20, marginBottom: 5 }}>
+                <View style={styles.buttonContainer}>
             
                     <TouchableOpacity onPress={() => {validation() }}
-                        style={container.button}>
+                        style={styles.submitButton}>
                         {load ?
                             <ActivityIndicator size={'small'} color={'#FFF'} /> :
-                            <Text style={{...textStyle.button, fontSize:14}}>Tambah Keluarga</Text>
+                            <Text style={{ fontSize: 18, color: '#FFF' }}>Tambah Keluarga</Text>
                         }
                     </TouchableOpacity>
                 </View>
-            </View>
         </View>
     )
 }
 
-const container = StyleSheet.create({
-    base: {
-        flex: 1,
-        // backgroundColor: '#CCEDBF',
-        paddingHorizontal: 20   
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#1f1f1f',
+        minHeight: hp('100%'),
+        width: wp('100%'),
+        flex: 1
     },
-    buttonModal:{
+
+	header: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 20
+	},
+
+	headerText: {
+		color: '#DDDDDD'
+	},
+
+	inputTopContainer: {
+        paddingTop: 20,
+        paddingHorizontal: 10
+    },
+
+	inputMiddleContainer: {
+        paddingTop: 10,
+        paddingHorizontal: 10
+    },
+
+	inputBottomContainer: {
+        paddingTop: 10,
+        paddingBottom: 20,
+        paddingHorizontal: 10
+    },
+
+	input: {
+        height: 50,
+        borderWidth: 1,
+        paddingHorizontal: 20,
+        borderRadius: 3,
+        backgroundColor: '#2F2F2F',
+        justifyContent: 'center'
+    },
+
+	inputText: {
+        color: '#DDDDDD'
+    },
+
+	buttonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom:20
+    },
+
+	button: {
         flex: 0.5,
-        height: 70,
-        
+        height: 50,
+        borderWidth: 1,
         paddingHorizontal: 20,
         borderRadius: 3,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
         backgroundColor: '#2F2F2F'
-    },
-    inputText:{
-        color:'#DDDDDD',
-        marginLeft:-17
-    },
-    input: {
+	},
+
+	submitButton: {
         height: 50,
-        borderWidth: 1,
-        paddingHorizontal: 20,
-        borderRadius: 3,
-        color: '#DDDDDD',
-        backgroundColor: '#2F2F2F',
-        marginTop: 20,
-        fontSize: 14
-    },
-    pickerContainer: {
-        height: 50,
-        backgroundColor: '#2F2F2F',
-        borderWidth: 1,
-        borderRadius: 3,
-        justifyContent: 'center',
-        paddingHorizontal: 10,
-        marginTop:20,
-        fontSize:14
-    },
-    dob: {
-        height: 50,
-        borderWidth: 1,
-        paddingHorizontal: 10,
-        borderRadius: 3,
-        backgroundColor: '#2F2F2F',
-        justifyContent: 'center',
-        marginTop:20
-    },
-    dobMiddleContainer:{
-        paddingTop: 0,
-        paddingHorizontal: 0
-    },
-    button: {
-        height: 50,
-        width: '100%',
-        backgroundColor: '#005EA2',
-        borderWidth: 1,
+        width: '85%',
+        backgroundColor: '#005ea2',
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        
-        fontSize:14,
-        color: '#DDDDDD'
-    },
-})
-
-const textStyle = StyleSheet.create({
-    header: {
-        color: '#33691E',
-        fontSize: 14,
-        marginVertical: 10
-    },
-    button: {
-        color: '#DDDDDD',
-        fontWeight: 'bold'
-    },
-    input: {
-        color: '#DDDDDD'
-    },
-    pickerContainer: {
-        color: '#DDDDDD'
-    }
-})
-
-const style = StyleSheet.create({
-    container: {
-        backgroundColor: '#1F1F1F',
-        minHeight: '100%'
-    },
-    content:{
-        height: 85
-    },
-    input: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: wp('95%'),
-        fontSize: 14
-    },
-    inputMiddleContainer: {
-        paddingTop: 10,
-        paddingHorizontal: 10
-    },
-    textInput: {
-        width: 330,
-        paddingTop: 6,
-        paddingBottom: 6,
-        margin: 5,
-        fontSize:14
-    },
-    submit: {
-        backgroundColor: 'skyblue',
-        width: 150,
-        height: 48,
-        borderRadius: 9,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 30
+        marginVertical: 10,
     }
 })
 
