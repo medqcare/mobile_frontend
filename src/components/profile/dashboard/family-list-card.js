@@ -204,26 +204,3 @@ const textStyles = StyleSheet.create({
     }
 })
 export default connect(null, mapDispatchToProps)(familyList)
-
-// <TouchableOpacity>
-//     <View style={style.genderLogo} >
-        
-//     </View>
-
-//     <View style={style.familyData}>
-//         <View style={style.profilePicture}>
-//         </View>
-//         <View style={style.name}>
-//         </View>
-//         <View style={style.age}>
-//         </View>
-//     </View>
-// </TouchableOpacity>
-
-// const style = StyleSheet.create({
-//     genderLogo: {
-//         position: 'absolute',
-//         right: 10,
-//         top: 10
-//     }
-// })
