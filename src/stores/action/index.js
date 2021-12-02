@@ -546,7 +546,8 @@ export function deleteFamily(userId, { token }, modalF) {
   };
 }
 
-export function edit_profile(userData, userID, token) {
+export function edit_profile(userData, userID, token, navigateTo) {
+  console.log('Sending data to server...')
   return dispatch => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -557,9 +558,6 @@ export function edit_profile(userData, userID, token) {
           data: userData,
           headers: { Authorization: token },
         });
-        console.log(
-          'ini data dari update', data
-        );
         let dataUpdate = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
@@ -570,6 +568,9 @@ export function edit_profile(userData, userID, token) {
           type: 'GET_USER_DATA',
           payload: dataUpdate.data.data,
         });
+        ToastAndroid.show(data.data.message, ToastAndroid.SHORT)
+        console.log('Profile succesfully updated')
+        navigateTo('FamilyList')
       } catch (error) {
         console.log(error);
         reject(error);
