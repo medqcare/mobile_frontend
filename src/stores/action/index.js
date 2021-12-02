@@ -503,6 +503,7 @@ export function addFamily(dataFamily, navigation, loadFalse) {
           type: 'GET_USER_DATA',
           payload: result.data.data,
         })
+        loadFalse()
         navigation.navigate('FamilyList')
         ToastAndroid.show(successAddFamilyMessage, ToastAndroid.SHORT);
       }
