@@ -29,7 +29,6 @@ const mapDispatchToProps = {
 
 const profileInfo = (props) => {
     // const [userData, setUserData] = useState(props.userData)
-    const userData = useSelector(state => state.userData)
     const [confirmationModal, setConfirmationModal] = useState(false)
 
     // Load
@@ -76,11 +75,11 @@ const profileInfo = (props) => {
     async function setSelectedValue(label){
         switch (label) {
             case 'Kamera':
-                await props.navigation.navigate('ProfilePictureCamera')
+                await props.navigation.navigate('ProfilePictureCamera', { destination: props.destination })
                 break;
 
             case 'Galeri':
-                await props.navigation.navigate('ProfilePictureGallery')
+                await props.navigation.navigate('ProfilePictureGallery', { destination: props.destination })
                 break;
 
             case 'Hapus':
