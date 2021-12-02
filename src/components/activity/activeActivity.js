@@ -20,8 +20,8 @@ const activeActivity = props => {
   }, []);
 
   function socketers() {
-    // let socketIO = `${baseURL}`;
-    let socketIO = `http://192.168.43.100:3004` // only development
+    let socketIO = `${baseURL}`;
+    // let socketIO = `http://192.168.43.100:3004` // only development
     let socket = io(socketIO);
 
     socket.on(`que-${JSON.parse(props.queueId)}`, data => {

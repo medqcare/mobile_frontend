@@ -33,8 +33,8 @@ const ListApointment = (props) => {
 
     //function 
     function socketConnection() {
-        // let socketIO = `${baseURL}` //use this for production
-        let socketIO = `http://192.168.43.100:3004` // only development
+        let socketIO = `${baseURL}` //use this for production
+        // let socketIO = `http://192.168.43.100:3004` // only development
         let socket = io(socketIO)
         
         socket.on(`regP-${dataPatient._id}`, async data => {
