@@ -12,3 +12,9 @@ export default function getAge(date) {
     }
     return Age
 }
+
+export function properAge(date){
+    const age = getAge(date)
+    const properFormat = `${age} Tahun`
+    return properFormat
+}

@@ -34,7 +34,7 @@ const profileInfo = (props) => {
 
     // Load
     const [load, setLoad] = useState(false)
-
+    const userData = props.userData
 
     // Profile Picture
     const [profilePictureModal, setProfilePictureModal] = useState(false)
