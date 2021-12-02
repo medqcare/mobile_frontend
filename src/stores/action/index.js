@@ -529,12 +529,12 @@ export function deleteFamily(userId, { token }, modalF) {
           patientId: userId
         }
       });
+      ToastAndroid.show(Data.data.message, ToastAndroid.SHORT)
       let newUserData = await instance({
         url: `/v1/members/dataLogged`,
         method: 'GET',
         headers: { Authorization: token },
       });
-      console.log('ini new user data', newUserData)
       dispatch({
         type: 'GET_USER_DATA',
         payload: newUserData.data.data,
