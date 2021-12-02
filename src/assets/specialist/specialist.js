@@ -2,23 +2,21 @@ export function specialistName() {
     let listData = [
         {
             id: '01',
-            name: "Internist",
+            name: "Umum",
         },
         {
             id: "02",
-            name: "Plastic Surgeons"
+            name: "Spesialis Anak"
         },
         {
             id: '03',
-            name: "Physiatrists",
+            name: "Kandungan",
         },
         {
             id: '04',
-            name: "Pediatrician",
+            name: "Psikologi",
         },
     ]
 
-    return listData.sort(function (a, b) {
-        return (a.name.toLowerCase() > b.name.toLowerCase())
-    })
+    return listData
 }

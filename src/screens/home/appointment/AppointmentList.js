@@ -124,7 +124,7 @@ const Appointment = props => {
             />
           ) : (
             <View style={{flex: 1, alignItems: 'center', padding: 20}}>
-              <Text style={{color: '#FFFFFF'}}>There is no appointment</Text>
+              <Text style={{color: '#FFFFFF'}}>Tidak ada Daftar Janji</Text>
             </View>
           )}
           {/* {cancelR && (
