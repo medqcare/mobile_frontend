@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 
 function Transaksi(props) {
     return (
-        <View>
-            <Text style={{color: '#fff'}}>Ini riwayat Transaksi</Text>
+        <View style={{alignItems: 'center', marginTop: 25}}>
+            <Text style={{color: '#fff'}}>Tidak ada riwayat Transaksi</Text>
         </View>
     )
 }

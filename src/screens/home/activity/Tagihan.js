@@ -8,7 +8,9 @@ function Tagihan(props) {
         <View style={{flex: 1, backgroundColor: '#181818'}}>
         <StatusBar hidden />
         <Header title='Detail Transaksi' navigate={props.navigation.navigate} navigateBack='Home' />
-            <Text style={{color: '#F37335'}}>Ini halaman tagihan</Text>
+            <View style={{alignItems: 'center', marginTop: 25}}>
+                <Text style={{color: '#fff'}}>Belum ada tagihan</Text>
+            </View>
         </View>
     )
 }

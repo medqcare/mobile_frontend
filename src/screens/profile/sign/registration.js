@@ -64,18 +64,16 @@ const DataCompletion = props => {
 
 	// UserData
 	const [userData, setUserData] = useState({
-        photo: '',
+        imageUrl: '',
         nik: '',
         firstName: '',
         lastName: '',
         gender: 'Male',
-        dob: moment(new Date()).format('DD/MM/YYYY'),
+        dob: moment(new Date()).format('DD/MMMM/YYYY'),
         bloodType: 'A',
         resus: '+',
         phoneNumber: '',
-        location: '',
         insuranceStatus: 'UMUM',
-		// address: '',
 		location: {
 			province: selectedProvinceLabel,
 			city: selectedDistrictLabel,

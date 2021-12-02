@@ -164,6 +164,7 @@ const Allergies = props => {
           family={family}
           title="Siapa yang ingin anda check?"
           setSelectedValue={setSelectedValue}
+          navigateTo={props.navigation.navigate}
         />
       </View>
       {Load ? (

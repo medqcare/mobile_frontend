@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
     View,
     Text,
-    TouchableOpacity,
     StyleSheet,
     ScrollView,
     BackHandler,
-    Image
 } from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen';
 import { connect } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-import Icon from 'react-native-vector-icons/Ionicons'
-import Feather from 'react-native-vector-icons/Feather'
-import Icon5 from 'react-native-vector-icons/FontAwesome5'
-import ArrowBack from '../../assets/svg/ArrowBack'
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info'
 import secureEmail from '../../helpers/secureEmail';
@@ -29,7 +21,6 @@ const mapStateToProps = state => {
     return state
 }
 function ProfileDetail({ navigation, userData }){
-    console.log(userData, '=======================================')
     const nik = userData.nik
     const email = secureEmail(userData.userID.email)
     const bloodType = userData.bloodType + ' ' + userData.resus

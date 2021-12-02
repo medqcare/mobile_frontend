@@ -38,7 +38,7 @@ function RiwayatPage(props) {
       <Header title={'Riwayat ' + page} navigate={props.navigation.navigate} />
 
 
-      <View style={{ height: 40, margin: 15 }}>
+      <View style={{ height: 40, margin: 20 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {tipeRiwayat.map((item) => {
             return (
@@ -47,14 +47,14 @@ function RiwayatPage(props) {
                   style={{
                     backgroundColor: item === page ? "#005EA2" : null,
                     borderRadius: 30,
-                    borderWidth: item !== page ? 1 : null,
-                    borderColor: item !== page ? "#DDDDDD" : null,
+                    borderWidth: item !== page ? 0.8 : null,
+                    borderColor: item !== page ? "#474747" : null,
                     height: 40,
                     padding: 10,
                     marginRight: 5,
                   }}
                 >
-                  <Text style={{ color: "#DDDDDD" }}>{item}</Text>
+                  <Text style={{ color: "#B5B5B5" }}>{item}</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -62,9 +62,9 @@ function RiwayatPage(props) {
         </ScrollView>
       </View>
 
-      { page === 'Daftar Janji' && <Pemesanan /> }
+      { page === 'Daftar Janji' && <Pemesanan/> }
       { page === 'Transaksi' && <Transaksi /> }
-      { page === 'Resume Medis' && <ResumeMedis /> }
+      { page === 'Resume Medis' && <ResumeMedis navigation={props.navigation}/> }
       
     </KeyboardAvoidingView>
   );

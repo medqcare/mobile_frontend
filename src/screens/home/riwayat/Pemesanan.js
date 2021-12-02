@@ -74,7 +74,7 @@ function Pemesanan(props) {
   }, [appoinment]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#181818" }}>
+    <View style={{ flex: 1, backgroundColor: "#181818", marginHorizontal: 5 }}>
       {Load ? (
         <LottieLoader
           source={require("../../animation/loading.json")}
