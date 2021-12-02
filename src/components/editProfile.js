@@ -126,8 +126,6 @@ const editProfile = (props) => {
 		
 	// Function for change data
 	function setSelectedValue(value, changeKey, changeInnerKey, name, coordinatesKey){
-        console.log(changeKey)
-        console.log(name)
         if(changeKey === 'location'){
             const firstIndex = region.kabupatenkota(value)[0]
             coordinatesKey =  coordinatesKey ? coordinatesKey: [firstIndex.longitude, firstIndex.latitude]
@@ -206,7 +204,6 @@ const editProfile = (props) => {
 		props
 		.edit_profile(data, props.userData._id, JSON.parse(token).token)
 		.then((backData) => {
-			console.log(backData, "ini balikan datanya");
 			setLoad(false);
 			setModalS(true);
 			props.navigation.navigate("ProfileDetail")
@@ -392,7 +389,6 @@ const editProfile = (props) => {
 						}}
 						onDateChange={(date) => {
 							setUserData({ ...userData, dob: date });
-							console.log(date);
 						}}
 					/>
 				</View>
