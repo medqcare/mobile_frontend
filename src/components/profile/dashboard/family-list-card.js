@@ -39,6 +39,7 @@ const familyList = (props) => {
     const [modalS, setModalS] = useState(false) //untuk modal sukses
     const [modalF, setModalF] = useState(false) //untuk modal failed
     const [message, setMessage] = useState('') //untuk pesan dimodal
+    const [load, setLoad] = useState(false)
 
 
 
@@ -61,7 +62,6 @@ const familyList = (props) => {
 
     return (
         families.map((family, index) => {
-            console.log(family.firstName, 'di family list')
             return (
                 <TouchableOpacity
                     onPress={() => 
@@ -103,10 +103,13 @@ const familyList = (props) => {
                         optionRightText={'HAPUS'}
                         optionLeftFunction={() => setModalW (false)}
                         optionRightFunction={async () => {
+                            setLoad(true)
                             let token = await AsyncStorage.getItem('token')
-                            await props.deleteFamily(props.member._id, JSON.parse(token), modals)
+                            await props.deleteFamily(family._id, JSON.parse(token))
                             setModalW(false)
+                            setLoad(false)
                         }}
+                        load={load}
 
                     />
                 
