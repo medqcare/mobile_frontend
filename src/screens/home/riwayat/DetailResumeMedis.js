@@ -65,7 +65,7 @@ export default function DetailResumeMedis(props) {
             </TouchableOpacity>
           </View>
         </View>
-        <SafeAreaView>
+        <SafeAreaView >
           <ScrollView>
             {resumeMedis && (
               <View style={styles.content}>
@@ -74,22 +74,20 @@ export default function DetailResumeMedis(props) {
                   <View style={styles.line} />
                   <View style={styles.card}>
                     <View style={styles.item}>
-                      <Text style={styles.textItem}>Keluhan utama</Text>
+                      <Text style={styles.textSubHeader}>Keluhan utama</Text>
                     </View>
                     <View style={styles.contentBox}>
                       <Text style={styles.textContent}>
                         {resumeMedis.examination.anamnesa}
-                        ksjhdfljksdhfjhjjjjjjkshdfjshdfkjhsdfkhsdjfhsjfhskhfsdhkjfhskjfhsjd
                       </Text>
                     </View>
                     <View style={styles.item}>
-                      <Text style={styles.textItem}>Pemeriksaan Fisik</Text>
+                      <Text style={styles.textSubHeader}>Pemeriksaan Fisik</Text>
                     </View>
 
                     <View style={styles.contentBox}>
                       <Text style={styles.textContent}>
                         {resumeMedis.examination.physicalExam}
-                        ksjhdfljksdhfjhjjjjjjkshdfjshdfkjhsdfkhsdjfhsjfhskhfsdhkjfhskjfhsjd
                       </Text>
                     </View>
                   </View>
@@ -249,7 +247,7 @@ export default function DetailResumeMedis(props) {
                   <Text style={styles.textHeader}>PENGOBATAN</Text>
                   <View style={styles.line} />
                 </View>
-                <View style={styles.contentHeader}>
+                <View style={{...styles.contentHeader, marginBottom: '20%'}}>
                   <Text style={styles.textHeader}>NOTES</Text>
                   <View style={styles.line} />
                   <View style={styles.card}>
@@ -278,7 +276,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   content: {
-    height: "100%",
+    height: "95%",
     backgroundColor: "#2F2F2F",
     borderRadius: 10,
     padding: 15,
@@ -314,16 +312,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   contentBox: {
-    // backgroundColor: "#B5B5B5",
-    // borderColor: "#B5B5B5",
-    // borderWidth: 1,
     marginBottom: 10,
     borderRadius: 5,
-    minHeight: 50,
+    minHeight: 40,
     padding: 8,
   },
   textContent: {
     color: "#B5B5B5",
+  },
+  textSubHeader: {
+    color: "#fff",
+    fontSize: 12,
   },
   textItem: {
     color: "#B5B5B5",
