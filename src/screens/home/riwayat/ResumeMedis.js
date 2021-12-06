@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Dimensions, Modal, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import { connect } from "react-redux";
 import { baseURL } from "../../../config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,9 +17,9 @@ import QRCode from "react-native-qrcode-svg";
 
 import IcInformation from "../../../assets/svg/ic_information";
 import IcClose from "../../../assets/svg/ic_closenoborder";
-import Iconclose from '../../../assets/svg/ic_close'
+import Iconclose from "../../../assets/svg/ic_close";
 
-const dimHeight = Dimensions.get("screen").height;
+const dimHeight = Dimensions.get("window").height;
 
 function ResumeMedis({ navigation }) {
   const [dataMedRes, setDataMedres] = useState(null);
@@ -53,7 +60,7 @@ function ResumeMedis({ navigation }) {
       <View
         style={{
           position: "absolute",
-          marginTop: -dimHeight * 0.15,
+          marginTop: -dimHeight * 0.16,
           alignSelf: "flex-end",
           paddingRight: 15,
         }}
@@ -109,10 +116,16 @@ function ResumeMedis({ navigation }) {
             padding: 20,
           }}
         >
-        <View style={{marginBottom: 15, justifyContent: 'flex-end', flexDirection: 'row'}}>
-          <TouchableOpacity onPress={() => setModalKonfirmasi(false)}>
-            <IcClose />
-          </TouchableOpacity>
+          <View
+            style={{
+              marginBottom: 15,
+              justifyContent: "flex-end",
+              flexDirection: "row",
+            }}
+          >
+            <TouchableOpacity onPress={() => setModalKonfirmasi(false)}>
+              <IcClose />
+            </TouchableOpacity>
           </View>
           <View
             style={{
@@ -144,8 +157,7 @@ function ResumeMedis({ navigation }) {
                 }}
               >
                 Data ini bersifat pribadi untuk anda dan dokter yang anda
-                izinkan untuk melihatnya, 
-                anda yakin ingin membagikan data ini?
+                izinkan untuk melihatnya, anda yakin ingin membagikan data ini?
               </Text>
               <View
                 style={{
@@ -154,18 +166,18 @@ function ResumeMedis({ navigation }) {
                   width: "100%",
                 }}
               >
-                <TouchableOpacity onPress={() => setModalKonfirmasi(false)} >
+                <TouchableOpacity onPress={() => setModalKonfirmasi(false)}>
                   <Text
                     style={{ fontSize: 16, color: "#B5B5B5", marginTop: 20 }}
                   >
                     BATAL
                   </Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    onPress={() => {
-                        setModalKonfirmasi(false)
-                        setModalQR(true)
-                    }}
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalKonfirmasi(false);
+                    setModalQR(true);
+                  }}
                 >
                   <Text
                     style={{ fontSize: 16, color: "#FBB632", marginTop: 20 }}
@@ -187,10 +199,20 @@ function ResumeMedis({ navigation }) {
             padding: 20,
           }}
         >
+          <View style={{flexDirection: 'row', marginBottom: '10%', backgroundColor: '#3B2F03', padding: 5, borderRadius: 5}}>
+            <View style={{padding: dimHeight * 0.01}}>
+              <IcInformation size='20'/>
+            </View>
+            <Text style={{ color: "#8C8C8C", fontStyle: "italic", marginLeft: 5, width: '90%' }}>
+              <Text style={{fontWeight: 'bold'}}>Disclaimer : </Text>
+              Data ini bersifat pribadi untuk Anda dan dokter yang
+              Anda izinkan untuk melihatnya
+            </Text>
+          </View>
           <View
             style={{
-              minHeight: "40%",
-              padding: 10,
+              minHeight: "50%",
+              padding: 20,
               borderRadius: 5,
               backgroundColor: "#2F2F2F",
             }}
@@ -200,8 +222,8 @@ function ResumeMedis({ navigation }) {
                 flex: 1,
                 alignItems: "center",
                 margin: 5,
-                justifyContent: 'space-evenly',
-                marginVertical: 20
+                justifyContent: "space-evenly",
+                marginVertical: 20,
               }}
             >
               <View
@@ -218,15 +240,24 @@ function ResumeMedis({ navigation }) {
               <Text
                 style={{ color: "#B5B5B5", textAlign: "center", marginTop: 20 }}
               >
-                Perlihatkan QR Code ini kepada dokter yang ingin melihat data Resume Medis Anda
+                Perlihatkan QR Code ini kepada dokter yang ingin melihat data
+                Resume Medis Anda
               </Text>
             </View>
           </View>
-        <View style={{alignItems: 'center' }}>
-        <TouchableOpacity style={{ backgroundColor: '#2F2F2F', padding: 7, borderRadius: 20, marginTop: 10 }} onPress={() => setModalQR(false)}>
-            <Iconclose name='close' color='#FFFFFF' size={20} />
-        </TouchableOpacity>
-        </View>
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#2F2F2F",
+                padding: 7,
+                borderRadius: 20,
+                marginTop: 10,
+              }}
+              onPress={() => setModalQR(false)}
+            >
+              <Iconclose name="close" color="#FFFFFF" size={20} />
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>
