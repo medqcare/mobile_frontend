@@ -562,7 +562,7 @@ export function deleteFamily(userId, { token }, modalF) {
       });
     } catch (error) {
       console.log(error);
-      modalF(error.message)
+      // modalF(error.message)
     }
   };
 }
