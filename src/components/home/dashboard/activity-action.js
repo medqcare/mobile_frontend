@@ -11,8 +11,8 @@ return (
     <View style={style.container}>
       <View style={style.rowContent}>
         
-       <TouchableOpacity style={style.content} onPress={() => navigation.navigate('Tagihan')}>
-           <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Tagihan') : navigation.navigate('Sign')}>
+           <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
            <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Tagihan </Text>
        </TouchableOpacity>
 
@@ -22,8 +22,8 @@ return (
        </TouchableOpacity>
 
        <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
-        <View style={{width:60, alignItems:'center',justifyContent:'center'}}>
+         <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
+        <View style={{width:75, alignItems:'center',justifyContent:'center'}}>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
         </View>
       </TouchableOpacity>
@@ -43,12 +43,12 @@ return (
       </TouchableOpacity>
 
       <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_examNav.png')}/>
+         <Image style={style.image}source={require('../../../assets/png/Reminder.png')}/>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_resepNav.png')}/>
+         <Image style={style.image}source={require('../../../assets/png/Resep.png')}/>
          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Resep </Text>
       </TouchableOpacity>
 
@@ -69,7 +69,7 @@ return (
 const heightDim = Dimensions.get('screen').height
 const style = StyleSheet.create({
     container: {
-      marginTop: -60,
+      marginTop: -heightDim * 0.06,
       marginHorizontal: -20
     },
     rowContent: {
@@ -78,7 +78,7 @@ const style = StyleSheet.create({
       alignContent:'center',
       justifyContent:'space-between',
       width:'100%',
-      marginBottom:10
+      // marginBottom:5
     },
     content: {
       flexDirection:'column',
