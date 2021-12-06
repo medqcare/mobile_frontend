@@ -13,6 +13,7 @@ import Activity_Stack from "../activity";
 import riwayatStack from "./riwayatStack";
 import medresStack from "./medresStack";
 import dokumenMedisStack from "./dokumenMedisStack";
+import penunjangStack from "./penunjangStack";
 
 export default StackHome = createStackNavigator(
   {
@@ -84,6 +85,12 @@ export default StackHome = createStackNavigator(
     },
     DokumenMedisStack: {
       screen: dokumenMedisStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    PenunjangStack: {
+      screen: penunjangStack,
       navigationOptions: {
         headerShown: false,
       },
