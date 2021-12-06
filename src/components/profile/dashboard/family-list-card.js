@@ -62,7 +62,6 @@ const familyList = (props) => {
 
     return (
         families.map((family, index) => {
-            console.log(family.firstName, 'di family list')
             return (
                 <TouchableOpacity
                     onPress={() => 
@@ -108,9 +107,10 @@ const familyList = (props) => {
                             setLoad(true)
                             let token = await AsyncStorage.getItem('token')
                             await props.deleteFamily(family._id, JSON.parse(token))
-                            setLoad(false)
                             setModalW(false)
+                            setLoad(false)
                         }}
+                        load={load}
 
                     />
                 

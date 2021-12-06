@@ -242,6 +242,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
 export function SignUp(userData, navigation, modalFailed) {
   console.log(userData.email, 'is signing up')
   return dispatch => {
+    const email = userData.email
     instance({
       url: '/v1/members/signup',
       method: 'POST',
@@ -255,7 +256,7 @@ export function SignUp(userData, navigation, modalFailed) {
           payload: false
         })
         // navigation.navigate('Sign')
-        navigation.navigate('SuccessSignUp')
+        navigation.navigate('SuccessSignUp', {email})
       })
       .catch(error => {
         console.log('Error from server:', error.response)
@@ -266,6 +267,26 @@ export function SignUp(userData, navigation, modalFailed) {
         modalFailed(error.response ? error.response.data.err.message : error.message);
       });
   };
+}
+
+export function resendConfirmationEmail(email){
+  console.log('Application is sending request to resend confirmation email')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resendVerificationCode',
+        data: {
+          email
+        }
+      })
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to resend confirmation email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
 }
 
 export function SignInGoogle(token, navigation, navigateTo) {
@@ -871,13 +892,13 @@ export function deleteImage(patientId, token, navigateTo){
     console.log('Application is sending command to server....')
     try {
         let { data } = await instance({
-			url: `/v1/members/deleteAvatar`,
-			method: 'PATCH',
-			headers: {
-				id: patientId,
-				authorization: token,
-			}
-        })
+        url: `/v1/members/deleteAvatar`,
+        method: 'PATCH',
+        headers: {
+          id: patientId,
+          authorization: token,
+        }
+      })
 		console.log('Server has successfully deleted imageUrl')
 
         let result = await instance({

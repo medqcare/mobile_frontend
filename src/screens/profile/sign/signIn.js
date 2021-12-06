@@ -384,7 +384,7 @@ const viewStyles = StyleSheet.create({
 	container: {
 		minHeight: '100%',
 		alignItems: 'center',
-		justifyContent: 'flex-start'
+		justifyContent: 'space-between'
 	},
 	input: {
 		width: '85%',
@@ -465,7 +465,6 @@ const viewStyles = StyleSheet.create({
 	},
   	elipse: {
 		width: '100%',
-		height: '100%',
   	},
 
 	logoMedQCare: {
