@@ -49,22 +49,12 @@ const validateEmail = input => {
 };
 
 const signIn = props => {
-	// console.log(props)
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [firebaseNotificationToken, setToken] = useState(null)
 	const [checked, setChecked] = useState(false);
 	const [load, setload] = useState(false);
 	const [secureTextEntry, setSecureTextEntry] = useState(true)
-
-	useEffect(() => {
-		// console.log(props.navigation.state.params, 'ini adalah params yang dikirim dari tab button')
-	// PushNotification.configure({
-	// 	onRegister: function(token) {
-	// 	setToken(token.token)
-	// 	},
-	// });
-	}, []);
 
 	function CekValidation() {
 		if (!validateEmail(email) || password.length == 0) {
@@ -171,133 +161,130 @@ const signIn = props => {
 		return true;
 	});
 
-  return (
-    <LinearGradient colors={['#243555', '#00514B']}>
-		<KeyboardAvoidingView
-			style={viewStyles.container}
-			enabled={false}
-			behavior={'height'}>
-			{/* 4 lines of code below are from the previous design */}
-			{/* <ImageBackground
-			// source={require('../../../assets/Login-Background-Pattern.png')}
-			style={viewStyles.background}
-			/> */}
-		<Image
-			style={viewStyles.topVector}
-			source={require('../../../assets/png/VectorTop.png')}
-		/>
-        <Image
-			style={viewStyles.logoMedQCare}
-			source={require('../../../assets/png/LogoMedQCare.png')}
-     	/>
-        <View style={viewStyles.inputContainer}>
-			<View style={viewStyles.action}>
-				<TextInput
-					placeholder="Username / Email"
-					placeholderTextColor="#8b8b8b"
-					style={viewStyles.textInput}
-					autoCapitalize="none"
-					onChangeText={text => setEmail(text)}
-				/>
-			</View>
-			<View style={viewStyles.action_below}>
-				<TextInput
-					placeholder="Password"
-					placeholderTextColor="#8b8b8b"
-					secureTextEntry={secureTextEntry ? true : false}
-					style={viewStyles.textInput}
-					autoCapitalize="none"
-					onChangeText={text => setPassword(text)}
+	return (
+		<LinearGradient colors={['#243555', '#00514B']}>
+			<KeyboardAvoidingView
+				style={viewStyles.container}
+				enabled={false}
+				behavior={'height'}>
 
+				{/* Top Logo	 */}
+				<Image
+					style={viewStyles.topVector}
+					source={require('../../../assets/png/VectorTop.png')}
 				/>
+
+				{/* MedQCare Logo */}
+				<Image
+					style={viewStyles.logoMedQCare}
+					source={require('../../../assets/png/LogoMedQCare.png')}
+				/>
+
+				{/* Form Container */}
+				<View style={viewStyles.inputContainer}>
+
+					{/* Email Input */}
+					<View style={viewStyles.action}>
+						<TextInput
+							placeholder="Email"
+							placeholderTextColor="#8b8b8b"
+							style={viewStyles.textInput}
+							autoCapitalize="none"
+							onChangeText={text => setEmail(text)}
+						/>
+					</View>
+
+					{/* Password Input */}
+					<View style={viewStyles.action_below}>
+						<TextInput
+							placeholder="Password"
+							placeholderTextColor="#8b8b8b"
+							secureTextEntry={secureTextEntry ? true : false}
+							style={viewStyles.textInput}
+							autoCapitalize="none"
+							onChangeText={text => setPassword(text)}
+
+						/>
+
+						{/* Password Invisble/Visible Button */}
+						<TouchableOpacity
+							onPress={updateSecureTextEntry}
+						>
+							{secureTextEntry ? 
+							<Feather
+								name="eye-off"
+								size={20}
+								color="grey"
+							/>
+							: <Feather
+							name="eye"
+							size={20}
+							color="grey"
+						/>}
+						</TouchableOpacity>
+					</View>
+					
+					{/* Forgot Password  */}
+					<View style={viewStyles.forgotPassword}>
+						<TouchableOpacity
+							onPress={() => props.navigation.navigate('ResetPassword')}
+						>
+							<Text style={viewStyles.forgotPasswordText}>Lupa password?</Text>
+						</TouchableOpacity>
+					</View>
+
+					{/* Sign in  */}
+					<TouchableOpacity
+						onPress={() => {
+						CekValidation();
+						}}
+						style={viewStyles.button}>
+						{load ? 
+							( <ActivityIndicator size="small" color="#FFF" />) 
+							: 
+							( <Text style={style.buttonText}>Masuk</Text> )
+						}
+					</TouchableOpacity>
+				</View>
+
+				{/* Call to Action Register */}
+				<View style={style.callToAction}>
+					<Text style={style.callToActionText}>Belum punya akun?</Text>
+					<TouchableOpacity
+						onPress={() => props.navigation.navigate('SignUp')}	
+					>
+						<Text style={{...style.callToActionText, fontWeight: 'bold', paddingLeft: 5}}>Daftar</Text>
+					</TouchableOpacity>
+				</View>
+				
+				{/* Or */}
+				<View 
+					style={style.or}
+				>
+					<Text style={style.orText}>Atau daftar dengan</Text>
+				</View>
+
+				{/* Google Logo */}
 				<TouchableOpacity
-					onPress={updateSecureTextEntry}
+					onPress={() => googleLogin()}
+					style={style.googleLogin}
 				>
-					{secureTextEntry ? 
-					<Feather
-						name="eye-off"
-						size={20}
-						color="grey"
+					<Image
+						source={require('../../../assets/png/GoogleLogo.png')}	
+					>
+					</Image>
+					
+				</TouchableOpacity>
+			
+				{/* Doctor Logo */}
+				<View style={viewStyles.elipse}>
+					<Image
+						source={require('../../../assets/png/Image.png')}
 					/>
-					: <Feather
-					name="eye"
-					size={20}
-					color="grey"
-				/>}
-				</TouchableOpacity>
-			</View>
-			
-			<View style={viewStyles.forgotPassword}>
-        		<TouchableOpacity
-					onPress={() => props.navigation.navigate('ResetPassword')}
-				>
-					<Text style={viewStyles.forgotPasswordText}>Lupa password?</Text>
-				</TouchableOpacity>
-			</View>
-
-          	<TouchableOpacity
-				onPress={() => {
-				CekValidation();
-				}}
-				style={viewStyles.button}>
-				{load ? 
-					( <ActivityIndicator size="small" color="#FFF" />) 
-					: 
-					( <Text style={style.buttonText}>Masuk</Text> )
-				}
-			</TouchableOpacity>
-        </View>
-		<View style={style.callToAction}>
-			<Text style={style.callToActionText}>Belum punya akun?</Text>
-			<TouchableOpacity
-				onPress={() => props.navigation.navigate('SignUp')}	
-			>
-				<Text style={{...style.callToActionText, fontWeight: 'bold', paddingLeft: 5}}>Daftar</Text>
-			</TouchableOpacity>
-		</View>
-
-		<View 
-			style={style.or}
-		>
-			<Text style={style.orText}>Atau daftar dengan</Text>
-		</View>
-		<TouchableOpacity
-			onPress={() => googleLogin()}
-			style={style.googleLogin}
-		>
-			<Image
-				source={require('../../../assets/png/GoogleLogo.png')}	
-			>
-			</Image>
-			
-		</TouchableOpacity>
-		
-
-
-		{/* <View style={{paddingVertical: 10}}/> */}
-		
-        {/* <View style={style.bottom_buttons}>
-          <View style={style.separator} />
-          <View style={style.or}>
-            <Text> Atau sign in dengan  </Text>
-          </View>
-          <View style={style.sso}>
-            <TouchableOpacity
-              onPress={() => googleLogin()}
-              style={{...style.logo, backgroundColor: 'red'}}>
-              <IconFontA name={'google'} size={45} color={'white'} />
-            </TouchableOpacity>
-          </View>
-        </View> */}
-
-		<View style={viewStyles.elipse}>
-			<Image
-				source={require('../../../assets/png/Image.png')}
-			/>
-		</View>
-      </KeyboardAvoidingView>
-    </LinearGradient>
-  );
+				</View>
+			</KeyboardAvoidingView>
+		</LinearGradient>
+	);
 };
 
 const style = StyleSheet.create({
@@ -476,28 +463,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps,
 )(signIn);
-
-// The lines of code below are from the previous design
-{/* <TextInput
-            style={viewStyles.input}x
-            autoCapitalize={'none'}
-            placeholder={'Username / Email'}
-            keyboardType={'email-address'}
-            onChangeText={text => setEmail(text)}
-            value={email}
-          />
-          <TextInput
-            style={viewStyles.input}
-            secureTextEntry={true}
-            autoCapitalize={'none'}
-            placeholder={'Password'}
-            onChangeText={text => setPassword(text)}
-            value={password}
-          />
-           <View style={{ marginBottom: '10%', alignSelf: 'flex-start', paddingHorizontal: '15%', flexDirection: 'row', alignItems: 'center' }}>
-                      <CheckBox
-                          value={checked}
-                          onValueChange={() => setChecked(!checked)}
-                      />
-                      <Text>Remember password</Text>
-                  </View> */}

@@ -408,6 +408,104 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed, navigat
   };
 }
 
+export function resetPasswordEmail(email, navigate, navigateTo, isResend){
+  console.log('Application is sending request to reset password and send email')
+  return async dispatch => {
+    try {
+      let token = await AsyncStorage.getItem('token')
+      token = JSON.parse(token).token
+      console.log(token)
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resetPasswordEmail',
+        data: {
+          email
+        },
+        headers: {
+          Authorization: token,
+        },
+      })
+      const storedSecretCode = data.secretCode
+      await AsyncStorage.setItem('storedSecretCode', storedSecretCode)
+      console.log('Email sent to', email)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      if(!isResend){
+        navigate(navigateTo, {email})
+      }
+    } catch (error) {
+      console.log(error)
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function validateSecretCode(secretCode, storedSecretCode, navigate, navigateTo, email){
+  console.log(`Application is sending request to validate user's input code...`)
+  return async dispatch => {
+    try {
+      let token = await AsyncStorage.getItem('token')
+      token = JSON.parse(token).token
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/validateSecretCode`,
+        data: { 
+          secretCode
+        },
+        headers: {
+          storedSecretCode,
+          Authorization: token
+        }
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        navigate(navigateTo, {email})
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function changePassword(email, password, navigate, destination){
+  console.log('Application is sending request to change password...')
+  return async dispatch => {
+    try {
+      let token = await AsyncStorage.getItem('token')
+      token = JSON.parse(token).token
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/changePassword`,
+        data: {
+          email,
+          password
+        },
+        headers: {
+          Authorization: token
+        }
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        await AsyncStorage.removeItem('secretCode')
+        navigate(destination)
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
 export function GetUser(token, navigation) {
   console.log(token)
   console.log('Above is the token that is already in AsyncStorage')

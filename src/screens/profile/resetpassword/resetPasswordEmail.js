@@ -13,15 +13,19 @@ import {
 } from 'react-native'
 
 //action
-import { resetPasswordEmail,resetPasswordPhone, setLoading } from '../../../stores/action'
+import { resetPasswordEmail ,resetPasswordPhone, setLoading } from '../../../stores/action'
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import resetPasswd from './resetPassword'
-import { color } from 'react-native-reanimated'
 import { ToastAndroid } from 'react-native';
+
 //mapTopProps
-// const mapStateToProps = state => {
-//     return state
-// }
+const mapStateToProps = state => {
+    return state
+}
+
+const mapDispatchToProps = {
+    resetPasswordEmail
+}
 
 const resetPasswdEmail = (props) => {
     
@@ -31,35 +35,23 @@ const resetPasswdEmail = (props) => {
     })
 
     const [load, setLoad ] = useState(false)
-    const [valid, setValid] = useState(false)
-    const [changePasswordEmail, setPasswordEmail] = useState ({
-        emailConfirm: null,
-    })      
+    const [email, setEmail] = useState('')  
 
     const validation = () => {
-        console.log(changePasswordEmail, 'Ini data Email User')
+        console.log(email, 'Ini data Email User')
         
-        if(
-            changePasswordEmail.emailConfirm == null
-          ){
-           
-            setValid(true)
-            Finalvalidation(changePasswordEmail)
+        if(email === ''){
             ToastAndroid.show('Mohon untuk mengisi alamat email terlebih dahulu.', ToastAndroid.LONG) 
         }else {
-
-            setValid(false)
             setLoad(true)
-            Finalvalidation(changePasswordEmail)
-            ToastAndroid.show('Berhasil Mengirim Email.', ToastAndroid.LONG)
-            console.log('Ini data email kita bro', changePasswordEmail)
+            Finalvalidation(email)
+            ToastAndroid.show('MedQCare sedang mengirim email. Mohon menunggu', ToastAndroid.LONG)
         }
     }
 
-    function Finalvalidation(emailConfirm) {
-        // Methode
-       
-        props.navigation.navigate('allertEmail',{data:emailConfirm},setLoad(false))
+    function Finalvalidation(email) {
+        setLoad(false)
+        props.resetPasswordEmail(email, props.navigation.navigate, 'allertEmail')
     }
 
         
@@ -97,12 +89,12 @@ const resetPasswdEmail = (props) => {
                       <TextInput
                         autoFocus={false}
                         placeholder={'Email'}
-                        placeholderTextColor="#DDDDDD" 
+                        placeholderTextColor="#8b8b8b" 
                         style={style.txtInputTeks}
                         onChangeText={text => 
-                            setPasswordEmail({ ...changePasswordEmail, emailConfirm: text})
+                            setEmail(text)
                         } 
-                        value = {changePasswordEmail.emailConfirm}
+                        value = {email}
                       />
 
                       </View>  
@@ -111,7 +103,7 @@ const resetPasswdEmail = (props) => {
                 
                 <TouchableOpacity 
                     style={style.button}
-                    onPress={()=> {validation(props.navigation.navigate('allertEmail'))}}
+                    onPress={()=> validation()}
                 >
                 <View>
                     {
@@ -133,14 +125,15 @@ const resetPasswdEmail = (props) => {
 const style= StyleSheet.create({
     container:{
         backgroundColor: '#1F1F1F',
-        minHeight:'100%'    
-    },base:{
+        minHeight:'100%'   ,
+    },
+    base:{
         flex:1,
-        paddingHorizontal:20
+        paddingHorizontal:20,
     },
     content:{
         height:'15%',
-        backgroundColor:'#2F2F2F'
+        backgroundColor:'#2F2F2F',
     },
     main:{
         flexDirection:'row',
@@ -216,4 +209,4 @@ const style= StyleSheet.create({
     }
 })
 
-export default resetPasswdEmail
+export default connect(mapStateToProps, mapDispatchToProps)(resetPasswdEmail) 
