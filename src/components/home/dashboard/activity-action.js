@@ -21,7 +21,7 @@ return (
           <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
        </TouchableOpacity>
 
-       <TouchableOpacity style={style.content}>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('DokumenMedisStack') : navigation.navigate('Sign')}>
          <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
         <View style={{width:75, alignItems:'center',justifyContent:'center'}}>
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
