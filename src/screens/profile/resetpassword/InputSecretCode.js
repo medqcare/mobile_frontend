@@ -43,7 +43,7 @@ const InputSecretCode = (props) => {
             ToastAndroid.show('Format kode tidak valid, mohon masukan angka', ToastAndroid.SHORT)
         }
          else {
-            props.validateSecretCode(secretCode, storedSecretCode, props.navigation.navigate, 'ResetPasswordForm', email )
+            props.validateSecretCode(secretCode, storedSecretCode, props.navigation.navigate, 'ChangePasswordForm', email )
         }
     }
 

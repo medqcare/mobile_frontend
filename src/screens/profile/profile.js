@@ -92,7 +92,7 @@ const profile = (props) => {
                     <TouchableOpacity
                         
                         style={styles.upperMenu}
-                        onPress={() => props.navigation.navigate('ResetPasswordForm', { email, destination: 'ProfileStack' })}
+                        onPress={() => props.navigation.navigate('ChangePasswordForm', { email, destination: 'ProfileStack' })}
                     >
                         <Text style={styles.menuText}>Ubah Kata Sandi </Text>
                         <Image

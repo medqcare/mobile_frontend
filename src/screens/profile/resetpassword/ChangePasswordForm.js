@@ -20,7 +20,7 @@ import { changePassword } from '../../../stores/action'
 import Feather from 'react-native-vector-icons/Feather' // Made for password visibility
 
 
-function ResetPasswordForm({navigation, changePassword}){
+function ChangePasswordForm({navigation, changePassword}){
     const { email, destination } = navigation.state.params
     const [load, setLoad] = useState(false)
     const [secureTextEntry, setSecureTextEntry] = useState({
@@ -261,4 +261,4 @@ const mapDispatchToProps = {
     changePassword
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ResetPasswordForm)
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePasswordForm)
