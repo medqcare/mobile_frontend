@@ -12,6 +12,7 @@ import SignStack from "../profile/signStack";
 import Activity_Stack from "../activity";
 import riwayatStack from "./riwayatStack";
 import medresStack from "./medresStack";
+import dokumenMedisStack from "./dokumenMedisStack";
 
 export default StackHome = createStackNavigator(
   {
@@ -77,6 +78,12 @@ export default StackHome = createStackNavigator(
     },
     RiwayatStack: {
       screen: riwayatStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    DokumenMedisStack: {
+      screen: dokumenMedisStack,
       navigationOptions: {
         headerShown: false,
       },
