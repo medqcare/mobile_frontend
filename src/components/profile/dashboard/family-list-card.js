@@ -39,6 +39,7 @@ const familyList = (props) => {
     const [modalS, setModalS] = useState(false) //untuk modal sukses
     const [modalF, setModalF] = useState(false) //untuk modal failed
     const [message, setMessage] = useState('') //untuk pesan dimodal
+    const [load, setLoad] = useState(false)
 
 
 
@@ -97,14 +98,17 @@ const familyList = (props) => {
                     </View>
                 
                     <ConfirmationModal
+                        load={load}
                         modal={modalW}
                         warning={'Yakin ingin menghapus anggota keluarga?'}
                         optionLeftText={'BATAL'}
                         optionRightText={'HAPUS'}
                         optionLeftFunction={() => setModalW (false)}
                         optionRightFunction={async () => {
+                            setLoad(true)
                             let token = await AsyncStorage.getItem('token')
-                            await props.deleteFamily(props.member._id, JSON.parse(token), modals)
+                            await props.deleteFamily(family._id, JSON.parse(token))
+                            setLoad(false)
                             setModalW(false)
                         }}
 
