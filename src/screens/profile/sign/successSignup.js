@@ -1,5 +1,6 @@
 import React, { useEffect, useState  } from 'react'
 import { connect } from 'react-redux'
+import { resendConfirmationEmail } from '../../../stores/action'
 import {
     View,
     Text,
@@ -16,10 +17,19 @@ import {
 
 //action
 
-const SuccessSignUp = ({navigation}) => {
-    const [displayTime, setDisplayTime] = useState(10);
+const mapStateToProps = state => {
+    return state
+}
+
+const mapDispatchToProps = {
+    resendConfirmationEmail
+}
+
+const SuccessSignUp = ({navigation, resendConfirmationEmail}) => {
+    const [displayTime, setDisplayTime] = useState(30);
     const [countDown, setCountDown] = useState(true)
     const [timeCreated, setTimeCreated] = useState(new Date())
+    const { email } = navigation.state.params
 
     useEffect(() => {
         console.log('Current second:', displayTime)
@@ -35,6 +45,7 @@ const SuccessSignUp = ({navigation}) => {
     function resendEmail(){
         setCountDown(true)
         setDisplayTime(30)
+        resendConfirmationEmail(email)
     }
 
      return(
@@ -195,7 +206,7 @@ const style = StyleSheet.create({
 })
 
 
-export default SuccessSignUp
+export default connect(mapStateToProps, mapDispatchToProps)(SuccessSignUp)
 
 // import React, {useEffect, useState} from 'react'
 // import { StyleSheet, Text, View } from 'react-native'
