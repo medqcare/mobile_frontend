@@ -12,7 +12,8 @@ import {
   Alert,
   StatusBar,
   ActivityIndicator,
-  ToastAndroid
+  ToastAndroid,
+  BackHandler
 } from 'react-native';
 import { connect } from 'react-redux';
 import {
@@ -142,6 +143,11 @@ const signUp = props => {
     }
   }
 
+  BackHandler.addEventListener("hardwareBackPress", () => {
+	props.navigation.pop();
+	return true;
+});
+
   return (
   	<LinearGradient colors={['#243555', '#00514B']}>
 		  <KeyboardAvoidingView
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
 	container: {
 		minHeight: '100%',
 		alignItems: 'center',
-		justifyContent: 'flex-start',
+		justifyContent: 'space-between',
 		width: '100%'
 	},
 	topVector: {
@@ -266,14 +272,15 @@ const styles = StyleSheet.create({
 		height: 150,
 	},
 	logoMedQCare: {
-		marginTop: 10
+		marginTop: 10,
+		marginBottom: 50
 	},
 	inputContainer: {
 		width: '100%',
 		alignItems: 'center',
 		marginTop: 30,
 		paddingHorizontal: 50,
-		marginBottom: 20
+		marginBottom: 100,
 	},
 	action: {
 		flexDirection: 'row',
@@ -323,7 +330,6 @@ const styles = StyleSheet.create({
 	},
 	elipse: {
 		width: '100%',
-		height: '100%',
   	},
 })
 
