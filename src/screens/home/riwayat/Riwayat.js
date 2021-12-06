@@ -17,11 +17,11 @@ import Header from "../../../components/headers/GradientHeader"
 
 import Pemesanan from "./Pemesanan";
 import Transaksi from "./Transaksi";
-import ResumeMedis from "./ResumeMedis";
+// import ResumeMedis from "./ResumeMedis";
 
 function RiwayatPage(props) {
   const [page, setPage] = useState("Daftar Janji");
-  const tipeRiwayat = ["Daftar Janji", "Transaksi", "Resume Medis"];
+  const tipeRiwayat = ["Daftar Janji", "Transaksi"];
 
   BackHandler.addEventListener("hardwareBackPress", () => {
     return props.navigation.pop();
@@ -64,7 +64,7 @@ function RiwayatPage(props) {
 
       { page === 'Daftar Janji' && <Pemesanan/> }
       { page === 'Transaksi' && <Transaksi /> }
-      { page === 'Resume Medis' && <ResumeMedis navigation={props.navigation}/> }
+      {/* { page === 'Resume Medis' && <ResumeMedis navigation={props.navigation}/> } */}
       
     </KeyboardAvoidingView>
   );

@@ -60,7 +60,7 @@ export default function DetailResumeMedis(props) {
             </Text>
           </View>
           <View style={{}}>
-            <TouchableOpacity style={{}} onPress={() => props.navigation.pop()}>
+            <TouchableOpacity onPress={() => props.navigation.pop()}>
               <BUttonClose />
             </TouchableOpacity>
           </View>
