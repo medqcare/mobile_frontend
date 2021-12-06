@@ -20,7 +20,12 @@ export default function GreyHeader({
 
     return (
         <View style={styles.container}>
-            <StatusBar hidden/>
+            <StatusBar 
+            barStyle="light-content"
+            translucent={true}
+            backgroundColor={'transparent'}
+            hidden
+            />
             <View style={styles.touchableContent}>
                 <TouchableOpacity
                     onPress={() => navigate(navigateBack)}>
