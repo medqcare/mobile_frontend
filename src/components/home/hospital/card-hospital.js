@@ -72,38 +72,29 @@ const minWidth = Dimensions.get('screen').width
 
 const styles = StyleSheet.create({
   Container: {
-    flex: 1,
-    // backgroundColor: '#CCBBEB',
-    backgroundColor: '#2F2F2F',
-    width: "100%",
-    alignItems: 'center',
+    minWidth: 300,
     justifyContent: 'flex-start',
-    display: 'flex',
     flexDirection: 'row',
-    marginVertical: 5,
-    // borderBottomWidth: 0.5,
-
-    // minHeight: minHeight * 0.12,
-    // maxHeight: Dimensions.get('screen').height * 0.20,
-    padding: 5
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2F2F2F',
   },
   borderPhoto: {
-    borderRadius: 80,
+    borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 10,
-    marginVertical: 10,
-    minHeight: 60,
-    minWidth: 60,
+    marginRight: 10,
+    height: 60,
+    width: 60,
+    overflow: 'hidden',
+    padding: 5,
     borderWidth: 1,
-    borderColor: '#18d28a'
+    borderColor: '#33E204',
   },
   Photo: {
-    borderRadius: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 60,
-    minWidth: 60,
+    width: 55, 
+    height: 55, 
+    borderRadius: 55
   },
   DetailDokter: {
     marginLeft: 10,

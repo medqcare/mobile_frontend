@@ -55,7 +55,8 @@ function SearchDoctorPage(props) {
       console.log(location.lat, location.lng);
       let { data } = await axios({
         method: 'POST',
-        url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
+        // url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
+        url: `${baseURL}/api/v1/members/searchFacility`,
         data: {
           lat: location ? location.lat : -6.268809,
           lon: location ? location.lng : 106.974705,
@@ -163,7 +164,7 @@ function SearchDoctorPage(props) {
             />
           ) : (
               <View style={{ flex: 1, padding: 20, alignItems: 'center' }}>
-                <Text style={{color: '#DDDDDD'}}>There is no facility nearby</Text>
+                <Text style={{color: '#DDDDDD'}}>Tidak ada klinik terdekat</Text>
               </View>
             )
         }
