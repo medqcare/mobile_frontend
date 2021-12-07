@@ -7,6 +7,7 @@ import ResetPassworddEmail from '../../screens/profile/resetpassword/resetPasswo
 import ResetPassworddPhone from '../../screens/profile/resetpassword/resetPasswordPhone'
 import InputSecretCode from '../../screens/profile/resetpassword/InputSecretCode'
 import ChangePasswordForm from '../../screens/profile/resetpassword/ChangePasswordForm'
+import InputSecretCodeOTP from '../../screens/profile/resetpassword/InputSecretCodeOTP'
 
 
 const resetPasswordStack = createStackNavigator({
@@ -42,6 +43,12 @@ const resetPasswordStack = createStackNavigator({
     },
     InputSecretCode: {
         screen: InputSecretCode,
+        navigationOptions: {
+            headerShown: false
+        }
+    },
+    InputSecretCodeOTP : {
+        screen: InputSecretCodeOTP,
         navigationOptions: {
             headerShown: false
         }
