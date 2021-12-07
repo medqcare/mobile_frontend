@@ -51,6 +51,11 @@ function ChangePasswordForm({navigation, changePassword}){
         }
     }
 
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        navigation.navigate(destination)
+        return true
+    })
+
     return (
         <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
 			<StatusBar hidden/>
