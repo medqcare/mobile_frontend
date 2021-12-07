@@ -412,17 +412,11 @@ export function resetPasswordEmail(email, navigate, navigateTo, isResend){
   console.log('Application is sending request to reset password and send email')
   return async dispatch => {
     try {
-      let token = await AsyncStorage.getItem('token')
-      token = JSON.parse(token).token
-      console.log(token)
       const { data } = await instance({
         method: 'POST',
         url: '/v1/members/resetPasswordEmail',
         data: {
           email
-        },
-        headers: {
-          Authorization: token,
         },
       })
       const storedSecretCode = data.secretCode
@@ -445,8 +439,6 @@ export function validateSecretCode(secretCode, storedSecretCode, navigate, navig
   console.log(`Application is sending request to validate user's input code...`)
   return async dispatch => {
     try {
-      let token = await AsyncStorage.getItem('token')
-      token = JSON.parse(token).token
       let { data } = await instance({
         method: 'POST',
         url: `/v1/members/validateSecretCode`,
@@ -455,13 +447,12 @@ export function validateSecretCode(secretCode, storedSecretCode, navigate, navig
         },
         headers: {
           storedSecretCode,
-          Authorization: token
         }
       })
       if(data.message){
         console.log(data.message)
         ToastAndroid.show(data.message, ToastAndroid.SHORT)
-        navigate(navigateTo, {email})
+        navigate(navigateTo, {email, destination: 'SignIn'})
       } else {
         ToastAndroid.show(data.error, ToastAndroid.SHORT)
       }
@@ -477,8 +468,6 @@ export function changePassword(email, password, navigate, destination){
   console.log('Application is sending request to change password...')
   return async dispatch => {
     try {
-      let token = await AsyncStorage.getItem('token')
-      token = JSON.parse(token).token
       let { data } = await instance({
         method: 'POST',
         url: `/v1/members/changePassword`,
@@ -486,9 +475,6 @@ export function changePassword(email, password, navigate, destination){
           email,
           password
         },
-        headers: {
-          Authorization: token
-        }
       })
       if(data.message){
         console.log(data.message)
@@ -499,9 +485,10 @@ export function changePassword(email, password, navigate, destination){
         ToastAndroid.show(data.error, ToastAndroid.SHORT)
       }
     } catch (error) {
-      const { message } = error.response.data.err
-      console.log(message, 'Error found when trying to reset password and send email')
-      ToastAndroid.show(message, ToastAndroid.SHORT)
+      console.log(error)
+      // const { message } = error.response.data.err
+      // console.log(message, 'Error found when trying to reset password and send email')
+      // ToastAndroid.show(message, ToastAndroid.SHORT)
     }
   }
 }
@@ -561,8 +548,8 @@ export function GetUser(token, navigation) {
 export function logout(navigation) {
   return async dispatch => {
     try {
-      navigation.pop()
-      navigation.navigate('Sign');
+      await navigation.pop()
+      await navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
