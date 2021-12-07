@@ -435,6 +435,33 @@ export function resetPasswordEmail(email, navigate, navigateTo, isResend){
   }
 }
 
+export function resetPasswordPhone(phoneNumber, navigate, navigateTo, isResend){
+  console.log('Application is sending request to reset password and send SMS')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resetPasswordOTP',
+        data: {
+          phoneNumber
+        },
+      })
+      const { email, secretCode } = data
+      await AsyncStorage.setItem('storedSecretCode', secretCode)
+      console.log('SMS sent to', phoneNumber)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      if(!isResend){
+        navigate(navigateTo, {phoneNumber, email})
+      }
+    } catch (error) {
+      console.log(error)
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
 export function validateSecretCode(secretCode, storedSecretCode, navigate, navigateTo, email){
   console.log(`Application is sending request to validate user's input code...`)
   return async dispatch => {
