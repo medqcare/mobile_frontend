@@ -35,7 +35,7 @@ const mapStateToProps = state => {
 }
 
 const profile = (props) => {
-    const { email } = props.userData.userID
+    const email = props?.userData?.userID?.email
     BackHandler.addEventListener("hardwareBackPress", () => {
         props.navigation.navigate('Home')
         return true
