@@ -13,10 +13,8 @@ import {
 } from 'react-native'
 
 //action
-import { resetPasswordEmail,resetPasswordPhone, setLoading } from '../../../stores/action'
+import { resetPasswordPhone } from '../../../stores/action'
 import ArrowBack from '../../../assets/svg/ArrowBack'
-import resetPasswd from './resetPassword'
-import { color } from 'react-native-reanimated'
 import { ToastAndroid } from 'react-native';
 
 const resetPasswdPhone = (props) => {
@@ -26,45 +24,28 @@ const resetPasswdPhone = (props) => {
     })
 
     const [load, setLoad ] = useState(false)
-    const [valid, setValid] = useState(false)
-    const [changePasswordPhone, setPasswordPhone] = useState ({
-        phoneNumber: null,
-    })      
+    const [phoneNumber, setPhoneNumber] = useState(null)      
 
  
 
     const validation = () => {
-        console.log(changePasswordPhone, 'Ini data Phone Number User')
-
-        if (
-            changePasswordPhone.phoneNumber == null
-            ){
-            console.log(changePasswordPhone,'Ini data Phone user')
-            setValid(true)
-            ToastAndroid.show('Mohon untuk mengisi nomor telephone terlebih dahulu.', ToastAndroid.LONG)
-
-        }else if (
-            changePasswordPhone.phoneNumber.length <= 8 
-           ){
-            setValid(true)
-            ToastAndroid.show('Mohon untuk mengisi nomor hanphone dengan benar',ToastAndroid.LONG)
-            console.log('ini data phone user', changePasswordPhone)
-        }else {
-            
-            setValid(false)
+        setLoad(true)
+        const isNumber = +phoneNumber
+        if (phoneNumber === null){
+            ToastAndroid.show('Mohon untuk mengisi nomor terlebih dahulu.', ToastAndroid.LONG)
             setLoad(false)
-            Finalvalidation(changePasswordPhone)
-            console.log('Ini data phone', changePasswordPhone)
-            ToastAndroid.show('Berhasil Menambahkan Nomor Handphone',ToastAndroid.LONG)
-            
+
+        }else if (!isNumber){
+            ToastAndroid.show('Mohon mengisi nomor dengan format yang benar',ToastAndroid.LONG)
+            setLoad(false)
+        }else {
+            Finalvalidation()
         }
     }
 
-
-    function Finalvalidation(phoneNumber) {
-        // Methode
-       
-        props.navigation.navigate('Ottp',{data:phoneNumber},setValid(false))
+    function Finalvalidation() {
+        setLoad(false)
+        props.resetPasswordPhone(phoneNumber, props.navigation.navigate, 'InputSecretCodeOTP')
     }
 
     
@@ -107,9 +88,9 @@ const resetPasswdPhone = (props) => {
                             keyboardType={'numeric'}
                             autoCapitalize={'none'}
                             onChangeText={text => 
-                                setPasswordPhone({ ...changePasswordPhone, phoneNumber: text})
+                                setPhoneNumber(text)
                             } 
-                            value = {changePasswordPhone.phoneNumber}
+                            value = {phoneNumber}
                         />
                       
                       </View>  
@@ -118,7 +99,7 @@ const resetPasswdPhone = (props) => {
                 
                 <TouchableOpacity 
                     style={style.button}
-                    onPress={()=> {validation(props.navigation.navigate('otp'))}}
+                    onPress={()=> validation()}
                   
                 >
                     <View>
@@ -222,4 +203,12 @@ const style = StyleSheet.create({
     }
 })
 
-export default resetPasswdPhone
+const mapStateToProps = state => {
+    return state
+}
+
+const mapDispatchToProps = {
+    resetPasswordPhone
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(resetPasswdPhone)
