@@ -13,24 +13,24 @@ return (
         
        <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Tagihan') : navigation.navigate('Sign')}>
            <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
-           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Tagihan </Text>
+           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:12}}> Tagihan </Text>
        </TouchableOpacity>
 
        <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('RiwayatStack') : navigation.navigate('Sign')}>
           <Image style={style.image}source={require('../../../assets/png/ic_riwayatNav.png')}/>
-          <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
+          <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:12}}>Riwayat </Text>
        </TouchableOpacity>
 
        <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('DokumenMedisStack') : navigation.navigate('Sign')}>
          <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
         <View style={{width:75, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Dokumen Medis </Text>
         </View>
       </TouchableOpacity>
 
-       <TouchableOpacity style={style.content}>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('RujukanStack') : navigation.navigate('Sign')}>
           <Image style={style.image}source={require('../../../assets/png/ic_rujukanNav.png')}/>
-          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:13}}> Rujukan </Text>
+          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:12}}> Rujukan </Text>
        </TouchableOpacity>
 
       </View>
@@ -39,23 +39,23 @@ return (
       
       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Allergy') : navigation.navigate('Sign')}>
             <Image style={style.image}source={require('../../../assets/png/ic_alergiNav.png')}/>
-            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Alergi</Text>
+            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Alergi</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content}>
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('ReminderStack') : navigation.navigate('Sign')}>
          <Image style={style.image}source={require('../../../assets/png/Reminder.png')}/>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Reminder </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content}>
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('ResepStack') : navigation.navigate('Sign')}>
          <Image style={style.image}source={require('../../../assets/png/Resep.png')}/>
-         <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Resep </Text>
+         <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:12}}> Resep </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={style.content} onPress={() => {}}>
          <Image style={style.image}source={require('../../../assets/png/ic_dokterNav.png')}/>
         <View style={{width:70, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Home Care </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Home Care </Text>
         </View>
       </TouchableOpacity>
 
