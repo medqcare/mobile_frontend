@@ -57,7 +57,10 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
           quality: 1,
           exif: true,
         });
-        const fileToUpload = createFormData(result)
+        const firstName = userData.firstName
+        const lastName = userData.lastName
+        const fullName = lastName ? `${firstName}${lastName}` : firstName
+        const fileToUpload = createFormData(result, fullName)
         setImageToUpload(fileToUpload)
         
         if (!result.cancelled) {

@@ -999,17 +999,20 @@ export function uploadImage(patientId, fileToUpload, token, navigateTo, destinat
   }
 
 }
-export function deleteImage(patientId, token, navigateTo){
+export function deleteImage(patientId, fullName, token){
   return async dispatch => {
     console.log('Application is sending command to server....')
     try {
         let { data } = await instance({
         url: `/v1/members/deleteAvatar`,
         method: 'PATCH',
+        data: {
+          fileName: fullName
+        },
         headers: {
           id: patientId,
           authorization: token,
-        }
+        },
       })
 		console.log('Server has successfully deleted imageUrl')
 
