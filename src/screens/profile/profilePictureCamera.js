@@ -56,7 +56,10 @@ function ProfilePictureCamera({navigation, userData, uploadImage}){
             quality: 1,
         });
 
-        const fileToUpload = createFormData(result)
+        const firstName = userData.firstName
+        const lastName = userData.lastName
+        const fullName = lastName ? `${firstName}${lastName}` : firstName
+        const fileToUpload = createFormData(result, fullName)
         setImageToUpload(fileToUpload)
 
         if (!result.cancelled) {
