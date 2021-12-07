@@ -11,26 +11,26 @@ return (
     <View style={style.container}>
       <View style={style.rowContent}>
         
-       <TouchableOpacity style={style.content} onPress={() => navigation.navigate('Tagihan')}>
-           <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
-           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Tagihan </Text>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Tagihan') : navigation.navigate('Sign')}>
+           <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
+           <Text style={{marginTop:10,textAlign:'center',color:'white',fontSize:12}}> Tagihan </Text>
        </TouchableOpacity>
 
        <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('RiwayatStack') : navigation.navigate('Sign')}>
           <Image style={style.image}source={require('../../../assets/png/ic_riwayatNav.png')}/>
-          <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:13}}>Riwayat </Text>
+          <Text style={{marginTop:10,textAlign:'center', color:'white',fontSize:12}}>Riwayat </Text>
        </TouchableOpacity>
 
-       <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_biayaNav.png')}/>
-        <View style={{width:60, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Dokumen Medis </Text>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('DokumenMedisStack') : navigation.navigate('Sign')}>
+         <Image style={style.image}source={require('../../../assets/png/ic_statusNav.png')}/>
+        <View style={{width:75, alignItems:'center',justifyContent:'center'}}>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Dokumen Medis </Text>
         </View>
       </TouchableOpacity>
 
-       <TouchableOpacity style={style.content}>
+       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('RujukanStack') : navigation.navigate('Sign')}>
           <Image style={style.image}source={require('../../../assets/png/ic_rujukanNav.png')}/>
-          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:13}}> Rujukan </Text>
+          <Text style={{marginTop:10, textAlign:'center', color:'white',fontSize:12}}> Rujukan </Text>
        </TouchableOpacity>
 
       </View>
@@ -39,23 +39,23 @@ return (
       
       <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('Allergy') : navigation.navigate('Sign')}>
             <Image style={style.image}source={require('../../../assets/png/ic_alergiNav.png')}/>
-            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Alergi</Text>
+            <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Alergi</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_examNav.png')}/>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Reminder </Text>
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('ReminderStack') : navigation.navigate('Sign')}>
+         <Image style={style.image}source={require('../../../assets/png/Reminder.png')}/>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Reminder </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content}>
-         <Image style={style.image}source={require('../../../assets/png/ic_resepNav.png')}/>
-         <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:13}}> Resep </Text>
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('ResepStack') : navigation.navigate('Sign')}>
+         <Image style={style.image}source={require('../../../assets/png/Resep.png')}/>
+         <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:12}}> Resep </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={style.content} onPress={() => {}}>
          <Image style={style.image}source={require('../../../assets/png/ic_dokterNav.png')}/>
         <View style={{width:70, alignItems:'center',justifyContent:'center'}}>
-         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:13}}> Home Care </Text>
+         <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Home Care </Text>
         </View>
       </TouchableOpacity>
 
@@ -69,7 +69,7 @@ return (
 const heightDim = Dimensions.get('screen').height
 const style = StyleSheet.create({
     container: {
-      marginTop: -60,
+      marginTop: -heightDim * 0.06,
       marginHorizontal: -20
     },
     rowContent: {
@@ -78,7 +78,7 @@ const style = StyleSheet.create({
       alignContent:'center',
       justifyContent:'space-between',
       width:'100%',
-      marginBottom:10
+      // marginBottom:5
     },
     content: {
       flexDirection:'column',

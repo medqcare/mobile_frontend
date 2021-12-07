@@ -39,6 +39,7 @@ const familyList = (props) => {
     const [modalS, setModalS] = useState(false) //untuk modal sukses
     const [modalF, setModalF] = useState(false) //untuk modal failed
     const [message, setMessage] = useState('') //untuk pesan dimodal
+    const [load, setLoad] = useState(false)
 
 
 
@@ -61,8 +62,8 @@ const familyList = (props) => {
 
     return (
         families.map((family, index) => {
-            console.log(family.firstName, 'di family list')
             return (
+                // Family box
                 <TouchableOpacity
                     onPress={() => 
                         props.navigateTo('EditFamilyForm', { data: family })
@@ -77,36 +78,48 @@ const familyList = (props) => {
                     style={styles.container}
                 >
                     <View style={styles.topContainer}>
+                        {/* Profile Picture */}
                         <View style={styles.imageContainer}>
                             <Image 
                                 source={{ uri: (family.imageUrl ? family.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r') }}
                                 style={styles.image}
                             />
                         </View>
+
+                        {/* Gender Logo */}
                         <View style={styles.genderLogoContainer}>
                             <Icon name={iconProps(family.gender, 'name')}  style={{backgroundColor:iconProps(family.gender), borderRadius:50, padding: 4 }} size={14} color={'white'}/>
                         </View>
                     </View>
+
                     <View style={styles.bottomContainer}>
+
+                        {/* Name */}
                         <View style={styles.fullNameContainer}>
                             <Text style={styles.fullNameText}>{fullName(family.firstName, family.lastName)}</Text>
                         </View>
+
+                        {/* Age */}
                         <View style={styles.ageContainer}>
                             <Text style={styles.ageText}>{properAge(family.dob)}</Text>
                         </View>
                     </View>
                 
                     <ConfirmationModal
+                        load={load}
                         modal={modalW}
                         warning={'Yakin ingin menghapus anggota keluarga?'}
                         optionLeftText={'BATAL'}
                         optionRightText={'HAPUS'}
                         optionLeftFunction={() => setModalW (false)}
                         optionRightFunction={async () => {
+                            setLoad(true)
                             let token = await AsyncStorage.getItem('token')
-                            await props.deleteFamily(props.member._id, JSON.parse(token), modals)
+                            await props.deleteFamily(family._id, JSON.parse(token))
                             setModalW(false)
+                            setLoad(false)
                         }}
+                        load={load}
 
                     />
                 
@@ -117,7 +130,8 @@ const familyList = (props) => {
                         ) : null
                     }
                 </TouchableOpacity>
-        )})
+            )
+        })
     )
 }
 

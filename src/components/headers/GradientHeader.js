@@ -38,7 +38,12 @@ export default function GradientHeader({
             colors={colors} 
             style={styles.container}
         >
-            <StatusBar hidden/>
+            <StatusBar 
+                barStyle="light-content"
+                translucent={true}
+                backgroundColor={'transparent'}
+                hidden
+                />
             <View style={styles.innerContainer}>
                 <TouchableOpacity
                     onPress={() => navigate(navigateBack)}

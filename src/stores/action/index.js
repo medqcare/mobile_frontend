@@ -242,6 +242,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
 export function SignUp(userData, navigation, modalFailed) {
   console.log(userData.email, 'is signing up')
   return dispatch => {
+    const email = userData.email
     instance({
       url: '/v1/members/signup',
       method: 'POST',
@@ -255,7 +256,7 @@ export function SignUp(userData, navigation, modalFailed) {
           payload: false
         })
         // navigation.navigate('Sign')
-        navigation.navigate('SuccessSignUp')
+        navigation.navigate('SuccessSignUp', {email})
       })
       .catch(error => {
         console.log('Error from server:', error.response)
@@ -266,6 +267,26 @@ export function SignUp(userData, navigation, modalFailed) {
         modalFailed(error.response ? error.response.data.err.message : error.message);
       });
   };
+}
+
+export function resendConfirmationEmail(email){
+  console.log('Application is sending request to resend confirmation email')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resendVerificationCode',
+        data: {
+          email
+        }
+      })
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to resend confirmation email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
 }
 
 export function SignInGoogle(token, navigation, navigateTo) {
@@ -387,6 +408,91 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed, navigat
   };
 }
 
+export function resetPasswordEmail(email, navigate, navigateTo, isResend){
+  console.log('Application is sending request to reset password and send email')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resetPasswordEmail',
+        data: {
+          email
+        },
+      })
+      const storedSecretCode = data.secretCode
+      await AsyncStorage.setItem('storedSecretCode', storedSecretCode)
+      console.log('Email sent to', email)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      if(!isResend){
+        navigate(navigateTo, {email})
+      }
+    } catch (error) {
+      console.log(error)
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function validateSecretCode(secretCode, storedSecretCode, navigate, navigateTo, email){
+  console.log(`Application is sending request to validate user's input code...`)
+  return async dispatch => {
+    try {
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/validateSecretCode`,
+        data: { 
+          secretCode
+        },
+        headers: {
+          storedSecretCode,
+        }
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        navigate(navigateTo, {email, destination: 'SignIn'})
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function changePassword(email, password, navigate, destination){
+  console.log('Application is sending request to change password...')
+  return async dispatch => {
+    try {
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/changePassword`,
+        data: {
+          email,
+          password
+        },
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        await AsyncStorage.removeItem('secretCode')
+        navigate(destination)
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      console.log(error)
+      // const { message } = error.response.data.err
+      // console.log(message, 'Error found when trying to reset password and send email')
+      // ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
 export function GetUser(token, navigation) {
   console.log(token)
   console.log('Above is the token that is already in AsyncStorage')
@@ -442,8 +548,8 @@ export function GetUser(token, navigation) {
 export function logout(navigation) {
   return async dispatch => {
     try {
-      navigation.pop()
-      navigation.navigate('Sign');
+      await navigation.pop()
+      await navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
@@ -541,7 +647,7 @@ export function deleteFamily(userId, { token }, modalF) {
       });
     } catch (error) {
       console.log(error);
-      modalF(error.message)
+      // modalF(error.message)
     }
   };
 }
@@ -871,13 +977,13 @@ export function deleteImage(patientId, token, navigateTo){
     console.log('Application is sending command to server....')
     try {
         let { data } = await instance({
-			url: `/v1/members/deleteAvatar`,
-			method: 'PATCH',
-			headers: {
-				id: patientId,
-				authorization: token,
-			}
-        })
+        url: `/v1/members/deleteAvatar`,
+        method: 'PATCH',
+        headers: {
+          id: patientId,
+          authorization: token,
+        }
+      })
 		console.log('Server has successfully deleted imageUrl')
 
         let result = await instance({
