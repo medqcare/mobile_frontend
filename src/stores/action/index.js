@@ -548,8 +548,8 @@ export function GetUser(token, navigation) {
 export function logout(navigation) {
   return async dispatch => {
     try {
-      navigation.pop()
-      navigation.navigate('Sign');
+      await navigation.pop()
+      await navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
