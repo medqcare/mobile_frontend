@@ -156,13 +156,6 @@ function DokumenList(props) {
         setSelectedValue={setSelectedValue}
       >
       </PictureModal>
-      <PictureModal
-        modal={modalAdd}
-        setModal={setModalAdd}
-        selection={addDocumentOptions}
-        setSelectedValue={setSelectedValue}
-      >
-      </PictureModal>
       <DocumentOptionModal
         modal={modalOption}
         setModal={setModalOption}
