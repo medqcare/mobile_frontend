@@ -14,6 +14,9 @@ import riwayatStack from "./riwayatStack";
 import medresStack from "./medresStack";
 import dokumenMedisStack from "./dokumenMedisStack";
 import penunjangStack from "./penunjangStack";
+import rujukanStack from "./rujukanStack";
+import resepStack from "./resepStack";
+import reminderStack from "./reminderStack";
 
 export default StackHome = createStackNavigator(
   {
@@ -91,6 +94,24 @@ export default StackHome = createStackNavigator(
     },
     PenunjangStack: {
       screen: penunjangStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    RujukanStack: {
+      screen: rujukanStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    ResepStack: {
+      screen: resepStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    ReminderStack: {
+      screen: reminderStack,
       navigationOptions: {
         headerShown: false,
       },
