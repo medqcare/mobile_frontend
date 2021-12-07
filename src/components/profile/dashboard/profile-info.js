@@ -65,9 +65,12 @@ const profileInfo = (props) => {
     async function deleteProfilePicture(){
         setLoad(true)
         const patientId = userData._id
+        const firstName = userData.firstName
+        const lastName = userData.lastName
+        const fullName = lastName ? `${firstName}${lastName}` : firstName
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
-        await props.deleteImage(patientId, token, props.navigation.navigate)
+        await props.deleteImage(patientId, fullName, token)
         setLoad(false)
         setConfirmationModal(false)
     }
