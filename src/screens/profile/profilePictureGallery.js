@@ -57,15 +57,13 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
           quality: 1,
           exif: true,
         });
-        const firstName = userData.firstName
-        const lastName = userData.lastName
-        const fullName = lastName ? `${firstName}${lastName}` : firstName
-        const fileToUpload = createFormData(result, fullName)
-        setImageToUpload(fileToUpload)
         
         if (!result.cancelled) {
             setImage(result.uri);
-        }
+            const _id = userData._id
+            const fileToUpload = createFormData(result, _id)
+            setImageToUpload(fileToUpload)
+        } 
     }
 
     const saveImage = async () => {
@@ -100,16 +98,19 @@ function ProfilePictureGallery({navigation, userData, uploadImage}){
                 >
                     <Text style={styles.text}>Kembali</Text>  
                 </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => saveImage()}
-                    disabled={load}
-                >
-                    {load ? (
-                        <ActivityIndicator size={"small"} color="#FFF" />
-                        ) : (
-                            <Text style={styles.text}>Simpan</Text>
-                        )}
-                </TouchableOpacity>
+                {imageToUpload ? 
+                    <TouchableOpacity
+                        onPress={() => saveImage()}
+                        disabled={load}
+                    >
+                        {load ? (
+                            <ActivityIndicator size={"small"} color="#FFF" />
+                            ) : (
+                                <Text style={styles.text}>Simpan</Text>
+                            )}
+                    </TouchableOpacity> :
+                    <Text style={styles.text}>Pilih foto untuk melanjutkan</Text>
+                }
             </View>
         </View>
     )
