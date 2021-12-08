@@ -106,6 +106,7 @@ const familyList = (props) => {
                     </View>
                 
                     <ConfirmationModal
+                        load={load}
                         modal={modalW}
                         warning={'Yakin ingin menghapus anggota keluarga?'}
                         optionLeftText={'BATAL'}
