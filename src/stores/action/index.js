@@ -978,11 +978,11 @@ export function uploadImage(patientId, fileToUpload, token, navigateTo, destinat
             'content-type': 'multipart/form-data',
           },
         })
-		console.log('server has successfully updated Image Url')
+		  console.log('server has successfully updated Image Url')
         let result = await instance({
-			method: 'GET',
-			url: `/v1/members/dataLogged`,
-			headers: { Authorization: token },
+          method: 'GET',
+          url: `/v1/members/dataLogged`,
+          headers: { Authorization: token },
         })
         if (result.data) {
 			console.log('Application Found dataLogged')
@@ -999,16 +999,13 @@ export function uploadImage(patientId, fileToUpload, token, navigateTo, destinat
   }
 
 }
-export function deleteImage(patientId, fullName, token){
+export function deleteImage(patientId, token){
   return async dispatch => {
     console.log('Application is sending command to server....')
     try {
         let { data } = await instance({
         url: `/v1/members/deleteAvatar`,
         method: 'PATCH',
-        data: {
-          fileName: fullName
-        },
         headers: {
           id: patientId,
           authorization: token,
@@ -1031,7 +1028,7 @@ export function deleteImage(patientId, fullName, token){
 
         ToastAndroid.show(data.message, ToastAndroid.SHORT)
     } catch (error) {
-      console.log(error.response, 'Error found when trying to delete avatar')
+      console.log(error.response.data, 'Error found when trying to delete avatar')
     }
   }
 }
