@@ -17,6 +17,7 @@ import PictureModal from '../../modals/profilePictureModal'// modal for profile 
 import ConfirmationModal from '../../modals/ConfirmationModal'
 import { deleteImage } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import FullImageModal from '../../modals/FullImageModal'
 
 
 const mapStateToProps = state => {
@@ -28,8 +29,8 @@ const mapDispatchToProps = {
 };
 
 const profileInfo = (props) => {
-    // const [userData, setUserData] = useState(props.userData)
     const [confirmationModal, setConfirmationModal] = useState(false)
+    const [fullImageModal, setFullImageModal] = useState(false)
 
     // Load
     const [load, setLoad] = useState(false)
@@ -65,12 +66,9 @@ const profileInfo = (props) => {
     async function deleteProfilePicture(){
         setLoad(true)
         const patientId = userData._id
-        const firstName = userData.firstName
-        const lastName = userData.lastName
-        const fullName = lastName ? `${firstName}${lastName}` : firstName
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
-        await props.deleteImage(patientId, fullName, token)
+        await props.deleteImage(patientId, token)
         setLoad(false)
         setConfirmationModal(false)
     }
@@ -96,11 +94,21 @@ const profileInfo = (props) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.profilePicture}>   
-                <Image
-                    source={{ uri: userData?.imageUrl ? userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
-                    style={styles.userImage}
-                />  
+            <View style={styles.profilePicture}>  
+                <TouchableOpacity
+                    onPress={() => setFullImageModal(!fullImageModal)}    
+                > 
+                    <Image
+                        source={{ uri: userData?.imageUrl ? userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                        style={styles.userImage}
+                    />  
+                </TouchableOpacity>
+
+                <FullImageModal 
+                    modal={fullImageModal}
+                    setModal={setFullImageModal}
+                    imageUrl={userData.imageUrl}
+                />
                 
                 <TouchableOpacity style={{marginTop:-17,zIndex:1,marginLeft:30}}
                     onPress={()=>setProfilePictureModal(true)}
@@ -180,7 +188,7 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 150 / 2,
         overflow: "hidden",
-        borderWidth: 3,
+        borderWidth: 1,
         borderColor: "#4BE395"
     },
 

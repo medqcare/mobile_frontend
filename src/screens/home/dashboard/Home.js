@@ -8,7 +8,8 @@ import {
   StatusBar,
   TouchableOpacity,
   Image,
-  Dimensions
+  Dimensions,
+  TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
 import GetLocation from 'react-native-get-location';
@@ -183,12 +184,8 @@ function HomePage(props) {
                         }}>
                         <View style={{marginLeft: 10}}>
                           <Image
-                            style={{
-                              height: 30,
-                              width: 30,
-                              resizeMode: 'stretch',
-                            }}
-                            source={require('../../../assets/png/Profil.png')}
+                            style={style.profilePicture}
+                            source={{ uri: props.userData?.imageUrl ? props.userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                           />
                         </View>
                       </TouchableOpacity>
@@ -277,6 +274,16 @@ const style = StyleSheet.create({
     borderRadius: 50,
     right: 25,
     top: 25,
+  },
+  // profilePicture: { 
+  //   borderRadius: 25 / 2,
+  //   width: 25,
+  //   height: 25,
+  // },
+  profilePicture: { 
+    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+    width: Dimensions.get('window').width * 0.05787037,
+    height: Dimensions.get('window').width * 0.05787037,
   },
   greeting: {
     position: 'absolute',
