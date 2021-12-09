@@ -50,7 +50,7 @@ function ReminderActiveList(props) {
                                     <Text style={styles.textItem}>{el.information}</Text>
                                 </View>
                                 <Image
-                                    source={require('../../../assets/png/ArrowDown.png')}
+                                    source={require('../../assets/png/ArrowDown.png')}
                                 />
                             </View>
                             <View style={styles.drugMiddleContainer}>
