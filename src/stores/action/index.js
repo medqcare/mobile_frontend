@@ -1,5 +1,5 @@
 import axios from 'axios';
-import function_apaan from './function_apaan';
+import { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument } from './medical_resume';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -7,6 +7,7 @@ import { baseURL } from '../../config';
 const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
+
 
 const _storeData = async data => {
   console.log(data, 'This is the token after signing in');
@@ -1004,4 +1005,12 @@ export function deleteImage(patientId, token, navigateTo){
       console.log(error.response, 'Error found when trying to delete avatar')
     }
   }
+}
+
+
+export {
+  getDocumentByPatient,
+  uploadDocument,
+  renameDocument,
+  deleteDocument
 }
