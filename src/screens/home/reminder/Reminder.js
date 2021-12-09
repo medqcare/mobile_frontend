@@ -10,7 +10,7 @@ import {
 import { connect } from "react-redux";
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
-import ReminderFinishedList from "./ReminderFinishedList";
+import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;

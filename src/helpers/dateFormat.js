@@ -1,5 +1,5 @@
 function fullMonthFormat(date){
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
     const newDate = date.split('/')
     const year = newDate[2]
     const day = newDate[0]
