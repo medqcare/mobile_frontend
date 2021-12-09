@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import Header from "../../../components/headers/ReminderHeader";
-import ReminderActiveList from "./ReminderActiveList";
+import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "./ReminderFinishedList";
 
 const dimHeight = Dimensions.get("window").height;
