@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
+import { fullMonthFormat, getFormattedDate } from "../../helpers/dateFormat";
 
 
 const dimHeight = Dimensions.get("window").height;
@@ -22,7 +23,7 @@ function ReminderFinishedList(props) {
             type: 'Pil',
             ettiquete: ['Morning', 'Night'],
             isFinished: true,
-            finishedAt: new Date(2020, 11, 15)
+            finishedAt: new Date(2018, 5, 9)
         },
         {
             information: 'Sebelum Makan',
@@ -31,37 +32,38 @@ function ReminderFinishedList(props) {
             type: 'Tablet',
             ettiquete: ['Morning', 'Afternoon', 'Night'],
             isFinished: true,
-            finishedAt: new Date(2018, 7, 31)
+            finishedAt: new Date()
         }
     ]
   
     return (
         data ? (  
             data.map((el, index) => {
-                const date = new Date()
-                const options = {year: 'numeric', month: 'long', day: 'numeric' }
-                const formattedDate = date.toLocaleDateString('id-ID', options)
-                console.log(formattedDate);
+                const localDate = el.finishedAt.toLocaleString('id-ID')
+                const formattedDate = getFormattedDate(localDate)
+                const displayDate = fullMonthFormat(formattedDate)
                 return (
                     <View style={styles.eachDrugContainer} key={index}>
                         <TouchableOpacity
                             style={styles.touchable}
                             onPress={() => console.log('See Detail', index)}
                         >
-                        <Text style={styles.textItem}>{formattedDate}</Text>
-                        <View style={styles.drugSeparatorContainer}/>
-                            <View style={styles.drugTopContainer}>
-                                <View style={styles.informationContainer}>
-                                    <Text style={styles.textItem}>{el.information}</Text>
+                            <View>
+                                <Text style={styles.textItem}>{displayDate}</Text>
+                            </View>
+                            <View style={styles.drugSeparatorContainer}/>
+                                <View style={styles.drugTopContainer}>
+                                    <View style={styles.informationContainer}>
+                                        <Text style={styles.textItem}>{el.information}</Text>
+                                    </View>
+                                    <Image
+                                        source={require('../../assets/png/ArrowDown.png')}
+                                    />
                                 </View>
-                                <Image
-                                    source={require('../../../assets/png/ArrowDown.png')}
-                                />
-                            </View>
-                            <View style={styles.drugMiddleContainer}>
-                                <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
-                                <Text style={styles.ettiqueteText}>Hari ini {el.ettiquete.length}x sekali</Text>
-                            </View>
+                                <View style={styles.drugMiddleContainer}>
+                                    <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
+                                    <Text style={styles.ettiqueteText}>Hari ini {el.ettiquete.length}x sekali</Text>
+                                </View>
                         </TouchableOpacity>
                     </View>
                 )
