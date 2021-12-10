@@ -13,6 +13,11 @@ import {
 import { LinearGradient } from 'expo-linear-gradient'
 import ReminderBackButton from '../../assets/svg/ReminderBackButton'
 
+
+const dimensions = Dimensions.get('window')
+const dimHeight = dimensions.height
+const dimWidth = dimensions.width
+
 export default function ReminderHeader({
     navigate,
     navigateBack = 'Home',
@@ -20,7 +25,9 @@ export default function ReminderHeader({
     hidden = true,
     name = 'firstName'
 }){
-
+    
+    const widthBack = (dimWidth * 0.06945)
+    const heightBack = (dimHeight * 0.03677)
     const start = {
         x: 0, 
         y: 0
@@ -56,7 +63,7 @@ export default function ReminderHeader({
                             <TouchableOpacity
                                 onPress={() => navigate(navigateBack)}
                             >
-                                <ReminderBackButton/>
+                                <ReminderBackButton width={widthBack} height={heightBack}/>
                             </TouchableOpacity>
                             <View>
                                 <Text style={styles.greetingText}>Halo {name}!</Text>
@@ -67,10 +74,6 @@ export default function ReminderHeader({
         </ImageBackground>
     )
 }
-
-const dimensions = Dimensions.get('window')
-const dimHeight = dimensions.height
-const dimWidth = dimensions.width
 
 const styles = StyleSheet.create({
     container: {

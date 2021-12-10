@@ -52,7 +52,7 @@ function ReminderActiveList(props) {
                                 </View>
                                 <MaterialIcons 
                                     name="keyboard-arrow-down" 
-                                    size={24} 
+                                    size={dimWidth * 0.05} 
                                     color="#B5B5B5" 
                                 />
                             </View>

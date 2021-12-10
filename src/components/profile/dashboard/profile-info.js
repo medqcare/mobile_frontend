@@ -18,7 +18,7 @@ import ConfirmationModal from '../../modals/ConfirmationModal'
 import { deleteImage } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import FullImageModal from '../../modals/FullImageModal'
-
+import { readDirectoryAsync, cacheDirectory, deleteAsync, documentDirectory, getInfoAsync, readAsStringAsync, getContentUriAsync } from 'expo-file-system'
 
 const mapStateToProps = state => {
     return state
@@ -91,15 +91,49 @@ const profileInfo = (props) => {
                 break;
         }
     }
+    
+    // Function to access cache storage. Not working yet
+    async function fileSystem(){
+        try{
 
+            // // Document
+            // const document = documentDirectory
+            // const docs = await readDirectoryAsync(document)
+            // console.log(docs)
+    
+            // Cached
+            
+            // console.log(res)
+            // console.log(deleted)
+            const res = cacheDirectory
+            const cached = await readDirectoryAsync(res)
+            // console.log(cached)
+            // const content = await getContentUriAsync('file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+            // console.log(content)
+            const detail = await getInfoAsync(res + 'ImagePicker')
+            // const deleted = await deleteAsync(res + 'ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+
+            console.log(detail)
+            // const read = await readAsStringAsync('content://host.exp.exponent.FileSystemFileProvider/cached_expo_files/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+            // console.log(read, 'asdfasdfadsf')
+            // console.log('read');
+        }
+        catch(error){
+            console.log(error)
+        }
+
+    }
     return (
         <View style={styles.container}>
             <View style={styles.profilePicture}>  
                 <TouchableOpacity
                     onPress={() => setFullImageModal(!fullImageModal)}    
+                    // onPress={() => fileSystem()}    
                 > 
                     <Image
-                        source={{ uri: userData?.imageUrl ? userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                        key={(new Date()).getTime()}
+                        // source={{ uri: userData?.imageUrl ? userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r'}}
+                        source={{ uri: userData?.imageUrl ? `${userData?.imageUrl}?time=${new Date()}` : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r'}}
                         style={styles.userImage}
                     />  
                 </TouchableOpacity>
