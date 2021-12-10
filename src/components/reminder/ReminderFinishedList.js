@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { fullMonthFormat, getFormattedDate } from "../../helpers/dateFormat";
+import { AntDesign } from '@expo/vector-icons';
 
 
 const dimHeight = Dimensions.get("window").height;
@@ -35,6 +36,7 @@ function ReminderFinishedList(props) {
             finishedAt: new Date()
         }
     ]
+    // const data = null
   
     return (
         data ? (  
@@ -48,28 +50,35 @@ function ReminderFinishedList(props) {
                             style={styles.touchable}
                             onPress={() => console.log('See Detail', index)}
                         >
-                            <View>
-                                <Text style={styles.textItem}>{displayDate}</Text>
+                            <View style={styles.drugTopContainer}>
+                                <AntDesign 
+                                    name="exclamationcircle" 
+                                    size={dimWidth * 0.035} 
+                                    color="rgba(128, 128, 128, 1)" 
+                                />
+                                <Text style={styles.finishedText}>Telah selesai pada {displayDate}</Text>
                             </View>
                             <View style={styles.drugSeparatorContainer}/>
-                                <View style={styles.drugTopContainer}>
-                                    <View style={styles.informationContainer}>
-                                        <Text style={styles.textItem}>{el.information}</Text>
-                                    </View>
-                                    <Image
-                                        source={require('../../assets/png/ArrowDown.png')}
+                            <View style={styles.drugBottomContainer}>
+                                <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
+                                <View style={styles.ettiqueteContainter}>
+                                    <AntDesign 
+                                        name="clockcircleo" 
+                                        size={dimWidth * 0.035} 
+                                        color="rgba(128, 128, 128, 1)" 
                                     />
+                                    <Text style={styles.ettiqueteText}>{el.ettiquete.length}x sehari</Text>
                                 </View>
-                                <View style={styles.drugMiddleContainer}>
-                                    <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
-                                    <Text style={styles.ettiqueteText}>Hari ini {el.ettiquete.length}x sekali</Text>
-                                </View>
+                                <Text style={{...styles.italicDarkerText, paddingTop: dimHeight * 0.01471}}>{el.information}</Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
                 )
             })
         ) : (
-            <Text style={styles.textItem}>Belum Ada Reminder</Text>
+            <View style={styles.noDataContainer}>
+                <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
+            </View>
         )
     );
 }
@@ -81,7 +90,12 @@ const textStyles = {
 
 	lighterText: {
 		color: "rgba(221, 221, 221, 1)"
-	}
+	},
+
+    italicDarkerText: {
+        color: "rgba(181, 181, 181, 1)",
+        fontStyle: 'italic'
+    }
 }
 
 const styles = StyleSheet.create({
@@ -98,22 +112,27 @@ const styles = StyleSheet.create({
 		alignItems: "center"
 	},
 
-	drugTopContainer: {
-		flexDirection: 'row',
-		width: '90%',
-		justifyContent: "space-between",
+    drugTopContainer: {
+        flexDirection: "row",
+        width: '90%',
+        alignSelf: "center",
+        paddingBottom: dimHeight * 0.021447,
+    },
+
+    finishedText: {
+        ...textStyles.italicDarkerText,
+        paddingLeft: dimWidth * 0.02315
+    },
+
+    drugSeparatorContainer: {
+		backgroundColor: '#474747',
+		height: dimHeight * 0.0015,
+		width: '100%',
 	},
 
-	informationContainer: {
-		backgroundColor: 'rgba(31, 31, 31, 1)',
-		paddingHorizontal: dimWidth * 0.0139,
-		paddingVertical: dimHeight * 0.00491 
-	},
-
-	drugMiddleContainer: {
+    drugBottomContainer: {
 		width: '90%',
 		paddingTop: dimHeight * 0.01962,
-		paddingBottom: dimHeight * 0.02942
 	},
 
 	drugNameText: {
@@ -122,24 +141,31 @@ const styles = StyleSheet.create({
 		fontSize: 16
 	},
 
-	ettiqueteText: {
+    ettiqueteContainter: {
+        flexDirection: "row",
 		paddingTop: dimHeight * 0.01471,
-		...textStyles.darkerText
+    },
+
+	ettiqueteText: {
+		...textStyles.darkerText,
+        paddingLeft: dimWidth * 0.02315
 	},
+
+    noDataContainer: {
+        paddingTop: dimHeight * 0.015
+    },
 
 	darkerText : {
 		...textStyles.darkerText, 
 	},
 
-	drugSeparatorContainer: {
-		backgroundColor: '#474747',
-		height: dimHeight * 0.0015,
-		width: '100%',
+	lighterText: {
+		...textStyles.lighterText,
 	},
 
-	textItem: {
-		...textStyles.lighterText,
-	}
+    italicDarkerText: {
+        ...textStyles.italicDarkerText
+    }
 });
 
 

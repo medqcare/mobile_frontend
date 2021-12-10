@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
+import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -52,11 +53,12 @@ function Reminder(props) {
 							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>Selesai</Text>
 						</TouchableOpacity>
 					</View>
-					<View style={styles.optionAdd}>
-						<Image
-							source={require('../../../assets/png/ReminderAddButton.png')}
-						/>
-					</View>
+					<TouchableOpacity 
+						style={styles.optionAdd}
+						onPress={() => console.log('Add button')}
+					>
+						<ReminderAddButton/>
+					</TouchableOpacity>
 				</View>
 				{selectedStatus === 'Active' ? 
 					<ReminderActiveList/> :

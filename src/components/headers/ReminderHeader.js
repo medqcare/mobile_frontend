@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 
 import { LinearGradient } from 'expo-linear-gradient'
+import ReminderBackButton from '../../assets/svg/ReminderBackButton'
 
 export default function ReminderHeader({
     navigate,
@@ -55,9 +56,7 @@ export default function ReminderHeader({
                             <TouchableOpacity
                                 onPress={() => navigate(navigateBack)}
                             >
-                                <Image
-                                    source={require('../../assets/png/ReminderArrowBack.png')}
-                                />
+                                <ReminderBackButton/>
                             </TouchableOpacity>
                             <View>
                                 <Text style={styles.greetingText}>Halo {name}!</Text>
