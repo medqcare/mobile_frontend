@@ -9,7 +9,7 @@ import {
   Switch,
 } from "react-native";
 import { connect } from "react-redux";
-
+import { AntDesign, MaterialIcons  } from '@expo/vector-icons';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -33,6 +33,7 @@ function ReminderActiveList(props) {
             reminder: true
         }
     ]
+    // const data = null
   
     return (
         data ? (  
@@ -47,15 +48,24 @@ function ReminderActiveList(props) {
                         >
                             <View style={styles.drugTopContainer}>
                                 <View style={styles.informationContainer}>
-                                    <Text style={styles.textItem}>{el.information}</Text>
+                                    <Text style={styles.lighterText}>{el.information}</Text>
                                 </View>
-                                <Image
-                                    source={require('../../assets/png/ArrowDown.png')}
+                                <MaterialIcons 
+                                    name="keyboard-arrow-down" 
+                                    size={24} 
+                                    color="#B5B5B5" 
                                 />
                             </View>
                             <View style={styles.drugMiddleContainer}>
                                 <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
-                                <Text style={styles.ettiqueteText}>Hari ini {el.ettiquete.length}x sekali</Text>
+                                <View style={styles.ettiqueteContainter}>
+                                    <AntDesign 
+                                        name="clockcircleo" 
+                                        size={dimWidth * 0.035} 
+                                        color="rgba(128, 128, 128, 1)" 
+                                    />
+                                    <Text style={styles.ettiqueteText}>Hari ini {el.ettiquete.length}x sehari</Text>
+                                </View>
                             </View>
                             <View style={styles.drugSeparatorContainer}/>
                             <View style={styles.drugBottomContainer}>
@@ -66,6 +76,7 @@ function ReminderActiveList(props) {
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={toggleSwitch}
                                     value={isEnabled}
+                                    style={styles.reminderSwitch}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -73,7 +84,9 @@ function ReminderActiveList(props) {
                 )
             })
         ) : (
-            <Text style={styles.textItem}>Belum Ada Reminder</Text>
+            <View style={styles.noDataContainer}>
+                <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
+            </View>
         )
     );
 }
@@ -126,9 +139,14 @@ const styles = StyleSheet.create({
 		fontSize: 16
 	},
 
-	ettiqueteText: {
+    ettiqueteContainter: {
+        flexDirection: "row",
 		paddingTop: dimHeight * 0.01471,
-		...textStyles.darkerText
+    },
+
+	ettiqueteText: {
+		...textStyles.darkerText,
+        paddingLeft: dimWidth * 0.02315
 	},
 
 	darkerText : {
@@ -146,11 +164,30 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		width: '90%',
 		justifyContent: "space-between",
+        alignItems: "center",
 	},
+    
+    reminderSwitch: { 
+        transform: [
+            { 
+                // scaleX: 1.5
+                scaleX: dimWidth * 0.0031
+            }, 
+            { 
+                // scaleY: 1.5 
+                scaleY: dimHeight * 0.0015 
+            }
+        ],
+        height: dimHeight * 0.002451,
+    },
 
-	textItem: {
+    noDataContainer: {
+        paddingTop: dimHeight * 0.015
+    },
+
+    lighterText: {
 		...textStyles.lighterText,
-	}
+	},
 });
 
 
