@@ -16,26 +16,7 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderFinishedList(props) {
-    const data = [
-        {
-            information: 'Setelah Makan',
-            drugName: 'Marjan',
-            drugQuantity: 20,
-            type: 'Pil',
-            ettiquete: ['Morning', 'Night'],
-            isFinished: true,
-            finishedAt: new Date(2018, 5, 9)
-        },
-        {
-            information: 'Sebelum Makan',
-            drugName: 'Madu',
-            drugQuantity: 10,
-            type: 'Tablet',
-            ettiquete: ['Morning', 'Afternoon', 'Night'],
-            isFinished: true,
-            finishedAt: new Date()
-        }
-    ]
+    const data = null
   
     return (
         data ? (  
@@ -75,7 +56,9 @@ function ReminderFinishedList(props) {
                 )
             })
         ) : (
-            <Text style={styles.lighterText}>Belum Ada Reminder</Text>
+            <View style={styles.noDataContainer}>
+                <Text style={styles.lighterText}>Belum Ada Reminder</Text>
+            </View>
         )
     );
 }
@@ -147,6 +130,10 @@ const styles = StyleSheet.create({
 		...textStyles.darkerText,
         paddingLeft: dimWidth * 0.02315
 	},
+
+    noDataContainer: {
+        paddingTop: dimHeight * 0.015
+    },
 
 	darkerText : {
 		...textStyles.darkerText, 
