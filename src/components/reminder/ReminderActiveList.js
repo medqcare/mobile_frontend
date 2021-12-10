@@ -69,7 +69,7 @@ function ReminderActiveList(props) {
                             </View>
                             <View style={styles.drugSeparatorContainer}/>
                             <View style={styles.drugBottomContainer}>
-                                <Text style={styles.darkerText}>Setel Pengingat</Text>
+                                <Text style={styles.darkerText}>Setel pengingat</Text>
                                 <Switch
                                     trackColor={{ false: '#767577', true: 'rgba(10, 88, 237, 1)' }}
                                     thumbColor={'#f4f3f4'}
