@@ -4,10 +4,38 @@ import { connect } from "react-redux";
 import { Ionicons } from '@expo/vector-icons'
 import SearchIcon from '../../../assets/svg/Search'
 import DokumenList from "./DokumenList";
+import SelectPatient from "../../../components/modals/selectPatient";
 
 const dimHeight = Dimensions.get("window").height;
 
 function DokumenMedisList(props) {
+  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [modalPatient, setModalPatient] = useState(false)
+  const [family, setFamily] = useState([]);
+  const [patient, setPatient] = useState({
+    patientID: props.userData._id,
+    imageUrl: props.userData.imageUrl
+  });
+
+  useEffect(() => {
+    let _family = {
+      ...props.userData,
+    };
+    delete _family.family;
+    const temp = [_family];
+    props.userData.family.forEach(el => {
+      temp.push(el);
+    });
+    setFamily(family.concat(temp));
+  }, []);
+
+  function setSelectedValue(data){
+    setPatient({
+        patientID: data._id,
+        imageUrl: data.imageUrl
+    })
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -35,17 +63,27 @@ function DokumenMedisList(props) {
             placeholder='Cari Dokumen'
             placeholderTextColor='#A2A2A2'
           />
+          <TouchableOpacity onPress={() => setModalPatient(true)}>
           <Image
               style={{
                 height: dimHeight * 0.04,
                 width: dimHeight * 0.04,
-                resizeMode: 'stretch',
+                borderRadius: dimHeight * 0.04,
               }}
-              source={require('../../../assets/png/Profil.png')}
+              source={patient.imageUrl ? {uri: patient.imageUrl} : require('../../../assets/png/Profil.png')}
             />
+          </TouchableOpacity>
         </View>
       </View>
-      <DokumenList navigation={props.navigation}/>
+      <DokumenList navigation={props.navigation} patientID={patient.patientID}/>
+      <SelectPatient
+          modal={modalPatient}
+          setModal={setModalPatient}
+          accountOwner={accountOwner}
+          family={family}
+          title="Pilih Patient"
+          setSelectedValue={setSelectedValue}
+        />
     </View>
   );
 }
