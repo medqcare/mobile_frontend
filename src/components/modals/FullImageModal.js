@@ -25,7 +25,8 @@ export default function FullImageModal({modal, setModal, imageUrl}){
                     <ButtonClose/>
                 </TouchableOpacity>
                 <Image 
-                    source={{uri: imageUrl}}
+                        source={{ uri: imageUrl ? `${imageUrl}?time=${new Date()}` : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r'}}
+                        // source={{uri: imageUrl}}
                     style={styles.profilePicture}
                 />
             </View>
