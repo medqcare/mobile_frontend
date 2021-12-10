@@ -43,14 +43,14 @@ function Reminder(props) {
 							style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
 							onPress={() => changeStatus('Active')}
 						>
-							<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>Aktif</Text>
+							<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
 						</TouchableOpacity>
 						<TouchableOpacity
 							activeOpacity={1}
 							onPress={() => changeStatus('Finished')}
 							style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
 						>
-							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>Selesai</Text>
+							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
 						</TouchableOpacity>
 					</View>
 					<TouchableOpacity 

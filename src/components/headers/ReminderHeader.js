@@ -60,7 +60,7 @@ export default function ReminderHeader({
                             </TouchableOpacity>
                             <View>
                                 <Text style={styles.greetingText}>Halo {name}!</Text>
-                                <Text style={styles.noteText}>Pengingat untuk obat anda</Text>
+                                <Text style={styles.noteText}>Pengingat untuk obat Anda</Text>
                             </View>
                         </View>
             </LinearGradient>
