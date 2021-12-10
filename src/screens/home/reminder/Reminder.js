@@ -28,6 +28,9 @@ function Reminder(props) {
 	async function changeStatus(status){
 		setSelectedStatus(status)
 	}
+
+	const widthAdd = (dimWidth * 0.06945)
+    const heightAdd = (dimHeight * 0.03677)
   
   	return (
 		<View style={styles.container}>
@@ -57,7 +60,7 @@ function Reminder(props) {
 						style={styles.optionAdd}
 						onPress={() => console.log('Add button')}
 					>
-						<ReminderAddButton/>
+						<ReminderAddButton width={widthAdd} height={heightAdd}/>
 					</TouchableOpacity>
 				</View>
 				{selectedStatus === 'Active' ? 
