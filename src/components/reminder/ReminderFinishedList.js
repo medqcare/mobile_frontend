@@ -57,7 +57,7 @@ function ReminderFinishedList(props) {
             })
         ) : (
             <View style={styles.noDataContainer}>
-                <Text style={styles.lighterText}>Belum Ada Reminder</Text>
+                <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
             </View>
         )
     );
