@@ -32,25 +32,6 @@ function MenuNavigator({ navigation, data }) {
           backgroundColor: "#0C6292",
           height: "80%",
           width: 1,
-          backgroundColor: "#0C6292",
-        }}
-      ></View>
-      <TouchableOpacity
-        style={style.borderIcon}
-        onPress={() =>
-          data ? navigation.navigate("Filter") : navigation.navigate("Sign")
-        }
-      >
-        <DokFavorit />
-        <Text style={{ marginTop: 10, fontSize: 12, color: "#B5B5B5" }}>
-          Dokter Favorit
-        </Text>
-      </TouchableOpacity>
-      <View
-        style={{
-          backgroundColor: "#0C6292",
-          height: "80%",
-          width: 1,
         }}
       ></View>
       <TouchableOpacity
@@ -84,6 +65,25 @@ function MenuNavigator({ navigation, data }) {
         <Penunjang />
         <Text style={{ marginTop: 10, fontSize: 12, color: "#B5B5B5" }}>
           Penunjang
+        </Text>
+      </TouchableOpacity>
+      <View
+        style={{
+          backgroundColor: "#0C6292",
+          height: "80%",
+          width: 1,
+          backgroundColor: "#0C6292",
+        }}
+      ></View>
+      <TouchableOpacity
+        style={style.borderIcon}
+        onPress={() =>
+          data ? navigation.navigate("Filter") : navigation.navigate("Sign")
+        }
+      >
+        <DokFavorit />
+        <Text style={{ marginTop: 10, fontSize: 12, color: "#B5B5B5" }}>
+          Favorit
         </Text>
       </TouchableOpacity>
 
