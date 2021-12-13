@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Header from "../../../components/headers/GradientHeader";
+import SearchBar from "../../../components/headers/SearchBar";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -51,7 +52,7 @@ export default function PenunjangList(props) {
     container: {
       backgroundColor: speciment.selected ? "#212D3D" : "#2F2F2F",
       borderWidth: 1,
-      borderColor: "#2F2F2F",
+      borderColor: speciment.selected ? "#77BFF4" : "transparent",
       padding: 10,
       borderRadius: 4,
       alignSelf: "flex-start",
@@ -92,6 +93,7 @@ export default function PenunjangList(props) {
     <>
       <Header title="Penunjang" navigate={props.navigation.navigate} />
       <View style={styles.container}>
+        <SearchBar />
         <View>
           <Text style={styles.title}>pilih kategori</Text>
           <View style={{ flexDirection: "row" }}>
