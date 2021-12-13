@@ -6,11 +6,11 @@ export default StackPenunjang = createStackNavigator(
     PenunjangList: {
       screen: PenunjangList,
       navigationOptions: {
-        headerShown: false
+        headerShown: false,
       },
-    }
+    },
   },
   {
-    initialRouteName: "PenunjangList"
+    initialRouteName: "PenunjangList",
   }
 );
