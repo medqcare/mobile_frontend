@@ -25,6 +25,7 @@ import {
 const activityList = (props) => {
   const [dateRef, setDateRef] = useState(null);
   const [refresh, setRefresh] = useState(true);
+  const [registrationData, setRegistrationData] = useState(null)
 
   useEffect(() => {
     fetchdata();
@@ -36,6 +37,7 @@ const activityList = (props) => {
         .getTodayRegistration(props.userData.userID._id)
         .then(({ data }) => {
           setRefresh(false);
+          setRegistrationData(data)
           if (!dateRef) {
             setDateRef(new Date());
           }
@@ -84,6 +86,7 @@ const activityList = (props) => {
                       bookingID={el.bookingCode}
                       reservationID={el.reservationID}
                       queueId={JSON.stringify(el.queueID)}
+                      data={registrationData}
                     />
                   );
                 })}
