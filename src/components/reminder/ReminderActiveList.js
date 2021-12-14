@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { connect } from "react-redux";
 import { AntDesign, MaterialIcons  } from '@expo/vector-icons';
+import ToggleSwitch from 'toggle-switch-react-native'
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -70,14 +71,22 @@ function ReminderActiveList(props) {
                             <View style={styles.drugSeparatorContainer}/>
                             <View style={styles.drugBottomContainer}>
                                 <Text style={styles.darkerText}>Setel pengingat</Text>
-                                <Switch
+                                <ToggleSwitch
+                                    isOn={isEnabled}
+                                    onColor="rgba(10, 88, 237, 1)"
+                                    offColor="#767577"
+                                    size="medium"
+                                    animationSpeed={150}
+                                    onToggle={isOn => toggleSwitch()}
+                                />
+                                {/* <Switch
                                     trackColor={{ false: '#767577', true: 'rgba(10, 88, 237, 1)' }}
                                     thumbColor={'#f4f3f4'}
                                     ios_backgroundColor="#3e3e3e"
                                     onValueChange={toggleSwitch}
                                     value={isEnabled}
                                     style={styles.reminderSwitch}
-                                />
+                                /> */}
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -178,7 +187,7 @@ const styles = StyleSheet.create({
                 scaleY: dimHeight * 0.0015 
             }
         ],
-        height: dimHeight * 0.002451,
+        height: dimHeight * 0.029,
     },
 
     noDataContainer: {
