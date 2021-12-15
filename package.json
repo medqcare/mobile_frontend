@@ -18,7 +18,6 @@
     "axios": "^0.24.0",
     "expo": "~43.0.2",
     "expo-camera": "~12.0.3",
-    "expo-file-system": "^13.0.3",
     "expo-document-picker": "~10.0.3",
     "expo-file-system": "^13.0.3",
     "expo-google-app-auth": "~9.0.0",

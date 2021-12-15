@@ -17,7 +17,6 @@ import {
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 
-
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deleteDocument, getDocumentByPatient, renameDocument, uploadDocument } from "../../../stores/action";
@@ -53,6 +52,7 @@ function DokumenList(props) {
   const [modalLoad, setModalLoad] = useState(false)
   const patientID = props.patientID;
 
+
   useEffect(() => {
     _fetchData()
   }, [patientID]);
@@ -84,7 +84,6 @@ function DokumenList(props) {
     let token = JSON.parse(await AsyncStorage.getItem("token")).token;
     uploadDocument(token, patientID, data)
       .then(({data}) => {
-        console.log(data)
         _fetchData()
       })
       .catch(error => {
@@ -122,7 +121,6 @@ function DokumenList(props) {
     }
     deleteDocument(token, patientID, payload)
       .then(({data}) => {
-        console.log(data);
         _fetchData()
       })
       .catch(error => {
@@ -174,8 +172,6 @@ function DokumenList(props) {
 
       case "Galeri":
         let result = await DocumentPicker.getDocumentAsync({});
-        console.log(result.uri);
-        console.log(result);
         if (result.uri){
           setUploadLoading(true)
           let uri = result.uri
@@ -195,6 +191,19 @@ function DokumenList(props) {
 
   async function setSelectedAction(label) {
     switch (label) {
+      case "Detail":
+        console.log('masuk');
+        let fileUri = FileSystem.documentDirectory + selectedName;
+        console.log(fileUri);
+        FileSystem.downloadAsync(selectedUrl, fileUri)
+        .then(async({ uriFile }) => {
+          console.log(uriFile);
+          })
+        .catch(error => {
+          console.error(error);
+        })
+        break;
+
       case "Unduh":
         downloadFile()
         break;
@@ -231,6 +240,7 @@ function DokumenList(props) {
     ToastAndroid.show('Download Started', ToastAndroid.LONG)
     FileSystem.downloadAsync(selectedUrl, fileUri)
       .then(({ uri }) => {
+          console.log(uri);
           saveFile(uri);
         })
       .catch(error => {
@@ -241,7 +251,6 @@ function DokumenList(props) {
   const saveFile = async (uri) => {
     const asset = await MediaLibrary.createAssetAsync(uri);
     const album = await MediaLibrary.getAlbumAsync('Download');
-    console.log(album);
     if (album == null) {
       await MediaLibrary.createAlbumAsync('Download', asset, false);
       ToastAndroid.show('Download berhasil, check on your download folder', ToastAndroid.LONG)
@@ -250,7 +259,6 @@ function DokumenList(props) {
       ToastAndroid.show('Download berhasil, check on your download folder', ToastAndroid.LONG)
     }
   }
-  console.log(data);
 
   // const pdfBuffer = FileSystem.downloadAsync(selectedUrl)
 
