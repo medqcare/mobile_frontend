@@ -7,17 +7,17 @@ export default StackDokumenMedis = createStackNavigator(
     ListDokumenMedis: {
       screen: DokumenMedisList,
       navigationOptions: {
-        headerShown: false
+        headerShown: false,
       },
     },
     ShowDokumen: {
       screen: ShowDokumen,
       navigationOptions: {
-        headerShown: false
+        headerShown: false,
       },
-    }
+    },
   },
   {
-    initialRouteName: "ListDokumenMedis"
+    initialRouteName: "ListDokumenMedis",
   }
 );
