@@ -86,7 +86,8 @@ const activityList = (props) => {
                       bookingID={el.bookingCode}
                       reservationID={el.reservationID}
                       queueId={JSON.stringify(el.queueID)}
-                      data={registrationData}
+                      data={el}
+                      navigation={props.navigation}
                     />
                   );
                 })}
