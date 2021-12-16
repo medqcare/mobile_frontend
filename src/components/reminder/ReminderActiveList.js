@@ -133,24 +133,20 @@ function ReminderActiveList(props) {
                             </View>
                         }
                 </View>
-                {/* {isActive ? null :
-                    <> */}
-                        <View style={styles.drugSeparatorContainer}/>
-                    
-                        <View style={styles.drugBottomContainer}>
-                            <Text style={styles.darkerText}>Setel pengingat</Text>
-                            <ToggleSwitch
-                                isOn={reminders[_]}
-                                onColor="rgba(10, 88, 237, 1)"
-                                offColor="#767577"
-                                size="medium"
-                                animationSpeed={150}
-                                onToggle={isOn => toggleSwitch(_)}
-                                // onToggle={isOn => console.log('toggle', _)}
-                            />
-                        </View>
-                    {/* </>
-                } */}
+                    <View style={styles.drugSeparatorContainer}/>
+                
+                    <View style={styles.drugBottomContainer}>
+                        <Text style={styles.darkerText}>Setel pengingat</Text>
+                        <ToggleSwitch
+                            isOn={reminders[_]}
+                            onColor="rgba(10, 88, 237, 1)"
+                            offColor="#767577"
+                            size="medium"
+                            animationSpeed={150}
+                            onToggle={isOn => toggleSwitch(_)}
+                            // onToggle={isOn => console.log('toggle', _)}
+                        />
+                    </View>
             </View>
           </Animatable.View>
         );
@@ -215,16 +211,16 @@ function ReminderActiveList(props) {
   
     return (
         data ? 
-        <Accordion
-            activeSections={activeSections}
-            sections={CONTENT}
-            touchableComponent={TouchableWithoutFeedback}
-            expandMultiple={true}
-            renderHeader={renderHeader}
-            renderContent={renderContent}
-            duration={400}
-            onChange={setSections}
-        /> : (
+            <Accordion
+                activeSections={activeSections}
+                sections={CONTENT}
+                touchableComponent={TouchableWithoutFeedback}
+                expandMultiple={true}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                duration={400}
+                onChange={setSections}
+            /> : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
             </View>
