@@ -46,7 +46,7 @@ function ReminderActiveList(props) {
             reminder: true
         }
     ]
-    // const data = null
+    // const CONTENT = null
     const CONTENT = [
         {
             header:  {
@@ -73,37 +73,91 @@ function ReminderActiveList(props) {
             expanded: {
                 ettiquete: [true, false, undefined],
             }
-        }
+        },
+        {
+            header: {
+                information: 'Setelah Makan',
+                drugName: 'Bodrex',
+                drugQuantity: 20,
+                type: 'Pil',
+                ettiquete: ['Morning', 'Night'],
+                reminder: true
+            },
+            expanded: {
+                ettiquete: [true, false, undefined],
+            }
+        },
+        {
+            header: {
+                information: 'Setelah Makan',
+                drugName: 'Bodrex',
+                drugQuantity: 20,
+                type: 'Pil',
+                ettiquete: ['Morning', 'Night'],
+                reminder: true
+            },
+            expanded: {
+                ettiquete: [true, false, undefined],
+            }
+        },
+        {
+            header: {
+                information: 'Setelah Makan',
+                drugName: 'Bodrex',
+                drugQuantity: 20,
+                type: 'Pil',
+                ettiquete: ['Morning', 'Night'],
+                reminder: true
+            },
+            expanded: {
+                ettiquete: [true, false, undefined],
+            }
+        },
+        {
+            header: {
+                information: 'Setelah Makan',
+                drugName: 'Bodrex',
+                drugQuantity: 20,
+                type: 'Pil',
+                ettiquete: ['Morning', 'Night'],
+                reminder: true
+            },
+            expanded: {
+                ettiquete: [true, false, undefined],
+            }
+        },
     ]
-    const [reminders, setReminders] = useState(CONTENT.map(el => {
+    const [reminders, setReminders] = useState(CONTENT ? CONTENT.map(el => {
         return el.header.reminder
-    }))
+    }) : null)
     const toggleSwitch = (index) => {
-        let newArray = []
-        for(let i = 0; i < reminders.length; i++){
-            if(i === index){
-                reminders[i] = !reminders[i]
-                newArray.push(reminders[i])
-            } else newArray.push(reminders[i])
-        }
+        const newArray = reminders.map((el, idx) => {
+            if(index === idx){
+                el = !el
+            }
+            return el
+        })
         setReminders(newArray)
     }
 
     const [activeSections, setActiveSections] = useState([]);
-
-    const setSections = (sections) => {
-        //setting up a active section state
-        setActiveSections(sections.includes(undefined) ? [] : sections);
+    const setSections = (sections, isClose, index) => {
+        if(isClose){
+            const newSections = sections.filter(el => {
+                return el !== index
+            })
+            setActiveSections(newSections)
+        } else {
+            setActiveSections(sections.includes(undefined) ? [] : sections);
+        }
     };
 
     const renderHeader = (section, _, isActive,) => {
-        //Accordion Header view
         return (
           <Animatable.View
             key={_}
             duration={400}
             style={styles.eachDrugContainer}
-            // style={[styles.header, isActive ? styles.active : styles.inactive]}
             transition="backgroundColor"
         >
             <View
@@ -145,7 +199,6 @@ function ReminderActiveList(props) {
                             size="medium"
                             animationSpeed={150}
                             onToggle={isOn => toggleSwitch(_)}
-                            // onToggle={isOn => console.log('toggle', _)}
                         />
                     </View>
             </View>
@@ -154,30 +207,25 @@ function ReminderActiveList(props) {
     };
 
     const renderContent = (section, _, isActive) => {
-    //Accordion Content view
         const { ettiquete } = section.expanded
         return (
             <Animatable.View
                 key={_}
                 duration={400}
                 style={styles.reminderContainer}
-                // style={[styles.content, isActive ? styles.active : styles.inactive]}
                 transition="backgroundColor">
                     {ettiquete.map((el, index) => {
                         return (
-                            <View key={index} style={{paddingLeft: 14, paddingBottom: 14}}>
+                            <View key={index} style={{paddingLeft: 14, paddingBottom: 14, }}>
                                 <View style={styles.reminderTimeContainer}>
                                     <View style={{paddingHorizontal: 10}}>
                                         <View style={styles.reminderLowerContainer}>
                                             <View style={{flexDirection: "row"}}>
                                                 <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                                <Text style={styles.reminderTimeText}>{el}</Text>
+                                                <Text style={styles.reminderTimeText}>13:00</Text>
                                             </View>
                                             <TouchableOpacity 
-                                                    // onPress={showTimepicker} 
-                                                    // onPress={() => createCalendar()} 
-                                                    // title="Show time picker!" 
-                                                >
+                                            >
                                                 {el === undefined ? 
                                                     <Text>Masukin tombol</Text> :
                                                     <View style={{flexDirection: "row"}}>
@@ -201,18 +249,21 @@ function ReminderActiveList(props) {
                             </View>
                         )
                     })}
-                {/* <Animatable.Text
-                    animation={isActive ? 'bounceIn' : undefined}
-                    style={{ textAlign: 'center', color: 'white' }}>
-                    section
-                </Animatable.Text> */}
+                        <TouchableWithoutFeedback 
+                            onPress={() => setSections(activeSections, true, _)}    
+                        >
+                            <View style={styles.closeButton}>
+                                <Text style={styles.closeText}>Tutup</Text>
+                                <MaterialIcons name="keyboard-arrow-up" size={30} color="rgba(243, 115, 53, 1)"/>
+                            </View>
+                        </TouchableWithoutFeedback>
             </Animatable.View>
         );
     };
   
     return (
-        data ? 
-            <ScrollView style={{ height:dimHeight *0.7 }}>
+        CONTENT ? 
+            <ScrollView >
                 <Accordion
                     activeSections={activeSections}
                     sections={CONTENT}
@@ -222,6 +273,7 @@ function ReminderActiveList(props) {
                     renderContent={renderContent}
                     duration={400}
                     onChange={setSections}
+                    containerStyle={{alignItems: "center"}}
                 /> 
             </ScrollView> 
         : (
@@ -239,13 +291,16 @@ const textStyles = {
 
 	lighterText: {
 		color: "rgba(221, 221, 221, 1)"
-	}
+	},
+
+    redText: {
+        color: 'rgba(243, 115, 53, 1)'
+    }
 }
 
 const styles = StyleSheet.create({
 	eachDrugContainer: {
-		// paddingTop: dimHeight * 0.015
-        paddingTop: 12
+		paddingTop: dimHeight * 0.015,
 	},
 
 	touchable: {
@@ -328,6 +383,7 @@ const styles = StyleSheet.create({
 
     reminderContainer: {
         backgroundColor: '#2F2F2F',
+        width: dimWidth * 0.9,
     },
 
     reminderTimeContainer: {
@@ -357,6 +413,13 @@ const styles = StyleSheet.create({
 		paddingLeft: 5
 	},
 	
+    closeButton: {
+        flexDirection: "row",
+		width: '90%',
+        alignSelf: "center",
+        alignItems: "center",
+        paddingBottom: 15
+    },
 
     noDataContainer: {
         paddingTop: dimHeight * 0.015
@@ -365,6 +428,11 @@ const styles = StyleSheet.create({
     lighterText: {
 		...textStyles.lighterText,
 	},
+
+    closeText: {
+        paddingRight: 10,
+        ...textStyles.redText
+    }
 });
 
 
