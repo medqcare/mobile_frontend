@@ -10,7 +10,7 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
-  Keyboard,
+  ActivityIndicator,
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import SearchBar from "../../../components/headers/SearchBar";
@@ -2250,6 +2250,8 @@ export default function PenunjangList(props) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [search, setSearch] = useState("");
   const [specimentSelected, setSpecimentSelected] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedTests, setSelectedTests] = useState([]);
   const PPN = totalPrice * (10 / 100);
 
   useEffect(() => {
@@ -2260,6 +2262,19 @@ export default function PenunjangList(props) {
       setFilteredTests(testsBySpeciment);
     }
   }, [search]);
+
+  useEffect(() => {
+    if (selectedTests.length !== 0) {
+      setIsLoading(false);
+      props.navigation.navigate("FindClinic", { tests: selectedTests });
+    }
+  }, [selectedTests]);
+
+  const toScreenClinic = () => {
+    setIsLoading(true);
+    const newSelectedTests = tests.filter((test) => test.selected === true);
+    setSelectedTests(newSelectedTests);
+  };
 
   const specimentStyleBehavior = (speciment) => ({
     container: {
@@ -2456,11 +2471,16 @@ export default function PenunjangList(props) {
           ) : null}
           <TouchableOpacity
             style={styles.buttonWithIcon}
-            onPress={() => Keyboard.dismiss()}
+            onPress={() => toScreenClinic()}
           >
-            <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
-            {/* {load ? <ActivityIndicator size={"small"} color="#FFF" /> : null} */}
-            <RightArrow />
+            {isLoading ? (
+              <ActivityIndicator size={"small"} color="#FFF" />
+            ) : (
+              <>
+                <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
+                <RightArrow />
+              </>
+            )}
           </TouchableOpacity>
         </View>
       ) : null}
