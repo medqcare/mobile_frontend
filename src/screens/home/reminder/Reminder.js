@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,7 +6,7 @@ import {
   Dimensions,
   Image,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { connect } from "react-redux";
 import Header from "../../../components/headers/ReminderHeader";
@@ -21,20 +21,25 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function Reminder(props) {
+	const swiper = useRef(null)
 
 	const userData = props.userData
 	function firstName(){
 		return userData.firstName.split(' ')[0]
 	}
 
-	const [selectedStatus, setSelectedStatus] = useState('Active')
-
-	async function changeStatus(status){
-		setSelectedStatus(status)
-	}
-
 	const widthAdd = (dimWidth * 0.06945)
     const heightAdd = (dimHeight * 0.03677)
+
+	function renderPagination(index, total, context){
+		console.log(index, 'index')
+	}
+
+	function _onMomentumScrollEnd(e, state, context) {
+		console.log(state.index, 'state.index')
+	}
+
+	const [index, setIndex] = useState(0)
   
   	return (
 		<View style={styles.container}>
@@ -46,17 +51,27 @@ function Reminder(props) {
 				<View style={styles.statusContainer}>
 					<TouchableOpacity
 						activeOpacity={1}
-						style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						onPress={() => changeStatus('Active')}
+						style={index === 0 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+						// onPress={() => changeStatus('Active')}
+						onPress={() => {
+							if(index === 1){
+								swiper.current.scrollBy(-1)}
+							}
+						}
 					>
-						<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
+						<Text style={index === 0 ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						activeOpacity={1}
-						onPress={() => changeStatus('Finished')}
-						style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+						onPress={() => {
+							if(index === 0){
+								swiper.current.scrollBy(1)}
+							}
+						}
+						// onPress={() => changeStatus('Finished')}
+						style={index === 1 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
 					>
-						<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
+						<Text style={index === 1 ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
 					</TouchableOpacity>
 				</View>
 				<TouchableOpacity 
@@ -66,7 +81,15 @@ function Reminder(props) {
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
-			<Swiper showsButtons showsPagination={false} loop={false}>
+			<Swiper
+				showsButtons={false} 
+				ref={swiper}
+				showsPagination={false} 
+				loop={false}
+				renderPagination={renderPagination(index)}
+				onMomentumScrollEnd ={_onMomentumScrollEnd}
+				onIndexChanged={(index) => setIndex(index)}
+			>
 				<ScrollView bounces={true}>
 					<ReminderActiveList/>
 				</ScrollView>
