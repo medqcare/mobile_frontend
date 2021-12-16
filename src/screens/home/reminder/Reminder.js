@@ -5,7 +5,8 @@ import {
   View,
   Dimensions,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from "react-native";
 import { connect } from "react-redux";
 import Header from "../../../components/headers/ReminderHeader";
@@ -39,38 +40,34 @@ function Reminder(props) {
 				navigate={props.navigation.navigate}
 				name={firstName()}
 			/>
-			<View style={styles.content}>
-				<View style={styles.options}>
-					<View style={styles.statusContainer}>
-						<TouchableOpacity
-							activeOpacity={1}
-							style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-							onPress={() => changeStatus('Active')}
-						>
-							<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							activeOpacity={1}
-							onPress={() => changeStatus('Finished')}
-							style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						>
-							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
-						</TouchableOpacity>
-					</View>
-					<TouchableOpacity 
-						style={styles.optionAdd}
-						onPress={() => props.navigation.navigate('AddReminderForm')}
+			<View style={styles.options}>
+				<View style={styles.statusContainer}>
+					<TouchableOpacity
+						activeOpacity={1}
+						style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+						onPress={() => changeStatus('Active')}
 					>
-						<ReminderAddButton width={widthAdd} height={heightAdd}/>
+						<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						activeOpacity={1}
+						onPress={() => changeStatus('Finished')}
+						style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+					>
+						<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
 					</TouchableOpacity>
 				</View>
-				<ScrollView>
-				{selectedStatus === 'Active' ? 
-					<ReminderActiveList/> :
-					<ReminderFinishedList/>
-				}
-				</ScrollView>
+				<TouchableOpacity 
+					style={styles.optionAdd}
+					onPress={() => props.navigation.navigate('AddReminderForm')}
+				>
+					<ReminderAddButton width={widthAdd} height={heightAdd}/>
+				</TouchableOpacity>
 			</View>
+			{selectedStatus === 'Active' ? 
+				<ReminderActiveList/> :
+				<ReminderFinishedList/>
+			}
 		</View>
   	);
 }
@@ -79,6 +76,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#1F1F1F",
+		paddingBottom: dimHeight * 0.01226
 	},
 	
 	content: {
