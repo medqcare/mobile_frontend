@@ -55,16 +55,16 @@
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.0.0",
     "react-native-web": "0.17.1",
-    "react-native-webview": "^11.15.0",
+    "react-native-webview": "11.13.0",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
     "react-navigation-tabs": "^2.11.1",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.0",
-    "toggle-switch-react-native": "^3.3.0"
     "rn-pdf-reader-js": "^4.1.1",
-    "socket.io-client": "^4.4.0"
+    "socket.io-client": "^4.4.0",
+    "toggle-switch-react-native": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
