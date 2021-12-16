@@ -12,6 +12,7 @@ import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
 import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
+import { ScrollView } from "react-native-gesture-handler";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -63,10 +64,12 @@ function Reminder(props) {
 						<ReminderAddButton width={widthAdd} height={heightAdd}/>
 					</TouchableOpacity>
 				</View>
+				<ScrollView>
 				{selectedStatus === 'Active' ? 
 					<ReminderActiveList/> :
 					<ReminderFinishedList/>
 				}
+				</ScrollView>
 			</View>
 		</View>
   	);
