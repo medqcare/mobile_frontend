@@ -10,13 +10,14 @@ import {
   SafeAreaView,
   StatusBar,
   Platform,
+  Keyboard,
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import SearchBar from "../../../components/headers/SearchBar";
 import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
 import RightArrow from "../../../assets/svg/RightArrow";
 import InformationIcon from "../../../assets/svg/information";
-
+import ClearableSearchBar from "../../../components/headers/ClearableSearchBar";
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 const DUMMIES_TEST = [
@@ -2242,24 +2243,23 @@ DUMMIES_TEST.forEach((test) => {
   }
 });
 
-console.log(dimHeight, ">>>> height");
-console.log(dimWidth, ">>>>> width");
 export default function PenunjangList(props) {
   const [speciments, setSpeciments] = useState(DUMMMIES_SPECIMENTS);
   const [tests, setTests] = useState(DUMMIES_TEST);
-  const [specimentSelected, setSpecimentSelected] = useState();
-  const [filteredSpeciments, setFilteredSpeciments] = useState([]);
+  const [filteredTests, setFilteredTests] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [search, setSearch] = useState("");
+  const [specimentSelected, setSpecimentSelected] = useState();
   const PPN = totalPrice * (10 / 100);
 
   useEffect(() => {
-    if (specimentSelected) {
-      const testsFilteredBySpecimentName = tests.filter((test) => {
-        return test.speciment == specimentSelected.speciment_name;
-      });
-      setFilteredSpeciments(testsFilteredBySpecimentName);
+    if (search === "" && specimentSelected) {
+      const testsBySpeciment = tests.filter(
+        (test) => test.speciment === specimentSelected.speciment_name
+      );
+      setFilteredTests(testsBySpeciment);
     }
-  }, [specimentSelected]);
+  }, [search]);
 
   const specimentStyleBehavior = (speciment) => ({
     container: {
@@ -2290,6 +2290,10 @@ export default function PenunjangList(props) {
       }
       return speciment;
     });
+    const testsFilteredBySpecimentName = tests.filter((test) => {
+      return test.speciment == specimentName;
+    });
+    setFilteredTests(testsFilteredBySpecimentName);
     setSpeciments(newSpeciments);
   };
 
@@ -2311,6 +2315,21 @@ export default function PenunjangList(props) {
     setTests(newTests);
   };
 
+  const searchHandler = (text) => {
+    const textLower = text.toLowerCase();
+    if (text === "") {
+      setSearch("");
+      setFilteredTests([]);
+    } else {
+      const results = tests.filter((test) => {
+        const testName = test.test_name.toLowerCase();
+        return testName.startsWith(textLower);
+      });
+      setSearch(text);
+      setFilteredTests(results);
+    }
+  };
+
   const renderItem = ({ item }) => {
     const { speciment_name } = item;
     const { container, text } = specimentStyleBehavior(item);
@@ -2324,107 +2343,121 @@ export default function PenunjangList(props) {
     );
   };
 
+  const renderTests = ({ item }) => {
+    return (
+      <View style={styles.specimentItemSection}>
+        <Text style={styles.specimentItemText}>{item.test_name}</Text>
+        <Checkbox
+          value={item.selected}
+          color={item.selected ? "#017EF9" : null}
+          onValueChange={() => onTestSelected(item.test_id)}
+        />
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
         {/* search bar */}
-        <SearchBar placeholder="Cari test atau sampel" />
+        <ClearableSearchBar
+          placeholder="Cari test atau sampel"
+          // onFocus={() => onSearchBarFocusHandler()}
+          onChangeText={searchHandler}
+          setSearch={setSearch}
+        />
 
         {/* speciment */}
-        <View style={styles.specimentContainer}>
-          <Text style={styles.title}>pilih kategori</Text>
-          <View style={{ flexDirection: "row" }}>
-            <FlatList
-              data={speciments}
-              renderItem={renderItem}
-              keyExtractor={(_, index) => `${index}-speciment`}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-        </View>
-
-        {/* test by speciment */}
-        {specimentSelected ? (
-          <ScrollView
-            style={styles.specimentItemContainer}
-            showsVerticalScrollIndicator={true}
-            persistentScrollbar={true}
-          >
-            {filteredSpeciments.map((item) => (
-              <View style={styles.specimentItemSection} key={`${item.test_id}`}>
-                <Text style={styles.specimentItemText}>{item.test_name}</Text>
-                <Checkbox
-                  value={item.selected}
-                  color={item.selected ? "#017EF9" : null}
-                  onValueChange={() => onTestSelected(item.test_id)}
-                />
-              </View>
-            ))}
-          </ScrollView>
-        ) : null}
-
-        {/* price preview */}
-        {totalPrice !== 0 ? (
-          <View style={styles.priceSection}>
-            <ScrollView style={styles.topPriceContainer}>
-              <Text style={styles.costTitle}>Perkiraan Biaya</Text>
-              <View style={styles.costDetailSectionContainer}>
-                {tests.map((test) => {
-                  if (test.selected === true) {
-                    return (
-                      <View
-                        style={styles.costDetailSection}
-                        key={`cost-${test.test_name}-${test.test_id}`}
-                      >
-                        <Text
-                          style={styles.costText}
-                        >{`Cek ${test.test_name} ${test.speciment}`}</Text>
-                        <Text style={styles.costText}>
-                          {formatNumberToRupiah(test.price)}
-                        </Text>
-                      </View>
-                    );
-                  }
-                })}
-                <View style={styles.costDetailSection}>
-                  <Text style={{ color: "#B5B5B5" }}>{`PPN`}</Text>
-                  <Text style={styles.costText}>
-                    {formatNumberToRupiah(PPN)}
-                  </Text>
-                </View>
-              </View>
-            </ScrollView>
-            <View style={styles.bottomPriceContainer}>
-              <View style={styles.informationContainer}>
-                <InformationIcon />
-                <Text
-                  style={{
-                    color: "#B5B5B5",
-                    fontSize: 11,
-                    marginLeft: 8,
-                    fontStyle: "italic",
-                  }}
-                  numberOfLines={2}
-                >
-                  Harga akan berbeda di setiap tempat praktik
-                </Text>
-              </View>
-              <View style={styles.subTotalContainer}>
-                <Text style={styles.subTotalTitle}>Sub Total</Text>
-                <Text style={styles.subTotalPriceText}>
-                  {formatNumberToRupiah(totalPrice + PPN)}
-                </Text>
-              </View>
+        {search === "" ? (
+          <View style={styles.specimentContainer}>
+            <Text style={styles.title}>pilih kategori</Text>
+            <View style={{ flexDirection: "row" }}>
+              <FlatList
+                data={speciments}
+                renderItem={renderItem}
+                keyExtractor={(_, index) => `${index}-speciment`}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
             </View>
           </View>
+        ) : null}
+
+        {/* test by speciment */}
+        {filteredTests.length !== 0 ? (
+          <FlatList
+            data={filteredTests}
+            style={styles.specimentItemContainer}
+            renderItem={renderTests}
+            showsVerticalScrollIndicator={true}
+            persistentScrollbar={true}
+            keyExtractor={(item) => `${item.test_id}-test`}
+          ></FlatList>
         ) : null}
       </View>
 
       {/* button action */}
       {totalPrice !== 0 ? (
         <View>
-          <TouchableOpacity style={styles.buttonWithIcon}>
+          {/* price preview */}
+          {totalPrice !== 0 ? (
+            <View style={styles.priceSection}>
+              <ScrollView style={styles.topPriceContainer}>
+                <Text style={styles.costTitle}>Perkiraan Biaya</Text>
+                <View style={styles.costDetailSectionContainer}>
+                  {tests.map((test) => {
+                    if (test.selected === true) {
+                      return (
+                        <View
+                          style={styles.costDetailSection}
+                          key={`cost-${test.test_name}-${test.test_id}`}
+                        >
+                          <Text
+                            style={styles.costText}
+                          >{`Cek ${test.test_name} ${test.speciment}`}</Text>
+                          <Text style={styles.costText}>
+                            {formatNumberToRupiah(test.price)}
+                          </Text>
+                        </View>
+                      );
+                    }
+                  })}
+                  <View style={styles.costDetailSection}>
+                    <Text style={{ color: "#B5B5B5" }}>{`PPN`}</Text>
+                    <Text style={styles.costText}>
+                      {formatNumberToRupiah(PPN)}
+                    </Text>
+                  </View>
+                </View>
+              </ScrollView>
+              <View style={styles.bottomPriceContainer}>
+                <View style={styles.informationContainer}>
+                  <InformationIcon />
+                  <Text
+                    style={{
+                      color: "#B5B5B5",
+                      fontSize: 11,
+                      marginLeft: 8,
+                      fontStyle: "italic",
+                    }}
+                    numberOfLines={2}
+                  >
+                    Harga akan berbeda di setiap tempat praktik
+                  </Text>
+                </View>
+                <View style={styles.subTotalContainer}>
+                  <Text style={styles.subTotalTitle}>Sub Total</Text>
+                  <Text style={styles.subTotalPriceText}>
+                    {formatNumberToRupiah(totalPrice + PPN)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ) : null}
+          <TouchableOpacity
+            style={styles.buttonWithIcon}
+            onPress={() => Keyboard.dismiss()}
+          >
             <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
             {/* {load ? <ActivityIndicator size={"small"} color="#FFF" /> : null} */}
             <RightArrow />
