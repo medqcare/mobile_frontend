@@ -27,6 +27,69 @@ function ReminderFinishedList(props) {
             finishedAt: new Date(2018, 5, 9)
         },
         {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
             information: 'Sebelum Makan',
             drugName: 'Madu',
             drugQuantity: 10,
@@ -100,7 +163,8 @@ const textStyles = {
 
 const styles = StyleSheet.create({
 	eachDrugContainer: {
-		paddingTop: dimHeight * 0.015
+		paddingTop: dimHeight * 0.015,
+        alignSelf: "center"
 	},
 
 	touchable: {
@@ -152,7 +216,9 @@ const styles = StyleSheet.create({
 	},
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015
+        paddingTop: dimHeight * 0.015,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
 	darkerText : {
