@@ -14,15 +14,11 @@ import ToggleSwitch from 'toggle-switch-react-native'
 //import for the animation of Collapse and Expand
 import * as Animatable from 'react-native-animatable';
 
-//import for the collapsible/Expandable view
-import Collapsible from 'react-native-collapsible';
 
 //import for the Accordion view
 import Accordion from 'react-native-collapsible/Accordion';
 
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
-import { ScrollView } from "react-native-gesture-handler";
-
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -272,19 +268,17 @@ function ReminderActiveList(props) {
   
     return (
         CONTENT ? 
-            <ScrollView >
-                <Accordion
-                    activeSections={activeSections}
-                    sections={CONTENT}
-                    touchableComponent={TouchableWithoutFeedback}
-                    expandMultiple={true}
-                    renderHeader={renderHeader}
-                    renderContent={renderContent}
-                    duration={400}
-                    onChange={setSections}
-                    containerStyle={{alignItems: "center"}}
-                /> 
-            </ScrollView> 
+            <Accordion
+                activeSections={activeSections}
+                sections={CONTENT}
+                touchableComponent={TouchableWithoutFeedback}
+                expandMultiple={true}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                duration={400}
+                onChange={setSections}
+                containerStyle={{alignItems: "center"}}
+            /> 
         : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>

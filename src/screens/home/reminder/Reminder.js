@@ -64,10 +64,12 @@ function Reminder(props) {
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
-			{selectedStatus === 'Active' ? 
-				<ReminderActiveList/> :
-				<ReminderFinishedList/>
-			}
+			<ScrollView>
+				{selectedStatus === 'Active' ? 
+					<ReminderActiveList/> :
+					<ReminderFinishedList/>
+				}
+			</ScrollView>
 		</View>
   	);
 }
