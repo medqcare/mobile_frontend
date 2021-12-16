@@ -166,11 +166,14 @@ function ReminderActiveList(props) {
                 <View style={styles.drugTopContainer}>
                     <Text style={styles.drugNameText}>{section.header.drugName} {section.header.drugQuantity} {section.header.type}</Text>
                     {isActive ? null :
-                        <MaterialIcons 
-                            name="keyboard-arrow-down" 
-                            size={dimWidth * 0.05} 
-                            color="#B5B5B5" 
-                        />
+                        <Animatable.View
+                            animation={'swing'}>
+                            <MaterialIcons 
+                                name="keyboard-arrow-down" 
+                                size={dimWidth * 0.05} 
+                                color="#B5B5B5" 
+                            />
+                        </Animatable.View>
                     }
                 </View>
                 <View style={styles.drugMiddleContainer}>
@@ -216,34 +219,40 @@ function ReminderActiveList(props) {
                 transition="backgroundColor">
                     {ettiquete.map((el, index) => {
                         return (
-                            <View key={index} style={{paddingLeft: 14, paddingBottom: 14, }}>
+                            <View key={index}>
                                 <View style={styles.reminderTimeContainer}>
-                                    <View style={{paddingHorizontal: 10}}>
-                                        <View style={styles.reminderLowerContainer}>
-                                            <View style={{flexDirection: "row"}}>
-                                                <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                                <Text style={styles.reminderTimeText}>13:00</Text>
-                                            </View>
-                                            <TouchableOpacity 
-                                            >
-                                                {el === undefined ? 
-                                                    <Text>Masukin tombol</Text> :
-                                                    <View style={{flexDirection: "row"}}>
-                                                        {el ?
-                                                            <>
-                                                                <ReminderSkippedLogo/>
-                                                                <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
-                                                            </>
-                                                        :
-                                                            <>
-                                                                <FontAwesome name="check" size={24} color="green" />
-                                                                <Text style={{color: 'green', paddingLeft: 5}}>DIMINUM</Text>
-                                                            </>
-                                                        }
-                                                    </View>
-                                                }
-                                            </TouchableOpacity>
+                                    <View style={styles.reminderLowerContainer}>
+                                        <View style={{flexDirection: "row"}}>
+                                            <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
+                                            <Text style={styles.reminderTimeText}>13:00</Text>
                                         </View>
+                                            {el === undefined ? 
+                                                <View style={{flexDirection: "row", justifyContent: "space-between", width: 170, }}>
+                                                    <TouchableOpacity
+                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
+                                                    >
+                                                        <Text style={{color: 'rgba(119, 191, 244, 1)'}}>TERLEWAT</Text>
+                                                    </TouchableOpacity>
+                                                    <TouchableOpacity
+                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
+                                                    >
+                                                        <Text style={{color: 'rgba(119, 191, 244, 1)'}}>DIMINUM</Text>
+                                                    </TouchableOpacity>
+                                                </View> :
+                                                <View style={{flexDirection: "row", alignItems: "center"}}>
+                                                    {el ?
+                                                        <>
+                                                            <ReminderSkippedLogo/>
+                                                            <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
+                                                        </>
+                                                    :
+                                                        <>
+                                                            <FontAwesome name="check" size={24} color="green" />
+                                                            <Text style={{color: 'green', paddingLeft: 5}}>DIMINUM</Text>
+                                                        </>
+                                                    }
+                                                </View>
+                                            }
                                     </View>
                                 </View>
                             </View>
@@ -387,10 +396,12 @@ const styles = StyleSheet.create({
     },
 
     reminderTimeContainer: {
+        width: '90%',
+        justifyContent: "center",
+        alignSelf: "center",
+        height: 64,
 		borderBottomWidth: 1,
 		borderBottomColor: 'rgba(71, 71, 71, 1)',
-		paddingBottom: 10,
-		// backgroundColor: 'red'
 	},
 
     reminderTopContainer: {
@@ -403,6 +414,7 @@ const styles = StyleSheet.create({
     reminderLowerContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
+        alignItems: "center"
         // backgroundColor: 'blue'
 	},
 
@@ -418,7 +430,8 @@ const styles = StyleSheet.create({
 		width: '90%',
         alignSelf: "center",
         alignItems: "center",
-        paddingBottom: 15
+        paddingBottom: 15,
+        paddingTop: 10
     },
 
     noDataContainer: {
