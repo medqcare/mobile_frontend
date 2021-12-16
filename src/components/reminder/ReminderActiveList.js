@@ -24,24 +24,6 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList(props) {
-    const data = [
-        {
-            information: 'Sebelum Makan',
-            drugName: 'Paracetamol',
-            drugQuantity: 10,
-            type: 'Tablet',
-            ettiquete: ['Morning', 'Afternoon', 'Night'],
-            reminder: false
-        },
-        {
-            information: 'Setelah Makan',
-            drugName: 'Bodrex',
-            drugQuantity: 20,
-            type: 'Pil',
-            ettiquete: ['Morning', 'Night'],
-            reminder: true
-        }
-    ]
     // const CONTENT = null
     const CONTENT = [
         {
@@ -429,7 +411,9 @@ const styles = StyleSheet.create({
     },
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015
+        paddingTop: dimHeight * 0.015,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
     lighterText: {

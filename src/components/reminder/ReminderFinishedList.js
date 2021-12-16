@@ -216,7 +216,9 @@ const styles = StyleSheet.create({
 	},
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015
+        paddingTop: dimHeight * 0.015,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
 	darkerText : {
