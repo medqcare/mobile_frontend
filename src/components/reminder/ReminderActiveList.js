@@ -21,6 +21,7 @@ import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
+import { ScrollView } from "react-native-gesture-handler";
 
 
 const dimHeight = Dimensions.get("window").height;
@@ -211,16 +212,19 @@ function ReminderActiveList(props) {
   
     return (
         data ? 
-            <Accordion
-                activeSections={activeSections}
-                sections={CONTENT}
-                touchableComponent={TouchableWithoutFeedback}
-                expandMultiple={true}
-                renderHeader={renderHeader}
-                renderContent={renderContent}
-                duration={400}
-                onChange={setSections}
-            /> : (
+            <ScrollView style={{ height:dimHeight *0.7 }}>
+                <Accordion
+                    activeSections={activeSections}
+                    sections={CONTENT}
+                    touchableComponent={TouchableWithoutFeedback}
+                    expandMultiple={true}
+                    renderHeader={renderHeader}
+                    renderContent={renderContent}
+                    duration={400}
+                    onChange={setSections}
+                /> 
+            </ScrollView> 
+        : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
             </View>
