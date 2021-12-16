@@ -14,6 +14,8 @@ import ReminderActiveList from "../../../components/reminder/ReminderActiveList"
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
 import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 import { ScrollView } from "react-native-gesture-handler";
+import Swiper from 'react-native-swiper'
+
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -64,12 +66,20 @@ function Reminder(props) {
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
-			<ScrollView>
+			<Swiper showsButtons showsPagination={false} loop={false}>
+				<ScrollView bounces={true}>
+					<ReminderActiveList/>
+				</ScrollView>
+				<ScrollView>
+					<ReminderFinishedList/>
+				</ScrollView>
+			</Swiper>
+			{/* <ScrollView>
 				{selectedStatus === 'Active' ? 
 					<ReminderActiveList/> :
 					<ReminderFinishedList/>
 				}
-			</ScrollView>
+			</ScrollView> */}
 		</View>
   	);
 }
