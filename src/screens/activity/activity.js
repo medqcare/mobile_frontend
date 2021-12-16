@@ -29,9 +29,13 @@ const activity = (props) => {
       let bookingID = props.bookingID
       let reservationID = props.reservationID 
       // let queueID = props.navigation.state.params.queueId ? props.navigation.state.params.queueId : await AsyncStorage.getItem(`${reservationID}`) 
-      let queueID = props.queueId ? props.queueId : await AsyncStorage.getItem(`${reservationID}`)
-      let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
+      // let queueID = props.queueId ? props.queueId : await AsyncStorage.getItem(`${reservationID}`)
+      // let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
+      let savedData = props.data
+      let queueID = props.queueId
       let getCurrentQueue = await props.getCurrentQueueingNumber(queueID)
+
+      console.log(savedData );
       
       if (savedData) {
         setFlag(true)
@@ -39,16 +43,17 @@ const activity = (props) => {
         setBookingID(bookingID)
         setReservationID(reservationID)
         setCurrentQueue(getCurrentQueue)
-        setScannedData(JSON.parse(savedData))
+        setScannedData(savedData)
       } else {
         setFlag(false)
       }
     } catch (error) {
+      console.log(error);
       setFlag(false)
     }
   }
   BackHandler.addEventListener('hardwareBackPress', () => {
-    return (props.navigation.navigate('Activity_List'))
+    return (props.navigation.navigate('Home'))
   })
   
   return (
@@ -61,7 +66,7 @@ const activity = (props) => {
               <View style={{marginTop: 2}}>
                 <IcDokter />
               </View>
-              <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{scannedData.registration.doctor.doctorName}</Text>
+              <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{scannedData?.doctor.doctorName}</Text>
             </View>
             
         </View>

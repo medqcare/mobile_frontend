@@ -9,7 +9,14 @@ import {
   SafeAreaView,
   ToastAndroid,
   ActivityIndicator,
+  PermissionsAndroid,
+  Image
 } from "react-native";
+
+
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+
 import { connect } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deleteDocument, getDocumentByPatient, renameDocument, uploadDocument } from "../../../stores/action";
@@ -18,6 +25,8 @@ import PictureModal from "../../../components/modals/profilePictureModal";
 import DocumentOptionModal from "../../../components/modals/docOptionModal";
 import RenameModal from "../../../components/modals/modalRename";
 import ConfirmationModal from "../../../components/modals/ConfirmationModal"
+
+import LottieLoader from 'lottie-react-native'
 
 import Ic_Sort from "../../../assets/svg/ic_sort";
 import Ic_Dokumen from "../../../assets/svg/ic_documen";
@@ -33,12 +42,16 @@ function DokumenList(props) {
   const [modalOption, setModalOption] = useState(false)
   const [modalRename, setModalRename] = useState(false)
   const [modalDelete, setModalDelete] = useState(false)
+  const [uploadLoading, setUploadLoading] = useState(false)
+
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
   const [selectedName, setSelectedName] = useState(null)
-  const [seletedKey, setSelectedKey] = useState(null)
+  const [selectedKey, setSelectedKey] = useState(null)
+  const [selectedUrl, setfileUrl] = useState(null)
   const [modalLoad, setModalLoad] = useState(false)
   const patientID = props.patientID;
+
 
   useEffect(() => {
     _fetchData()
@@ -71,11 +84,13 @@ function DokumenList(props) {
     let token = JSON.parse(await AsyncStorage.getItem("token")).token;
     uploadDocument(token, patientID, data)
       .then(({data}) => {
-        console.log(data)
         _fetchData()
       })
       .catch(error => {
         console.log(error);
+      })
+      .finally(() => {
+        setUploadLoading(false)
       })
   }
 
@@ -102,11 +117,10 @@ function DokumenList(props) {
     const token = JSON.parse(await AsyncStorage.getItem("token")).token;
     const payload ={
       documentid: selectedId,
-      key: seletedKey
+      key: selectedKey
     }
     deleteDocument(token, patientID, payload)
       .then(({data}) => {
-        console.log(data);
         _fetchData()
       })
       .catch(error => {
@@ -151,21 +165,21 @@ function DokumenList(props) {
   async function setSelectedValue(label) {
     switch (label) {
       case "Kamera":
-        await props.navigation.navigate("ProfilePictureCamera", {
-          destination: "DokumenMedisStack",
-        });
+        // await props.navigation.navigate("ProfilePictureCamera", {
+        //   destination: "DokumenMedisStack",
+        // });
         break;
 
       case "Galeri":
         let result = await DocumentPicker.getDocumentAsync({});
-        console.log(result.uri);
-        console.log(result);
         if (result.uri){
+          setUploadLoading(true)
           let uri = result.uri
           let name = result.name + new Date().toLocaleDateString().split('/').join('') + new Date().toLocaleTimeString().split(':').join('')
           let type = result.mimeType
           const data = new FormData();
           data.append('avatar', { uri, name, type })
+          console.log(data);
           upload(data)
         }
         break;
@@ -177,6 +191,23 @@ function DokumenList(props) {
 
   async function setSelectedAction(label) {
     switch (label) {
+      case "Detail":
+        console.log('masuk');
+        let fileUri = FileSystem.documentDirectory + selectedName;
+        console.log(fileUri);
+        FileSystem.downloadAsync(selectedUrl, fileUri)
+        .then(async({ uriFile }) => {
+          console.log(uriFile);
+          })
+        .catch(error => {
+          console.error(error);
+        })
+        break;
+
+      case "Unduh":
+        downloadFile()
+        break;
+
       case "Ganti Nama":
         setModalRename(true)
         break;
@@ -189,6 +220,47 @@ function DokumenList(props) {
         break;
     }
   }
+
+  const checkPermission = async () => {
+    const result = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+    return result
+  }
+
+  const askPermission = async () => {
+    const result = await PermissionsAndroid.request('android.permission.WRITE_EXTERNAL_STORAGE')
+    return result
+  }
+
+  const downloadFile = async () => {
+    const permission = await checkPermission()
+    if (!permission){
+      await askPermission()
+    } 
+    let fileUri = FileSystem.documentDirectory + selectedName;
+    ToastAndroid.show('Download Started', ToastAndroid.LONG)
+    FileSystem.downloadAsync(selectedUrl, fileUri)
+      .then(({ uri }) => {
+          console.log(uri);
+          saveFile(uri);
+        })
+      .catch(error => {
+        console.error(error);
+      })
+  }
+
+  const saveFile = async (uri) => {
+    const asset = await MediaLibrary.createAssetAsync(uri);
+    const album = await MediaLibrary.getAlbumAsync('Download');
+    if (album == null) {
+      await MediaLibrary.createAlbumAsync('Download', asset, false);
+      ToastAndroid.show('Download berhasil, check on your download folder', ToastAndroid.LONG)
+    } else {
+      await MediaLibrary.addAssetsToAlbumAsync([asset], album, false)
+      ToastAndroid.show('Download berhasil, check on your download folder', ToastAndroid.LONG)
+    }
+  }
+
+  // const pdfBuffer = FileSystem.downloadAsync(selectedUrl)
 
   return (
     <View style={styles.container}>
@@ -208,12 +280,19 @@ function DokumenList(props) {
               renderItem={({ item }) => {
                 return (
                   <View style={styles.cardDokumen}>
-                    <View style={styles.imageDokumen} />
+                    <TouchableOpacity 
+                      onPress={() => props.navigation.navigate('ShowDokumen', {uri: item.fileUrl, name: item.name})}
+                      style={styles.imageDokumen} 
+                    />
+                    {/* <Image style={{height: 50, width: 50}} source={{uri: ''}}>
+
+                    </Image> */}
                     <TouchableOpacity 
                       onPress={() => {
                         setSelectedId(item._id)
                         setSelectedName(item.name)
                         setSelectedKey(item.key)
+                        setfileUrl(item.fileUrl)
                         setModalOption(true)
                       }}
                       style={styles.detailCard}
@@ -256,8 +335,19 @@ function DokumenList(props) {
       <TouchableOpacity
         onPress={() => setModalAdd(true)}
         style={styles.buttonAdd}
+        disabled={uploadLoading}
       >
-        <Text style={{ ...styles.textItem, fontSize: 12 }}>Tambah Dokumen</Text>
+        {
+          uploadLoading ? (
+            <LottieLoader
+                source={require('../../../screens/animation/orange-pulse.json')}
+                autoPlay
+                loop
+              />
+          ) : (
+            <Text style={{ ...styles.textItem, fontSize: 12 }}>Tambah Dokumen</Text>
+          )
+        }
       </TouchableOpacity>
       <PictureModal
         modal={modalAdd}
@@ -331,6 +421,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     width: dimWidth * 0.4,
+    minHeight: dimHeight * 0.04,
     backgroundColor: "#005EA2",
     borderRadius: 25,
     padding: 10,
