@@ -779,7 +779,7 @@ function DetailDoctorPage(props) {
                                                 new Date(
                                                   `${month + 1}/${calcDate(
                                                     key
-                                                  )}/${new Date().getFullYear()}`
+                                                  )}/${bookingDate.getFullYear()}`
                                                 ).getDay()
                                               ]
                                             }

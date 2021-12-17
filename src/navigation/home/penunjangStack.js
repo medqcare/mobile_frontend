@@ -27,6 +27,6 @@ export default StackPenunjang = createStackNavigator(
     },
   },
   {
-    initialRouteName: "PenunjangList",
+    initialRouteName: "FindClinic",
   }
 );
