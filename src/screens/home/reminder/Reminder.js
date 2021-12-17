@@ -40,7 +40,7 @@ function Reminder(props) {
 	}
 
 	const [index, setIndex] = useState(0)
-  
+	 
   	return (
 		<View style={styles.container}>
 			<Header
@@ -91,10 +91,10 @@ function Reminder(props) {
 				onIndexChanged={(index) => setIndex(index)}
 			>
 				<ScrollView bounces={true}>
-					<ReminderActiveList/>
+					<ReminderActiveList props={props}/>
 				</ScrollView>
 				<ScrollView>
-					<ReminderFinishedList/>
+					<ReminderFinishedList props={props} />
 				</ScrollView>
 			</Swiper>
 			{/* <ScrollView>
