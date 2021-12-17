@@ -12,8 +12,6 @@ import ButtonMap from "../../../assets/svg/buttonMap";
 import ArrowDown from "../../../assets/svg/ArrowDown";
 import ArrowUp from "../../../assets/svg/ArrowUp";
 import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
-import CalendarStrip from "react-native-calendar-strip";
-import Calendar from "../../../components/Calendar";
 
 const DUMMIES_CLINIC = [
   {
@@ -6707,179 +6705,156 @@ export default function FindClinic(props) {
   const [selectedClinic, setSelectedClinic] = useState();
   const [date, setDate] = useState(new Date());
 
-  // useEffect(() => {
-  //   const clinicsAvailable = clinics.filter((clinic) => {
-  //     const tests = props.navigation.getParam("tests");
-  //     let totalPrice = 0;
-  //     let isReady = true;
-  //     tests.forEach((test) => {
-  //       const testFromClinic = clinic.data.find(
-  //         (eachTestFromClinic) => eachTestFromClinic.test_id === test.test_id
-  //       );
+  useEffect(() => {
+    const clinicsAvailable = clinics.filter((clinic) => {
+      const tests = props.navigation.getParam("tests");
+      let totalPrice = 0;
+      let isReady = true;
+      tests.forEach((test) => {
+        const testFromClinic = clinic.data.find(
+          (eachTestFromClinic) => eachTestFromClinic.test_id === test.test_id
+        );
 
-  //       if (testFromClinic) {
-  //         totalPrice += testFromClinic.price;
-  //       } else {
-  //         isReady = false;
-  //       }
-  //     });
-  //     clinic.totalPrice = totalPrice;
-  //     return isReady;
-  //   });
-  //   setClinics(clinicsAvailable);
-  //   setIsLoading(false);
-  // }, []);
+        if (testFromClinic) {
+          totalPrice += testFromClinic.price;
+        } else {
+          isReady = false;
+        }
+      });
+      clinic.totalPrice = totalPrice;
+      return isReady;
+    });
+    setClinics(clinicsAvailable);
+    setIsLoading(false);
+  }, []);
 
-  // const onExpandButtonPressedHandler = (clinic) => {
-  //   const clinicsWithSelected = clinics.map((eachClinic) => {
-  //     if (eachClinic.Lab_name === clinic.Lab_name) {
-  //       eachClinic.selected = !eachClinic.selected;
-  //     } else {
-  //       eachClinic.selected = false;
-  //     }
-  //     return eachClinic;
-  //   });
-  //   setClinics(clinicsWithSelected);
-  // };
-
-  // const renderClinics = ({ item: clinic }) => {
-  //   return (
-  //     <View style={styles.clinicContainer}>
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //           marginBottom: 16,
-  //         }}
-  //       >
-  //         <Image
-  //           source={{ uri: clinic.image_url }}
-  //           style={{
-  //             width: 60,
-  //             height: 60,
-  //             borderRadius: 3,
-  //           }}
-  //         />
-  //         <View style={{ width: "60%" }}>
-  //           <Text
-  //             style={{
-  //               color: "#DDDDDD",
-  //               fontWeight: "500",
-  //               marginBottom: 6,
-  //               fontSize: 12,
-  //             }}
-  //           >
-  //             {clinic.Lab_name}
-  //           </Text>
-  //           <Text
-  //             style={{
-  //               color: "#A5A5A5",
-  //               fontSize: 12,
-  //               fontWeight: "400",
-  //               marginBottom: 4,
-  //             }}
-  //             numberOfLines={2}
-  //           >
-  //             {clinic.Alamat}
-  //           </Text>
-  //           <Text style={{ color: "#A5A5A5" }}>1.2 km dari Anda</Text>
-  //         </View>
-  //         <TouchableOpacity style={{ alignSelf: "flex-start" }}>
-  //           <View
-  //             style={{
-  //               alignItems: "center",
-  //               height: 40,
-  //               width: 40,
-  //               borderRadius: 40,
-  //               borderColor: "#7D7D7D",
-  //               borderWidth: 1,
-  //               alignItems: "center",
-  //               justifyContent: "center",
-  //             }}
-  //           >
-  //             <ButtonMap />
-  //           </View>
-  //         </TouchableOpacity>
-  //       </View>
-  //       <View
-  //         style={{
-  //           flexDirection: "row",
-  //           justifyContent: "space-between",
-  //           alignItems: "center",
-  //         }}
-  //       >
-  //         <TouchableOpacity
-  //           style={{
-  //             flexDirection: "row",
-  //             justifyContent: "space-between",
-  //             alignItems: "center",
-  //           }}
-  //           onPress={() => onExpandButtonPressedHandler(clinic)}
-  //         >
-  //           <Text
-  //             style={{
-  //               marginRight: 6,
-  //               color: "#F37335",
-  //               fontWeight: "300",
-  //               transform: [{ translateY: -2 }],
-  //             }}
-  //           >
-  //             {clinic.selected ? "Tutup" : "Selengkapnya"}
-  //           </Text>
-  //           {clinic.selected ? <ArrowUp /> : <ArrowDown />}
-  //         </TouchableOpacity>
-  //         {clinic.selected ? null : (
-  //           <Text style={{ color: "#DDDDDD", fontWeight: "300" }}>
-  //             Mulai dari {formatNumberToRupiah(clinic.totalPrice)}
-  //           </Text>
-  //         )}
-  //       </View>
-  //     </View>
-  //   );
-  // };
-
-  // return (
-  //   <View style={styles.container}>
-  //     {isLoading ? (
-  //       <View
-  //         style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-  //       >
-  //         <ActivityIndicator color="yellow" size="large" />
-  //       </View>
-  //     ) : (
-  //       <>
-  //         <Text style={styles.labelText}>Pilih Lokasi & Jadwal LAB </Text>
-  //         <FlatList
-  //           data={clinics}
-  //           renderItem={renderClinics}
-  //           keyExtractor={(_, index) => `clinic-${index}`}
-  //         />
-  //         <ButtonPrimary label="Ke Pembayaran" />
-  //       </>
-  //     )}
-  //   </View>
-  // );
-
-  const onDateSelectedHandler = (date) => {
-    // console.log(date, ">>> from find clinic");
-    setDate(date);
+  const onExpandButtonPressedHandler = (clinic) => {
+    const clinicsWithSelected = clinics.map((eachClinic) => {
+      if (eachClinic.Lab_name === clinic.Lab_name) {
+        eachClinic.selected = !eachClinic.selected;
+      } else {
+        eachClinic.selected = false;
+      }
+      return eachClinic;
+    });
+    setClinics(clinicsWithSelected);
   };
 
-  const customStyles = [];
-  for (let i = 0; i < 6; i++) {
-    customStyles.push({
-      dateContainerStyle: {
-        backgroundColor: "blue",
-        borderRadius: 12,
-        width: 46,
-        height: 66,
-      },
-    });
-  }
+  const renderClinics = ({ item: clinic }) => {
+    return (
+      <View style={styles.clinicContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 16,
+          }}
+        >
+          <Image
+            source={{ uri: clinic.image_url }}
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 3,
+            }}
+          />
+          <View style={{ width: "60%" }}>
+            <Text
+              style={{
+                color: "#DDDDDD",
+                fontWeight: "500",
+                marginBottom: 6,
+                fontSize: 12,
+              }}
+            >
+              {clinic.Lab_name}
+            </Text>
+            <Text
+              style={{
+                color: "#A5A5A5",
+                fontSize: 12,
+                fontWeight: "400",
+                marginBottom: 4,
+              }}
+              numberOfLines={2}
+            >
+              {clinic.Alamat}
+            </Text>
+            <Text style={{ color: "#A5A5A5" }}>1.2 km dari Anda</Text>
+          </View>
+          <TouchableOpacity style={{ alignSelf: "flex-start" }}>
+            <View
+              style={{
+                alignItems: "center",
+                height: 40,
+                width: 40,
+                borderRadius: 40,
+                borderColor: "#7D7D7D",
+                borderWidth: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ButtonMap />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+            onPress={() => onExpandButtonPressedHandler(clinic)}
+          >
+            <Text
+              style={{
+                marginRight: 6,
+                color: "#F37335",
+                fontWeight: "300",
+                transform: [{ translateY: -2 }],
+              }}
+            >
+              {clinic.selected ? "Tutup" : "Selengkapnya"}
+            </Text>
+            {clinic.selected ? <ArrowUp /> : <ArrowDown />}
+          </TouchableOpacity>
+          {clinic.selected ? null : (
+            <Text style={{ color: "#DDDDDD", fontWeight: "300" }}>
+              Mulai dari {formatNumberToRupiah(clinic.totalPrice)}
+            </Text>
+          )}
+        </View>
+      </View>
+    );
+  };
 
   return (
-    <View>
-      <Calendar selectedDate={date} onDateSelected={onDateSelectedHandler} />
+    <View style={styles.container}>
+      {isLoading ? (
+        <View
+          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator color="yellow" size="large" />
+        </View>
+      ) : (
+        <>
+          <Text style={styles.labelText}>Pilih Lokasi & Jadwal LAB </Text>
+          <FlatList
+            data={clinics}
+            renderItem={renderClinics}
+            keyExtractor={(_, index) => `clinic-${index}`}
+          />
+          <ButtonPrimary label="Ke Pembayaran" />
+        </>
+      )}
     </View>
   );
 }
