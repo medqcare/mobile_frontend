@@ -8,22 +8,23 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import { connect } from "react-redux";
-import { AntDesign, MaterialIcons, MaterialCommunityIcons, FontAwesome  } from '@expo/vector-icons';
+import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
-//import for the animation of Collapse and Expand
 import * as Animatable from 'react-native-animatable';
 
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+  } from 'react-native-reanimated';
 
-//import for the Accordion view
 import Accordion from 'react-native-collapsible/Accordion';
-
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList(props) {
+function ReminderActiveList({props}) {
     // const CONTENT = null
     const CONTENT = [
         {
@@ -33,7 +34,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 10,
                 type: 'Tablet',
                 ettiquete: ['Morning', 'Afternoon', 'Night'],
-                reminder: false
+                reminder: false,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [false, true, undefined]
@@ -46,7 +48,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 20,
                 type: 'Pil',
                 ettiquete: ['Morning', 'Night'],
-                reminder: true
+                reminder: true,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [true, false, undefined],
@@ -59,7 +62,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 20,
                 type: 'Pil',
                 ettiquete: ['Morning', 'Night'],
-                reminder: true
+                reminder: true,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [true, false, undefined],
@@ -72,7 +76,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 20,
                 type: 'Pil',
                 ettiquete: ['Morning', 'Night'],
-                reminder: true
+                reminder: true,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [true, false, undefined],
@@ -85,7 +90,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 20,
                 type: 'Pil',
                 ettiquete: ['Morning', 'Night'],
-                reminder: true
+                reminder: true,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [true, false, undefined],
@@ -98,7 +104,8 @@ function ReminderActiveList(props) {
                 drugQuantity: 20,
                 type: 'Pil',
                 ettiquete: ['Morning', 'Night'],
-                reminder: true
+                reminder: true,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
             },
             expanded: {
                 ettiquete: [true, false, undefined],
@@ -128,7 +135,7 @@ function ReminderActiveList(props) {
         } else {
             setActiveSections(sections.includes(undefined) ? [] : sections);
         }
-    };
+    }; 
 
     const renderHeader = (section, _, isActive,) => {
         return (
@@ -143,7 +150,16 @@ function ReminderActiveList(props) {
             >
                 <View style={styles.drugTopContainer}>
                     <Text style={styles.drugNameText}>{section.header.drugName} {section.header.drugQuantity} {section.header.type}</Text>
-                    {isActive ? null :
+                    {isActive ? 
+                        <Animatable.View
+                        animation={'wobble'}>
+                            <TouchableOpacity
+                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                            >
+                                <Text style={styles.lighterText}>Detail</Text>
+                            </TouchableOpacity>
+                        </Animatable.View>
+                    :
                         <Animatable.View
                             animation={'swing'}>
                             <MaterialIcons 
@@ -427,10 +443,4 @@ const styles = StyleSheet.create({
 });
 
 
-
-
-const mapStateToProps = state => {
-    return state
-}
-
-export default connect(mapStateToProps)(ReminderActiveList)
+export default ReminderActiveList
