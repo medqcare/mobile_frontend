@@ -2244,7 +2244,7 @@ DUMMIES_TEST.forEach((test) => {
 });
 
 export default function PenunjangList(props) {
-  const [speciments, setSpeciments] = useState(DUMMMIES_SPECIMENTS);
+  const [speciments, setSpeciments] = useState([]);
   const [tests, setTests] = useState(DUMMIES_TEST);
   const [filteredTests, setFilteredTests] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -2269,6 +2269,22 @@ export default function PenunjangList(props) {
       props.navigation.navigate("FindClinic", { tests: selectedTests });
     }
   }, [selectedTests]);
+
+  useEffect(() => {
+    let objectWithKeySpecimentName = {};
+    for (let i = 0; i < tests.length; i++) {
+      const { speciment } = tests[i];
+
+      if (!objectWithKeySpecimentName[speciment]) {
+        objectWithKeySpecimentName[speciment] = {
+          speciment_name: speciment,
+          selected: false,
+        };
+      }
+    }
+    const speciments = Object.values(objectWithKeySpecimentName);
+    setSpeciments(speciments);
+  }, []);
 
   const toScreenClinic = () => {
     setIsLoading(true);
@@ -2313,20 +2329,22 @@ export default function PenunjangList(props) {
   };
 
   const onTestSelected = (testId) => {
+    let newTotalPrice = totalPrice;
     const newTests = tests.map((test) => {
       if (test.test_id === testId) {
         const isSelected = test.selected;
 
         if (isSelected === true) {
           test.selected = false;
-          setTotalPrice(totalPrice - test.price);
+          newTotalPrice -= test.price;
         } else {
           test.selected = true;
-          setTotalPrice(totalPrice + test.price);
+          newTotalPrice += test.price;
         }
       }
       return test;
     });
+    setTotalPrice(newTotalPrice);
     setTests(newTests);
   };
 
@@ -2383,7 +2401,7 @@ export default function PenunjangList(props) {
         />
 
         {/* speciment */}
-        {search === "" ? (
+        {search === "" && speciments.length !== 0 ? (
           <View style={styles.specimentContainer}>
             <Text style={styles.title}>pilih kategori</Text>
             <View style={{ flexDirection: "row" }}>

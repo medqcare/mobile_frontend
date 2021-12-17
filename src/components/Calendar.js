@@ -30,6 +30,7 @@ export default function Calendar({
 }) {
   const [date, setDate] = useState(new Date());
   const [month, setMonth] = useState(date.getMonth());
+  const [localSelectedDate, setLocalSelectedDate] = useState(selectedDate);
 
   Date.isLeapYear = function (year) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -90,10 +91,18 @@ export default function Calendar({
     return result;
   };
 
-  const getDayName = (dateNumber) => {
+  const getDayName = (dayNumber) => {
+    return DAYS[dayNumber];
+  };
+
+  const getDayNumber = (dateNumber) => {
     const stringDate = `${month + 1}/${dateNumber}/${date.getFullYear()}`;
     const dayNumber = new Date(stringDate).getDay();
-    return DAYS[dayNumber];
+    return dayNumber;
+  };
+
+  const checkIsWeekend = (dayNumber) => {
+    return dayNumber === 6 || dayNumber === 0;
   };
 
   const onPressHandler = (dateNumberSelected) => {
@@ -101,12 +110,15 @@ export default function Calendar({
     const year = date.getFullYear();
     const stringDate = `${month}/${dateNumberSelected}/${year}`;
     const newDate = new Date(stringDate);
-    onDateSelected(newDate);
+    setLocalSelectedDate(newDate);
+    if (typeof onDateSelected === "function") {
+      onDateSelected(newDate);
+    }
   };
 
   const isSelectedDate = (objectDate) => {
-    const dateNumber = selectedDate.getDate();
-    const monthNumber = selectedDate.getMonth();
+    const dateNumber = localSelectedDate.getDate();
+    const monthNumber = localSelectedDate.getMonth();
     return (
       dateNumber === objectDate.getDate() &&
       monthNumber === objectDate.getMonth()
@@ -115,9 +127,11 @@ export default function Calendar({
 
   const renderDates = ({ item }) => {
     const dateNumber = calculateDate(item);
-    const dayName = getDayName(dateNumber);
+    const dayNumber = getDayNumber(dateNumber);
+    const dayName = getDayName(dayNumber);
     const stringDate = `${month + 1}/${dateNumber}/${date.getFullYear()}`;
     const objectDate = new Date(stringDate);
+    const isWeekend = checkIsWeekend(dayNumber);
     return (
       <TouchableOpacity
         style={{
@@ -129,6 +143,7 @@ export default function Calendar({
           width: 46,
           height: 66,
         }}
+        disabled={isWeekend}
         onPress={() => onPressHandler(dateNumber)}
       >
         <View
@@ -138,15 +153,19 @@ export default function Calendar({
             alignItems: "center",
           }}
         >
-          <Text style={{ color: "white" }}>{dayName}</Text>
-          <Text style={{ color: "white" }}>{dateNumber}</Text>
+          <Text style={{ color: !isWeekend ? "#DDDDDD" : "#727272" }}>
+            {dayName}
+          </Text>
+          <Text style={{ color: !isWeekend ? "#DDDDDD" : "#727272" }}>
+            {dateNumber}
+          </Text>
         </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={{ backgroundColor: "red", height: 120, paddingVertical: 10 }}>
+    <View style={{ height: 120, paddingVertical: 10 }}>
       {/* Choose Months */}
       <View
         style={{
@@ -154,6 +173,7 @@ export default function Calendar({
           alignItems: "center",
           alignSelf: "center",
           justifyContent: "center",
+          marginBottom: 16,
         }}
       >
         {date.getMonth() !== new Date().getMonth() ? (
@@ -168,10 +188,17 @@ export default function Calendar({
               setMonth(date.getMonth());
             }}
           >
-            <Text>{"<"}</Text>
+            <Text style={{ color: "#DDDDDD" }}>{"<"}</Text>
           </TouchableOpacity>
         ) : null}
-        <Text style={{ width: "30%", textAlign: "center", height: 20 }}>
+        <Text
+          style={{
+            width: "30%",
+            textAlign: "center",
+            height: 20,
+            color: "#DDDDDD",
+          }}
+        >
           {MONTHS[month]}
         </Text>
         <TouchableOpacity
@@ -185,7 +212,7 @@ export default function Calendar({
             setMonth(date.getMonth());
           }}
         >
-          <Text>{">"}</Text>
+          <Text style={{ color: "#DDDDDD" }}>{">"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -195,6 +222,7 @@ export default function Calendar({
         data={getRemainingDates()}
         renderItem={renderDates}
         keyExtractor={(item) => `${item}`}
+        showsHorizontalScrollIndicator={false}
       ></FlatList>
     </View>
   );
