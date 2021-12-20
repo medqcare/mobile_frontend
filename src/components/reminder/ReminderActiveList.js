@@ -154,9 +154,10 @@ function ReminderActiveList({props}) {
                         <Animatable.View
                         animation={'wobble'}>
                             <TouchableOpacity
+                            style={styles.detailContainer}
                                 onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
                             >
-                                <Text style={styles.lighterText}>Detail</Text>
+                                    <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
                         </Animatable.View>
                     :
@@ -337,6 +338,11 @@ const styles = StyleSheet.create({
 		fontWeight: '500',
 		fontSize: 16
 	},
+
+    detailContainer: {
+        paddingHorizontal: 15,
+        paddingVertical: 3,
+    },
 
     ettiqueteContainter: {
         flexDirection: "row",
