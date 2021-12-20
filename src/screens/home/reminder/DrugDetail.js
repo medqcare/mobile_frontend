@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Dimensions,
   Image,
-  TouchableOpacity,
-  SafeAreaView,
   TextInput,
 } from "react-native";
 import { connect } from "react-redux";
@@ -14,6 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import GreyHeader from "../../../components/headers/GreyHeader";
 import { FontAwesome } from '@expo/vector-icons'; 
 import VerticalLine from '../../../assets/svg/VerticalLine'
+import { DataTable } from 'react-native-paper'
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
@@ -94,18 +93,17 @@ function DrugDetail({navigation, userData}){
                 </View>
 
                 {/* Bottom Container */}
-                    <View style={styles.bottomContainer}>
-                        <View style={styles.eachDrugStatusContainer}>
-                            <View style={styles.icon}>
-                                <FontAwesome name="circle" size={10} color="#B5B5B5" />
-                                <VerticalLine/>
-                            </View>
-                            <View style={styles.status}>
-                                <Text style={styles.upperCenteredSectionText}>07:00</Text>
-                                <Text style={styles.upperCenteredSectionText}>Diminum</Text>
-                            </View>
-                        </View>
-                    </View>
+                <DataTable style={styles.bottomContainer}>
+                    <DataTable.Row style={{borderBottomWidth: 0 }}>
+                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><FontAwesome name="circle" size={10} color="#B5B5B5" /></DataTable.Cell>
+                        <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>07:00</Text></DataTable.Cell>
+                    </DataTable.Row>
+
+                    <DataTable.Row style={{borderBottomWidth: 0}}>
+                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
+                        <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>Diminum</Text></DataTable.Cell>
+                    </DataTable.Row>
+                </DataTable>
             </ScrollView>
         </View>
     )
@@ -201,8 +199,8 @@ const styles = StyleSheet.create({
     },
 
     bottomContainer: {
-        marginHorizontal: 20,
-        paddingTop: 10
+        width: dimWidth * 0.3,
+        marginTop: 10,
     },
 
     eachDrugStatusContainer: {
@@ -212,17 +210,13 @@ const styles = StyleSheet.create({
 
     icon: {
         alignItems: "center",
-        // backgroundColor: 'yellow',
-        justifyContent: "space-between",
-        height: 37
+        backgroundColor: 'yellow',
 
     },
 
     status: {
-        justifyContent: "space-between",
         paddingLeft: 7,
-        // backgroundColor: 'red',
-        height: 37
+        backgroundColor: 'red',
     },
 })
 
