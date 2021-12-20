@@ -14,6 +14,9 @@ import ArrowUp from "../../../assets/svg/ArrowUp";
 import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
 import Calendar from "../../../components/Calendar";
 import openMap from "../../../helpers/openMap";
+import { connect } from "react-redux";
+import getDistanceFromLatLonInKm from "../../../helpers/latlongToKM";
+import ButtonPrimary from "../../../components/ButtonPrimary";
 
 const DUMMIES_CLINIC = [
   {
@@ -6675,32 +6678,6 @@ const DUMMIES_CLINIC = [
   },
 ];
 
-function ButtonPrimary({ label, onPress }) {
-  return (
-    <TouchableOpacity
-      style={{
-        backgroundColor: "#005EA2",
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingVertical: 16,
-        borderRadius: 4,
-      }}
-      onPress={onPress}
-    >
-      <Text
-        style={{
-          color: "#DDDDDD",
-          textTransform: "capitalize",
-          fontSize: 14,
-        }}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
-  );
-}
-
 const TIMES = [
   "08:00 - 10:00",
   "10:00 - 12:00",
@@ -6708,7 +6685,7 @@ const TIMES = [
   "19:00 - 20:00",
 ];
 
-export default function FindClinic(props) {
+function FindClinic(props) {
   console.log(props.myLocation);
   const [clinics, setClinics] = useState(DUMMIES_CLINIC);
   const [isLoading, setIsLoading] = useState(true);
@@ -6721,6 +6698,7 @@ export default function FindClinic(props) {
       const tests = props.navigation.getParam("tests");
       let totalPrice = 0;
       let isReady = true;
+      const clinicTests = [];
       tests.forEach((test) => {
         const testFromClinic = clinic.data.find(
           (eachTestFromClinic) => eachTestFromClinic.test_id === test.test_id
@@ -6728,12 +6706,17 @@ export default function FindClinic(props) {
 
         if (testFromClinic) {
           totalPrice += testFromClinic.price;
+          clinicTests.push(testFromClinic);
         } else {
           isReady = false;
         }
       });
-      clinic.totalPrice = totalPrice;
-      clinic.ppn = clinic.totalPrice * (10 / 100);
+      clinic.ppn = totalPrice * (10 / 100);
+      clinic.totalPrice = totalPrice + clinic.ppn;
+      clinic.tests = clinicTests;
+      const { coordinates } = clinic.Location;
+      const [lngClinic, latClinic] = coordinates;
+      const { lat: latUser, lng: lngUser } = props.myLocation;
       return isReady;
     });
     setClinics(clinicsAvailable);
@@ -6764,11 +6747,20 @@ export default function FindClinic(props) {
     setDate(date);
   };
 
+  const onPressHandler = () => {
+    props.navigation.navigate("Payment", {
+      penunjang: {
+        clinic: selectedClinic,
+        tests: props.navigation.getParam("tests"),
+        bookingTime: bookingTime,
+        bookingSchedule: date,
+      },
+    });
+  };
+
   const renderClinics = ({ item: clinic }) => {
     const [lang, lat] = clinic.Location.coordinates;
-    const totalPriceWithFormatRupiah = formatNumberToRupiah(
-      clinic.totalPrice + clinic.ppn
-    );
+    const totalPriceWithFormatRupiah = formatNumberToRupiah(clinic.totalPrice);
     return (
       <View style={styles.clinicContainer}>
         <View
@@ -6937,7 +6929,7 @@ export default function FindClinic(props) {
             keyExtractor={(_, index) => `clinic-${index}`}
           />
           {selectedClinic && bookingTime && date ? (
-            <ButtonPrimary label="Ke Pembayaran" />
+            <ButtonPrimary label="Ke Pembayaran" onPress={onPressHandler} />
           ) : null}
         </>
       )}
@@ -6968,3 +6960,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
 });
+
+const mapStateToProps = (state) => state;
+
+export default connect(mapStateToProps)(FindClinic);

@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Checkbox from "expo-checkbox";
-import SearchBar from "../../../components/headers/SearchBar";
+import { connect } from "react-redux";
 import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
 import RightArrow from "../../../assets/svg/RightArrow";
 import InformationIcon from "../../../assets/svg/information";
@@ -2243,7 +2243,7 @@ DUMMIES_TEST.forEach((test) => {
   }
 });
 
-export default function PenunjangList(props) {
+function PenunjangList(props) {
   const [speciments, setSpeciments] = useState([]);
   const [tests, setTests] = useState(DUMMIES_TEST);
   const [filteredTests, setFilteredTests] = useState([]);
@@ -2392,10 +2392,8 @@ export default function PenunjangList(props) {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        {/* search bar */}
         <ClearableSearchBar
           placeholder="Cari test atau sampel"
-          // onFocus={() => onSearchBarFocusHandler()}
           onChangeText={searchHandler}
           setSearch={setSearch}
         />
@@ -2631,3 +2629,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
+const mapStateToProps = (state) => state;
+
+export default connect(mapStateToProps)(PenunjangList);
