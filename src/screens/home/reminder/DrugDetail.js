@@ -98,10 +98,18 @@ function DrugDetail({navigation, userData}){
                         <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><FontAwesome name="circle" size={10} color="#B5B5B5" /></DataTable.Cell>
                         <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>07:00</Text></DataTable.Cell>
                     </DataTable.Row>
-
                     <DataTable.Row style={{borderBottomWidth: 0}}>
                         <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
-                        <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>Diminum</Text></DataTable.Cell>
+                        <DataTable.Cell><Text style={{color: 'green'}}>DIMINUM</Text></DataTable.Cell>
+                    </DataTable.Row>
+
+                    <DataTable.Row style={{borderBottomWidth: 0 }}>
+                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><FontAwesome name="circle" size={10} color="#B5B5B5" /></DataTable.Cell>
+                        <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>13:00</Text></DataTable.Cell>
+                    </DataTable.Row>
+                    <DataTable.Row style={{borderBottomWidth: 0}}>
+                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
+                        <DataTable.Cell><Text style={{color: 'red'}}>TERLEWAT</Text></DataTable.Cell>
                     </DataTable.Row>
                 </DataTable>
             </ScrollView>
