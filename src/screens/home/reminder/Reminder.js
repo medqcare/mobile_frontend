@@ -1,20 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Dimensions,
-  Image,
   TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
 import { connect } from "react-redux";
+import { getPrescriptions, getReminders } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
 import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const dimHeight = Dimensions.get("window").height;
@@ -24,6 +24,37 @@ function Reminder(props) {
 	const swiper = useRef(null)
 
 	const userData = props.userData
+	
+	const [activePrescriptions, setActivePrescriptions] = useState([])
+	const [finishedPrescriptions, setFinishedPrescriptions] = useState([])
+
+	useEffect( async () => {
+		try {
+			let token = await AsyncStorage.getItem("token");
+			token = JSON.parse(token).token
+			const patientID = props.userData._id
+			await props.getPrescriptions(patientID, token)
+			await props.getReminders(patientID, token)
+		} catch (error){
+			console.log(error, 'error di Reminder Page')
+		}
+	}, [])
+
+	useEffect(async () => {
+		await filter()
+	}, [])
+
+	async function filter(){
+		const active = []
+		const finsihed = []
+		for(let i = 0; i < userData.prescriptions.length; i++){
+			if(userData.prescriptions[i].isFinished) finsihed.push(userData.prescriptions[i])
+			else active.push(userData.prescriptions[i])
+		}
+		setFinishedPrescriptions(finsihed)
+		setActivePrescriptions(active)
+	}
+
 	function firstName(){
 		return userData.firstName.split(' ')[0]
 	}
@@ -31,16 +62,7 @@ function Reminder(props) {
 	const widthAdd = (dimWidth * 0.06945)
     const heightAdd = (dimHeight * 0.03677)
 
-	function renderPagination(index, total, context){
-		console.log(index, 'index')
-	}
-
-	function _onMomentumScrollEnd(e, state, context) {
-		console.log(state.index, 'state.index')
-	}
-
 	const [index, setIndex] = useState(0)
-	 
   	return (
 		<View style={styles.container}>
 			<Header
@@ -86,23 +108,15 @@ function Reminder(props) {
 				ref={swiper}
 				showsPagination={false} 
 				loop={false}
-				renderPagination={renderPagination(index)}
-				onMomentumScrollEnd ={_onMomentumScrollEnd}
 				onIndexChanged={(index) => setIndex(index)}
 			>
 				<ScrollView bounces={true}>
-					<ReminderActiveList props={props}/>
+					<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
 				</ScrollView>
 				<ScrollView>
-					<ReminderFinishedList props={props} />
+					<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
 				</ScrollView>
 			</Swiper>
-			{/* <ScrollView>
-				{selectedStatus === 'Active' ? 
-					<ReminderActiveList/> :
-					<ReminderFinishedList/>
-				}
-			</ScrollView> */}
 		</View>
   	);
 }
@@ -160,11 +174,13 @@ const styles = StyleSheet.create({
 	},
 });
 
-
-
-
 const mapStateToProps = state => {
     return state
 }
 
-export default connect(mapStateToProps)(Reminder)
+const mapDispatchToProps = {
+	getPrescriptions,
+	getReminders
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Reminder)
