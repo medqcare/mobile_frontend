@@ -4,7 +4,6 @@ import {
   Text,
   View,
   Dimensions,
-  Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -24,94 +23,62 @@ import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props}) {
-    // const CONTENT = null
-    const CONTENT = [
-        {
-            header:  {
-                information: 'Sebelum Makan',
-                drugName: 'Paracetamol',
-                drugQuantity: 10,
+function ReminderActiveList({props, prescriptions}) {
+    const { reminderDetails } = props.userData
+    const CONTENT = prescriptions.length > 0 ? prescriptions.map(el => {
+        const {
+            dose,
+            drugID,
+            drugName,
+            drugQuantity,
+            ettiquete,
+            expiredDate,
+            finishedAt,
+            information,
+            isFinished,
+            patientID,
+            price,
+            quantityTotal,
+            reminder,
+            uidDrug,
+            _id
+        } = el
+
+        const newObject = {
+            header: {
+                information,
+                drugName,
+                drugQuantity,
                 type: 'Tablet',
-                ettiquete: ['Morning', 'Afternoon', 'Night'],
-                reminder: false,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
+                ettiquete,
+                reminder,
+                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
             },
             expanded: {
-                ettiquete: [false, true, undefined]
+                ettiquete: filter('status', _id),
+                alarmTime: filter('alarmTime', _id)
             }
-        },
-        {
-            header: {
-                information: 'Setelah Makan',
-                drugName: 'Bodrex',
-                drugQuantity: 20,
-                type: 'Pil',
-                ettiquete: ['Morning', 'Night'],
-                reminder: true,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
-            },
-            expanded: {
-                ettiquete: [true, false, undefined],
+        }
+        return newObject
+    }) : null
+
+    function filter(key, _id){
+        if(key === 'alarmTime'){
+            const alarmTime = []
+            for(let i = 0; i < reminderDetails?.length; i++){
+                if(reminderDetails[i].prescriptionID === _id) alarmTime.push(reminderDetails[i].alarmTime)
             }
-        },
-        {
-            header: {
-                information: 'Setelah Makan',
-                drugName: 'Bodrex',
-                drugQuantity: 20,
-                type: 'Pil',
-                ettiquete: ['Morning', 'Night'],
-                reminder: true,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
-            },
-            expanded: {
-                ettiquete: [true, false, undefined],
+            return alarmTime
+        } else {
+            const status = []
+            for(let i = 0; i < reminderDetails?.length; i++){
+                if(reminderDetails[i].prescriptionID === _id) status.push(reminderDetails[i].status)
             }
-        },
-        {
-            header: {
-                information: 'Setelah Makan',
-                drugName: 'Bodrex',
-                drugQuantity: 20,
-                type: 'Pil',
-                ettiquete: ['Morning', 'Night'],
-                reminder: true,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
-            },
-            expanded: {
-                ettiquete: [true, false, undefined],
-            }
-        },
-        {
-            header: {
-                information: 'Setelah Makan',
-                drugName: 'Bodrex',
-                drugQuantity: 20,
-                type: 'Pil',
-                ettiquete: ['Morning', 'Night'],
-                reminder: true,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
-            },
-            expanded: {
-                ettiquete: [true, false, undefined],
-            }
-        },
-        {
-            header: {
-                information: 'Setelah Makan',
-                drugName: 'Bodrex',
-                drugQuantity: 20,
-                type: 'Pil',
-                ettiquete: ['Morning', 'Night'],
-                reminder: true,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp'
-            },
-            expanded: {
-                ettiquete: [true, false, undefined],
-            }
-        },
-    ]
+            return status
+        }
+
+    }
+
     const [reminders, setReminders] = useState(CONTENT ? CONTENT.map(el => {
         return el.header.reminder
     }) : null)
@@ -205,7 +172,7 @@ function ReminderActiveList({props}) {
     };
 
     const renderContent = (section, _, isActive) => {
-        const { ettiquete } = section.expanded
+        const { ettiquete, alarmTime } = section.expanded
         return (
             <Animatable.View
                 key={_}
@@ -219,9 +186,9 @@ function ReminderActiveList({props}) {
                                     <View style={styles.reminderLowerContainer}>
                                         <View style={{flexDirection: "row"}}>
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                            <Text style={styles.reminderTimeText}>13:00</Text>
+                                            <Text style={styles.reminderTimeText}>{alarmTime[index]}</Text>
                                         </View>
-                                            {el === undefined ? 
+                                            {el === null ? 
                                                 <View style={{flexDirection: "row", justifyContent: "space-between", width: 170, }}>
                                                     <TouchableOpacity
                                                         style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
