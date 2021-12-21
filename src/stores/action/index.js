@@ -1,5 +1,7 @@
 import axios from 'axios';
-import function_apaan from './function_apaan';
+import { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument } from './medical_resume';
+import { getPrescriptions } from './prescription'
+import { getReminders } from './reminders'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -7,6 +9,7 @@ import { baseURL } from '../../config';
 const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
+
 
 const _storeData = async data => {
   console.log(data, 'This is the token after signing in');
@@ -242,6 +245,7 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
 export function SignUp(userData, navigation, modalFailed) {
   console.log(userData.email, 'is signing up')
   return dispatch => {
+    const email = userData.email
     instance({
       url: '/v1/members/signup',
       method: 'POST',
@@ -255,7 +259,7 @@ export function SignUp(userData, navigation, modalFailed) {
           payload: false
         })
         // navigation.navigate('Sign')
-        navigation.navigate('SuccessSignUp')
+        navigation.navigate('SuccessSignUp', {email})
       })
       .catch(error => {
         console.log('Error from server:', error.response)
@@ -266,6 +270,26 @@ export function SignUp(userData, navigation, modalFailed) {
         modalFailed(error.response ? error.response.data.err.message : error.message);
       });
   };
+}
+
+export function resendConfirmationEmail(email){
+  console.log('Application is sending request to resend confirmation email')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resendVerificationCode',
+        data: {
+          email
+        }
+      })
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to resend confirmation email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
 }
 
 export function SignInGoogle(token, navigation, navigateTo) {
@@ -342,7 +366,7 @@ export function SignInGoogle(token, navigation, navigateTo) {
   };
 }
 
-export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
+export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed, navigateTo) {
   return async dispatch => {
     let token = await AsyncStorage.getItem('token')
     instance({
@@ -365,8 +389,9 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
                 type: 'GET_USER_DATA',
                 payload: data.data,
               });
+              ToastAndroid.show('Data saved, redirecting you to our home screen...', ToastAndroid.SHORT)
               modalSuccess(data.message)
-              navigation.navigate('Home')
+              navigateTo('Home')
             }
             catch (error) {
               modalFailed(error)
@@ -384,6 +409,118 @@ export function CreatePatientAsUser(dataUser, modalSuccess, modalFailed) {
         console.log('Error Create Patient as User');
       });
   };
+}
+
+export function resetPasswordEmail(email, navigate, navigateTo, isResend){
+  console.log('Application is sending request to reset password and send email')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resetPasswordEmail',
+        data: {
+          email
+        },
+      })
+      const storedSecretCode = data.secretCode
+      await AsyncStorage.setItem('storedSecretCode', storedSecretCode)
+      console.log('Email sent to', email)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      if(!isResend){
+        navigate(navigateTo, {email})
+      }
+    } catch (error) {
+      console.log(error)
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function resetPasswordPhone(phoneNumber, navigate, navigateTo, isResend){
+  console.log('Application is sending request to reset password and send SMS')
+  return async dispatch => {
+    try {
+      const { data } = await instance({
+        method: 'POST',
+        url: '/v1/members/resetPasswordOTP',
+        data: {
+          phoneNumber
+        },
+      })
+      const { email, secretCode } = data
+      await AsyncStorage.setItem('storedSecretCode', secretCode)
+      console.log('SMS sent to', phoneNumber)
+      ToastAndroid.show(data.message, ToastAndroid.SHORT)
+      if(!isResend){
+        navigate(navigateTo, {phoneNumber, email})
+      }
+    } catch (error) {
+      console.log(error)
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function validateSecretCode(secretCode, storedSecretCode, navigate, navigateTo, email){
+  console.log(`Application is sending request to validate user's input code...`)
+  return async dispatch => {
+    try {
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/validateSecretCode`,
+        data: { 
+          secretCode
+        },
+        headers: {
+          storedSecretCode,
+        }
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        navigate(navigateTo, {email, destination: 'SignIn'})
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      const { message } = error.response.data.err
+      console.log(message, 'Error found when trying to reset password and send email')
+      ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
+}
+
+export function changePassword(email, password, navigate, destination){
+  console.log('Application is sending request to change password...')
+  return async dispatch => {
+    try {
+      let { data } = await instance({
+        method: 'POST',
+        url: `/v1/members/changePassword`,
+        data: {
+          email,
+          password
+        },
+      })
+      if(data.message){
+        console.log(data.message)
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        await AsyncStorage.removeItem('secretCode')
+        navigate(destination)
+      } else {
+        ToastAndroid.show(data.error, ToastAndroid.SHORT)
+      }
+    } catch (error) {
+      console.log(error)
+      // const { message } = error.response.data.err
+      // console.log(message, 'Error found when trying to reset password and send email')
+      // ToastAndroid.show(message, ToastAndroid.SHORT)
+    }
+  }
 }
 
 export function GetUser(token, navigation) {
@@ -422,6 +559,7 @@ export function GetUser(token, navigation) {
             payload: false
           })
           res()
+          navigation.navigate('UserDataCompletion')
           // modalW()
         }
       } catch (error) {
@@ -429,7 +567,7 @@ export function GetUser(token, navigation) {
           `Please check your internet connection`,
           ToastAndroid.LONG,
         );
-        console.log(error.message, 'Error found in function GetUser')
+        console.log('Error found in function GetUser ==>', error.message, )
         rej(error)
       }
 
@@ -440,8 +578,8 @@ export function GetUser(token, navigation) {
 export function logout(navigation) {
   return async dispatch => {
     try {
-      navigation.pop()
-      navigation.navigate('Sign');
+      await navigation.pop()
+      await navigation.navigate('Sign');
       await AsyncStorage.removeItem('docterFavorite');
       await AsyncStorage.removeItem('token');
       await dispatch({
@@ -465,19 +603,16 @@ export function addFamily(dataFamily, navigation, loadFalse) {
         data: dataFamily,
         headers: { Authorization: JSON.parse(token).token },
       })
-
-      // console.log('ni mau create data di add family',data)
       if (data && data.message && data.message.includes('family NIK already registered')) {
-        console.log('gabisa boss NIKnya udah kepake')
         if (data.data == 'cannot add same family twice') {
-          ToastAndroid.show('NIK sudah menjadi anggota keluarga !', ToastAndroid.SHORT);
+          ToastAndroid.show('This NIK has already been registered!', ToastAndroid.SHORT);
+          loadFalse(false)
         } else {
           let { data } = await instance({
             url: '/v1/members/dataLogged',
             method: 'GET',
             headers: { Authorization: JSON.parse(token).token },
           })
-          // console.log('ini hail data yang balikannya add family kedua',data)
 
           await dispatch({
             type: 'GET_USER_DATA',
@@ -487,29 +622,29 @@ export function addFamily(dataFamily, navigation, loadFalse) {
           ToastAndroid.show('NIK sudah terdaftar, Berhasil menambahkan data sebelumnya', ToastAndroid.LONG);
         }
       } else if (data && data.error) {
-        // console.log('masuk sini eror beroohhh')
-        console.log(data.error,'ini data.error')
         if (data.error.message.includes('Request failed with status code')) {
           loadFalse()
-          ToastAndroid.show('NIK sama dengan Pemilik akun !', ToastAndroid.SHORT);
+          ToastAndroid.show(`This NIK is the same as the account owner's !`, ToastAndroid.SHORT);
         }
       } else {
-        // console.log('silahkan nik baru mah sok ajaaa atuuhh')
-        let { data } = await instance({
+        console.log('Successfully added family member')
+        console.log('Navigating back to family list...')
+        const successAddFamilyMessage = data.message 
+        let result = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
           headers: { Authorization: JSON.parse(token).token },
         })
-        // console.log('ini hail data yang balikannya add family kedua',data)
         await dispatch({
           type: 'GET_USER_DATA',
-          payload: data.data,
+          payload: result.data.data,
         })
+        loadFalse()
         navigation.navigate('FamilyList')
-        ToastAndroid.show('Berhasil menambahkan keluarga !', ToastAndroid.SHORT);
+        ToastAndroid.show(successAddFamilyMessage, ToastAndroid.SHORT);
       }
     } catch (error) {
-      console.log(error, 'ini errornya add family');
+      console.log(error, 'Error found when adding a new family');
       loadFalse()
       ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG);
     }
@@ -530,24 +665,25 @@ export function deleteFamily(userId, { token }, modalF) {
           patientId: userId
         }
       });
+      ToastAndroid.show(Data.data.message, ToastAndroid.SHORT)
       let newUserData = await instance({
         url: `/v1/members/dataLogged`,
         method: 'GET',
         headers: { Authorization: token },
       });
-      console.log('ini new user data', newUserData)
       dispatch({
         type: 'GET_USER_DATA',
         payload: newUserData.data.data,
       });
     } catch (error) {
       console.log(error);
-      modalF(error.message)
+      // modalF(error.message)
     }
   };
 }
 
-export function edit_profile(userData, userID, token) {
+export function edit_profile(userData, userID, token, navigateTo) {
+  console.log('Sending data to server...')
   return dispatch => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -558,9 +694,8 @@ export function edit_profile(userData, userID, token) {
           data: userData,
           headers: { Authorization: token },
         });
-        console.log(
-          'ini data dari update', data
-        );
+        console.log('Profile succesfully updated')
+        console.log('Application is trying to GET data logged after successfully updating a profile')
         let dataUpdate = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
@@ -571,6 +706,9 @@ export function edit_profile(userData, userID, token) {
           type: 'GET_USER_DATA',
           payload: dataUpdate.data.data,
         });
+        console.log('Data logged successfully updated')
+        ToastAndroid.show(data.data.message, ToastAndroid.SHORT)
+        navigateTo('FamilyList')
       } catch (error) {
         console.log(error);
         reject(error);
@@ -825,4 +963,91 @@ export function getDataMedicine() {
       }
     })
   }
+}
+
+export function uploadImage(patientId, fileToUpload, token, navigateTo, destination){
+  return async  dispatch => {
+      console.log('Application is trying to upload the image...')
+      try {
+        console.log(fileToUpload)
+        let { data } = await instance({
+          url: `/v1/members/updateAvatar`,
+          method: 'PATCH',
+          data: fileToUpload,
+          headers: { 
+            'Accept': 'application/json',
+            authorization: token,
+            id: patientId,
+            'content-type': 'multipart/form-data',
+          },
+        })
+		  console.log('server has successfully updated Image Url')
+        let result = await instance({
+          method: 'GET',
+          url: `/v1/members/dataLogged`,
+          headers: { Authorization: token },
+        })
+        if (result.data) {
+			console.log('Application Found dataLogged')
+			await dispatch({
+				type: 'GET_USER_DATA',
+				payload: result.data.data,
+			});
+		}
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        navigateTo(destination)
+      } catch (error) {
+        console.log(error.response, 'Error found when trying to upload avatar')
+      }
+  }
+
+}
+export function deleteImage(patientId, token){
+  return async dispatch => {
+    console.log('Application is sending command to server....')
+    try {
+        let { data } = await instance({
+        url: `/v1/members/deleteAvatar`,
+        method: 'PATCH',
+        headers: {
+          id: patientId,
+          authorization: token,
+        },
+      })
+		console.log('Server has successfully deleted imageUrl')
+
+        let result = await instance({
+			method: 'GET',
+			url: `/v1/members/dataLogged`,
+			headers: { Authorization: token },
+        })
+        if (result.data) {
+			console.log('Application Found dataLogged')
+			await dispatch({
+				type: 'GET_USER_DATA',
+				payload: result.data.data,
+			});
+		}
+
+        ToastAndroid.show(data.message, ToastAndroid.SHORT)
+    } catch (error) {
+      console.log(error.response.data, 'Error found when trying to delete avatar')
+    }
+  }
+}
+
+
+export {
+  getDocumentByPatient,
+  uploadDocument,
+  renameDocument,
+  deleteDocument
+}
+
+export {
+  getPrescriptions
+}
+
+export {
+  getReminders
 }

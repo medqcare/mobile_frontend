@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
     View,
     Text,
@@ -8,40 +8,28 @@ import {
     Image,
     TextInput,
     ScrollView,
-    Picker,
-    Alert,
     ToastAndroid,
-    ImageBackground,
     ActivityIndicator,
 } from 'react-native'
-import {LinearGradient} from 'expo-linear-gradient'
 import DatePicker from 'react-native-datepicker';
 import { connect } from 'react-redux';
-import getDay from '../../../helpers/getDay'
 import { edit_profile, setLoading } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker'
 import { fullMonthFormat } from '../../../helpers/dateFormat';
 import Header from '../../../components/headers/GradientHeader'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
-//Icon
-import IconAD from 'react-native-vector-icons/AntDesign'
-import Icon from 'react-native-vector-icons/Ionicons'
-import ArrowBack from '../../../assets/svg/ArrowBack'
+import withZero from '../../../helpers/withZero';
 //Modal
-
-import LottieLoader from 'lottie-react-native'
-import { color } from 'react-native-reanimated';
+import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 
 
 const editFamilyData = (props) => {
     let dataFamily = props.navigation.state.params.data
     var moment = require('moment')
-    const [genderlist, setGender] = useState(['Male', 'Female',])
-    const [listTitle, setTitle] = useState(['Mr.', 'Mrs.', 'Miss.', 'Ms.'])
     const [load, setLoad] = useState(false)
-    const [modalS, setModalS] = useState(false)
     const [bloodTypeModal, setBloodTypeModal] = useState(false)
     const [rhesusTypeModal, setRhesusModal] = useState(false)
     const [insuranceStatusModal, setInsuranceStatusModal] = useState(false)
@@ -80,26 +68,69 @@ const editFamilyData = (props) => {
     ]
    
     const [changeData, setChangeData] = useState({
-        nik:  '',
-        title: '',
-        firstName:  '', 
-        lastName:  '', 
-        gender:  '', 
-        dob: moment(props.userData.dob).format('DD/MM/YYYY'),
-        bloodType: '',
-        resus: '', 
-        phoneNumber: '', 
-        insuranceStatus: '' 
-        // statusFamily: '',
-        // address: '',
+        nik:  dataFamily.nik.toString(),
+        firstName:  dataFamily.firstName, 
+        lastName:  dataFamily.lastName, 
+        gender:  dataFamily.gender, 
+        dob: moment(dataFamily.dob).format('DD/MM/YYYY'),
+        bloodType: dataFamily.bloodType,
+        resus: dataFamily.resus, 
+        phoneNumber: dataFamily.phoneNumber, 
+        insuranceStatus: dataFamily.insuranceStatus ,
+        location: dataFamily.location
     }) 
-    // console.log('Ini data Family nya',dataFamily)
+    
+    // Region
+	const region = require("../../../assets/Region/province");
 
-    async function setSelectedValue(value, changeKey){
-        setChangeData({
-            ...changeData,
-            [changeKey] :value
-        })
+	// Province; 34 provinces
+	const [province, setProvince] = useState(region.province);
+	const [provinceModal, setProvinceModal] = useState(false)
+	const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(changeData.location.province)
+	const provinceSelection = province
+
+	// District
+	const provinceObject = province.filter(el => {
+		return el.name ===selectedProvinceLabel
+	})
+	const provinceId = provinceObject[0].id
+	const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
+	const [districtModal, setDistrictModal] = useState(false)
+	const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(changeData.location.city)
+
+    async function setSelectedValue(value, changeKey, changeInnerKey, name, coordinatesKey){
+        if(changeKey === 'location'){
+            const firstIndex = region.kabupatenkota(value)[0]
+            coordinatesKey =  coordinatesKey ? coordinatesKey: [firstIndex.longitude, firstIndex.latitude]
+            if(changeInnerKey === 'province'){
+                setDistrict(region.kabupatenkota(value))
+                setSelectedDistrictLabel(firstIndex.name)
+                setChangeData({
+                    ...changeData,
+                    [changeKey]: {
+                        ...changeData[changeKey],
+                        [changeInnerKey]: name,
+                        city: firstIndex.name,
+                        coordinates: [coordinatesKey[0], coordinatesKey[1]],
+                    }
+                })
+            } else {
+                setSelectedDistrictLabel(name)
+                setChangeData({
+                    ...changeData,
+                    [changeKey]: {
+                        ...changeData[changeKey],
+                        [changeInnerKey]: name,
+                        coordinates: [coordinatesKey[0], coordinatesKey[1]]
+                    }
+                })
+            }
+		} else {
+            setChangeData({
+                ...changeData,
+                [changeKey] :value
+            })
+        }
     }
 
     var radio_props = [
@@ -108,6 +139,7 @@ const editFamilyData = (props) => {
     ]; 
     
     async function validation() {
+        console.log('Validating data...')
         if (changeData.nik !== null && changeData.nik.length > 1 && changeData.nik.length !== 16 ||
             changeData.firstName == '' || changeData.firstName == null ||
             changeData.dob == null) {
@@ -124,7 +156,6 @@ const editFamilyData = (props) => {
             dataSend = Object.filter(dataSend, value => value !== undefined)
             dataSend = Object.filter(dataSend, value => value !== '')
 
-            console.log(dataSend, 'ini data yang mau di dikirim')
             if (typeof dataSend.nik === 'string' && dataSend.nik !== '') {
                 dataSend.nik = Number(dataSend.nik)
             }
@@ -133,12 +164,12 @@ const editFamilyData = (props) => {
     }
 
     async function sendData(data) {
+        console.log('Data validated')
+        console.log('Sending data to store/index')
         let token = await AsyncStorage.getItem('token')
-        props.edit_profile(data, dataFamily._id, JSON.parse(token).token)
+        props.edit_profile(data, dataFamily._id, JSON.parse(token).token, props.navigation.navigate)
             .then(backData => {
-                // console.log(backData.message, 'ini balikan datanya')
                 setLoad(false)
-                setModalS(true)
             })
             .catch(err => {
                 console.log(err)
@@ -146,351 +177,413 @@ const editFamilyData = (props) => {
             })
     }
 
-    // function createdData (changeData) {
-    //     let dataFamily = await AsyncStorage.getItem('token')
-    //     props.edit_profile
-        
-    // }
-
-    useEffect(() => {
-        console.log(dataFamily,'panggilan ketika dibuka')
-        let _gender,_statusFamily, _dob,_nik, _lastName, _bloodtype, _rhesus, _phoneNumber, _insuranceStatus
-        if (dataFamily.nik) {
-            _nik = dataFamily.nik + ''
-        } else {
-            _nik = ''
-        }
-        if (dataFamily.lastName) {
-            _lastName = dataFamily.lastName
-        } else {
-            _lastName = ''
-        }
-        if (dataFamily.gender) {
-            _gender = dataFamily.gender
-        } else {
-            _gender = ''
-        }
-        if (dataFamily.bloodType) {
-            _bloodtype = dataFamily.bloodType
-        } else {
-            _bloodtype = ''
-        }
-        if (dataFamily.dob) {   
-            _dob = dataFamily.dob
-        } else{
-            _dob= ''
-        }
-        if (dataFamily.statusFamily) {   
-            _statusFamily = dataFamily.statusFamily
-        } else{
-            _statusFamily= ''
-        }
-        if (dataFamily.resus) {
-            _rhesus = dataFamily.resus
-        } else {
-            _rhesus = ''
-        }
-        if (dataFamily.phoneNumber) {
-            _phoneNumber = dataFamily.phoneNumber
-        } else {
-            _phoneNumber = ''
-        }
-        if (dataFamily.insuranceStatus) {
-            _insuranceStatus = dataFamily.insuranceStatus
-        } else {
-            _insuranceStatus = ''
-        }
-        // console.log('sedangkan ini adlah niknya', _nik)
-        setChangeData({
-            nik: _nik,
-            title: dataFamily.title,
-            firstName: dataFamily.firstName,
-            lastName: _lastName,
-            gender: _gender,
-            dob: _dob,
-            bloodType: _bloodtype,
-            resus: _rhesus,
-            phoneNumber: _phoneNumber,
-            insuranceStatus: _insuranceStatus
-        })
-    }, [])
-
     
     const[selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(dataFamily.bloodType)
     const[selectedRhesusLabel,setSelectedRhesusLabel] = useState(dataFamily.resus)
     const[selectedInsuranceLabel,setselectedInsuranceLabel] = useState(dataFamily.insuranceStatus)
-    const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.statusFamily)
-    const chosenDate = fullMonthFormat(changeData.dob)
-    console.log('ini adlah change datanya', changeData)
+    const[selectedStatusFamilyLabel,setSelectedStatusFamilyLabel] = useState(dataFamily.relationship)
+    const newDate = new Date(dataFamily.dob)
+	const sendDate = `${withZero(newDate.getDate())}/${withZero(newDate.getMonth()+1)}/${withZero(newDate.getFullYear())}`
+	const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate))
     return (
         <View style={{ flex: 1 }}>
             <Header title={'Ubah Data'} navigate={props.navigation.navigate} navigateBack={'FamilyList'}/>
             
-                <View style={container.base}>
+                <View style={styles.container}>
                     <ScrollView showsVerticalScrollIndicator={false}>
-                    {/* <TouchableOpacity style={container.editphoto}>
-                    <Text style={textStyle.editphoto}>Edit Photo</Text>
-                    </TouchableOpacity> */}
-                    {/* NIK Input Edit */}
-                    <TextInput
-                        style={{ ...container.input, width: '100%' }}
-                        autoCapitalize={'none'}
-                        autoFocus={false}
-                        placeholder={'NIK'}
-                        keyboardType={'numeric'}
-                        onChangeText={text =>
-                            setChangeData({ ...changeData, nik: text })
-                        }
-                        value={changeData.nik}
-                    />
-                    {/* NIK Input Edit Error */}
-                        {changeData.nik !== null && changeData.nik.length > 0 && changeData.nik.length !== 16 &&
-                            <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
-                        }
-                    {/* First Name Input Edit Error */}    
-                        {!changeData.firstName &&
-                            <Text style={textStyle.start}>*</Text>
-                        }
-                    {/* First Name Input Edit */}   
-                    <View style={{ flexDirection: 'row', width: '100%' }}>
-                        <TextInput
-                            style={{ ...container.input, width: '100%' }}
-                            autoCapitalize={'sentences'}
-                            autoFocus={false}
-                            placeholder={'Nama Depan'}
-                            onChangeText={text =>
-                                setChangeData({ ...changeData, firstName: text })
+                       
+                        {/* NIK Input Edit */}
+                        <View style={styles.inputTopContainer}>
+                            <View style={styles.input}>
+                                <TextInput
+                                    style={styles.inputText}
+                                    autoCapitalize={'none'}
+                                    autoFocus={false}
+                                    placeholder={'NIK'}
+                                    keyboardType={'numeric'}
+                                    placeholderTextColor="#8b8b8b" 
+                                    onChangeText={text =>
+                                        setChangeData({ ...changeData, nik: text })
+                                    }
+                                    value={changeData.nik}
+                                />
+                            </View>
+                            {/* NIK Input Edit Error */}
+                            {changeData.nik !== null && changeData.nik.length > 0 && changeData.nik.length !== 16 &&
+                                <Text style={{ color: 'red' }}>NIK must contain at 16 characters</Text>
                             }
-                            value={changeData.firstName}
-                        />
-                    </View>
-                     {/* Last Name Input Edit */}
-                    <TextInput
-                            style={{ ...container.input, width: '100%' }}
-                            autoCapitalize={'sentences'}
-                            autoFocus={false}
-                            placeholder={'Last Name'}
-                            onChangeText={text =>
-                                setChangeData({ ...changeData, lastName: text })
+                        </View>
+                        
+                        {/* First Name Input Edit Error */}    
+                            {!changeData.firstName &&
+                                <Text style={textStyle.start}>*</Text>
                             }
-                            value={changeData.lastName}
-                     />
-                    {/* Gender Input Edit */}
-                    <View style={{marginTop:20}}>
-                        <RadioForm
-                            initial={0,1}
-                            radio_props={radio_props}
-                            onPress={(itemValue) => {setChangeData({ ...changeData, gender:itemValue})}}
-                            formHorizontal={true}
-                            labelHorizontal={true}
-                            animation={true}
-                            labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
-                            style={{alignItems:'center',marginTop:10,paddingHorizontal:20,color: '#DDDDDD'}}
-                            buttonOuterSize={20}
-                        />
-                    </View>
-                     {/* DOB Input Edit */}
-                    <View style={container.dobMiddleContainer}>
-                    <View style={container.dob}>
-                    <Text style={{marginLeft:5,marginTop:30,color:'#DDDDDD'}}> {chosenDate}</Text>
-                        <DatePicker
-                            style={{ width: '100%' }}
-                            date={chosenDate.dob} //initial date from state
-                            mode="date" //The enum of date, datetime and time
-                            maxDate={new Date()}
-                            format='DD/MM/YYYY'
-                            confirmBtnText="Confirm"
-                            cancelBtnText="Cancel"
-                            customStyles={{
-                                dateIcon: {
-                                    display: 'none',
-                                    position: 'absolute',
-                                    right: 1,
-                                    bottom:30,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    shadowColor: 'black',
-                                },
-                                dateInput: {
-                                    marginLeft: 0,
-                                    borderWidth: 0,
-                                    borderColor: '#D5EDE1',
-                                },
-                                dateText: {
-                                    display: 'none',
-                                }
-                            }}
-                            onDateChange={date => {
-                                setChangeData({ ...changeData, dob: date });
-                            }}
-                        />
+                        {/* First Name Input Edit */}   
+                        <View style={styles.inputMiddleContainer}>
+                            <View style={styles.input}>
+                                <TextInput
+                                    style={styles.inputText}
+                                    autoCapitalize={'sentences'}
+                                    autoFocus={false}
+                                    placeholder={'Nama Depan'}
+                                    placeholderTextColor="#8b8b8b" 
+                                    onChangeText={text =>
+                                        setChangeData({ ...changeData, firstName: text })
+                                    }
+                                    value={changeData.firstName}
+                                />
+                            </View>
                         </View>
+                    
+                        {/* Last Name Input Edit */}
+                        <View style={styles.inputMiddleContainer}>
+                            <View style={styles.input}>
+                                <TextInput
+                                    style={styles.inputText}
+                                    autoCapitalize={'sentences'}
+                                    autoFocus={false}
+                                    placeholder={'Nama Belakang'}
+                                    placeholderTextColor="#8b8b8b" 
+                                    onChangeText={text =>
+                                        setChangeData({ ...changeData, lastName: text })
+                                    }
+                                    value={changeData.lastName}
+                            />
+                            </View>
                         </View>
-                         {/* DOB Input Edit Error */}
+                    
+                        {/* Gender Input Edit */}
+                        <View style={styles.inputMiddleContainer}>
+                            <View style={{...styles.input, justifyContent: 'center', backgroundColor: 'transparent', borderWidth: 0,}}>
+                                <RadioForm
+                                    radio_props={radio_props}
+                                    initial={0}
+                                    onPress={(value) => {setChangeData({ ...changeData, gender: value })}}
+                                    formHorizontal={true}
+                                    labelHorizontal={true}
+                                    animation={false}
+                                    labelStyle={{ paddingRight:10, fontSize: 14, color: '#DDDDDD'}}
+                                    style={styles.inputText}
+                                    buttonOuterSize={20}
+                                />
+                            </View>
+                        </View>
+                        
+                        {/* DOB Input Edit */}
+                        <View style={styles.inputMiddleContainer}>
+                            <View style={{...styles.input, justifyContent: 'space-between', alignItems: 'center', flexDirection: 'row'}}>
+                                <Text style={styles.inputText}>{chosenDate}</Text>
+                                <DatePicker
+                                    date={chosenDate} //initial date from state
+                                    mode="date" //The enum of date, datetime and time                            
+                                    format='DD/MMMM/YYYY'
+                                    maxDate={new Date()}
+                                    confirmBtnText="Confirm"
+                                    cancelBtnText="Cancel"
+                                    customStyles={{
+                                        dateIcon: {
+                                            display: 'none',
+                                            position: 'absolute',
+                                            right: 0,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            shadowColor: 'black',
+                                        },
+                                        dateInput: {
+                                            marginLeft: 0,
+                                            borderWidth: 0,
+                                            borderColor: '#D5EDE1',
+                                        },
+                                        dateText: {
+                                            display: 'none',
+                                        }
+                                    }}
+                                    onDateChange={date => {
+                                        setChangeData({ ...changeData, dob: date });
+                                        setChosenDate(fullMonthFormat(date))
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        
+                        {/* DOB Input Edit Error */}
                             {!changeData.dob &&
                                 <Text style={{ color: 'red' }}>DoB Don't Empty</Text>
                             }
-                         {/* Phone Number Input Edit */}                    
-                            <TextInput
-                            style={{ ...container.input, width: '100%' }}
-                            autoCapitalize={'none'}
-                            autoFocus={false}
-                            placeholderTextColor={'white'}
-                            keyboardType={'numeric'}
-                            onChangeText={text =>
-                                setChangeData({ ...changeData, phoneNumber: text })
-                            }
-                            value={changeData.phoneNumber}
-                            />    
-                            
-                        <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between' }}>
-                        {/* Blood Input Edit */}
-                            <View style={{ ...container.pickerContainer, width: '50%' }}
-                            
-                            >
-                               
-                                <TouchableOpacity
-                                    onPress={()=>setBloodTypeModal(true)}
-                                    style={container.buttonModal}
-                                 
-                               >
-                                    <Text style={container.inputText} >  {selectedBloodTypeLabel} </Text>
-                                    <Image
-                                        style={{width:12,height:10.2}} 
-                                        source={require('../../../assets/png/ArrowDown.png')}
-                                    />
-                               </TouchableOpacity>
-                               <SelectModal
-                                    
-                                    modal={bloodTypeModal}
-                                    setModal={setBloodTypeModal}
-                                    selection={bloodType}
-                                    title='Silahkan pilih golongan darah anda'
-                                    subtitle='Pilihan yang tersedia'
-                                    setSelectedValue={setSelectedValue}
-                                    setSelectedLabel={setselectedBloodTypeLabel}
-                                    changeValue='bloodType'
-                               />
-                              
-                            </View>
-                            {/* Rhesus Edit Input */} 
-                            <View style={{ ...container.pickerContainer, width: '50%' }}>
-                   
-                                <TouchableOpacity
-                                    onPress={() => setRhesusModal(true)}
-                                    style={container.buttonModal}
-                                >
-                                    <Text style={container.inputText}> {selectedRhesusLabel} </Text>
-                                    <Image
-                                        style={{width:12,height:10.2}} 
-                                        source={require('../../../assets/png/ArrowDown.png')}
-                                    />
-                                </TouchableOpacity>
-                                <SelectModal
-                                    modal={rhesusTypeModal}
-                                    setModal={setRhesusModal}
-                                    selection={resus}
-                                    title='Silahkan pilih golongan resus anda'
-                                    subtitle='Pilihan yang tersedia'
-                                    setSelectedValue={setSelectedValue}
-                                    setSelectedLabel={setSelectedRhesusLabel}
-                                    changeValue='resus'
+                        {/* Phone Number Input Edit */}                    
+                        <View style={styles.inputMiddleContainer}>
+                            <View style={styles.input}>
+                                <TextInput
+                                    style={styles.inputText}
+                                    autoCapitalize={'none'}
+                                    autoFocus={false}
+                                    placeholder={'Nomor Hp'}
+                                    placeholderTextColor="#8b8b8b"
+                                    keyboardType={'numeric'}
+                                    onChangeText={text =>
+                                        setChangeData({ ...changeData, phoneNumber: text })
+                                    }
+                                    value={changeData.phoneNumber}
                                 />
-                         </View>   
-                        </View>    
-                        <View style={{ ...container.pickerContainer, width: '100%' }}>
-                                <TouchableOpacity
-                                onPress={()=>setInsuranceStatusModal(true)}
-                                style={container.buttonModal}
+                            </View>
+                        </View>
+                                
+                        {/* Bloodtype form */}
+                        <View style={{...styles.inputMiddleContainer, flexDirection: 'row'}}>
+                            <TouchableOpacity 
+                                    onPress={() => setBloodTypeModal(true)}
+                                    style={styles.button}
                                 >
-                                    <Text style={container.inputText}> {selectedInsuranceLabel} </Text>
+                                    <Text style={styles.inputText}>{selectedBloodTypeLabel}</Text>
                                     <Image
-                                        style={{width:12,height:10.2}} 
                                         source={require('../../../assets/png/ArrowDown.png')}
                                     />
+                                
+                            </TouchableOpacity>
+                            <SelectModal
+                                modal={bloodTypeModal}
+                                setModal={setBloodTypeModal}
+                                selection={bloodType}
+                                title='Silahkan pilih golongan darah anda'
+                                subtitle='Pilihan yang tersedia'
+                                setSelectedValue={setSelectedValue}
+                                setSelectedLabel={setselectedBloodTypeLabel}
+                                changeKey='bloodType'
+                            />
+                                {/* Rhesus form */}
+                            <TouchableOpacity 
+                                    onPress={() => setRhesusModal(true)}
+                                    style={styles.button}
+                                >
+                                    <Text style={styles.inputText}>{selectedRhesusLabel}</Text>
+                                    <Image
+                                        source={require('../../../assets/png/ArrowDown.png')}
+                                    />
+                            </TouchableOpacity>
+                            <SelectModal
+                                modal={rhesusTypeModal}
+                                setModal={setRhesusModal}
+                                selection={resus}
+                                title='Silahkan pilih rhesus darah anda'
+                                subtitle='Pilihan yang tersedia'
+                                setSelectedValue={setSelectedValue}
+                                setSelectedLabel={setSelectedRhesusLabel}
+                                changeKey='resus'
+                            />
+                        </View>  
+
+                        {/* Insurance type form */}
+                        <View style={styles.inputMiddleContainer}>
+                                <TouchableOpacity 
+                                        onPress={() => setInsuranceStatusModal(true)}
+                                        style={styles.button}
+                                    >
+                                        <Text style={styles.inputText}>{selectedInsuranceLabel}</Text>
+                                        <Image
+                                            source={require('../../../assets/png/ArrowDown.png')}
+                                        />
                                 </TouchableOpacity>
+                                
                                 <SelectModal
                                     modal={insuranceStatusModal}
                                     setModal={setInsuranceStatusModal}
                                     selection={insuranceStatus}
-                                    title='Silahkan pilih golongan resus anda'
+                                    title='Silahkan pilih tipe asuransi anda'
                                     subtitle='Pilihan yang tersedia'
                                     setSelectedValue={setSelectedValue}
                                     setSelectedLabel={setselectedInsuranceLabel}
-                                    changeValue='insuranceStatus'
-                                >
-                                </SelectModal>
+                                    changeKey='insuranceStatus'
+                                />
                         </View>
-                        <View style={{ ...container.pickerContainer, width: '100%' }}>
-                           <TouchableOpacity
-                                onPress={()=>setStatusFamilyModal(true)}
-                                style={container.buttonModal}
-                           >
-                           <Text style={container.inputText}> {selectedStatusFamilyLabel} </Text>
+
+                        {/* Status Family Input */}    
+                        <View style={styles.inputMiddleContainer}>
+                            <TouchableOpacity 
+                                onPress={() => setStatusFamilyModal(true)}
+                                style={styles.button}
+                            >
+                                <Text style={styles.inputText}>{selectedStatusFamilyLabel} </Text>
                                 <Image
-                                    style={{width:12,height:10.2}} 
                                     source={require('../../../assets/png/ArrowDown.png')}
                                 />
-                           </TouchableOpacity>
-                           <SelectModal
+                            </TouchableOpacity>
+                            <SelectModal
                                 modal={statusfamilyModal}
                                 setModal={setStatusFamilyModal}
                                 selection={statusFamily}
-                                title='Silahkan pilih Hubungan Keluarga anda'
+                                title='Silahkan pilih golongan keluarga anda'
                                 subtitle='Pilihan yang tersedia'
                                 setSelectedValue={setSelectedValue}
                                 setSelectedLabel={setSelectedStatusFamilyLabel}
-                                changeValue='statusFamily'
-                           >
-                        
-                           </SelectModal>             
-                        </View>
-                    <TextInput
-                        style={{   
-                            height: 80,
-                            borderWidth: 1,
-                            paddingHorizontal: 20,
-                            borderRadius: 3,
-                            color: '#DDDDDD',
-                            backgroundColor: '#2F2F2F',
-                            marginTop: 20, 
-                            color: '#DDDDDD',
-                            width: '100%',
-                            fontSize: 14,
-                            paddingBottom:50 
-                        }}
-                            autoCapitalize={'sentences'}
-                            autoFocus={false}
-                            placeholder={'Alamat....'}
-                            placeholderTextColor="#DDDDDD"
-                            // onChangeText={
-                            //     text => setDataFamily({ ...dataFamily, address: text })
-                            // }
-                            // value={dataFamily.address}
-                        />
-                    </ScrollView>
-                    <View style={{ alignItems: 'flex-end', marginTop: 20, marginBottom: 5 }}>    
-        
-                        <TouchableOpacity onPress={() => { validation() }} 
-                            style={container.button}>
-                            {load ? 
-                                <ActivityIndicator size={'small'} color='#FFF' /> :
-                                <Text style={{ fontSize: 14, color: '#FFF' }}>Simpan Data</Text>
-                            }
-                        </TouchableOpacity>
-                        {modalS &&
-                            <LottieLoader
-                                source={require('../../../screens/animation/success-green.json')}
-                                autoPlay
-                                loop={false}
-                                onAnimationFinish={() => props.navigation.navigate('FamilyList')}
+                                changeKey='relationship'
+                            >
+                            </SelectModal>
+                        </View> 
+
+                        {/* Province form */}
+                        <View style={styles.inputMiddleContainer}>
+                            <TouchableOpacity 
+                                onPress={() => setProvinceModal(true)}
+                                style={styles.button}
+                            >
+                                <Text style={styles.inputText}>{selectedProvinceLabel}</Text>
+                                <Image
+                                    source={require('../../../assets/png/ArrowDown.png')}
+                                />
+                            </TouchableOpacity>
+                            <LocationModalPicker
+                                modal={provinceModal}
+                                setModal={setProvinceModal}
+                                selection={provinceSelection}
+                                title='Silahkan pilih lokasi provinsi anda'
+                                subtitle='Pilihan yang tersedia'
+                                setSelectedValue={setSelectedValue}
+                                setSelectedLabel={setSelectedProvinceLabel}
+                                changeKey='location'
+                                changeInnerKey='province'
                             />
-                        }   
-                    </View>    
+                        </View>
+
+                        {/* City form */}
+                        <View style={styles.inputMiddleContainer}>
+                            <TouchableOpacity 
+                                onPress={() => setDistrictModal(true)}
+                                style={styles.button}
+                            >
+                                <Text style={styles.inputText}>{selectedDistrictLabel}</Text>
+                                <Image
+                                    source={require('../../../assets/png/ArrowDown.png')}
+                                />
+                            </TouchableOpacity>
+                            <LocationModalPicker
+                                modal={districtModal}
+                                setModal={setDistrictModal}
+                                selection={district}
+                                title='Silahkan pilih lokasi kota anda'
+                                subtitle='Pilihan yang tersedia'
+                                setSelectedValue={setSelectedValue}
+                                setSelectedLabel={setSelectedDistrictLabel}
+                                changeKey='location'
+                                changeInnerKey='city'
+                            />
+                        </View>
+
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity
+                                onPress={() => validation()}
+                                style={styles.submitButton}
+                            >
+                                {load ? (
+                                <ActivityIndicator size={"small"} color="#FFF" />
+                                ) : (
+                                <Text style={{ fontSize: 18, color: "#FFF" }}>Simpan Data</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                
+                        {/* <View style={{ alignItems: 'flex-end', marginTop: 20, marginBottom: 5 }}>    
+            
+                            <TouchableOpacity onPress={() => { validation() }} 
+                                style={container.button}>
+                                {load ? 
+                                    <ActivityIndicator size={'small'} color='#FFF' /> :
+                                    <Text style={{ fontSize: 14, color: '#FFF' }}>Simpan Data</Text>
+                                }
+                            </TouchableOpacity>
+                            {modalS &&
+                                <LottieLoader
+                                    source={require('../../../screens/animation/success-green.json')}
+                                    autoPlay
+                                    loop={false}
+                                    onAnimationFinish={() => props.navigation.navigate('FamilyList')}
+                                />
+                            }   
+                        </View>    */}
+                    </ScrollView>
+
                 </View>
         </View> 
     )
 }
+
+const styles = StyleSheet.create({
+	container: {
+        backgroundColor: '#1f1f1f',
+        minHeight: hp('100%'),
+        width: wp('100%'),
+        flex: 1
+    },
+
+	header: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 20
+	},
+
+	headerText: {
+		color: '#DDDDDD'
+	},
+
+	inputTopContainer: {
+        paddingTop: 20,
+        paddingHorizontal: 10
+    },
+
+	inputMiddleContainer: {
+        paddingTop: 10,
+        paddingHorizontal: 10
+    },
+
+	inputBottomContainer: {
+        paddingTop: 10,
+        paddingBottom: 20,
+        paddingHorizontal: 10
+    },
+
+	input: {
+        height: 50,
+        borderWidth: 1,
+        paddingHorizontal: 20,
+        borderRadius: 3,
+        backgroundColor: '#2F2F2F',
+        justifyContent: 'center'
+    },
+
+	inputText: {
+        color: '#DDDDDD'
+    },
+
+	buttonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom:20
+    },
+
+	button: {
+        flex: 0.5,
+        height: 50,
+        borderWidth: 1,
+        paddingHorizontal: 20,
+        borderRadius: 3,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+        backgroundColor: '#2F2F2F'
+	},
+
+	submitButton: {
+        height: 50,
+        width: '85%',
+        backgroundColor: '#005ea2',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+    }
+})
 
 const container = StyleSheet.create({
     base: {

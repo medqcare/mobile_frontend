@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {
   View,
-  ScrollView,
   Text,
   StyleSheet,
   FlatList,
   ImageBackground,
   StatusBar,
-  RefreshControl,
   TouchableOpacity,
   Image,
+  Dimensions,
   TextInput,
 } from 'react-native';
 import {connect} from 'react-redux';
@@ -25,7 +24,6 @@ import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Search from '../../../assets/svg/Search';
 import SearchBar from '../../../components/headers/SearchBar'
 
 import Lonceng from '../../../assets/svg/home-blue/lonceng';
@@ -34,7 +32,9 @@ import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
 // import PushNotification from 'react-native-push-notification';
 
-// PushNotification.cancelAllLocalNotifications()
+const dimHeight = Dimensions.get('window').height
+
+
 function HomePage(props) {
   const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
@@ -152,7 +152,7 @@ function HomePage(props) {
           <View style={style.topMenu}>
             <ImageBackground
               imageStyle={{
-                height: '100%',
+                height: dimHeight * 0.25,
                 width: '100%',
                 resizeMode: 'stretch',
               }}
@@ -166,8 +166,8 @@ function HomePage(props) {
                   }}>
                   <Image
                     style={{
-                      height: 20,
-                      width: 105,
+                      height: dimHeight * 0.035,
+                      width: dimHeight * 0.18,
                       resizeMode: 'stretch',
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
@@ -184,12 +184,8 @@ function HomePage(props) {
                         }}>
                         <View style={{marginLeft: 10}}>
                           <Image
-                            style={{
-                              height: 25,
-                              width: 25,
-                              resizeMode: 'stretch',
-                            }}
-                            source={require('../../../assets/png/Profil.png')}
+                            style={style.profilePicture}
+                            source={{ uri: props.userData?.imageUrl ? props.userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
                           />
                         </View>
                       </TouchableOpacity>
@@ -212,7 +208,7 @@ function HomePage(props) {
                   ]}>
                   Aktifitas
                 </Text>
-                <View style={{height: 180}}>
+                <View style={{height: 170}}>
                 <RecentActivity navigation={props.navigation} />
                 </View>
               </View>
@@ -243,10 +239,9 @@ const style = StyleSheet.create({
     zIndex: 0,
   },
   container: {
-    // backgroundColor: '#121212',
     height: '70%',
     flexDirection: 'column',
-    marginTop: '18%',
+    marginTop: dimHeight * 0.115,
     marginHorizontal: '5%',
   },
   headerImage: {
@@ -279,6 +274,16 @@ const style = StyleSheet.create({
     borderRadius: 50,
     right: 25,
     top: 25,
+  },
+  // profilePicture: { 
+  //   borderRadius: 25 / 2,
+  //   width: 25,
+  //   height: 25,
+  // },
+  profilePicture: { 
+    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+    width: Dimensions.get('window').width * 0.05787037,
+    height: Dimensions.get('window').width * 0.05787037,
   },
   greeting: {
     position: 'absolute',

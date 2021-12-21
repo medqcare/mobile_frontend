@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 
 
-export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeV} ){
+export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeInnerKey, changeV} ){
 
     return(
         <Modal
@@ -46,7 +46,7 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
                                             <TouchableOpacity
                                                 onPress={() => {
                                                     setSelectedLabel(item.label || item)
-                                                    setSelectedValue(item.value || item, changeKey)
+                                                    setSelectedValue(item.value || item, changeKey, changeInnerKey)
                                                     setModal(false)
                                                 }}
                                             >

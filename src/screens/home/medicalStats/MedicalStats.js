@@ -1,496 +1,391 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  View,
-  Text,
-  ImageBackground,
-  TouchableOpacity,
-  ScrollView,
-  FlatList,
-  Picker,
-  RefreshControl,
-  BackHandler,
   StyleSheet,
-} from 'react-native';
-import {LinearGradient} from 'expo-linear-gradient';
-import axios from 'axios';
-import {baseURL} from '../../../config';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import {connect} from 'react-redux';
-import Header from '../../../components/headers/GradientHeader'
-import ArrowBack from '../../../assets/svg/ArrowBack'
+  Text,
+  View,
+  Dimensions,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
+import { connect } from "react-redux";
+import { baseURL } from "../../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { getFormattedDate } from "../../../helpers/dateFormat";
+import Qrcode from "../../../assets/svg/Qrcode";
+import QRCode from "react-native-qrcode-svg";
 
-import Icon from 'react-native-vector-icons/Ionicons';
-import IconFA from 'react-native-vector-icons/FontAwesome';
-import ListMedStats from '../../../components/home/medicalStats/listMedicalStats';
-import LottieLoader from 'lottie-react-native';
+import IcInformation from "../../../assets/svg/ic_information";
+import IcClose from "../../../assets/svg/ic_closenoborder";
+import Iconclose from "../../../assets/svg/ic_close";
 
-const MedicalStats = props => {
-  const [Load, setLoad] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [medicalStats, setMedStats] = useState(null);
+import Header from "../../../components/headers/GradientHeader";
+import SelectPatient from "../../../components/modals/selectPatient";
+
+const dimHeight = Dimensions.get("window").height;
+
+function MedicalResume(props) {
+  console.log(props.userData, "ini dari resume medis");
+  const [dataMedRes, setDataMedres] = useState(null);
+  const [resumeMedis, setResumeMedis] = useState(null);
+  const [activePage, setActivePage] = useState(null);
+  const [lengthData, setLengthData] = useState(0);
+  const [modalQR, setModalQR] = useState(false);
+  const [modalKonfirmasi, setModalKonfirmasi] = useState(false);
+  const [displayName, setDisplayName] = useState(
+    props.userData.lastName
+      ? props.userData.firstName + " " + props.userData.lastName
+      : props.userData.firstName
+  );
   const [family, setFamily] = useState([]);
+  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [modalPatient, setModalPatient] = useState(true);
   const [patient, setPatient] = useState({
-    patientID: props.userData ? props.userData._id : '',
-    patientName: props.userData ? props.userData.firstName : '',
-    dob: props.userData ? props.userData.dob : '',
+    patient: {
+      patientID: null,
+      patientName: null,
+      gender: null,
+      nik: null,
+      photo: null,
+      dob: null,
+      insuranceStatus: null,
+    },
   });
 
-  const [isShow, setShow] = React.useState(false);
-  const [isOpen, setOpen] = React.useState(false);
-  const [isBuka, setBuka] = React.useState(false);
+  useEffect(() => {
+    if (dataMedRes) {
+      setResumeMedis(dataMedRes[activePage]);
+    }
+  }, [activePage]);
 
-  const [vitalSign, setVitalSign] = useState(false);
-  const [exam, setExam] = useState(false);
-  const [soap, setSoap] = useState(false);
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    _fetchDataMedrec(patient.patientID);
-    setRefreshing(false);
-  }, [refreshing]);
-
-  const _fetchDataMedrec = async patientID => {
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    console.log('masuk sini ', patientID);
+  const _getData = async () => {
+    let token = await AsyncStorage.getItem("token");
     try {
-      let {data, status} = await axios({
+      let { data } = await axios({
         url: `${baseURL}/api/v1/members/getMedicalResume`,
-        method: 'POST',
-        headers: {Authorization: JSON.parse(token).token},
-        data: {patientID: patientID},
+        method: "POST",
+        headers: { Authorization: JSON.parse(token).token },
+        data: {
+          patientID: patient.patient.patientID,
+        },
       });
-      console.log(data.data, 'Ini data yang ');
-      if (data.data) {
-        setMedStats(data.data.reverse());
-        setLoad(false);
-      } else {
-        setMedStats(null);
-        setLoad(false);
-      }
+      console.log(data.data);
+      setDataMedres(data.data);
+      setLengthData(data.data.length);
     } catch (error) {
-      console.log(error);
-      setLoad(false);
+      console.log(error, "ini error di resume medis");
     }
   };
 
-  function getFamily() {
-    let dataUser = {
-      _id: props.userData._id,
-      firstName: props.userData.lastName
-        ? props.userData.firstName + ' ' + props.userData.lastName
-        : props.userData.firstName,
-    };
-    const temp = [dataUser];
-    props.userData.family.forEach(el => {
-      temp.push({
-        _id: el._id,
-        firstName: el.lastName
-          ? el.firstName + ' ' + el.lastName
-          : el.firstName,
-      });
-    });
-    setFamily(temp);
-  }
-
   useEffect(() => {
-    console.log('jalan');
-    getFamily();
-    _fetchDataMedrec(patient.patientID);
-  }, []);
-
-  useEffect(() => {
-    _fetchDataMedrec(patient.patientID);
+    _getData();
   }, [patient]);
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    if (props.navigation.state.params) {
-      let back = props.navigation.state.params.goback
-        ? props.navigation.state.params.goback
-        : 'Home';
-      props.navigation.navigate('Home');
-      props.navigation.navigate(back);
-    }
-    return true;
-  });
-  console.log(props.navigation.state, 'ini nav');
+  useEffect(() => {
+    let _family = {
+      ...props.userData,
+    };
+    delete _family.family;
+    const temp = [_family];
+    props.userData.family.forEach((el) => {
+      temp.push(el);
+    });
+    setFamily(family.concat(temp));
+  }, []);
+
+  function setSelectedValue(data) {
+    setDataMedres([]);
+    setPatient({
+      patient: {
+        patientID: data._id,
+        patientName: data.lastName
+          ? data.firstName + " " + data.lastName
+          : data.firstName,
+        nik: data.nik,
+        dob: data.dob,
+        gender: data.gender,
+        photo: data.photo,
+        insuranceStatus: data.insuranceStatus,
+      },
+    });
+    setDisplayName(
+      data.lastName ? data.firstName + " " + data.lastName : data.firstName
+    );
+  }
+
+  console.log(patient, ">>>>>>>>");
 
   return (
-    <View style={{backgroundColor: '#1F1F1F', flex: 1}}>
-      <Header title={'Resume Medis'} navigate={props.navigation.navigate}/>
+    <View style={{ backgroundColor: "#1F1F1F", flex: 1 }}>
+      <Header title={"Resume Medis"} navigate={props.navigation.navigate} />
 
-      <View style={styles.nameContainer}>
-        <Text style={styles.nameText}>Gunawan Irawan</Text>
-        <TouchableOpacity>
-          <Text style={{...styles.nameText2, color: '#F37335'}}>Ubah</Text>
+      <View
+        style={{
+          position: "absolute",
+          marginTop: dimHeight * 0.02,
+          alignSelf: "flex-end",
+          paddingRight: 15,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            setModalKonfirmasi(true);
+          }}
+        >
+          <Qrcode />
         </TouchableOpacity>
       </View>
-
-      <ScrollView>
-        <View style={styles.menuContainer}>
-          <View style={styles.card}>
-            <Text style={styles.textinnerCardDate}>
-              Taken Date : 05/11/2021
-            </Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.textinnerCardDescription}>Vital Sign</Text>
-              {vitalSign ? (
-                <TouchableOpacity onPress={() => setVitalSign(false)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-up"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => setVitalSign(true)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-down"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              )}
+      <View style={Styles.container}>
+        <View style={Styles.cardName}>
+          <Text style={Styles.textName}>{displayName}</Text>
+          <TouchableOpacity onPress={() => setModalPatient(true)}>
+            <Text style={Styles.button}>UBAH</Text>
+          </TouchableOpacity>
+        </View>
+        {dataMedRes?.map((item, idx) => {
+          return (
+            <View style={Styles.card} key={idx}>
+              <Text style={{ color: "#B5B5B5" }}>
+                Taken Date {getFormattedDate(item.createdAt)}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  props.navigation.navigate("DetailResumeMedis", {
+                    data: dataMedRes,
+                    idx,
+                  });
+                }}
+              >
+                <Text style={Styles.button}>LIHAT</Text>
+              </TouchableOpacity>
             </View>
-            {vitalSign ? (
-              <View style={{}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Syastole</Text>
-                  <Text style={styles.textdetail}>1</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Diastole</Text>
-                  <Text style={styles.textdetail}>10</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Temperature</Text>
-                  <Text style={styles.textdetail}>36</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Heart rate</Text>
-                  <Text style={styles.textdetail}>40</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Weight</Text>
-                  <Text style={styles.textdetail}>50</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Height</Text>
-                  <Text style={styles.textdetail}>150</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>BMI</Text>
-                  <Text style={styles.textdetail}>22</Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                  }}>
-                  <Text style={styles.textdetail}>Nutrition State</Text>
-                  <Text style={styles.textdetail}>Normal</Text>
-                </View>
-              </View>
-            ) : null}
+          );
+        })}
+        {!dataMedRes && (
+          <View style={{ alignItems: "center", marginTop: 25 }}>
+            <Text style={{ color: "#fff" }}>
+              Tidak ada riwayat Resume Medis
+            </Text>
           </View>
-
-          <View style={styles.card}>
-            <Text style={styles.textinnerCardDate}>
-              Taken Date : 05/11/2021
-            </Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{color: '#DDDDDD'}}>Exam</Text>
-              {exam ? (
-                <TouchableOpacity onPress={() => setExam(false)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-up"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => setExam(true)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-down"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-            {
-                exam ? (
-                    <View style={{marginBottom: 20}}>
-              <View style={{}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Anamnesa</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>
-                    Batuk, Pilek, Pusing
-                  </Text>
-                </View>
-              </View>
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Physical Exam</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>
-                    Benjolan kecil di kepala
-                  </Text>
-                </View>
-              </View>
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Allergy</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>Debu</Text>
-                </View>
-              </View>
-
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Dx</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>Vertigo</Text>
-                </View>
-              </View>
-
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>ICD</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>H81.4</Text>
-                </View>
-              </View>
-            </View>
-                ) : null
-            }
-            
+        )}
+      </View>
+      <Modal visible={modalKonfirmasi} animationType="fade" transparent={true}>
+        <View
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            flex: 1,
+            justifyContent: "center",
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              marginBottom: 15,
+              justifyContent: "flex-end",
+              flexDirection: "row",
+            }}
+          >
+            <TouchableOpacity onPress={() => setModalKonfirmasi(false)}>
+              <IcClose />
+            </TouchableOpacity>
           </View>
-
-          <View style={styles.card}>
-            <Text style={styles.textinnerCardDate}>
-              Taken Date : 05/11/2021
-            </Text>
+          <View
+            style={{
+              maxHeight: "60%",
+              minHeight: "35%",
+              padding: 10,
+              borderRadius: 5,
+              backgroundColor: "#2F2F2F",
+            }}
+          >
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{color: '#DDDDDD'}}>Soap</Text>
-              {soap ? (
-                <TouchableOpacity onPress={() => setSoap(false)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-up"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={() => setSoap(true)}>
-                  <MaterialIcon
-                    name="keyboard-arrow-down"
-                    size={26}
-                    color="#f1f1f1"
-                    style={{marginHorizontal: -7}}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-            {
-                soap ? (
-                    <View style={{marginBottom: 20}}>
-              <View style={{}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Subjective</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>
-                    Pandangan kunang-kunang, kepala serasa membesar
+              style={{
+                flex: 1,
+                alignItems: "center",
+                margin: 5,
+                justifyContent: "space-evenly",
+              }}
+            >
+              <View>
+                <IcInformation />
+              </View>
+              <Text
+                style={{
+                  color: "#B5B5B5",
+                  textAlign: "center",
+                  marginTop: 20,
+                  fontStyle: "italic",
+                  fontSize: 15,
+                }}
+              >
+                Data ini bersifat pribadi untuk anda dan dokter yang anda
+                izinkan untuk melihatnya, anda yakin ingin membagikan data ini?
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-evenly",
+                  width: "100%",
+                }}
+              >
+                <TouchableOpacity onPress={() => setModalKonfirmasi(false)}>
+                  <Text
+                    style={{ fontSize: 16, color: "#B5B5B5", marginTop: 20 }}
+                  >
+                    BATAL
                   </Text>
-                </View>
-              </View>
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Objective</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>
-                    Tensi normal, benjolan kecil di kepala sebelah kiri
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalKonfirmasi(false);
+                    setModalQR(true);
+                  }}
+                >
+                  <Text
+                    style={{ fontSize: 16, color: "#FBB632", marginTop: 20 }}
+                  >
+                    BAGIKAN
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Assesment</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>Disarankan untuk test kolesterol</Text>
-                </View>
-              </View>
-
-              <View style={{marginTop: 15}}>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    marginTop: 12,
-                    height: 30,
-                  }}>
-                  <Text style={{color: '#B5B5B5'}}>Planning</Text>
-                  <Text style={{color: '#DDDDDD', marginTop: 10}}>R/ Candesartan</Text>
-                </View>
-              </View>
-
             </View>
-                ) : null
-            }
-            
           </View>
         </View>
-      </ScrollView>
+      </Modal>
+      <Modal visible={modalQR} animationType="fade" transparent={true}>
+        <View
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            flex: 1,
+            justifyContent: "center",
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: "10%",
+              backgroundColor: "#3B2F03",
+              padding: 5,
+              borderRadius: 5,
+            }}
+          >
+            <View style={{ padding: dimHeight * 0.01 }}>
+              <IcInformation size="20" />
+            </View>
+            <Text
+              style={{
+                color: "#8C8C8C",
+                fontStyle: "italic",
+                marginLeft: 5,
+                width: "90%",
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}>Disclaimer : </Text>
+              Data ini bersifat pribadi untuk Anda dan dokter yang Anda izinkan
+              untuk melihatnya
+            </Text>
+          </View>
+          <View
+            style={{
+              minHeight: "50%",
+              padding: 20,
+              borderRadius: 5,
+              backgroundColor: "#2F2F2F",
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                margin: 5,
+                justifyContent: "space-evenly",
+                marginVertical: 20,
+              }}
+            >
+              <View
+                style={{
+                  padding: 3,
+                  borderRadius: 10,
+                  borderColor: "#fff",
+                  borderWidth: 5,
+                  backgroundColor: "#2F2F2F",
+                }}
+              >
+                <QRCode size={180} value={"test"} />
+              </View>
+              <Text
+                style={{ color: "#B5B5B5", textAlign: "center", marginTop: 20 }}
+              >
+                Perlihatkan QR Code ini kepada dokter yang ingin melihat data
+                Resume Medis Anda
+              </Text>
+            </View>
+          </View>
+          <View style={{ alignItems: "center" }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#2F2F2F",
+                padding: 7,
+                borderRadius: 20,
+                marginTop: 10,
+              }}
+              onPress={() => setModalQR(false)}
+            >
+              <Iconclose name="close" color="#FFFFFF" size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <SelectPatient
+        modal={modalPatient}
+        setModal={setModalPatient}
+        accountOwner={accountOwner}
+        family={family}
+        title="Pilih Patient"
+        setSelectedValue={setSelectedValue}
+      />
     </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  nameContainer: {
-    width: '90%',
-    height: 45,
-    marginTop: '6%',
-    backgroundColor: '#2F2F2F',
-    marginHorizontal: 20,
+const Styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  cardName: {
+    borderColor: "#545454",
+    borderWidth: 1,
     borderRadius: 5,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: 5,
-  },
-  nameText: {
-    fontSize: 14,
-    color: 'white',
-    marginHorizontal: 12,
-    marginVertical:-18
-  },
-  nameText2: {
-    fontSize: 14,
-    color: 'white',
-    marginHorizontal: 12,
-    marginVertical:-10
-  },
-  menuContainer: {
-    // height: '50%',
+    paddingHorizontal: 15,
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   card: {
-    marginTop: '3%',
-    backgroundColor: '#2F2F2F',
+    backgroundColor: "#2F2F2F",
     borderRadius: 5,
-    padding: 15,
-    marginHorizontal: 20,
+    paddingHorizontal: 15,
+    height: 50,
+    marginTop: "5%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  wrapper: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '75%',
+  button: {
+    color: "#F37335",
   },
-  textinnerCardDate: {
-    color: '#A87F0B',
-    marginBottom: '4%',
-    fontSize: 14,
-  },
-
-  textinnerCardDescription: {
-    color: 'white',
-    fontSize: 14,
-  },
-
-  textdetail: {
-    color: '#B5B5B5',
-    fontSize: 14,
+  textName: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-export default connect(mapStateToProps)(MedicalStats);
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MedicalResume);

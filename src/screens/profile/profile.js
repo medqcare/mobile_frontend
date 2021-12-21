@@ -35,6 +35,7 @@ const mapStateToProps = state => {
 }
 
 const profile = (props) => {
+    const { email } = props.userData.userID
     BackHandler.addEventListener("hardwareBackPress", () => {
         props.navigation.navigate('Home')
         return true
@@ -51,7 +52,7 @@ const profile = (props) => {
                 navigateTo={'Home'}
                 title='Profil Saya'
             />
-            <ProfileInfo />
+            <ProfileInfo navigation={props.navigation} destination='ProfileStack'/>
             <View style={{flex: 1, backgroundColor: '#1F1F1F', width: '100%'}}>
                 <View style={styles.menu}>
                     <TouchableOpacity
@@ -91,7 +92,7 @@ const profile = (props) => {
                     <TouchableOpacity
                         
                         style={styles.upperMenu}
-                        onPress={() => props.navigation.navigate('ResetPassword')}
+                        onPress={() => props.navigation.navigate('ChangePasswordForm', { email, destination: 'ProfileStack' })}
                     >
                         <Text style={styles.menuText}>Ubah Kata Sandi </Text>
                         <Image

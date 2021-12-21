@@ -1,38 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
     View,
     Text,
-    TouchableOpacity,
     StyleSheet,
     ScrollView,
     BackHandler,
-    Image
 } from 'react-native'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen';
 import { connect } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-
-import Icon from 'react-native-vector-icons/Ionicons'
-import Feather from 'react-native-vector-icons/Feather'
-import Icon5 from 'react-native-vector-icons/FontAwesome5'
-import ArrowBack from '../../assets/svg/ArrowBack'
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info'
-
-import { changeLogin, Logout } from '../../stores/action'
-import { SafeAreaView } from 'react-navigation';
-
 import secureEmail from '../../helpers/secureEmail';
 import GreyHeader from '../../components/headers/GreyHeader';
+import capitalFirst from '../../helpers/capitalFirst';
 
 const mapStateToProps = state => {
     return state
 }
 function ProfileDetail({ navigation, userData }){
-    console.log(userData, '=======================================')
     const nik = userData.nik
     const email = secureEmail(userData.userID.email)
     const bloodType = userData.bloodType + ' ' + userData.resus
@@ -44,9 +32,8 @@ function ProfileDetail({ navigation, userData }){
         }
     }
     const gender = genderIndonesian(userData.gender)
-    console.log(userData.location.city, userData.location.province);
     const payment = userData.payment || 'Umum'
-    const address = `${userData.location.city}, ${userData.location.province}` 
+    const address = `${capitalFirst(userData.location.city)}, ${capitalFirst(userData.location.province)}` 
 
     BackHandler.addEventListener("hardwareBackPress", () => {
         navigation.pop()
@@ -62,22 +49,7 @@ function ProfileDetail({ navigation, userData }){
                 title='Profil Saya'
                 edit={true}
             />
-            {/* <View style={styles.header}>
-                    <View style={styles.headerLeft}>
-                        <TouchableOpacity
-                            onPress={() => navigation.pop()}>
-                            <View style={{ flexDirection: 'row', }} >
-                                <ArrowBack />
-                                <Text style={styles.headerText}>Profil Saya</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('EditProfile')}>
-                        <Feather name="edit" color="#DDDDDD" size={20} style={{paddingRight: 20}}/>
-                    </TouchableOpacity>
-                </View> */}
-            <ProfileInfo />
+            <ProfileInfo navigation={navigation} destination='ProfileDetail'/>
             <View style={{paddingVertical: 15}}>
                 <View style={styles.profileDetail}>
                     <View style={styles.upperDetail}>
@@ -164,7 +136,6 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         fontSize: 14,
         width: '80%',
-        textTransform: 'capitalize'
     }
 })
 

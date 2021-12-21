@@ -7,6 +7,11 @@ import {
     StyleSheet,
 } from 'react-native'
 import { Ionicons, Feather } from '@expo/vector-icons'
+import { 
+    widthPercentageToDP as wp, 
+    heightPercentageToDP as hp 
+} from 'react-native-responsive-screen'
+
 
 
 
@@ -15,12 +20,18 @@ export default function GreyHeader({
     navigateBack = 'Home',
     navigateTo, 
     title = 'Enter Title Here', 
-    edit = false
+    edit = false,
+    hidden = true
 }){
 
     return (
         <View style={styles.container}>
-            <StatusBar hidden/>
+            <StatusBar 
+                barStyle="light-content"
+                translucent={true}
+                backgroundColor={'transparent'}
+                hidden={hidden}
+            />
             <View style={styles.touchableContent}>
                 <TouchableOpacity
                     onPress={() => navigate(navigateBack)}>
@@ -53,7 +64,7 @@ export default function GreyHeader({
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 60,
+        height: hp('8%'),
         width: '100%',
         backgroundColor: '#2F2F2F',
         justifyContent: 'space-between',
@@ -65,7 +76,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     content: {
-         flexDirection: 'row', 
+        flexDirection: 'row', 
+        marginBottom: 20
     },
     backArrow: { 
         paddingHorizontal: 17.64

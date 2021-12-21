@@ -1,16 +1,16 @@
 import { createStackNavigator } from "react-navigation-stack";
 import Riwayat from '../../screens/home/riwayat/Riwayat'
 
-export default StackMedres = createStackNavigator(
+export default StackRiwayat = createStackNavigator(
   {
     Riwayat: {
       screen: Riwayat,
       navigationOptions: {
-        headerShown: false,
+        headerShown: false
       },
-    },
+    }
   },
   {
-    initialRouteName: "Riwayat",
+    initialRouteName: "Riwayat"
   }
 );
