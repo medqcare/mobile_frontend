@@ -65,7 +65,6 @@ function DetailDoctorPage(props) {
   // console.log(_data, 'ini _data')
   // console.log(_idHostpital, 'idHost')
   const [showLoading, setLoading] = useState(true);
-  const [detProfile, setDetProfile] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
   const [showAddress, setShowAddress] = useState(true);
   const [aktif, setaktif] = useState("");
@@ -283,11 +282,11 @@ function DetailDoctorPage(props) {
   const about = () => {
     console.log("??", dataDoctor, "??");
 
-    if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
-      if (dataDoctor.doctorProfile.abstract.length > 120) {
-        setDetProfile(false);
-      }
-    }
+    // if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
+    //   if (dataDoctor.doctorProfile.abstract.length > 120) {
+    //     setDetProfile(false);
+    //   }
+    // }
     // console.log(facility, 'fac address')
     if (facility !== null && facility.facilityAddress !== null) {
       // console.log('masuk fac add not null')
