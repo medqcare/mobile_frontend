@@ -5,7 +5,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
-  TouchableWithoutFeedback,
+  Switch,
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -149,7 +149,6 @@ function ReminderActiveList({props, prescriptions}) {
                                     size={dimWidth * 0.035} 
                                     color="rgba(128, 128, 128, 1)" 
                                 />
-                                <Text style={styles.ettiqueteText}>Hari ini {section.header.ettiquete.length}x sehari</Text>
                             </View>
                         }
                 </View>
@@ -218,34 +217,23 @@ function ReminderActiveList({props, prescriptions}) {
                                     </View>
                                 </View>
                             </View>
-                        )
-                    })}
-                        <TouchableWithoutFeedback 
-                            onPress={() => setSections(activeSections, true, _)}    
-                        >
-                            <View style={styles.closeButton}>
-                                <Text style={styles.closeText}>Tutup</Text>
-                                <MaterialIcons name="keyboard-arrow-up" size={30} color="rgba(243, 115, 53, 1)"/>
+                            <View style={styles.drugSeparatorContainer}/>
+                            <View style={styles.drugBottomContainer}>
+                                <Text style={styles.darkerText}>Setel pengingat</Text>
+                                <Switch
+                                    trackColor={{ false: '#767577', true: 'rgba(10, 88, 237, 1)' }}
+                                    thumbColor={'#f4f3f4'}
+                                    ios_backgroundColor="#3e3e3e"
+                                    onValueChange={toggleSwitch}
+                                    value={isEnabled}
+                                    style={styles.reminderSwitch}
+                                />
                             </View>
-                        </TouchableWithoutFeedback>
-            </Animatable.View>
-        );
-    };
-  
-    return (
-        CONTENT ? 
-            <Accordion
-                activeSections={activeSections}
-                sections={CONTENT}
-                touchableComponent={TouchableWithoutFeedback}
-                expandMultiple={true}
-                renderHeader={renderHeader}
-                renderContent={renderContent}
-                duration={400}
-                onChange={setSections}
-                containerStyle={{alignItems: "center"}}
-            /> 
-        : (
+                        </TouchableOpacity>
+                    </View>
+                )
+            })
+        ) : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
             </View>
@@ -260,16 +248,12 @@ const textStyles = {
 
 	lighterText: {
 		color: "rgba(221, 221, 221, 1)"
-	},
-
-    redText: {
-        color: 'rgba(243, 115, 53, 1)'
-    }
+	}
 }
 
 const styles = StyleSheet.create({
 	eachDrugContainer: {
-		paddingTop: dimHeight * 0.015,
+		paddingTop: dimHeight * 0.015
 	},
 
 	touchable: {
@@ -296,8 +280,7 @@ const styles = StyleSheet.create({
 	drugMiddleContainer: {
 		width: '90%',
 		paddingTop: dimHeight * 0.01962,
-		paddingBottom: dimHeight * 0.02942,
-        flexDirection: "row"
+		paddingBottom: dimHeight * 0.02942
 	},
 
 	drugNameText: {
@@ -313,9 +296,7 @@ const styles = StyleSheet.create({
 
     ettiqueteContainter: {
         flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingLeft: dimWidth * 0.02315
+		paddingTop: dimHeight * 0.01471,
     },
 
 	ettiqueteText: {
@@ -352,67 +333,16 @@ const styles = StyleSheet.create({
                 scaleY: dimHeight * 0.0015 
             }
         ],
-        height: dimHeight * 0.029,
-    },
-
-    reminderContainer: {
-        backgroundColor: '#2F2F2F',
-        width: dimWidth * 0.9,
-    },
-
-    reminderTimeContainer: {
-        width: '90%',
-        justifyContent: "center",
-        alignSelf: "center",
-        height: 64,
-		borderBottomWidth: 1,
-		borderBottomColor: 'rgba(71, 71, 71, 1)',
-	},
-
-    reminderTopContainer: {
-		alignSelf: "flex-start",
-		backgroundColor: 'rgba(47, 47, 47, 1)',
-		paddingVertical: 4,
-		paddingHorizontal: 6
-	},
-
-    reminderLowerContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-        alignItems: "center"
-        // backgroundColor: 'blue'
-	},
-
-	reminderTimeText: {
-		color: 'rgba(181, 181, 181, 1)',
-		fontSize: 20,
-		fontWeight: '500',
-		paddingLeft: 5
-	},
-	
-    closeButton: {
-        flexDirection: "row",
-		width: '90%',
-        alignSelf: "center",
-        alignItems: "center",
-        paddingBottom: 15,
-        paddingTop: 10
+        height: dimHeight * 0.002451,
     },
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015,
-        justifyContent: "center",
-        alignItems: "center"
+        paddingTop: dimHeight * 0.015
     },
 
     lighterText: {
 		...textStyles.lighterText,
 	},
-
-    closeText: {
-        paddingRight: 10,
-        ...textStyles.redText
-    }
 });
 
 

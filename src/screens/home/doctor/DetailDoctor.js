@@ -1,4 +1,4 @@
-import React, {Component, useState, useEffect} from 'react';
+import React, { Component, useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -14,62 +14,60 @@ import {
   ImageBackground,
   FlatList,
   Linking,
-} from 'react-native';
-import {connect} from 'react-redux';
+} from "react-native";
+import { connect } from "react-redux";
 
-import IconAnt from 'react-native-vector-icons/AntDesign';
-import Icon from 'react-native-vector-icons/Ionicons';
-import Coins from '../../../assets/svg/coins';
-import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconAnt from "react-native-vector-icons/AntDesign";
+import Icon from "react-native-vector-icons/Ionicons";
+import Coins from "../../../assets/svg/coins";
+import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import formatRP from '../../../helpers/rupiah';
+import formatRP from "../../../helpers/rupiah";
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Schedule from '../../../components/home/doctor/schedule';
-import axios from 'axios';
-import {baseURL} from '../../../config';
-import {addDoctorFavorite} from '../../../stores/action';
-import Loading from '../../../components/Loader';
-import ArrowDown from '../../../assets/svg/ArrowDown'
-import ArrowUp from '../../../assets/svg/ArrowUp'
-import ButtonMap from '../../../assets/svg/buttonMap'
-import RatingStar from '../../../assets/svg/RatingStar'
-import Money from '../../../assets/svg/Money'
-import BuatJanji from '../../../assets/svg/BuatJanji'
-import ArrowBack from '../../../assets/svg/ArrowBack'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Schedule from "../../../components/home/doctor/schedule";
+import axios from "axios";
+import { baseURL } from "../../../config";
+import { addDoctorFavorite } from "../../../stores/action";
+import Loading from "../../../components/Loader";
+import ArrowDown from "../../../assets/svg/ArrowDown";
+import ArrowUp from "../../../assets/svg/ArrowUp";
+import ButtonMap from "../../../assets/svg/buttonMap";
+import RatingStar from "../../../assets/svg/RatingStar";
+import Money from "../../../assets/svg/Money";
+import BuatJanji from "../../../assets/svg/BuatJanji";
+import ArrowBack from "../../../assets/svg/ArrowBack";
 
-
-const dimHeight = Dimensions.get('screen').height;
-const dimWidth = Dimensions.get('screen').width;
+const dimHeight = Dimensions.get("screen").height;
+const dimWidth = Dimensions.get("screen").width;
 
 function DetailDoctorPage(props) {
   // console.log(props,'props')
   // console.log(props.navigation.actions, 'navigation')
   const months = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember',
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
   ];
 
-  const _data = props.navigation.getParam('data');
-  const _idHostpital = props.navigation.getParam('idHos');
-  const _back = props.navigation.getParam('back');
+  const _data = props.navigation.getParam("data");
+  const _idHostpital = props.navigation.getParam("idHos");
+  const _back = props.navigation.getParam("back");
   // console.log(_data, 'ini _data')
   // console.log(_idHostpital, 'idHost')
   const [showLoading, setLoading] = useState(true);
-  const [detProfile, setDetProfile] = useState(true);
   const [showAbout, setShowAbout] = useState(false);
   const [showAddress, setShowAddress] = useState(true);
-  const [aktif, setaktif] = useState('');
+  const [aktif, setaktif] = useState("");
   const [dataDoctor, setDataDoctor] = useState(null);
   const [jadwalPerhari, setjadwalPerhari] = useState([]);
 
@@ -80,20 +78,20 @@ function DetailDoctorPage(props) {
   const [month, setMonth] = useState(bookingDate.getMonth());
 
   const [facility, setFacility] = useState(null);
-  const day = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+  const day = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
   const [favorit, setFavorit] = useState(null);
   const [thisFavorite, setThisFavorite] = useState(false);
   const [showDetail, setShowDetail] = useState(null);
 
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
-  const [bookingTime, setBookingTime] = useState('');
+  const [bookingTime, setBookingTime] = useState("");
 
-  Date.isLeapYear = function(year) {
+  Date.isLeapYear = function (year) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
 
-  Date.getDaysInMonth = function(year, month) {
+  Date.getDaysInMonth = function (year, month) {
     return [
       31,
       Date.isLeapYear(year) ? 29 : 28,
@@ -110,15 +108,15 @@ function DetailDoctorPage(props) {
     ][month];
   };
 
-  Date.prototype.isLeapYear = function() {
+  Date.prototype.isLeapYear = function () {
     return Date.isLeapYear(this.getFullYear());
   };
 
-  Date.prototype.getDaysInMonth = function() {
+  Date.prototype.getDaysInMonth = function () {
     return Date.getDaysInMonth(this.getFullYear(), this.getMonth());
   };
 
-  Date.prototype.addMonths = function() {
+  Date.prototype.addMonths = function () {
     var n = this.getDate();
     this.setDate(1);
     this.setMonth(this.getMonth() + 1);
@@ -126,7 +124,7 @@ function DetailDoctorPage(props) {
     return this;
   };
 
-  Date.prototype.minusMonths = function() {
+  Date.prototype.minusMonths = function () {
     var n = this.getDate();
     this.setDate(1);
     this.setMonth(this.getMonth() - 1);
@@ -140,18 +138,18 @@ function DetailDoctorPage(props) {
     // console.log("===============masuk useeffect===================");
     // console.log(_data, '------------');
     axios({
-      method: 'POST',
+      method: "POST",
       url: `${baseURL}/api/v1/members/detailDoctor/${_data.doctorID}`,
       // url: `${baseURL}/api/v1/members/detailDoctor/618ab3931dbe3c74a14d6a18`
     })
-      .then(({data}) => {
-        console.log(data, '===============setelah axios===================');
+      .then(({ data }) => {
+        console.log(data, "===============setelah axios===================");
         // console.log(data);
         setDataDoctor(data);
         setLoading(false);
       })
-      .catch(err => {
-        console.log(err, 'error get Dockter');
+      .catch((err) => {
+        console.log(err, "error get Dockter");
       });
   }, [_data]);
 
@@ -179,7 +177,7 @@ function DetailDoctorPage(props) {
     if (props.userData && dataDoctor) {
       // console.log(props.userData.doctorFavorites.length, '+++++++++')
       if (props.userData.doctorFavorites.length > 0) {
-        props.userData.doctorFavorites.find(function(value, index) {
+        props.userData.doctorFavorites.find(function (value, index) {
           // console.log(index, '=', value)
           if (value._id == dataDoctor._id) {
             setThisFavorite(true);
@@ -187,7 +185,7 @@ function DetailDoctorPage(props) {
         });
       } else {
         setThisFavorite(false);
-        console.log('kosong');
+        console.log("kosong");
       }
     }
   };
@@ -199,30 +197,30 @@ function DetailDoctorPage(props) {
         doctorFavorites: props.userData.doctorFavorites.concat(dataDoctor),
       };
       props.addDoctorFavorite(dataNew);
-      console.log('Lol', props.userData.doctorFavorites.length);
+      console.log("Lol", props.userData.doctorFavorites.length);
       await AsyncStorage.setItem(
-        'doctorFavorite',
-        JSON.stringify(dataNew.doctorFavorites),
+        "doctorFavorite",
+        JSON.stringify(dataNew.doctorFavorites)
       );
-      console.log(await AsyncStorage.getItem('doctorFavorite'));
+      console.log(await AsyncStorage.getItem("doctorFavorite"));
       // findFavorite()
     } else {
       if (dataDoctor) {
         function arrayRemove(arr, value) {
-          return arr.filter(function(ele) {
+          return arr.filter(function (ele) {
             return ele._id != value;
           });
         }
         var result = arrayRemove(
           props.userData.doctorFavorites,
-          dataDoctor._id,
+          dataDoctor._id
         );
         // console.log(result, 'ini sisa nya')
-        let dataSend = {...props.userData, doctorFavorites: result};
+        let dataSend = { ...props.userData, doctorFavorites: result };
         props.addDoctorFavorite(dataSend);
         await AsyncStorage.setItem(
-          'doctorFavorite',
-          JSON.stringify(dataSend.doctorFavorites),
+          "doctorFavorite",
+          JSON.stringify(dataSend.doctorFavorites)
         );
         setThisFavorite(false);
       }
@@ -232,15 +230,15 @@ function DetailDoctorPage(props) {
   const buatJanji = async () => {
     // console.log('ini untuk buat janji, anti diredirect')
     // console.log(value,'ini valuenya..')
-    if (bookingTime === '') {
-      ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+    if (bookingTime === "") {
+      ToastAndroid.show("Silahkan pilih tanggal janji", ToastAndroid.LONG);
     } else {
       props.userData
         ? // console.log('ini bisa di redirect'),
-          props.navigation.push('BuatJanji', {data: dataDoctor})
+          props.navigation.push("BuatJanji", { data: dataDoctor })
         : // console.log('gabisa di redirect karena belom login, arahin ke bagian sign'),
-          (props.navigation.navigate('DetailDoctor'),
-          props.navigation.navigate('Sign'));
+          (props.navigation.navigate("DetailDoctor"),
+          props.navigation.navigate("Sign"));
     }
   };
 
@@ -282,13 +280,13 @@ function DetailDoctorPage(props) {
   };
 
   const about = () => {
-    console.log('??', dataDoctor, '??');
+    console.log("??", dataDoctor, "??");
 
-    if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
-      if (dataDoctor.doctorProfile.abstract.length > 120) {
-        setDetProfile(false);
-      }
-    }
+    // if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
+    //   if (dataDoctor.doctorProfile.abstract.length > 120) {
+    //     setDetProfile(false);
+    //   }
+    // }
     // console.log(facility, 'fac address')
     if (facility !== null && facility.facilityAddress !== null) {
       // console.log('masuk fac add not null')
@@ -298,9 +296,9 @@ function DetailDoctorPage(props) {
     }
   };
 
-  const checkSchedule = key => {
+  const checkSchedule = (key) => {
     return new Date(
-      `${month + 1}/${calcDate(key)}/${bookingDate.getFullYear()}`,
+      `${month + 1}/${calcDate(key)}/${bookingDate.getFullYear()}`
     )
       .getDay()
       .toString();
@@ -309,7 +307,7 @@ function DetailDoctorPage(props) {
   function parsingData() {
     let day = {};
     if (dataDoctor.facility !== null) {
-      dataDoctor.facility.forEach(el1 => {
+      dataDoctor.facility.forEach((el1) => {
         Object.entries(el1.facilitySchedule).forEach((el2, index2) => {
           if (index2 == 0) {
             day[el1.facilityName] = el2;
@@ -322,9 +320,12 @@ function DetailDoctorPage(props) {
 
   const _openMap = (lat, lang) => {
     console.log(lat, lang);
-    const scheme = Platform.select({ios: 'maps:0,0?q=', android: 'geo:0,0?q='});
+    const scheme = Platform.select({
+      ios: "maps:0,0?q=",
+      android: "geo:0,0?q=",
+    });
     const latLng = `${lat},${lang}`;
-    const label = 'Custom Label';
+    const label = "Custom Label";
     const url = Platform.select({
       ios: `${scheme}${label}@${latLng}`,
       android: `${scheme}${latLng}(${label})`,
@@ -332,7 +333,7 @@ function DetailDoctorPage(props) {
     Linking.openURL(url);
   };
 
-  const calcDate = key => {
+  const calcDate = (key) => {
     return month === new Date().getMonth()
       ? bookingDate.getDate() + key
       : key + 1;
@@ -344,37 +345,48 @@ function DetailDoctorPage(props) {
       {dataDoctor && (
         <View style={containerStyle.container}>
           <ImageBackground
-            source={require('../../../assets/background/RectangleHeader.png')}
-            style={{height: 100}}>
+            source={require("../../../assets/background/RectangleHeader.png")}
+            style={{ height: 100 }}
+          >
             <View
               style={{
                 height: 40,
                 marginTop: 32,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
               <TouchableOpacity
-                onPress={() => props.navigation.navigate(_back)}>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginHorizontal: 20}}>
+                onPress={() => props.navigation.navigate(_back)}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginHorizontal: 20,
+                  }}
+                >
                   <ArrowBack />
                   <Text
                     style={{
                       fontSize: 20,
-                      color: '#ffff',
-                      position: 'relative',
-                      marginLeft: 20
-                    }}>
+                      color: "#ffff",
+                      position: "relative",
+                      marginLeft: 20,
+                    }}
+                  >
                     Profil Dokter
                   </Text>
                 </View>
               </TouchableOpacity>
               {props.userData && (
                 <TouchableOpacity
-                  style={{marginRight: 40}}
+                  style={{ marginRight: 40 }}
                   onPress={() => {
                     changeTapLove();
-                  }}>
+                  }}
+                >
                   {thisFavorite ? (
                     <Icon name="ios-heart" color="#F37335" size={20} />
                   ) : (
@@ -385,7 +397,7 @@ function DetailDoctorPage(props) {
             </View>
           </ImageBackground>
 
-          <View style={{flex: 1}}>
+          <View style={{ flex: 1 }}>
             <View>
               <View style={containerStyle.dataDoctor}>
                 <View style={containerStyle.spesialis}>
@@ -394,7 +406,7 @@ function DetailDoctorPage(props) {
                       style={styles.avatar}
                       source={{
                         uri: !dataDoctor.photo
-                          ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
+                          ? "https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg"
                           : dataDoctor.photo,
                       }}
                     />
@@ -409,27 +421,28 @@ function DetailDoctorPage(props) {
                   </Text>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       marginBottom: 15,
-                    }}>
-                    <View style={{marginRight: 12}}>
+                    }}
+                  >
+                    <View style={{ marginRight: 12 }}>
                       <RatingStar />
                     </View>
-                    <Text style={{color: '#B2B2B2'}}>4.7/5</Text>
+                    <Text style={{ color: "#B2B2B2" }}>4.7/5</Text>
                   </View>
                   <View>
                     <Text style={fontStyles.titleSp}>
                       Jasa Konsultasi Mulai Dari
                     </Text>
                   </View>
-                  <View style={{flexDirection: 'row'}}>
-                    <View style={{marginRight: 12}}>
+                  <View style={{ flexDirection: "row" }}>
+                    <View style={{ marginRight: 12 }}>
                       <Money />
                     </View>
-                    <Text style={{color: '#B2B2B2'}}>
+                    <Text style={{ color: "#B2B2B2" }}>
                       {facility !== null && facility.facilityEstPrice
-                        ? formatRP(facility.facilityEstPrice, 'RP ')
+                        ? formatRP(facility.facilityEstPrice, "RP ")
                         : 0}
                     </Text>
                   </View>
@@ -441,11 +454,13 @@ function DetailDoctorPage(props) {
                   marginHorizontal: 15,
                   height: 0,
                   borderWidth: 1,
-                  borderColor: '#353535',
+                  borderColor: "#353535",
                 }}
               />
-              <Text style={{color: '#DDDDDD', marginLeft: 15, marginBottom: 5}}>
-                Lokasi {'&'} Jadwal Praktik
+              <Text
+                style={{ color: "#DDDDDD", marginLeft: 15, marginBottom: 5 }}
+              >
+                Lokasi {"&"} Jadwal Praktik
               </Text>
             </View>
             <ScrollView>
@@ -458,15 +473,16 @@ function DetailDoctorPage(props) {
                   </View>
                   <View
                     style={{
-                      alignItems: 'center',
+                      alignItems: "center",
                       flex: 1,
                       paddingVertical: 20,
-                    }}>
+                    }}
+                  >
                     <Image
                       source={{
-                        uri: 'https://dikertas.com/repository/notfound2.png',
+                        uri: "https://dikertas.com/repository/notfound2.png",
                       }}
-                      style={{height: 110, width: 110}}
+                      style={{ height: 110, width: 110 }}
                     />
                     <Text>Facility Kosong</Text>
                   </View>
@@ -479,17 +495,18 @@ function DetailDoctorPage(props) {
                       <View
                         key={indexFacility}
                         style={{
-                          backgroundColor: '#2F2F2F',
+                          backgroundColor: "#2F2F2F",
                           marginVertical: 5,
                           paddingLeft: 10,
                           paddingVertical: 10,
-                        }}>
+                        }}
+                      >
                         <View>
                           <View style={containerStyle.detMedfac}>
                             <Image
                               source={{
                                 uri: !item.facilityPhoto
-                                  ? 'https://revcycleintelligence.com/images/site/article_headers/_normal/hospital%2C_green.jpg'
+                                  ? "https://revcycleintelligence.com/images/site/article_headers/_normal/hospital%2C_green.jpg"
                                   : item.facilityPhoto,
                               }}
                               style={styles.imageRS}
@@ -517,19 +534,21 @@ function DetailDoctorPage(props) {
                               onPress={() =>
                                 _openMap(
                                   item.location.coordinates[1],
-                                  item.location.coordinates[0],
+                                  item.location.coordinates[0]
                                 )
-                              }>
+                              }
+                            >
                               <View
                                 style={{
-                                  alignItems: 'center',
+                                  alignItems: "center",
                                   height: 40,
                                   width: 40,
                                   borderRadius: 40,
-                                  borderColor: '#7D7D7D',
+                                  borderColor: "#7D7D7D",
                                   borderWidth: 1,
-                                }}>
-                                <View style={{marginTop: 8}}>
+                                }}
+                              >
+                                <View style={{ marginTop: 8 }}>
                                   <ButtonMap />
                                 </View>
                               </View>
@@ -558,39 +577,37 @@ function DetailDoctorPage(props) {
                                   ...dataDoctor,
                                   healthFacility: {
                                     facilityID:
-                                      dataDoctor.facility[
-                                        indexFacility
-                                      ].facilityID,
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityID,
                                     facilityName:
-                                      dataDoctor.facility[
-                                        indexFacility
-                                      ].facilityName,
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityName,
                                     facilityType:
-                                      dataDoctor.facility[
-                                        indexFacility
-                                      ].facilityType,
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityType,
                                     facilityMainType:
-                                      dataDoctor.facility[
-                                        indexFacility
-                                      ].facilityMainType,
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityMainType,
                                   },
                                 });
-                              }}>
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={{color: '#F37335'}}>
+                              }}
+                            >
+                              <View style={{ flexDirection: "row" }}>
+                                <Text style={{ color: "#F37335" }}>
                                   Selengkapnya
                                 </Text>
-                                <View style={{marginLeft: 8, marginTop: 5}}>
+                                <View style={{ marginLeft: 8, marginTop: 5 }}>
                                   <ArrowDown />
                                 </View>
                               </View>
                             </TouchableOpacity>
                           ) : (
                             <TouchableOpacity
-                              onPress={() => setShowDetail(null)}>
-                              <View style={{flexDirection: 'row'}}>
-                                <Text style={{color: '#F37335'}}>Tutup</Text>
-                                <View style={{marginLeft: 8, marginTop: 5}}>
+                              onPress={() => setShowDetail(null)}
+                            >
+                              <View style={{ flexDirection: "row" }}>
+                                <Text style={{ color: "#F37335" }}>Tutup</Text>
+                                <View style={{ marginLeft: 8, marginTop: 5 }}>
                                   <ArrowUp />
                                 </View>
                               </View>
@@ -602,10 +619,11 @@ function DetailDoctorPage(props) {
                             <View style={dateStyle.chooseMonth}>
                               <View
                                 style={{
-                                  flexDirection: 'row',
-                                  width: '40%',
-                                  justifyContent: 'space-between',
-                                }}>
+                                  flexDirection: "row",
+                                  width: "40%",
+                                  justifyContent: "space-between",
+                                }}
+                              >
                                 <TouchableOpacity
                                   disabled={
                                     bookingDate.getMonth() ===
@@ -613,60 +631,78 @@ function DetailDoctorPage(props) {
                                   }
                                   onPress={() => {
                                     setBookingDate(bookingDate.minusMonths());
-                                    setBookingTime('');
+                                    setBookingTime("");
                                     setMonth(bookingDate.getMonth());
-                                  }}>
-                                  <View style={{height: 20, width: 50, alignItems: 'center'}}>
-                                  <Text
+                                  }}
+                                >
+                                  <View
                                     style={{
-                                      fontSize: 16,
-                                      color: '#DDDDDD',
-                                      marginTop: -2,
-                                    }}>
-                                    {'<'}
-                                  </Text>
+                                      height: 20,
+                                      width: 50,
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 16,
+                                        color: "#DDDDDD",
+                                        marginTop: -2,
+                                      }}
+                                    >
+                                      {"<"}
+                                    </Text>
                                   </View>
                                 </TouchableOpacity>
                                 <Text
                                   style={{
                                     fontSize: 14,
-                                    color: '#DDDDDD',
+                                    color: "#DDDDDD",
                                     marginBottom: 10,
-                                  }}>
+                                  }}
+                                >
                                   {months[month]}
                                 </Text>
                                 <TouchableOpacity
                                   onPress={() => {
                                     setBookingDate(bookingDate.addMonths());
-                                    setBookingTime('');
+                                    setBookingTime("");
                                     setMonth(bookingDate.getMonth());
-                                  }}>
-                                    <View style={{height: 20, width: 50, alignItems: 'center'}}>
-                                  <Text
+                                  }}
+                                >
+                                  <View
                                     style={{
-                                      fontSize: 16,
-                                      color: '#DDDDDD',
-                                      marginTop: -2,
-                                    }}>
-                                    {'>'}
-                                  </Text>
+                                      height: 20,
+                                      width: 50,
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
+                                        fontSize: 16,
+                                        color: "#DDDDDD",
+                                        marginTop: -2,
+                                      }}
+                                    >
+                                      {">"}
+                                    </Text>
                                   </View>
                                 </TouchableOpacity>
                               </View>
 
                               <ScrollView
                                 horizontal
-                                showsHorizontalScrollIndicator={false}>
-                                <View style={{flexDirection: 'row'}}>
+                                showsHorizontalScrollIndicator={false}
+                              >
+                                <View style={{ flexDirection: "row" }}>
                                   {Array.from(
                                     Array(
                                       month === new Date().getMonth()
                                         ? bookingDate.getDaysInMonth() -
                                             bookingDate.getDate() +
                                             1
-                                        : bookingDate.getDaysInMonth(),
-                                    ).keys(),
-                                  ).map(key => {
+                                        : bookingDate.getDaysInMonth()
+                                    ).keys()
+                                  ).map((key) => {
                                     return (
                                       <TouchableOpacity
                                         key={key}
@@ -676,7 +712,7 @@ function DetailDoctorPage(props) {
                                           ]
                                         }
                                         onPress={() => {
-                                          setBookingTime('');
+                                          setBookingTime("");
                                           setChooseDate(calcDate(key));
                                           checkSchedule(key);
                                           // const checkDay = new Date(`${month + 1}/${calcDate(key)}/${new Date().getFullYear()}`).getDay()
@@ -710,7 +746,8 @@ function DetailDoctorPage(props) {
                                                 ].facilityMainType,
                                             },
                                           });
-                                        }}>
+                                        }}
+                                      >
                                         <View
                                           style={{
                                             marginTop: 10,
@@ -720,35 +757,44 @@ function DetailDoctorPage(props) {
                                             borderRadius: 12,
                                             backgroundColor:
                                               chooseDate === calcDate(key)
-                                                ? '#005EA2'
-                                                : '#3F3F3F',
-                                          }}>
+                                                ? "#005EA2"
+                                                : "#3F3F3F",
+                                          }}
+                                        >
                                           <Text
                                             style={{
                                               fontSize: 14,
                                               marginVertical: 10,
-                                              textAlign: 'center',
+                                              textAlign: "center",
                                               color: item.facilitySchedule[
                                                 checkSchedule(key)
                                               ]
-                                                ? '#DDDDDD'
-                                                : '#727272',
-                                            }}>
+                                                ? "#DDDDDD"
+                                                : "#727272",
+                                            }}
+                                          >
                                             {
-                                              day[new Date(`${month + 1}/${calcDate(key)}/${new Date().getFullYear()}`).getDay()]
+                                              day[
+                                                new Date(
+                                                  `${month + 1}/${calcDate(
+                                                    key
+                                                  )}/${bookingDate.getFullYear()}`
+                                                ).getDay()
+                                              ]
                                             }
-                                            </Text>
+                                          </Text>
                                           <Text
                                             style={{
                                               fontSize: 14,
                                               marginBottom: 15,
-                                              textAlign: 'center',
+                                              textAlign: "center",
                                               color: item.facilitySchedule[
                                                 checkSchedule(key)
                                               ]
-                                                ? '#DDDDDD'
-                                                : '#727272',
-                                            }}>
+                                                ? "#DDDDDD"
+                                                : "#727272",
+                                            }}
+                                          >
                                             {calcDate(key)}
                                           </Text>
                                         </View>
@@ -758,54 +804,61 @@ function DetailDoctorPage(props) {
                                 </View>
                               </ScrollView>
                             </View>
-                            <View style={{marginVertical: 15}}>
+                            <View style={{ marginVertical: 15 }}>
                               {newData !== null &&
                               newData[item.facilityName] !== null &&
                               newData[item.facilityName][1] ? (
                                 <ScrollView
                                   horizontal
-                                  showsHorizontalScrollIndicator={false}>
-                                  {newData[item.facilityName][1].map((time, fIndex) => {
-                                    return (
-                                      <TouchableOpacity
-                                        key={fIndex}
-                                        onPress={() => {
-                                          setBookingTime(time);
-                                          setDataDoctor({
-                                            ...dataDoctor,
-                                            bookingTime: time,
-                                            bookingSchedule: `${bookingDate.getFullYear()}-${bookingDate.getMonth() +
-                                              1}-${chooseDate}`,
-                                          });
-                                        }}>
-                                        <View
-                                          style={{
-                                            height: 40,
-                                            width: 120,
-                                            marginRight: 10,
-                                            borderRadius: 5,
-                                            backgroundColor:
-                                              bookingTime === time
-                                                ? '#005EA2'
-                                                : '#3F3F3F',
-                                          }}>
-                                          <Text
+                                  showsHorizontalScrollIndicator={false}
+                                >
+                                  {newData[item.facilityName][1].map(
+                                    (time, fIndex) => {
+                                      return (
+                                        <TouchableOpacity
+                                          key={fIndex}
+                                          onPress={() => {
+                                            setBookingTime(time);
+                                            setDataDoctor({
+                                              ...dataDoctor,
+                                              bookingTime: time,
+                                              bookingSchedule: `${bookingDate.getFullYear()}-${
+                                                bookingDate.getMonth() + 1
+                                              }-${chooseDate}`,
+                                            });
+                                          }}
+                                        >
+                                          <View
                                             style={{
-                                              color: '#DDDDDD',
-                                              textAlign: 'center',
-                                              marginTop: 10,
-                                            }}>
-                                            {time}
-                                          </Text>
-                                        </View>
-                                      </TouchableOpacity>
-                                    );
-                                  })}
+                                              height: 40,
+                                              width: 120,
+                                              marginRight: 10,
+                                              borderRadius: 5,
+                                              backgroundColor:
+                                                bookingTime === time
+                                                  ? "#005EA2"
+                                                  : "#3F3F3F",
+                                            }}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: "#DDDDDD",
+                                                textAlign: "center",
+                                                marginTop: 10,
+                                              }}
+                                            >
+                                              {time}
+                                            </Text>
+                                          </View>
+                                        </TouchableOpacity>
+                                      );
+                                    }
+                                  )}
                                 </ScrollView>
                               ) : null}
                             </View>
-                            <Text style={{color: '#DDDDDD'}}>
-                              Lihat Semua Jadwal {'>'}
+                            <Text style={{ color: "#DDDDDD" }}>
+                              Lihat Semua Jadwal {">"}
                             </Text>
                           </View>
                         ) : null}
@@ -821,21 +874,23 @@ function DetailDoctorPage(props) {
             onPress={async () => {
               // console.log(dataDoctor, 'iniloh');
               buatJanji();
-            }}>
+            }}
+          >
             <View
               style={{
                 height: 50,
-                backgroundColor: '#005EA2',
-                alignItems: 'center',
-                justifyContent: 'center',
+                backgroundColor: "#005EA2",
+                alignItems: "center",
+                justifyContent: "center",
                 borderRadius: 5,
                 margin: 10,
-              }}>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{marginTop: 2}}>
-                <BuatJanji />
+              }}
+            >
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ marginTop: 2 }}>
+                  <BuatJanji />
                 </View>
-                <Text style={{color: '#FFF', fontSize: 16, marginLeft: 10}}>
+                <Text style={{ color: "#FFF", fontSize: 16, marginLeft: 10 }}>
                   Buat Janji
                 </Text>
               </View>
@@ -850,9 +905,9 @@ function DetailDoctorPage(props) {
 const styles = StyleSheet.create({
   borderAvatar: {
     borderRadius: 70,
-    borderColor: '#5FFCA5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#5FFCA5",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     marginLeft: -30,
     width: 70,
@@ -863,13 +918,13 @@ const styles = StyleSheet.create({
     height: 65,
     borderRadius: 65,
     borderWidth: 1,
-    borderColor: '#FFF',
+    borderColor: "#FFF",
   },
   imageIcon: {
-    backgroundColor: '#2DE34C',
-    borderColor: '#55C968',
+    backgroundColor: "#2DE34C",
+    borderColor: "#55C968",
     borderRadius: 3,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 10,
   },
   imageRS: {
@@ -880,9 +935,9 @@ const styles = StyleSheet.create({
 
   name: {
     fontSize: 22,
-    color: 'gray',
-    fontWeight: '600',
-    textTransform: 'capitalize',
+    color: "gray",
+    fontWeight: "600",
+    textTransform: "capitalize",
   },
   body: {
     marginTop: 0,
@@ -890,22 +945,22 @@ const styles = StyleSheet.create({
 
   info: {
     fontSize: 16,
-    color: '#52de97',
+    color: "#52de97",
     marginTop: 10,
   },
   description: {
     fontSize: 16,
     // color: "#696969",
     marginTop: 10,
-    textAlign: 'center',
-    textTransform: 'capitalize',
+    textAlign: "center",
+    textTransform: "capitalize",
   },
   buttonContainer: {
     marginTop: 10,
     height: 45,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 20,
     width: 250,
     borderRadius: 30,
@@ -913,22 +968,22 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     borderRadius: 5,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginTop: 20,
     minHeight: dimHeight * 0.1,
     minWidth: dimWidth * 0.95,
     padding: 10,
-    borderStyle: 'solid',
+    borderStyle: "solid",
     borderWidth: 1,
-    borderColor: '#52de97',
+    borderColor: "#52de97",
   },
 });
 
 const containerStyle = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#1F1F1F',
+    flexDirection: "column",
+    backgroundColor: "#1F1F1F",
   },
   bodyContent: {
     flex: 1,
@@ -937,13 +992,13 @@ const containerStyle = StyleSheet.create({
     borderRadius: 5,
   },
   dataDoctor: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   spesialis: {
     marginTop: -15,
     marginLeft: -10,
     flex: 2,
-    alignItems: 'center',
+    alignItems: "center",
   },
   personalData: {
     flex: 4,
@@ -951,13 +1006,13 @@ const containerStyle = StyleSheet.create({
     marginTop: 10,
   },
   medFacility: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   detMedfac: {
     flex: 1,
     marginRight: 10,
-    flexDirection: 'row',
+    flexDirection: "row",
     marginVertical: 10,
   },
   detRS: {
@@ -966,73 +1021,73 @@ const containerStyle = StyleSheet.create({
   },
   maps: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
 
 const fontStyles = StyleSheet.create({
   textIcon: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 14,
     padding: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   poli: {
     fontSize: 14,
-    color: '#B2B2B2',
-    textAlign: 'center',
+    color: "#B2B2B2",
+    textAlign: "center",
   },
   name: {
     fontSize: 14,
-    color: '#DDDDDD',
+    color: "#DDDDDD",
   },
   titleSp: {
     fontSize: 12,
-    color: '#B2B2B2',
+    color: "#B2B2B2",
     marginBottom: 7,
   },
   price: {
     fontSize: 14,
-    color: '#B2B2B2',
-    fontWeight: 'bold',
+    color: "#B2B2B2",
+    fontWeight: "bold",
     marginTop: 7,
   },
   headerNameStyle: {
     fontSize: 16,
-    color: '#5E5A5A',
-    fontWeight: 'bold',
+    color: "#5E5A5A",
+    fontWeight: "bold",
     marginTop: 10,
   },
   contain: {
     fontSize: 14,
-    color: '#5E5A5A',
+    color: "#5E5A5A",
     marginVertical: 10,
     marginRight: 20,
-    textAlign: 'justify',
+    textAlign: "justify",
   },
   other: {
     fontSize: 14,
-    color: '#33E204',
-    textDecorationLine: 'underline',
+    color: "#33E204",
+    textDecorationLine: "underline",
     marginTop: 10,
     marginRight: 20,
   },
   address: {
     fontSize: 13,
-    color: '#A5A5A5',
+    color: "#A5A5A5",
   },
   aktif: {
-    color: 'red',
+    color: "red",
   },
   nonAktif: {
-    color: 'blue',
+    color: "blue",
   },
 });
 
 const dateStyle = StyleSheet.create({
   chooseMonth: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 7,
   },
   cardDate: {
@@ -1041,18 +1096,15 @@ const dateStyle = StyleSheet.create({
     height: 75,
     width: 55,
     borderRadius: 12,
-    backgroundColor: '#3F3F3F',
+    backgroundColor: "#3F3F3F",
   },
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 const mapDispatchToProps = {
   addDoctorFavorite,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(DetailDoctorPage);
+export default connect(mapStateToProps, mapDispatchToProps)(DetailDoctorPage);

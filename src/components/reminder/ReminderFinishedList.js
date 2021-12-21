@@ -80,8 +80,7 @@ const textStyles = {
 
 const styles = StyleSheet.create({
 	eachDrugContainer: {
-		paddingTop: dimHeight * 0.015,
-        alignSelf: "center"
+		paddingTop: dimHeight * 0.015
 	},
 
 	touchable: {
@@ -133,9 +132,7 @@ const styles = StyleSheet.create({
 	},
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015,
-        justifyContent: "center",
-        alignItems: "center"
+        paddingTop: dimHeight * 0.015
     },
 
 	darkerText : {

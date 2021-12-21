@@ -7,7 +7,7 @@ import {baseURL} from '../../config';
 
 const activeActivity = props => {
   // console.log(Object.keys(props.data.registration))
-  let queuingNumber = props.data.queuingNumber;
+  let {queuingNumber} = props.data.registration;
   const [quesekarang, setquesekarang] = useState(props.currentQueue);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const activeActivity = props => {
           <View style={{marginTop: 2}}>
             <IcPatient />
           </View>
-          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.patient.patientName}</Text>
+          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.registration.patient.patientName}</Text>
         </View>
       </View>
       

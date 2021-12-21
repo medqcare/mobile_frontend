@@ -21,7 +21,6 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function Reminder(props) {
-	const swiper = useRef(null)
 
 	const userData = props.userData
 	
@@ -60,7 +59,7 @@ function Reminder(props) {
 	}
 
 	const widthAdd = (dimWidth * 0.06945)
-    const heightAdd = (dimHeight * 0.03677)
+  const heightAdd = (dimHeight * 0.03677)
 
 	const [index, setIndex] = useState(0)
   	return (
@@ -69,31 +68,29 @@ function Reminder(props) {
 				navigate={props.navigation.navigate}
 				name={firstName()}
 			/>
-			<View style={styles.options}>
-				<View style={styles.statusContainer}>
-					<TouchableOpacity
-						activeOpacity={1}
-						style={index === 0 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						// onPress={() => changeStatus('Active')}
-						onPress={() => {
-							if(index === 1){
-								swiper.current.scrollBy(-1)}
-							}
-						}
+			<View style={styles.content}>
+				<View style={styles.options}>
+					<View style={styles.statusContainer}>
+						<TouchableOpacity
+							activeOpacity={1}
+							style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+							onPress={() => changeStatus('Active')}
+						>
+							<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
+						</TouchableOpacity>
+						<TouchableOpacity
+							activeOpacity={1}
+							onPress={() => changeStatus('Finished')}
+							style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+						>
+							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
+						</TouchableOpacity>
+					</View>
+					<TouchableOpacity 
+						style={styles.optionAdd}
+						onPress={() => console.log('Add button')}
 					>
-						<Text style={index === 0 ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
-					</TouchableOpacity>
-					<TouchableOpacity
-						activeOpacity={1}
-						onPress={() => {
-							if(index === 0){
-								swiper.current.scrollBy(1)}
-							}
-						}
-						// onPress={() => changeStatus('Finished')}
-						style={index === 1 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-					>
-						<Text style={index === 1 ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
+						<ReminderAddButton width={widthAdd} height={heightAdd}/>
 					</TouchableOpacity>
 				</View>
 				<TouchableOpacity 
@@ -125,7 +122,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#1F1F1F",
-		paddingBottom: dimHeight * 0.01226
 	},
 	
 	content: {

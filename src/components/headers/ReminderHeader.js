@@ -74,10 +74,11 @@ export default function ReminderHeader({
         </ImageBackground>
     )
 }
+
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: dimHeight * 0.25,
+        height: dimHeight * 0.21446,
         width: dimWidth,
         justifyContent: 'space-between',
         alignItems: 'flex-end',
