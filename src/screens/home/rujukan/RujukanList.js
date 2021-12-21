@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
+  PermissionsAndroid,
 } from "react-native";
 import Header from "../../../components/headers/GradientHeader";
 import PictureModal from "../../../components/modals/profilePictureModal";
 import DocumentOptionModal from "../../../components/modals/docOptionModal";
+import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import Ic_Sort from "../../../assets/svg/ic_sort";
@@ -29,6 +31,7 @@ function RujukanList(props) {
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
   const [referenceFiles, setRefencesFiles] = useState([]);
+  const [selectedReferenceFile, setSelectedReferenceFile] = useState();
 
   useEffect(() => {
     (async () => {
@@ -48,6 +51,15 @@ function RujukanList(props) {
         return !!element.referral;
       });
       setRefencesFiles(newReferenceFiles);
+
+      // check permissions
+
+      const permissionWriteExternalStorageStatus =
+        await checkPermissionWriteExternalStorage();
+
+      if (!permissionWriteExternalStorageStatus) {
+        await requestPermissionWriteExternalStorage();
+      }
     })();
   }, []);
 
@@ -81,6 +93,8 @@ function RujukanList(props) {
     },
   ];
 
+  const downloadFileHandler = async () => {};
+
   async function setSelectedValue(label) {
     switch (label) {
       case "Kamera":
@@ -100,18 +114,17 @@ function RujukanList(props) {
     }
   }
 
-  async function setSelectedAction(label) {
-    console.log(label);
+  function setSelectedAction(label) {
+    switch (label) {
+      case "Unduh": {
+        (async () => await downloadFileHandler())();
+      }
+
+      default: {
+        break;
+      }
+    }
   }
-  // const data = null
-  const data = [
-    {
-      name: "Rujukan RS Kartika",
-    },
-    {
-      name: "Rujukan RS Umum Bekasi",
-    },
-  ];
 
   return (
     <View style={styles.container}>
@@ -136,7 +149,13 @@ function RujukanList(props) {
                       })
                     }
                   />
-                  <View style={styles.detailCard}>
+                  <TouchableOpacity
+                    style={styles.detailCard}
+                    onPress={() => {
+                      setModalOption(true);
+                      setSelectedReferenceFile(item);
+                    }}
+                  >
                     <View style={styles.iconDoc}>
                       <Ic_Dokumen />
                     </View>
@@ -150,13 +169,10 @@ function RujukanList(props) {
                         {item.referral.title}
                       </Text>
                     </View>
-                    <TouchableOpacity
-                      onPress={() => setModalOption(true)}
-                      style={styles.iconOption}
-                    >
+                    <View style={styles.iconOption}>
                       <Ic_Option />
-                    </TouchableOpacity>
-                  </View>
+                    </View>
+                  </TouchableOpacity>
                 </View>
               );
             }}

@@ -25,7 +25,7 @@ function ShowDocument(props) {
         navigate={props.navigation.navigate}
         navigateBack={backTo}
       />
-      <PDFReader source={source} />
+      <PDFReader source={source} withPinchZoom={true} />
     </View>
   );
 }
