@@ -23,7 +23,7 @@ export function getReminders(patientID, token){
                 payload: data.data
             })
         } catch (error) {
-            console.log(error)
+            console.log(error) 
         }
     }
 }
