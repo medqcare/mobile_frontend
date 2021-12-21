@@ -58,6 +58,22 @@ export default (state = initState, action) => {
         ...state,
         userData: action.payload
       }
+    case 'GET_PRESCRIPTION_DATA':
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          prescriptions: action.payload
+        }
+      }
+    case 'GET_REMINDER_DATA':
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          reminderDetails: action.payload
+        }
+      }
     case 'SET_TODAY_ACTIVITY':
       return {
         ...state,
