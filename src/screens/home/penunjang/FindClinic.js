@@ -12,6 +12,11 @@ import ButtonMap from "../../../assets/svg/buttonMap";
 import ArrowDown from "../../../assets/svg/ArrowDown";
 import ArrowUp from "../../../assets/svg/ArrowUp";
 import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
+import Calendar from "../../../components/Calendar";
+import openMap from "../../../helpers/openMap";
+import { connect } from "react-redux";
+import getDistanceFromLatLonInKm from "../../../helpers/latlongToKM";
+import ButtonPrimary from "../../../components/ButtonPrimary";
 
 const DUMMIES_CLINIC = [
   {
@@ -6673,43 +6678,27 @@ const DUMMIES_CLINIC = [
   },
 ];
 
-function ButtonPrimary({ label, onPress }) {
-  return (
-    <TouchableOpacity
-      style={{
-        backgroundColor: "#005EA2",
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        paddingVertical: 16,
-        borderRadius: 4,
-      }}
-      onPress={onPress}
-    >
-      <Text
-        style={{
-          color: "#DDDDDD",
-          textTransform: "capitalize",
-          fontSize: 14,
-        }}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
-  );
-}
+const TIMES = [
+  "08:00 - 10:00",
+  "10:00 - 12:00",
+  "13:00 - 15:00",
+  "19:00 - 20:00",
+];
 
-export default function FindClinic(props) {
+function FindClinic(props) {
+  console.log(props.myLocation);
   const [clinics, setClinics] = useState(DUMMIES_CLINIC);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClinic, setSelectedClinic] = useState();
   const [date, setDate] = useState(new Date());
+  const [bookingTime, setBookingTime] = useState("");
 
   useEffect(() => {
     const clinicsAvailable = clinics.filter((clinic) => {
       const tests = props.navigation.getParam("tests");
       let totalPrice = 0;
       let isReady = true;
+      const clinicTests = [];
       tests.forEach((test) => {
         const testFromClinic = clinic.data.find(
           (eachTestFromClinic) => eachTestFromClinic.test_id === test.test_id
@@ -6717,11 +6706,17 @@ export default function FindClinic(props) {
 
         if (testFromClinic) {
           totalPrice += testFromClinic.price;
+          clinicTests.push(testFromClinic);
         } else {
           isReady = false;
         }
       });
-      clinic.totalPrice = totalPrice;
+      clinic.ppn = totalPrice * (10 / 100);
+      clinic.totalPrice = totalPrice + clinic.ppn;
+      clinic.tests = clinicTests;
+      const { coordinates } = clinic.Location;
+      const [lngClinic, latClinic] = coordinates;
+      const { lat: latUser, lng: lngUser } = props.myLocation;
       return isReady;
     });
     setClinics(clinicsAvailable);
@@ -6729,18 +6724,43 @@ export default function FindClinic(props) {
   }, []);
 
   const onExpandButtonPressedHandler = (clinic) => {
+    let newSelectedClinic = null;
     const clinicsWithSelected = clinics.map((eachClinic) => {
       if (eachClinic.Lab_name === clinic.Lab_name) {
+        const selectedStatus = eachClinic.selected;
+
+        if (!selectedStatus) {
+          newSelectedClinic = clinic;
+        }
         eachClinic.selected = !eachClinic.selected;
       } else {
         eachClinic.selected = false;
       }
       return eachClinic;
     });
+    setSelectedClinic(newSelectedClinic);
+    setBookingTime("");
     setClinics(clinicsWithSelected);
   };
 
+  const onDateSelected = (date) => {
+    setDate(date);
+  };
+
+  const onPressHandler = () => {
+    props.navigation.navigate("Payment", {
+      penunjang: {
+        clinic: selectedClinic,
+        tests: props.navigation.getParam("tests"),
+        bookingTime: bookingTime,
+        bookingSchedule: date,
+      },
+    });
+  };
+
   const renderClinics = ({ item: clinic }) => {
+    const [lang, lat] = clinic.Location.coordinates;
+    const totalPriceWithFormatRupiah = formatNumberToRupiah(clinic.totalPrice);
     return (
       <View style={styles.clinicContainer}>
         <View
@@ -6782,7 +6802,10 @@ export default function FindClinic(props) {
             </Text>
             <Text style={{ color: "#A5A5A5" }}>1.2 km dari Anda</Text>
           </View>
-          <TouchableOpacity style={{ alignSelf: "flex-start" }}>
+          <TouchableOpacity
+            style={{ alignSelf: "flex-start" }}
+            onPress={() => openMap(lat, lang)}
+          >
             <View
               style={{
                 alignItems: "center",
@@ -6826,12 +6849,65 @@ export default function FindClinic(props) {
             </Text>
             {clinic.selected ? <ArrowUp /> : <ArrowDown />}
           </TouchableOpacity>
-          {clinic.selected ? null : (
+          {!clinic.selected ? (
             <Text style={{ color: "#DDDDDD", fontWeight: "300" }}>
-              Mulai dari {formatNumberToRupiah(clinic.totalPrice)}
+              {`${totalPriceWithFormatRupiah}`}
             </Text>
-          )}
+          ) : null}
         </View>
+        {clinic.selected ? (
+          <View>
+            <Calendar date={date} onDateSelected={onDateSelected} />
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                marginVertical: 16,
+              }}
+            >
+              {TIMES.map((time, index) => {
+                return (
+                  <TouchableOpacity
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 12,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      maxWidth: 95,
+                      backgroundColor:
+                        time === bookingTime ? "#005EA2" : "#454545",
+                      alignSelf: "flex-start",
+                      borderRadius: 4,
+                      marginRight: (index + 1) % 3 === 0 ? 0 : 8,
+                      marginBottom: 8,
+                    }}
+                    key={`${index}-booking-time`}
+                    onPress={() => setBookingTime(time)}
+                  >
+                    <Text style={{ color: "#DDDDDD", fontSize: 12 }}>
+                      {time}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text style={{ color: "#DDDDDD" }}>
+                {totalPriceWithFormatRupiah}
+              </Text>
+              <TouchableOpacity
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
+                <Text style={{ color: "#DDDDDD", marginRight: 8 }}>
+                  Lihat Semua Jadwal
+                </Text>
+                <Text style={{ color: "#DDDDDD" }}>{">"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
       </View>
     );
   };
@@ -6852,7 +6928,9 @@ export default function FindClinic(props) {
             renderItem={renderClinics}
             keyExtractor={(_, index) => `clinic-${index}`}
           />
-          <ButtonPrimary label="Ke Pembayaran" />
+          {selectedClinic && bookingTime && date ? (
+            <ButtonPrimary label="Ke Pembayaran" onPress={onPressHandler} />
+          ) : null}
         </>
       )}
     </View>
@@ -6882,3 +6960,7 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
 });
+
+const mapStateToProps = (state) => state;
+
+export default connect(mapStateToProps)(FindClinic);

@@ -19,23 +19,27 @@ import IcInformation from "../../../assets/svg/ic_information";
 import IcClose from "../../../assets/svg/ic_closenoborder";
 import Iconclose from "../../../assets/svg/ic_close";
 
-import Header from '../../../components/headers/GradientHeader'
+import Header from "../../../components/headers/GradientHeader";
 import SelectPatient from "../../../components/modals/selectPatient";
 
 const dimHeight = Dimensions.get("window").height;
 
 function MedicalResume(props) {
-  console.log(props.userData, 'ini dari resume medis');
+  console.log(props.userData, "ini dari resume medis");
   const [dataMedRes, setDataMedres] = useState(null);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [lengthData, setLengthData] = useState(0);
   const [modalQR, setModalQR] = useState(false);
   const [modalKonfirmasi, setModalKonfirmasi] = useState(false);
-  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+  const [displayName, setDisplayName] = useState(
+    props.userData.lastName
+      ? props.userData.firstName + " " + props.userData.lastName
+      : props.userData.firstName
+  );
   const [family, setFamily] = useState([]);
   const [accountOwner, setAccountOwner] = useState(props.userData);
-  const [modalPatient, setModalPatient] = useState(false)
+  const [modalPatient, setModalPatient] = useState(true);
   const [patient, setPatient] = useState({
     patient: {
       patientID: null,
@@ -61,6 +65,9 @@ function MedicalResume(props) {
         url: `${baseURL}/api/v1/members/getMedicalResume`,
         method: "POST",
         headers: { Authorization: JSON.parse(token).token },
+        data: {
+          patientID: patient.patient.patientID,
+        },
       });
       console.log(data.data);
       setDataMedres(data.data);
@@ -72,7 +79,7 @@ function MedicalResume(props) {
 
   useEffect(() => {
     _getData();
-  }, []);
+  }, [patient]);
 
   useEffect(() => {
     let _family = {
@@ -80,32 +87,37 @@ function MedicalResume(props) {
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach(el => {
+    props.userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));
   }, []);
 
-  function setSelectedValue(data){
+  function setSelectedValue(data) {
+    setDataMedres([]);
     setPatient({
-        patient: {
-          patientID: data._id,
-          patientName: data.lastName
-            ? data.firstName + ' ' + data.lastName
-            : data.firstName,
-          nik: data.nik,
-          dob: data.dob,
-          gender: data.gender,
-          photo: data.photo,
-          insuranceStatus: data.insuranceStatus,
-        },
-      })
-      setDisplayName(data.lastName? data.firstName + " " + data.lastName : data.firstName)
+      patient: {
+        patientID: data._id,
+        patientName: data.lastName
+          ? data.firstName + " " + data.lastName
+          : data.firstName,
+        nik: data.nik,
+        dob: data.dob,
+        gender: data.gender,
+        photo: data.photo,
+        insuranceStatus: data.insuranceStatus,
+      },
+    });
+    setDisplayName(
+      data.lastName ? data.firstName + " " + data.lastName : data.firstName
+    );
   }
 
+  console.log(patient, ">>>>>>>>");
+
   return (
-      <View style={{backgroundColor: '#1F1F1F', flex: 1}}>
-      <Header title={'Resume Medis'} navigate={props.navigation.navigate}/>
+    <View style={{ backgroundColor: "#1F1F1F", flex: 1 }}>
+      <Header title={"Resume Medis"} navigate={props.navigation.navigate} />
 
       <View
         style={{
@@ -249,14 +261,29 @@ function MedicalResume(props) {
             padding: 20,
           }}
         >
-          <View style={{flexDirection: 'row', marginBottom: '10%', backgroundColor: '#3B2F03', padding: 5, borderRadius: 5}}>
-            <View style={{padding: dimHeight * 0.01}}>
-              <IcInformation size='20'/>
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: "10%",
+              backgroundColor: "#3B2F03",
+              padding: 5,
+              borderRadius: 5,
+            }}
+          >
+            <View style={{ padding: dimHeight * 0.01 }}>
+              <IcInformation size="20" />
             </View>
-            <Text style={{ color: "#8C8C8C", fontStyle: "italic", marginLeft: 5, width: '90%' }}>
-              <Text style={{fontWeight: 'bold'}}>Disclaimer : </Text>
-              Data ini bersifat pribadi untuk Anda dan dokter yang
-              Anda izinkan untuk melihatnya
+            <Text
+              style={{
+                color: "#8C8C8C",
+                fontStyle: "italic",
+                marginLeft: 5,
+                width: "90%",
+              }}
+            >
+              <Text style={{ fontWeight: "bold" }}>Disclaimer : </Text>
+              Data ini bersifat pribadi untuk Anda dan dokter yang Anda izinkan
+              untuk melihatnya
             </Text>
           </View>
           <View
@@ -311,13 +338,13 @@ function MedicalResume(props) {
         </View>
       </Modal>
       <SelectPatient
-          modal={modalPatient}
-          setModal={setModalPatient}
-          accountOwner={accountOwner}
-          family={family}
-          title="Pilih Patient"
-          setSelectedValue={setSelectedValue}
-        />
+        modal={modalPatient}
+        setModal={setModalPatient}
+        accountOwner={accountOwner}
+        family={family}
+        title="Pilih Patient"
+        setSelectedValue={setSelectedValue}
+      />
     </View>
   );
 }
