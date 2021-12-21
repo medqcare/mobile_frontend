@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,18 +12,45 @@ import {
 import Header from "../../../components/headers/GradientHeader";
 import PictureModal from "../../../components/modals/profilePictureModal";
 import DocumentOptionModal from "../../../components/modals/docOptionModal";
-
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
 import Ic_Sort from "../../../assets/svg/ic_sort";
 import Ic_Dokumen from "../../../assets/svg/ic_documen";
 import Ic_Option from "../../../assets/svg/ic_option";
+import axios from "axios";
+import { connect } from "react-redux";
+import { baseURL } from "../../../config";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-export default function PenunjangList(props) {
+function RujukanList(props) {
+  const [modalAdd, setModalAdd] = useState(false);
+  const [modalOption, setModalOption] = useState(false);
+  const [referenceFiles, setRefencesFiles] = useState([]);
 
-  const [modalAdd, setModalAdd] = useState(false)
-  const [modalOption, setModalOption] = useState(false)
+  useEffect(() => {
+    (async () => {
+      const token = await AsyncStorage.getItem("token");
+      const { data } = await axios({
+        method: "POST",
+        url: `${baseURL}/api/v1/members/getMedicalResume`,
+        headers: {
+          Authorization: JSON.parse(token).token,
+        },
+        data: {
+          patientID: props.userData._id,
+        },
+      });
+      const { data: medicalResumes } = data;
+      const newReferenceFiles = medicalResumes.filter((element) => {
+        return !!element.referral;
+      });
+      setRefencesFiles(newReferenceFiles);
+    })();
+  }, []);
+
   const addDocumentOptions = [
     {
       label: "Kamera",
@@ -58,13 +85,13 @@ export default function PenunjangList(props) {
     switch (label) {
       case "Kamera":
         await props.navigation.navigate("ProfilePictureCamera", {
-          destination: 'DokumenMedisStack',
+          destination: "DokumenMedisStack",
         });
         break;
 
       case "Galeri":
         await props.navigation.navigate("ProfilePictureGallery", {
-          destination: 'DokumenMedisStack',
+          destination: "DokumenMedisStack",
         });
         break;
 
@@ -85,19 +112,30 @@ export default function PenunjangList(props) {
       name: "Rujukan RS Umum Bekasi",
     },
   ];
+
   return (
     <View style={styles.container}>
       <Header title="Rujukan" navigate={props.navigation.navigate} />
       <View style={styles.content}>
         <SafeAreaView style={styles.document}>
           <FlatList
-            data={data}
+            data={referenceFiles}
             numColumns={2}
             keyExtractor={(item, idx) => String(idx)}
             renderItem={({ item, index }) => {
               return (
                 <View style={styles.cardDokumen}>
-                  <View style={styles.imageDokumen} />
+                  <TouchableOpacity
+                    style={styles.imageDokumen}
+                    onPress={() =>
+                      props.navigation.navigate("ShowDokumen", {
+                        name: item.referral.title,
+                        base64:
+                          "data:application/pdf;base64," + item.referral.base64,
+                        backTo: "ListRujukan",
+                      })
+                    }
+                  />
                   <View style={styles.detailCard}>
                     <View style={styles.iconDoc}>
                       <Ic_Dokumen />
@@ -108,7 +146,9 @@ export default function PenunjangList(props) {
                         justifyContent: "center",
                       }}
                     >
-                      <Text style={styles.dokumentName}>{item.name}</Text>
+                      <Text style={styles.dokumentName}>
+                        {item.referral.title}
+                      </Text>
                     </View>
                     <TouchableOpacity
                       onPress={() => setModalOption(true)}
@@ -122,7 +162,10 @@ export default function PenunjangList(props) {
             }}
           />
         </SafeAreaView>
-        <TouchableOpacity style={styles.buttonAdd}>
+        <TouchableOpacity
+          style={styles.buttonAdd}
+          onPress={() => setModalAdd(true)}
+        >
           <Text style={styles.textButton}>Minta Rujukan</Text>
         </TouchableOpacity>
       </View>
@@ -131,15 +174,13 @@ export default function PenunjangList(props) {
         setModal={setModalAdd}
         selection={addDocumentOptions}
         setSelectedValue={setSelectedValue}
-      >
-      </PictureModal>
+      ></PictureModal>
       <DocumentOptionModal
         modal={modalOption}
         setModal={setModalOption}
         selection={documentAction}
         setSelectedValue={setSelectedAction}
-      >
-      </DocumentOptionModal>
+      ></DocumentOptionModal>
     </View>
   );
 }
@@ -222,3 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
+const mapStateToProps = (state) => state;
+
+export default connect(mapStateToProps)(RujukanList);
