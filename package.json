@@ -39,6 +39,7 @@
     "react-native-modal": "^13.0.0",
     "react-native-otp-form": "^1.0.2",
     "react-native-otp-textinput": "^0.0.8",
+    "react-native-paper": "^4.11.1",
     "react-native-popover-view": "^4.1.0",
     "react-native-push-notification": "^8.1.1",
     "react-native-qrcode-svg": "^6.1.1",
