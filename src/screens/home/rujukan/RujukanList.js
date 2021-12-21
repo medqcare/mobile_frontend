@@ -15,6 +15,7 @@ import PictureModal from "../../../components/modals/profilePictureModal";
 import DocumentOptionModal from "../../../components/modals/docOptionModal";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
+import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import Ic_Sort from "../../../assets/svg/ic_sort";
 import Ic_Dokumen from "../../../assets/svg/ic_documen";
@@ -51,15 +52,6 @@ function RujukanList(props) {
         return !!element.referral;
       });
       setRefencesFiles(newReferenceFiles);
-
-      // check permissions
-
-      const permissionWriteExternalStorageStatus =
-        await checkPermissionWriteExternalStorage();
-
-      if (!permissionWriteExternalStorageStatus) {
-        await requestPermissionWriteExternalStorage();
-      }
     })();
   }, []);
 
@@ -93,7 +85,14 @@ function RujukanList(props) {
     },
   ];
 
-  const downloadFileHandler = async () => {};
+  const downloadFileHandler = async () => {
+    const { title, base64 } = selectedReferenceFile.referral;
+    const fileUri = FileSystem.documentDirectory + title + ".pdf";
+    await FileSystem.writeAsStringAsync(fileUri, base64, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    await Sharing.shareAsync(fileUri);
+  };
 
   async function setSelectedValue(label) {
     switch (label) {
