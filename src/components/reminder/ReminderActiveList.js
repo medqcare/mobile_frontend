@@ -34,38 +34,10 @@ function ReminderActiveList({props, prescriptions }) {
     useEffect(() => {
         if(prescriptions.length > 0){
             Promise.all(prescriptions.map(el => {
-                const {
-                    dose,
-                    drugID,
-                    drugName,
-                    drugQuantity,
-                    ettiquete,
-                    expiredDate,
-                    finishedAt,
-                    information,
-                    isFinished,
-                    patientID,
-                    price,
-                    quantityTotal,
-                    reminder,
-                    uidDrug,
-                    _id
-                } = el
-        
                 const newObject = {
-                    header: {
-                        information,
-                        drugName,
-                        drugQuantity,
-                        type: 'Tablet',
-                        ettiquete,
-                        reminder,
-                        imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-                    },
-                    expanded: {
-                        ettiquete: filter('status', _id),
-                        alarmTime: filter('alarmTime', _id)
-                    }
+                    ...el,
+                    type: 'Tablet',
+                    imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
                 }
                 return newObject
             }))
@@ -82,38 +54,22 @@ function ReminderActiveList({props, prescriptions }) {
     useEffect(() => {
         if(!loadContent){
             const newReminders = content.map(el => {
-                return el.header.reminder
+                return el.reminder
             })
             setReminders(newReminders)
             setLoad(false)
         }
     }, [loadContent])
-
-    function filter(key, _id){
-        if(key === 'alarmTime'){
-            const alarmTime = []
-            for(let i = 0; i < reminderDetails?.length; i++){
-                if(reminderDetails[i].prescriptionID === _id) alarmTime.push(reminderDetails[i].alarmTime)
-            }
-            return alarmTime
-        } else {
-            const status = []
-            for(let i = 0; i < reminderDetails?.length; i++){
-                if(reminderDetails[i].prescriptionID === _id) status.push(reminderDetails[i].status)
-            }
-            return status
-        }
-
-    }
     
     const toggleSwitch = (index) => {
-        const newArray = reminders.map((el, idx) => {
-            if(index === idx){
-                el = !el
+        const newArray = content.map((el, idx) => {
+            const newObject = {
+                ...el,
+                reminder: index === idx ? !el.reminder : el.reminder
             }
-            return el
+            return newObject
         })
-        setReminders(newArray)
+        setContent(newArray)
     }
 
     const [activeSections, setActiveSections] = useState([]);
@@ -140,7 +96,7 @@ function ReminderActiveList({props, prescriptions }) {
                 style={styles.touchable}
             >
                 <View style={styles.drugTopContainer}>
-                    <Text style={styles.drugNameText}>{section.header.drugName} {section.header.drugQuantity} {section.header.type}</Text>
+                    <Text style={styles.drugNameText}>{section.drugName} {section.drugQuantity} {section.type}</Text>
                     {isActive ? 
                         <Animatable.View
                         animation={'wobble'}>
@@ -164,7 +120,7 @@ function ReminderActiveList({props, prescriptions }) {
                 </View>
                 <View style={styles.drugMiddleContainer}>
                     <View style={styles.informationContainer}>
-                        <Text style={styles.lighterText}>{section.header.information}</Text>
+                        <Text style={styles.lighterText}>{section.information}</Text>
                     </View>
                         {isActive ? null :
                             <View style={styles.ettiqueteContainter}>
@@ -173,7 +129,7 @@ function ReminderActiveList({props, prescriptions }) {
                                     size={dimWidth * 0.035} 
                                     color="rgba(128, 128, 128, 1)" 
                                 />
-                                <Text style={styles.ettiqueteText}>Hari ini {section.header.ettiquete.length}x sehari</Text>
+                                <Text style={styles.ettiqueteText}>Hari ini {section.ettiquete.length}x sehari</Text>
                             </View>
                         }
                 </View>
@@ -182,7 +138,7 @@ function ReminderActiveList({props, prescriptions }) {
                     <View style={styles.drugBottomContainer}>
                         <Text style={styles.darkerText}>Setel pengingat</Text>
                         <ToggleSwitch
-                            isOn={reminders[_]}
+                            isOn={section.reminder}
                             onColor="rgba(10, 88, 237, 1)"
                             offColor="#767577"
                             size="medium"
@@ -196,23 +152,24 @@ function ReminderActiveList({props, prescriptions }) {
     };
 
     const renderContent = (section, _, isActive) => {
-        const { ettiquete, alarmTime } = section.expanded
+        const { reminders } = section
         return (
             <Animatable.View
                 key={_}
                 duration={400}
                 style={styles.reminderContainer}
                 transition="backgroundColor">
-                    {ettiquete.map((el, index) => {
+                    {reminders.map((el, index) => {
+                        const status = el.status
                         return (
                             <View key={index}>
                                 <View style={styles.reminderTimeContainer}>
                                     <View style={styles.reminderLowerContainer}>
                                         <View style={{flexDirection: "row"}}>
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                            <Text style={styles.reminderTimeText}>{alarmTime[index]}</Text>
+                                            <Text style={styles.reminderTimeText}>{reminders[index].alarmTime}</Text>
                                         </View>
-                                            {el === null ? 
+                                            {status === null ? 
                                                 <View style={{flexDirection: "row", justifyContent: "space-between", width: 170, }}>
                                                     <TouchableOpacity
                                                         style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
@@ -226,7 +183,7 @@ function ReminderActiveList({props, prescriptions }) {
                                                     </TouchableOpacity>
                                                 </View> :
                                                 <View style={{flexDirection: "row", alignItems: "center"}}>
-                                                    {el ?
+                                                    {status ?
                                                         <>
                                                             <ReminderSkippedLogo/>
                                                             <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
