@@ -15,14 +15,18 @@ import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from "react-native-paper";
 
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function Reminder(props) {
+	const swiper = useRef(null)
 
 	const userData = props.userData
+
+	const [load, setLoad] = useState(true)
 	
 	const [activePrescriptions, setActivePrescriptions] = useState([])
 	const [finishedPrescriptions, setFinishedPrescriptions] = useState([])
@@ -40,7 +44,8 @@ function Reminder(props) {
 	}, [])
 
 	useEffect(async () => {
-		await filter()
+		if(activePrescriptions.length === 0) await filter()
+		setLoad(false)
 	}, [])
 
 	async function filter(){
@@ -59,7 +64,7 @@ function Reminder(props) {
 	}
 
 	const widthAdd = (dimWidth * 0.06945)
-  const heightAdd = (dimHeight * 0.03677)
+    const heightAdd = (dimHeight * 0.03677)
 
 	const [index, setIndex] = useState(0)
   	return (
@@ -68,29 +73,31 @@ function Reminder(props) {
 				navigate={props.navigation.navigate}
 				name={firstName()}
 			/>
-			<View style={styles.content}>
-				<View style={styles.options}>
-					<View style={styles.statusContainer}>
-						<TouchableOpacity
-							activeOpacity={1}
-							style={selectedStatus === 'Active' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-							onPress={() => changeStatus('Active')}
-						>
-							<Text style={selectedStatus === 'Active' ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							activeOpacity={1}
-							onPress={() => changeStatus('Finished')}
-							style={selectedStatus === 'Finished' ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						>
-							<Text style={selectedStatus === 'Finished' ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
-						</TouchableOpacity>
-					</View>
-					<TouchableOpacity 
-						style={styles.optionAdd}
-						onPress={() => console.log('Add button')}
+			<View style={styles.options}>
+				<View style={styles.statusContainer}>
+					<TouchableOpacity
+						activeOpacity={1}
+						style={index === 0 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+						// onPress={() => changeStatus('Active')}
+						onPress={() => {
+							if(index === 1){
+								swiper.current.scrollBy(-1)}
+							}
+						}
 					>
-						<ReminderAddButton width={widthAdd} height={heightAdd}/>
+						<Text style={index === 0 ? styles.selectedStatusText: styles.unSelectedStatusText}>AKTIF</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						activeOpacity={1}
+						onPress={() => {
+							if(index === 0){
+								swiper.current.scrollBy(1)}
+							}
+						}
+						// onPress={() => changeStatus('Finished')}
+						style={index === 1 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
+					>
+						<Text style={index === 1 ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
 					</TouchableOpacity>
 				</View>
 				<TouchableOpacity 
@@ -100,20 +107,23 @@ function Reminder(props) {
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
-			<Swiper
-				showsButtons={false} 
-				ref={swiper}
-				showsPagination={false} 
-				loop={false}
-				onIndexChanged={(index) => setIndex(index)}
-			>
-				<ScrollView bounces={true}>
-					<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
-				</ScrollView>
-				<ScrollView>
-					<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
-				</ScrollView>
-			</Swiper>
+			{load ? 
+				<ActivityIndicator size={"small"} color={"blue"}/> :
+				<Swiper
+					showsButtons={false} 
+					ref={swiper}
+					showsPagination={false} 
+					loop={false}
+					onIndexChanged={(index) => setIndex(index)}
+				>
+					<ScrollView bounces={true}>
+						<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
+					</ScrollView>
+					<ScrollView>
+						<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
+					</ScrollView>
+				</Swiper>
+			}
 		</View>
   	);
 }
@@ -122,6 +132,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#1F1F1F",
+		paddingBottom: dimHeight * 0.01226
 	},
 	
 	content: {

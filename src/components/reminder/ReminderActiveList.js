@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Dimensions,
   TouchableOpacity,
-  Switch,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -19,48 +19,73 @@ import Animated, {
 
 import Accordion from 'react-native-collapsible/Accordion';
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
+import { ActivityIndicator } from "react-native-paper";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, prescriptions}) {
+function ReminderActiveList({props, prescriptions }) {
+    const [load, setLoad] = useState(true)
     const { reminderDetails } = props.userData
-    const CONTENT = prescriptions.length > 0 ? prescriptions.map(el => {
-        const {
-            dose,
-            drugID,
-            drugName,
-            drugQuantity,
-            ettiquete,
-            expiredDate,
-            finishedAt,
-            information,
-            isFinished,
-            patientID,
-            price,
-            quantityTotal,
-            reminder,
-            uidDrug,
-            _id
-        } = el
+    const [content, setContent] = useState(null)
+    const [loadContent, setLoadContent] = useState(true)
+    const [reminders, setReminders] = useState(null)
 
-        const newObject = {
-            header: {
-                information,
-                drugName,
-                drugQuantity,
-                type: 'Tablet',
-                ettiquete,
-                reminder,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-            },
-            expanded: {
-                ettiquete: filter('status', _id),
-                alarmTime: filter('alarmTime', _id)
-            }
+    useEffect(() => {
+        if(prescriptions.length > 0){
+            Promise.all(prescriptions.map(el => {
+                const {
+                    dose,
+                    drugID,
+                    drugName,
+                    drugQuantity,
+                    ettiquete,
+                    expiredDate,
+                    finishedAt,
+                    information,
+                    isFinished,
+                    patientID,
+                    price,
+                    quantityTotal,
+                    reminder,
+                    uidDrug,
+                    _id
+                } = el
+        
+                const newObject = {
+                    header: {
+                        information,
+                        drugName,
+                        drugQuantity,
+                        type: 'Tablet',
+                        ettiquete,
+                        reminder,
+                        imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
+                    },
+                    expanded: {
+                        ettiquete: filter('status', _id),
+                        alarmTime: filter('alarmTime', _id)
+                    }
+                }
+                return newObject
+            }))
+            .then(result => {
+                setContent(result)
+                setLoadContent(false)
+            })
         }
-        return newObject
-    }) : null
+    }, [])
+
+
+    useEffect(() => {
+        if(!loadContent){
+            const newReminders = content.map(el => {
+                return el.header.reminder
+            })
+            setReminders(newReminders)
+            setLoad(false)
+        }
+    }, [loadContent])
 
     function filter(key, _id){
         if(key === 'alarmTime'){
@@ -78,10 +103,9 @@ function ReminderActiveList({props, prescriptions}) {
         }
 
     }
+    
+    
 
-    const [reminders, setReminders] = useState(CONTENT ? CONTENT.map(el => {
-        return el.header.reminder
-    }) : null)
     const toggleSwitch = (index) => {
         const newArray = reminders.map((el, idx) => {
             if(index === idx){
@@ -149,6 +173,7 @@ function ReminderActiveList({props, prescriptions}) {
                                     size={dimWidth * 0.035} 
                                     color="rgba(128, 128, 128, 1)" 
                                 />
+                                <Text style={styles.ettiqueteText}>Hari ini {section.header.ettiquete.length}x sehari</Text>
                             </View>
                         }
                 </View>
@@ -217,23 +242,35 @@ function ReminderActiveList({props, prescriptions}) {
                                     </View>
                                 </View>
                             </View>
-                            <View style={styles.drugSeparatorContainer}/>
-                            <View style={styles.drugBottomContainer}>
-                                <Text style={styles.darkerText}>Setel pengingat</Text>
-                                <Switch
-                                    trackColor={{ false: '#767577', true: 'rgba(10, 88, 237, 1)' }}
-                                    thumbColor={'#f4f3f4'}
-                                    ios_backgroundColor="#3e3e3e"
-                                    onValueChange={toggleSwitch}
-                                    value={isEnabled}
-                                    style={styles.reminderSwitch}
-                                />
+                        )
+                    })}
+                        <TouchableWithoutFeedback 
+                            onPress={() => setSections(activeSections, true, _)}    
+                        >
+                            <View style={styles.closeButton}>
+                                <Text style={styles.closeText}>Tutup</Text>
+                                <MaterialIcons name="keyboard-arrow-up" size={30} color="rgba(243, 115, 53, 1)"/>
                             </View>
-                        </TouchableOpacity>
-                    </View>
-                )
-            })
-        ) : (
+                        </TouchableWithoutFeedback>
+            </Animatable.View>
+        );
+    };
+  
+    return (
+        load ? <ActivityIndicator color="red" size={'small'}/> :
+        content ? 
+            <Accordion
+                activeSections={activeSections}
+                sections={content}
+                touchableComponent={TouchableWithoutFeedback}
+                expandMultiple={true}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                duration={400}
+                onChange={setSections}
+                containerStyle={{alignItems: "center"}}
+            /> 
+        : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
             </View>
@@ -248,12 +285,16 @@ const textStyles = {
 
 	lighterText: {
 		color: "rgba(221, 221, 221, 1)"
-	}
+	},
+
+    redText: {
+        color: 'rgba(243, 115, 53, 1)'
+    }
 }
 
 const styles = StyleSheet.create({
 	eachDrugContainer: {
-		paddingTop: dimHeight * 0.015
+		paddingTop: dimHeight * 0.015,
 	},
 
 	touchable: {
@@ -280,7 +321,8 @@ const styles = StyleSheet.create({
 	drugMiddleContainer: {
 		width: '90%',
 		paddingTop: dimHeight * 0.01962,
-		paddingBottom: dimHeight * 0.02942
+		paddingBottom: dimHeight * 0.02942,
+        flexDirection: "row"
 	},
 
 	drugNameText: {
@@ -296,7 +338,9 @@ const styles = StyleSheet.create({
 
     ettiqueteContainter: {
         flexDirection: "row",
-		paddingTop: dimHeight * 0.01471,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingLeft: dimWidth * 0.02315
     },
 
 	ettiqueteText: {
@@ -333,16 +377,67 @@ const styles = StyleSheet.create({
                 scaleY: dimHeight * 0.0015 
             }
         ],
-        height: dimHeight * 0.002451,
+        height: dimHeight * 0.029,
+    },
+
+    reminderContainer: {
+        backgroundColor: '#2F2F2F',
+        width: dimWidth * 0.9,
+    },
+
+    reminderTimeContainer: {
+        width: '90%',
+        justifyContent: "center",
+        alignSelf: "center",
+        height: 64,
+		borderBottomWidth: 1,
+		borderBottomColor: 'rgba(71, 71, 71, 1)',
+	},
+
+    reminderTopContainer: {
+		alignSelf: "flex-start",
+		backgroundColor: 'rgba(47, 47, 47, 1)',
+		paddingVertical: 4,
+		paddingHorizontal: 6
+	},
+
+    reminderLowerContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+        alignItems: "center"
+        // backgroundColor: 'blue'
+	},
+
+	reminderTimeText: {
+		color: 'rgba(181, 181, 181, 1)',
+		fontSize: 20,
+		fontWeight: '500',
+		paddingLeft: 5
+	},
+	
+    closeButton: {
+        flexDirection: "row",
+		width: '90%',
+        alignSelf: "center",
+        alignItems: "center",
+        paddingBottom: 15,
+        paddingTop: 10
     },
 
     noDataContainer: {
-        paddingTop: dimHeight * 0.015
+        paddingTop: dimHeight * 0.015,
+        justifyContent: "center",
+        alignItems: "center"
     },
 
     lighterText: {
 		...textStyles.lighterText,
 	},
+
+    closeText: {
+        paddingRight: 10,
+        ...textStyles.redText
+    }
 });
 
 
