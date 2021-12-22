@@ -27,6 +27,7 @@
     "expo-image-picker": "~11.0.3",
     "expo-linear-gradient": "~10.0.3",
     "expo-media-library": "^13.0.3",
+    "expo-sharing": "~10.0.3",
     "expo-status-bar": "~1.1.0",
     "geolib": "^3.3.3",
     "lottie-react-native": "4.0.3",
