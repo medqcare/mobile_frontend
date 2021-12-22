@@ -71,10 +71,6 @@ function RujukanList(props) {
       url: require('../../../assets/png/documentPage/detail.png'),
     },
     {
-      label: 'Unduh',
-      url: require('../../../assets/png/documentPage/unduh.png'),
-    },
-    {
       label: 'Share',
       url: require('../../../assets/png/documentPage/ic_share.png'),
     },
