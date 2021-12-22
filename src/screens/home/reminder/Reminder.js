@@ -15,6 +15,7 @@ import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from "react-native-paper";
 
 
 const dimHeight = Dimensions.get("window").height;
@@ -24,6 +25,8 @@ function Reminder(props) {
 	const swiper = useRef(null)
 
 	const userData = props.userData
+
+	const [load, setLoad] = useState(true)
 	
 	const [activePrescriptions, setActivePrescriptions] = useState([])
 	const [finishedPrescriptions, setFinishedPrescriptions] = useState([])
@@ -41,7 +44,8 @@ function Reminder(props) {
 	}, [])
 
 	useEffect(async () => {
-		await filter()
+		if(activePrescriptions.length === 0) await filter()
+		setLoad(false)
 	}, [])
 
 	async function filter(){
@@ -103,20 +107,23 @@ function Reminder(props) {
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
-			<Swiper
-				showsButtons={false} 
-				ref={swiper}
-				showsPagination={false} 
-				loop={false}
-				onIndexChanged={(index) => setIndex(index)}
-			>
-				<ScrollView bounces={true}>
-					<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
-				</ScrollView>
-				<ScrollView>
-					<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
-				</ScrollView>
-			</Swiper>
+			{load ? 
+				<ActivityIndicator size={"small"} color={"blue"}/> :
+				<Swiper
+					showsButtons={false} 
+					ref={swiper}
+					showsPagination={false} 
+					loop={false}
+					onIndexChanged={(index) => setIndex(index)}
+				>
+					<ScrollView bounces={true}>
+						<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
+					</ScrollView>
+					<ScrollView>
+						<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
+					</ScrollView>
+				</Swiper>
+			}
 		</View>
   	);
 }

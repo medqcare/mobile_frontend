@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -19,48 +19,73 @@ import Animated, {
 
 import Accordion from 'react-native-collapsible/Accordion';
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
+import { ActivityIndicator } from "react-native-paper";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, prescriptions}) {
+function ReminderActiveList({props, prescriptions }) {
+    const [load, setLoad] = useState(true)
     const { reminderDetails } = props.userData
-    const CONTENT = prescriptions.length > 0 ? prescriptions.map(el => {
-        const {
-            dose,
-            drugID,
-            drugName,
-            drugQuantity,
-            ettiquete,
-            expiredDate,
-            finishedAt,
-            information,
-            isFinished,
-            patientID,
-            price,
-            quantityTotal,
-            reminder,
-            uidDrug,
-            _id
-        } = el
+    const [content, setContent] = useState(null)
+    const [loadContent, setLoadContent] = useState(true)
+    const [reminders, setReminders] = useState(null)
 
-        const newObject = {
-            header: {
-                information,
-                drugName,
-                drugQuantity,
-                type: 'Tablet',
-                ettiquete,
-                reminder,
-                imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-            },
-            expanded: {
-                ettiquete: filter('status', _id),
-                alarmTime: filter('alarmTime', _id)
-            }
+    useEffect(() => {
+        if(prescriptions.length > 0){
+            Promise.all(prescriptions.map(el => {
+                const {
+                    dose,
+                    drugID,
+                    drugName,
+                    drugQuantity,
+                    ettiquete,
+                    expiredDate,
+                    finishedAt,
+                    information,
+                    isFinished,
+                    patientID,
+                    price,
+                    quantityTotal,
+                    reminder,
+                    uidDrug,
+                    _id
+                } = el
+        
+                const newObject = {
+                    header: {
+                        information,
+                        drugName,
+                        drugQuantity,
+                        type: 'Tablet',
+                        ettiquete,
+                        reminder,
+                        imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
+                    },
+                    expanded: {
+                        ettiquete: filter('status', _id),
+                        alarmTime: filter('alarmTime', _id)
+                    }
+                }
+                return newObject
+            }))
+            .then(result => {
+                setContent(result)
+                setLoadContent(false)
+            })
         }
-        return newObject
-    }) : null
+    }, [])
+
+
+    useEffect(() => {
+        if(!loadContent){
+            const newReminders = content.map(el => {
+                return el.header.reminder
+            })
+            setReminders(newReminders)
+            setLoad(false)
+        }
+    }, [loadContent])
 
     function filter(key, _id){
         if(key === 'alarmTime'){
@@ -78,10 +103,9 @@ function ReminderActiveList({props, prescriptions}) {
         }
 
     }
+    
+    
 
-    const [reminders, setReminders] = useState(CONTENT ? CONTENT.map(el => {
-        return el.header.reminder
-    }) : null)
     const toggleSwitch = (index) => {
         const newArray = reminders.map((el, idx) => {
             if(index === idx){
@@ -233,10 +257,11 @@ function ReminderActiveList({props, prescriptions}) {
     };
   
     return (
-        CONTENT ? 
+        load ? <ActivityIndicator color="red" size={'small'}/> :
+        content ? 
             <Accordion
                 activeSections={activeSections}
-                sections={CONTENT}
+                sections={content}
                 touchableComponent={TouchableWithoutFeedback}
                 expandMultiple={true}
                 renderHeader={renderHeader}
