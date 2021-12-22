@@ -73,6 +73,9 @@ function ReminderActiveList({props, prescriptions }) {
                 setContent(result)
                 setLoadContent(false)
             })
+        } else {
+            setContent([])
+            setLoad(false)
         }
     }, [])
 
@@ -255,7 +258,7 @@ function ReminderActiveList({props, prescriptions }) {
   
     return (
         load ? <ActivityIndicator color="blue" size={'small'}/> :
-        content ? 
+        content.length > 0 ? 
             <Accordion
                 activeSections={activeSections}
                 sections={content}
