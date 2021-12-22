@@ -254,7 +254,7 @@ function ReminderActiveList({props, prescriptions }) {
     };
   
     return (
-        load ? <ActivityIndicator color="red" size={'small'}/> :
+        load ? <ActivityIndicator color="blue" size={'small'}/> :
         content ? 
             <Accordion
                 activeSections={activeSections}
