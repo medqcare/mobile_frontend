@@ -15,8 +15,91 @@ import { AntDesign } from '@expo/vector-icons';
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderFinishedList({props, prescriptions}) {
-    const data = prescriptions.length > 0 ? prescriptions : null
+function ReminderFinishedList(props) {
+    const data = [
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Setelah Makan',
+            drugName: 'Marjan',
+            drugQuantity: 20,
+            type: 'Pil',
+            ettiquete: ['Morning', 'Night'],
+            isFinished: true,
+            finishedAt: new Date(2018, 5, 9)
+        },
+        {
+            information: 'Sebelum Makan',
+            drugName: 'Madu',
+            drugQuantity: 10,
+            type: 'Tablet',
+            ettiquete: ['Morning', 'Afternoon', 'Night'],
+            isFinished: true,
+            finishedAt: new Date()
+        }
+    ]
+    // const data = null
   
     return (
         data ? (  
