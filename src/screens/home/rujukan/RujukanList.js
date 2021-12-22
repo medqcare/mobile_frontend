@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  Image,
   Dimensions,
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  PermissionsAndroid,
-} from "react-native";
-import Header from "../../../components/headers/GradientHeader";
-import PictureModal from "../../../components/modals/profilePictureModal";
-import DocumentOptionModal from "../../../components/modals/docOptionModal";
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
-import * as Sharing from "expo-sharing";
-import * as FileSystem from "expo-file-system";
-import Ic_Sort from "../../../assets/svg/ic_sort";
-import Ic_Dokumen from "../../../assets/svg/ic_documen";
-import Ic_Option from "../../../assets/svg/ic_option";
-import axios from "axios";
-import { connect } from "react-redux";
-import { baseURL } from "../../../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+  Alert,
+} from 'react-native';
+import Header from '../../../components/headers/GradientHeader';
+import PictureModal from '../../../components/modals/profilePictureModal';
+import DocumentOptionModal from '../../../components/modals/docOptionModal';
+import { FontAwesome } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import Ic_Dokumen from '../../../assets/svg/ic_documen';
+import Ic_Option from '../../../assets/svg/ic_option';
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { baseURL } from '../../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const dimHeight = Dimensions.get("window").height;
-const dimWidth = Dimensions.get("window").width;
+const dimHeight = Dimensions.get('window').height;
+const dimWidth = Dimensions.get('window').width;
 
 function RujukanList(props) {
   const [modalAdd, setModalAdd] = useState(false);
@@ -36,9 +33,9 @@ function RujukanList(props) {
 
   useEffect(() => {
     (async () => {
-      const token = await AsyncStorage.getItem("token");
+      const token = await AsyncStorage.getItem('token');
       const { data } = await axios({
-        method: "POST",
+        method: 'POST',
         url: `${baseURL}/api/v1/members/getMedicalResume`,
         headers: {
           Authorization: JSON.parse(token).token,
@@ -57,54 +54,57 @@ function RujukanList(props) {
 
   const addDocumentOptions = [
     {
-      label: "Kamera",
-      url: require("../../../assets/png/ic_kamera.png"),
+      label: 'Kamera',
+      url: require('../../../assets/png/ic_kamera.png'),
     },
     {
-      label: "Galeri",
-      url: require("../../../assets/png/ic_galeri.png"),
+      label: 'Galeri',
+      url: require('../../../assets/png/ic_galeri.png'),
     },
   ];
 
   const documentAction = [
     {
-      label: "Detail",
-      url: require("../../../assets/png/documentPage/detail.png"),
+      label: 'Detail',
+      url: require('../../../assets/png/documentPage/detail.png'),
     },
     {
-      label: "Unduh",
-      url: require("../../../assets/png/documentPage/unduh.png"),
+      label: 'Unduh',
+      url: require('../../../assets/png/documentPage/unduh.png'),
     },
     {
-      label: "Ganti Nama",
-      url: require("../../../assets/png/documentPage/rename.png"),
-    },
-    {
-      label: "Hapus",
-      url: require("../../../assets/png/documentPage/delete.png"),
+      label: 'Share',
+      url: require('../../../assets/png/documentPage/ic_share.png'),
     },
   ];
 
-  const downloadFileHandler = async () => {
+  const shareFileHandler = async () => {
     const { title, base64 } = selectedReferenceFile.referral;
-    const fileUri = FileSystem.documentDirectory + title + ".pdf";
+    const fileUri = FileSystem.documentDirectory + title + '.pdf';
     await FileSystem.writeAsStringAsync(fileUri, base64, {
       encoding: FileSystem.EncodingType.Base64,
     });
+    const isAvailable = await Sharing.isAvailableAsync();
+
+    if (!isAvailable) {
+      Alert.alert("Uh oh, sharing isn't available on your platform");
+      return;
+    }
+
     await Sharing.shareAsync(fileUri);
   };
 
   async function setSelectedValue(label) {
     switch (label) {
-      case "Kamera":
-        await props.navigation.navigate("ProfilePictureCamera", {
-          destination: "DokumenMedisStack",
+      case 'Kamera':
+        await props.navigation.navigate('ProfilePictureCamera', {
+          destination: 'DokumenMedisStack',
         });
         break;
 
-      case "Galeri":
-        await props.navigation.navigate("ProfilePictureGallery", {
-          destination: "DokumenMedisStack",
+      case 'Galeri':
+        await props.navigation.navigate('ProfilePictureGallery', {
+          destination: 'DokumenMedisStack',
         });
         break;
 
@@ -115,8 +115,20 @@ function RujukanList(props) {
 
   function setSelectedAction(label) {
     switch (label) {
-      case "Unduh": {
-        (async () => await downloadFileHandler())();
+      case 'Share': {
+        (async () => {
+          await shareFileHandler();
+        })();
+      }
+
+      case 'Detail': {
+        props.navigation.navigate('ShowDokumen', {
+          name: selectedReferenceFile.referral.title,
+          base64:
+            'data:application/pdf;base64,' +
+            selectedReferenceFile.referral.base64,
+          backTo: 'ListRujukan',
+        });
       }
 
       default: {
@@ -140,11 +152,11 @@ function RujukanList(props) {
                   <TouchableOpacity
                     style={styles.imageDokumen}
                     onPress={() =>
-                      props.navigation.navigate("ShowDokumen", {
+                      props.navigation.navigate('ShowDokumen', {
                         name: item.referral.title,
                         base64:
-                          "data:application/pdf;base64," + item.referral.base64,
-                        backTo: "ListRujukan",
+                          'data:application/pdf;base64,' + item.referral.base64,
+                        backTo: 'ListRujukan',
                       })
                     }
                   />
@@ -161,7 +173,7 @@ function RujukanList(props) {
                     <View
                       style={{
                         maxWidth: dimWidth * 0.25,
-                        justifyContent: "center",
+                        justifyContent: 'center',
                       }}
                     >
                       <Text style={styles.dokumentName}>
@@ -203,18 +215,18 @@ function RujukanList(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#181818",
+    backgroundColor: '#181818',
   },
   content: {
     height: dimHeight * 0.88,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
     padding: 20,
   },
   buttonAdd: {
-    alignItems: "center",
-    alignSelf: "center",
+    alignItems: 'center',
+    alignSelf: 'center',
     width: dimWidth * 0.4,
-    backgroundColor: "#005EA2",
+    backgroundColor: '#005EA2',
     borderRadius: 25,
     padding: 10,
   },
@@ -222,22 +234,22 @@ const styles = StyleSheet.create({
     height: 55,
     width: 55,
     borderRadius: 55,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: "#33E204",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: '#33E204',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 10,
   },
   image: {
     height: 50,
     width: 50,
     borderRadius: 50,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   document: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     paddingBottom: dimHeight * 0.04,
   },
   cardDokumen: {
@@ -245,23 +257,23 @@ const styles = StyleSheet.create({
     width: dimWidth * 0.48,
   },
   textItem: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
   },
   dokumentName: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
     fontSize: 11,
-    textAlign: "center",
+    textAlign: 'center',
   },
   detailCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     maxWidth: dimWidth * 0.4,
     paddingVertical: 10,
   },
   imageDokumen: {
     height: dimHeight * 0.12,
     width: dimWidth * 0.4,
-    backgroundColor: "#C4C4C4",
+    backgroundColor: '#C4C4C4',
     borderRadius: 10,
   },
   iconDoc: {
@@ -271,10 +283,10 @@ const styles = StyleSheet.create({
     paddingTop: dimHeight * 0.008,
   },
   textItem: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
   },
   textButton: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
     fontSize: 12,
   },
 });
