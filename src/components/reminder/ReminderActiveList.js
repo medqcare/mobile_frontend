@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import Accordion from 'react-native-collapsible/Accordion';
+<<<<<<< HEAD
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo';
 import { ActivityIndicator } from 'react-native-paper';
 
@@ -70,6 +71,102 @@ function ReminderActiveList({ props, prescriptions }) {
             },
           };
           return newObject;
+=======
+import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
+import { ActivityIndicator } from "react-native-paper";
+
+const dimHeight = Dimensions.get("window").height;
+const dimWidth = Dimensions.get("window").width;
+
+function ReminderActiveList({props, prescriptions }) {
+    const [load, setLoad] = useState(true)
+    const { reminderDetails } = props.userData
+    const [content, setContent] = useState(null)
+    const [loadContent, setLoadContent] = useState(true)
+    const [reminders, setReminders] = useState(null)
+
+    useEffect(() => {
+        if(prescriptions.length > 0){
+            Promise.all(prescriptions.map(el => {
+                const {
+                    dose,
+                    drugID,
+                    drugName,
+                    drugQuantity,
+                    ettiquete,
+                    expiredDate,
+                    finishedAt,
+                    information,
+                    isFinished,
+                    patientID,
+                    price,
+                    quantityTotal,
+                    reminder,
+                    uidDrug,
+                    _id
+                } = el
+        
+                const newObject = {
+                    header: {
+                        information,
+                        drugName,
+                        drugQuantity,
+                        type: 'Tablet',
+                        ettiquete,
+                        reminder,
+                        imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
+                    },
+                    expanded: {
+                        ettiquete: filter('status', _id),
+                        alarmTime: filter('alarmTime', _id)
+                    }
+                }
+                return newObject
+            }))
+            .then(result => {
+                setContent(result)
+                setLoadContent(false)
+            })
+        } else {
+            setContent([])
+            setLoad(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        if(!loadContent){
+            const newReminders = content.map(el => {
+                return el.header.reminder
+            })
+            setReminders(newReminders)
+            setLoad(false)
+        }
+    }, [loadContent])
+
+    function filter(key, _id){
+        if(key === 'alarmTime'){
+            const alarmTime = []
+            for(let i = 0; i < reminderDetails?.length; i++){
+                if(reminderDetails[i].prescriptionID === _id) alarmTime.push(reminderDetails[i].alarmTime)
+            }
+            return alarmTime
+        } else {
+            const status = []
+            for(let i = 0; i < reminderDetails?.length; i++){
+                if(reminderDetails[i].prescriptionID === _id) status.push(reminderDetails[i].status)
+            }
+            return status
+        }
+
+    }
+    
+    const toggleSwitch = (index) => {
+        const newArray = reminders.map((el, idx) => {
+            if(index === idx){
+                el = !el
+            }
+            return el
+>>>>>>> c8d7819bb57758faf4f8eafece4c89c0b636e685
         })
       ).then((result) => {
         setContent(result);
@@ -208,6 +305,7 @@ function ReminderActiveList({ props, prescriptions }) {
   const renderContent = (section, _, isActive) => {
     const { ettiquete, alarmTime } = section.expanded;
     return (
+<<<<<<< HEAD
       <Animatable.View
         key={_}
         duration={400}
@@ -285,6 +383,24 @@ function ReminderActiveList({ props, prescriptions }) {
                   )}
                 </View>
               </View>
+=======
+        load ? <ActivityIndicator color="blue" size={'small'}/> :
+        content.length > 0 ? 
+            <Accordion
+                activeSections={activeSections}
+                sections={content}
+                touchableComponent={TouchableWithoutFeedback}
+                expandMultiple={true}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                duration={400}
+                onChange={setSections}
+                containerStyle={{alignItems: "center"}}
+            /> 
+        : (
+            <View style={styles.noDataContainer}>
+                <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
+>>>>>>> c8d7819bb57758faf4f8eafece4c89c0b636e685
             </View>
           );
         })}
