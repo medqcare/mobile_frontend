@@ -12,7 +12,6 @@ import {
 import Header from '../../../components/headers/GradientHeader';
 import PictureModal from '../../../components/modals/profilePictureModal';
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
-import { FontAwesome } from '@expo/vector-icons';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import Ic_Dokumen from '../../../assets/svg/ic_documen';
@@ -21,6 +20,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieLoader from 'lottie-react-native';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -30,6 +30,7 @@ function RujukanList(props) {
   const [modalOption, setModalOption] = useState(false);
   const [referenceFiles, setRefencesFiles] = useState([]);
   const [selectedReferenceFile, setSelectedReferenceFile] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -49,6 +50,7 @@ function RujukanList(props) {
         return !!element.referral;
       });
       setRefencesFiles(newReferenceFiles);
+      setIsLoading(false);
     })();
   }, []);
 
@@ -140,62 +142,71 @@ function RujukanList(props) {
   return (
     <View style={styles.container}>
       <Header title="Rujukan" navigate={props.navigation.navigate} />
-      <View style={styles.content}>
-        <SafeAreaView style={styles.document}>
-          <FlatList
-            data={referenceFiles}
-            numColumns={2}
-            keyExtractor={(item, idx) => String(idx)}
-            renderItem={({ item, index }) => {
-              return (
-                <View style={styles.cardDokumen}>
-                  <TouchableOpacity
-                    style={styles.imageDokumen}
-                    onPress={() =>
-                      props.navigation.navigate('ShowDokumen', {
-                        name: item.referral.title,
-                        base64:
-                          'data:application/pdf;base64,' + item.referral.base64,
-                        backTo: 'ListRujukan',
-                      })
-                    }
-                  />
-                  <TouchableOpacity
-                    style={styles.detailCard}
-                    onPress={() => {
-                      setModalOption(true);
-                      setSelectedReferenceFile(item);
-                    }}
-                  >
-                    <View style={styles.iconDoc}>
-                      <Ic_Dokumen />
-                    </View>
-                    <View
-                      style={{
-                        maxWidth: dimWidth * 0.25,
-                        justifyContent: 'center',
+      {isLoading ? (
+        <LottieLoader
+          source={require('../../animation/loading.json')}
+          autoPlay
+          loop
+        />
+      ) : (
+        <View style={styles.content}>
+          <SafeAreaView style={styles.document}>
+            <FlatList
+              data={referenceFiles}
+              numColumns={2}
+              keyExtractor={(item, idx) => String(idx)}
+              renderItem={({ item, index }) => {
+                return (
+                  <View style={styles.cardDokumen}>
+                    <TouchableOpacity
+                      style={styles.imageDokumen}
+                      onPress={() =>
+                        props.navigation.navigate('ShowDokumen', {
+                          name: item.referral.title,
+                          base64:
+                            'data:application/pdf;base64,' +
+                            item.referral.base64,
+                          backTo: 'ListRujukan',
+                        })
+                      }
+                    />
+                    <TouchableOpacity
+                      style={styles.detailCard}
+                      onPress={() => {
+                        setModalOption(true);
+                        setSelectedReferenceFile(item);
                       }}
                     >
-                      <Text style={styles.dokumentName}>
-                        {item.referral.title}
-                      </Text>
-                    </View>
-                    <View style={styles.iconOption}>
-                      <Ic_Option />
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        </SafeAreaView>
-        <TouchableOpacity
-          style={styles.buttonAdd}
-          onPress={() => setModalAdd(true)}
-        >
-          <Text style={styles.textButton}>Minta Rujukan</Text>
-        </TouchableOpacity>
-      </View>
+                      <View style={styles.iconDoc}>
+                        <Ic_Dokumen />
+                      </View>
+                      <View
+                        style={{
+                          maxWidth: dimWidth * 0.25,
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Text style={styles.dokumentName}>
+                          {item.referral.title}
+                        </Text>
+                      </View>
+                      <View style={styles.iconOption}>
+                        <Ic_Option />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+          </SafeAreaView>
+          {/* <TouchableOpacity
+            style={styles.buttonAdd}
+            onPress={() => setModalAdd(true)}
+          >
+            <Text style={styles.textButton}>Minta Rujukan</Text>
+          </TouchableOpacity> */}
+        </View>
+      )}
       <PictureModal
         modal={modalAdd}
         setModal={setModalAdd}
