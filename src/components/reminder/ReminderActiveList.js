@@ -76,7 +76,6 @@ function ReminderActiveList({props, prescriptions }) {
         }
     }, [])
 
-
     useEffect(() => {
         if(!loadContent){
             const newReminders = content.map(el => {
@@ -104,8 +103,6 @@ function ReminderActiveList({props, prescriptions }) {
 
     }
     
-    
-
     const toggleSwitch = (index) => {
         const newArray = reminders.map((el, idx) => {
             if(index === idx){
