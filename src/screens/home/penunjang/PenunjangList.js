@@ -18,6 +18,8 @@ import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import RightArrow from '../../../assets/svg/RightArrow';
 import InformationIcon from '../../../assets/svg/information';
 import ClearableSearchBar from '../../../components/headers/ClearableSearchBar';
+import LottieLoader from 'lottie-react-native';
+
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 const DUMMIES_TEST = [
@@ -2230,14 +2232,20 @@ const DUMMIES_TEST = [
 
 function PenunjangList(props) {
   const [speciments, setSpeciments] = useState([]);
-  const [tests, setTests] = useState(DUMMIES_TEST);
+  const [tests, setTests] = useState([]);
   const [filteredTests, setFilteredTests] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [search, setSearch] = useState('');
   const [specimentSelected, setSpecimentSelected] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTests, setSelectedTests] = useState([]);
+  const [isPreparation, setIsPreparation] = useState(true);
   const PPN = totalPrice * (10 / 100);
+
+  useEffect(() => {
+    setTests(DUMMIES_TEST);
+    setFilteredTests([]);
+  }, []);
 
   useEffect(() => {
     if (search === '' && specimentSelected) {
@@ -2256,20 +2264,23 @@ function PenunjangList(props) {
   }, [selectedTests]);
 
   useEffect(() => {
-    let objectWithKeySpecimentName = {};
-    for (let i = 0; i < tests.length; i++) {
-      const { speciment } = tests[i];
+    if (speciments.length === 0 && tests.length !== 0) {
+      let objectWithKeySpecimentName = {};
+      for (let i = 0; i < tests.length; i++) {
+        const { speciment } = tests[i];
 
-      if (!objectWithKeySpecimentName[speciment]) {
-        objectWithKeySpecimentName[speciment] = {
-          speciment_name: speciment,
-          selected: false,
-        };
+        if (!objectWithKeySpecimentName[speciment]) {
+          objectWithKeySpecimentName[speciment] = {
+            speciment_name: speciment,
+            selected: false,
+          };
+        }
       }
+      const speciments = Object.values(objectWithKeySpecimentName);
+      setSpeciments(speciments);
     }
-    const speciments = Object.values(objectWithKeySpecimentName);
-    setSpeciments(speciments);
-  }, []);
+    setIsPreparation(false);
+  }, [tests]);
 
   const toScreenClinic = () => {
     setIsLoading(true);
@@ -2297,19 +2308,33 @@ function PenunjangList(props) {
   });
 
   const onSpecimentSelected = (specimentName) => {
+    let newSpecimentSelected = null;
     const newSpeciments = speciments.map((speciment) => {
       if (speciment.speciment_name === specimentName) {
         speciment.selected = true;
-        setSpecimentSelected(speciment);
+        newSpecimentSelected = speciment;
       } else {
         speciment.selected = false;
       }
       return speciment;
     });
-    const testsFilteredBySpecimentName = tests.filter((test) => {
-      return test.speciment == specimentName;
-    });
+    const testsFilteredBySpecimentName = [];
+    let newTotalPrice = 0;
+    for (let i = 0; i < tests.length; i++) {
+      const test = tests[i];
+
+      if (test.selected === true) {
+        newTotalPrice += test.price;
+      }
+
+      if (test.speciment === specimentName) {
+        testsFilteredBySpecimentName.push(test);
+      }
+    }
+
+    setSpecimentSelected(newSpecimentSelected);
     setFilteredTests(testsFilteredBySpecimentName);
+    setTotalPrice(newTotalPrice);
     setSpeciments(newSpeciments);
   };
 
@@ -2374,117 +2399,127 @@ function PenunjangList(props) {
     );
   };
 
+  console.log(filteredTests, '>>>>> ini adalah filtered tests');
+
   return (
     <SafeAreaView style={styles.container}>
-      <View>
-        <ClearableSearchBar
-          placeholder="Cari test atau sampel"
-          onChangeText={searchHandler}
-          setSearch={setSearch}
+      {isPreparation ? (
+        <LottieLoader
+          source={require('../../animation/loading.json')}
+          autoPlay
+          loop
         />
+      ) : (
+        <>
+          <View>
+            <ClearableSearchBar
+              placeholder="Cari test atau sampel"
+              onChangeText={searchHandler}
+              setSearch={setSearch}
+            />
 
-        {/* speciment */}
-        {search === '' && speciments.length !== 0 ? (
-          <View style={styles.specimentContainer}>
-            <Text style={styles.title}>pilih kategori</Text>
-            <View style={{ flexDirection: 'row' }}>
+            {/* speciment */}
+            {search === '' && speciments.length !== 0 ? (
+              <View style={styles.specimentContainer}>
+                <Text style={styles.title}>pilih kategori</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <FlatList
+                    data={speciments}
+                    renderItem={renderItem}
+                    keyExtractor={(_, index) => `${index}-speciment`}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  />
+                </View>
+              </View>
+            ) : null}
+
+            {/* test by speciment */}
+            {filteredTests.length !== 0 ? (
               <FlatList
-                data={speciments}
-                renderItem={renderItem}
-                keyExtractor={(_, index) => `${index}-speciment`}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
+                data={filteredTests}
+                style={styles.specimentItemContainer}
+                renderItem={renderTests}
+                showsVerticalScrollIndicator={true}
+                persistentScrollbar={true}
+                keyExtractor={(item) => `${item.test_id}-test`}
+              ></FlatList>
+            ) : null}
           </View>
-        ) : null}
 
-        {/* test by speciment */}
-        {filteredTests.length !== 0 ? (
-          <FlatList
-            data={filteredTests}
-            style={styles.specimentItemContainer}
-            renderItem={renderTests}
-            showsVerticalScrollIndicator={true}
-            persistentScrollbar={true}
-            keyExtractor={(item) => `${item.test_id}-test`}
-          ></FlatList>
-        ) : null}
-      </View>
-
-      {/* button action */}
-      {totalPrice !== 0 ? (
-        <View>
-          {/* price preview */}
-          {totalPrice !== 0 ? (
-            <View style={styles.priceSection}>
-              <ScrollView style={styles.topPriceContainer}>
-                <Text style={styles.costTitle}>Perkiraan Biaya</Text>
-                <View style={styles.costDetailSectionContainer}>
-                  {tests.map((test) => {
-                    if (test.selected === true) {
-                      return (
-                        <View
-                          style={styles.costDetailSection}
-                          key={`cost-${test.test_name}-${test.test_id}`}
-                        >
-                          <Text
-                            style={styles.costText}
-                          >{`Cek ${test.test_name} ${test.speciment}`}</Text>
-                          <Text style={styles.costText}>
-                            {formatNumberToRupiah(test.price)}
-                          </Text>
-                        </View>
-                      );
-                    }
-                  })}
-                  <View style={styles.costDetailSection}>
-                    <Text style={{ color: '#B5B5B5' }}>{`PPN`}</Text>
-                    <Text style={styles.costText}>
-                      {formatNumberToRupiah(PPN)}
+          {/* button action */}
+          <View>
+            {/* price preview */}
+            {totalPrice !== 0 ? (
+              <View style={styles.priceSection}>
+                <ScrollView style={styles.topPriceContainer}>
+                  <Text style={styles.costTitle}>Perkiraan Biaya</Text>
+                  <View style={styles.costDetailSectionContainer}>
+                    {tests.map((test) => {
+                      if (test.selected === true) {
+                        return (
+                          <View
+                            style={styles.costDetailSection}
+                            key={`cost-${test.test_name}-${test.test_id}`}
+                          >
+                            <Text
+                              style={styles.costText}
+                            >{`Cek ${test.test_name} ${test.speciment}`}</Text>
+                            <Text style={styles.costText}>
+                              {formatNumberToRupiah(test.price)}
+                            </Text>
+                          </View>
+                        );
+                      }
+                    })}
+                    <View style={styles.costDetailSection}>
+                      <Text style={{ color: '#B5B5B5' }}>{`PPN`}</Text>
+                      <Text style={styles.costText}>
+                        {formatNumberToRupiah(PPN)}
+                      </Text>
+                    </View>
+                  </View>
+                </ScrollView>
+                <View style={styles.bottomPriceContainer}>
+                  <View style={styles.informationContainer}>
+                    <InformationIcon />
+                    <Text
+                      style={{
+                        color: '#B5B5B5',
+                        fontSize: 11,
+                        marginLeft: 8,
+                        fontStyle: 'italic',
+                      }}
+                      numberOfLines={2}
+                    >
+                      Harga akan berbeda di setiap tempat praktik
+                    </Text>
+                  </View>
+                  <View style={styles.subTotalContainer}>
+                    <Text style={styles.subTotalTitle}>Sub Total</Text>
+                    <Text style={styles.subTotalPriceText}>
+                      {formatNumberToRupiah(totalPrice + PPN)}
                     </Text>
                   </View>
                 </View>
-              </ScrollView>
-              <View style={styles.bottomPriceContainer}>
-                <View style={styles.informationContainer}>
-                  <InformationIcon />
-                  <Text
-                    style={{
-                      color: '#B5B5B5',
-                      fontSize: 11,
-                      marginLeft: 8,
-                      fontStyle: 'italic',
-                    }}
-                    numberOfLines={2}
-                  >
-                    Harga akan berbeda di setiap tempat praktik
-                  </Text>
-                </View>
-                <View style={styles.subTotalContainer}>
-                  <Text style={styles.subTotalTitle}>Sub Total</Text>
-                  <Text style={styles.subTotalPriceText}>
-                    {formatNumberToRupiah(totalPrice + PPN)}
-                  </Text>
-                </View>
               </View>
-            </View>
-          ) : null}
-          <TouchableOpacity
-            style={styles.buttonWithIcon}
-            onPress={() => toScreenClinic()}
-          >
-            {isLoading ? (
-              <ActivityIndicator size={'small'} color="#FFF" />
-            ) : (
-              <>
-                <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
-                <RightArrow />
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
-      ) : null}
+            ) : null}
+            <TouchableOpacity
+              style={styles.buttonWithIcon}
+              onPress={() => toScreenClinic()}
+            >
+              {isLoading ? (
+                <ActivityIndicator size={'small'} color="#FFF" />
+              ) : (
+                <>
+                  <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
+                  <RightArrow />
+                </>
+              )}
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 }
