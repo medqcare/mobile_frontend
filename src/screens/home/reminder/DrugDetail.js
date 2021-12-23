@@ -21,6 +21,7 @@ const dimWidth = dimension.width
 function DrugDetail({navigation, userData}){
     const  { drugDetail } = navigation.state.params
     const [notes, setNotes] = useState('Minum dengan air putih setelah makan')
+    const duration = drugDetail.quantityTotal / drugDetail.ettiquete.length
 
     return (
         <View style={styles.container}>
@@ -33,11 +34,11 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: drugDetail.header.imageUrl}} style={styles.imageContainer}/>
+                    <Image source={{uri: drugDetail.imageUrl}} style={styles.imageContainer}/>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
-                           <Text style={styles.lowerCenteredSectionText}>3x Sehari</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{`${drugDetail.ettiquete.length}x Sehari`}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Dosis</Text>
@@ -45,14 +46,14 @@ function DrugDetail({navigation, userData}){
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Durasi</Text>
-                           <Text style={styles.lowerCenteredSectionText}>7 Hari</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{`${duration} Hari`}</Text>
                        </View>
                     </View>
                 </View>
 
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
-                    <Text style={styles.drugNameText}>Cordarone 200mg 10 Tablet</Text>
+                    <Text style={styles.drugNameText}>{drugDetail.drugName} 200 mg {drugDetail.drugQuantity} {drugDetail.type}</Text>
                     <Text style={styles.drugDescriptionText}>Cordarone bermanfaat untuk mengatasi irama jantung yang tidak teratur (aritmia). Obat ini digunakan sebagai pengobatan lanjutan apabila antiaritmia lain tidak memberikan perkembangan.</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
