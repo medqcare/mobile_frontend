@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument } from './medical_resume';
-import { getPrescriptions } from './prescription'
+import { getDrugs } from './drugs'
 import { getReminders } from './reminders'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
@@ -1045,7 +1045,7 @@ export {
 }
 
 export {
-  getPrescriptions
+  getDrugs
 }
 
 export {
