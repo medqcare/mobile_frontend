@@ -2334,7 +2334,7 @@ function PenunjangList(props) {
 
     setSpecimentSelected(newSpecimentSelected);
     setFilteredTests(testsFilteredBySpecimentName);
-    setTotalPrice(newTotalPrice);
+    setTotalPrice(newTotalPricer);
     setSpeciments(newSpeciments);
   };
 
