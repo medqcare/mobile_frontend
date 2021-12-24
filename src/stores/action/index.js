@@ -5,15 +5,6 @@ import {
   renameDocument,
   deleteDocument,
 } from './medical_resume';
-import { getPrescriptions } from './prescription';
-import { getReminders } from './reminders';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  getDocumentByPatient,
-  uploadDocument,
-  renameDocument,
-  deleteDocument,
-} from './medical_resume';
 import { getDrugs } from './drugs';
 import { getReminders } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -807,7 +798,6 @@ export function bookDoctor(bookData, token) {
     if (month.length < 2) month = '0' + month;
     if (day.length < 2) day = '0' + day;
     bookData.bookingSchedule = `${day}/${month}/${year}`;
-    console.log(bookData, '>>>>> dari store');
     return new Promise(async (resolve, reject) => {
       try {
         console.log('masuk sini dari book dokter');
@@ -1119,10 +1109,6 @@ export function deleteImage(patientId, token) {
     }
   };
 }
-
-export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
-
-export { getPrescriptions };
 
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
