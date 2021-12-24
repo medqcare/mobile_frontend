@@ -27,6 +27,7 @@ const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 export default function Calendar({
   selectedDate = new Date(),
   onDateSelected,
+  isDateBlackList = true
 }) {
   const [date, setDate] = useState(new Date());
   const [month, setMonth] = useState(date.getMonth());
@@ -131,7 +132,12 @@ export default function Calendar({
     const dayName = getDayName(dayNumber);
     const stringDate = `${month + 1}/${dateNumber}/${date.getFullYear()}`;
     const objectDate = new Date(stringDate);
-    const isWeekend = checkIsWeekend(dayNumber);
+    let isWeekend = null
+    if(!isDateBlackList){
+      isWeekend = false
+    } else {
+      isWeekend = checkIsWeekend(dayNumber);
+    }
     return (
       <TouchableOpacity
         style={{
