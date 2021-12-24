@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,18 +12,18 @@ import {
   StyleSheet,
   ToastAndroid,
   ScrollView,
-  StatusBar
+  StatusBar,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
-import {getDataDoctor, setLoading} from '../../../stores/action';
+import { getDataDoctor, setLoading } from '../../../stores/action';
 import axios from 'axios';
-import {baseURL} from '../../../config';
-import {specialistName} from '../../../assets/specialist/specialist';
-import SearchBar from '../../../components/headers/SearchBar'
+import { baseURL } from '../../../config';
+import { specialistName } from '../../../assets/specialist/specialist';
+import SearchBar from '../../../components/headers/SearchBar';
 
 import Shortby from '../../../components/modals/doctors/modalSortBy';
-import ArrowBack from '../../../assets/svg/ArrowBack'
+import ArrowBack from '../../../assets/svg/ArrowBack';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
@@ -58,7 +58,7 @@ function SearchDoctorPage(props) {
     }
   }, [show]);
 
-  const _fetchDataDoctorPagination = async params => {
+  const _fetchDataDoctorPagination = async (params) => {
     // NOTE FOR LAT DAN LON
     // biasanya ada lat longnya yang kebalik dimasukkan
     // lat itu isinya yang pake minus (-)
@@ -66,14 +66,14 @@ function SearchDoctorPage(props) {
     console.log(params, 'params ...', currentPage);
     if (params == 'All') {
       try {
-        let {data} = await axios.post(
+        let { data } = await axios.post(
           `${baseURL}/api/v1/members/searchDoctor?page=${currentPage}`,
           {
             lat: location ? location.lat : -6.268809,
             lon: location ? location.lng : 106.974705,
             maxDistance: 1000000,
           },
-          {timeout: 4000},
+          { timeout: 4000 }
         );
         console.log(`Found ${data.data.length} selection of doctors`);
         if (currentPage == 0) {
@@ -91,7 +91,7 @@ function SearchDoctorPage(props) {
       }
     } else {
       try {
-        let {data} = await axios.post(
+        let { data } = await axios.post(
           `${baseURL}/api/v1/members/searchDoctorSpecialist?page=${currentPage}`,
           {
             lat: location ? location.lat : -6.268809,
@@ -99,7 +99,7 @@ function SearchDoctorPage(props) {
             maxDistance: 1000000,
             specialist: name,
           },
-          {timeout: 4000},
+          { timeout: 4000 }
         );
         if (data.data) {
           setShow(data.data);
@@ -113,25 +113,25 @@ function SearchDoctorPage(props) {
     }
   };
 
-  const _textChange = async params => {
+  const _textChange = async (params) => {
     setShow([]);
     if (params === '') {
       setCurrentPage(0);
     }
     try {
-      let {data, status} = await axios.get(
+      let { data, status } = await axios.get(
         `${baseURL}/api/v1/members/doctorByName?lat=${
           props.myLocation ? props.myLocation.lat : ''
         }&lon=${
           props.myLocation ? props.myLocation.lng : ''
         }&name=${params}&specialist=${name !== 'All' ? name : ''}`,
-        {timeout: 4000},
+        { timeout: 4000 }
       );
       if (status == 204) {
         setLoading(false);
         setShow([]);
       } else if (data.data.length) {
-        let datawanted = data.data.map(el => {
+        let datawanted = data.data.map((el) => {
           el.doctorID = el._id;
           return {
             photo: el.photo,
@@ -173,25 +173,27 @@ function SearchDoctorPage(props) {
     _fetchDataDoctorPagination('All');
   }, [loader]);
 
-
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.pop();
   });
+  console.log(props.userData, '>>>>> dari props user data');
   // console.log(show, 'ini show')
   return (
     <KeyboardAvoidingView
       style={styles.Container}
       behavior="height"
-      enabled={false}>
-      <StatusBar hidden/>
-      <View style={{height: '15%'}}>
+      enabled={false}
+    >
+      <StatusBar hidden />
+      <View style={{ height: '15%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
-          style={{flex: 1}}>
-          <View style={{marginTop: 20, marginHorizontal: 20, flex: 1}}>
+          style={{ flex: 1 }}
+        >
+          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
-              <View style={{flexDirection: 'row'}}>
-                <View style={{marginTop: 3}}>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ marginTop: 3 }}>
                   <ArrowBack />
                 </View>
                 <Text
@@ -200,16 +202,20 @@ function SearchDoctorPage(props) {
                     color: '#ffff',
                     position: 'relative',
                     marginLeft: 10,
-                  }}>
+                  }}
+                >
                   Pilih Dokter
                 </Text>
               </View>
             </TouchableOpacity>
-            <SearchBar placeholder={"cari dokter atau spesialis"} onChangeText={text => _textChange(text)}/>
+            <SearchBar
+              placeholder={'cari dokter atau spesialis'}
+              onChangeText={(text) => _textChange(text)}
+            />
           </View>
         </ImageBackground>
       </View>
-      <View style={{height: 60, margin: 15}}>
+      <View style={{ height: 60, margin: 15 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity onPress={() => setName('All')}>
             <View
@@ -222,16 +228,18 @@ function SearchDoctorPage(props) {
                 padding: 10,
                 marginRight: 5,
                 width: 50,
-                alignItems: 'center'
-              }}>
-              <Text style={{color: '#DDDDDD'}}>All</Text>
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ color: '#DDDDDD' }}>All</Text>
             </View>
           </TouchableOpacity>
-          {specialistData.map(item => {
+          {specialistData.map((item) => {
             return (
               <TouchableOpacity
                 onPress={() => setName(item.name)}
-                key={item.id}>
+                key={item.id}
+              >
                 <View
                   style={{
                     backgroundColor: item.name === name ? '#005EA2' : null,
@@ -241,8 +249,9 @@ function SearchDoctorPage(props) {
                     height: 40,
                     padding: 10,
                     marginRight: 5,
-                  }}>
-                  <Text style={{color: '#DDDDDD'}}>{item.name}</Text>
+                  }}
+                >
+                  <Text style={{ color: '#DDDDDD' }}>{item.name}</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -257,60 +266,63 @@ function SearchDoctorPage(props) {
         isLoading={showLoading}
         layout={layoutSkeleton}
         boneColor={'#1F1F1F'}> */}
-        <View style={{flex: 1}}>
-          {show?.length > 0 ? (
+      <View style={{ flex: 1 }}>
+        {show?.length > 0 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'space-between',
+              marginTop: -10,
+            }}
+          >
+            <FlatList
+              refreshControl={
+                <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+              }
+              style={{ flex: 1 }}
+              data={show}
+              keyExtractor={(item, index) => String(index)}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    props.navigation.navigate('DetailDoctor', {
+                      data: item,
+                      back: 'SearchDoctor',
+                    });
+                  }}
+                >
+                  <View style={{ marginHorizontal: dimWidth * 0.03 }}>
+                    <CardDoctor data={item} myLocation={props.myLocation} />
+                  </View>
+                </TouchableOpacity>
+              )}
+              onEndReached={() => {
+                if (show.length >= 5) {
+                  _fetchDataDoctorPagination(name);
+                }
+              }}
+              onEndReachedThreshold={1}
+            />
+          </View>
+        ) : (
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+            }
+          >
             <View
               style={{
                 flex: 1,
-                justifyContent: 'space-between',
-                marginTop: -10,
-              }}>
-              <FlatList
-                refreshControl={
-                  <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-                }
-                style={{flex: 1}}
-                data={show}
-                keyExtractor={(item, index) => String(index)}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      props.navigation.navigate('DetailDoctor', {
-                        data: item,
-                        back: 'SearchDoctor',
-                      });
-                    }}>
-                    <View style={{marginHorizontal: dimWidth * 0.03}}>
-                      <CardDoctor data={item} myLocation={props.myLocation} />
-                    </View>
-                  </TouchableOpacity>
-                )}
-                onEndReached={() => {
-                  if (show.length >= 5) {
-                    _fetchDataDoctorPagination(name);
-                  }
-                }}
-                onEndReachedThreshold={1}
-              />
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: 20,
+              }}
+            >
+              <Text style={{ color: '#fff' }}>There is no doctor nearby</Text>
             </View>
-          ) : (
-            <ScrollView
-              refreshControl={
-                <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-              }>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 20,
-                }}>
-                <Text style={{color: '#fff'}}>There is no doctor nearby</Text>
-              </View>
-            </ScrollView>
-          )}
-          
-        </View>
+          </ScrollView>
+        )}
+      </View>
       {/* </SkeletonContent> */}
 
       {sortby && (
@@ -455,7 +467,6 @@ const stylesF = StyleSheet.create({
     fontSize: 12,
   },
 });
-
 
 const layoutSkeleton = [
   {
@@ -646,7 +657,7 @@ const layoutSkeleton = [
   },
 ];
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 
@@ -655,7 +666,4 @@ const mapDispatchToProps = {
   setLoading,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(SearchDoctorPage);
+export default connect(mapStateToProps, mapDispatchToProps)(SearchDoctorPage);
