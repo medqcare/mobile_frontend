@@ -6,7 +6,7 @@ import {
   deleteDocument,
 } from './medical_resume';
 import { getDrugs } from './drugs';
-import { getReminders } from './reminders';
+import { getReminders, changeReminderStatus } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -1114,4 +1114,4 @@ export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
 export { getDrugs };
 
-export { getReminders };
+export { getReminders, changeReminderStatus };
