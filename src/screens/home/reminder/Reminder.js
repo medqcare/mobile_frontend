@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, getReminders } from '../../../stores/action'
+import { getDrugs, getReminders, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -105,7 +105,7 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
-					onPress={() => props.navigation.navigate('Undefined')}
+					onPress={() => props.navigation.navigate('AddReminderForm')}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
@@ -190,7 +190,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
 	getDrugs,
-	getReminders
+	getReminders,
+	changeReminderStatus
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reminder)
