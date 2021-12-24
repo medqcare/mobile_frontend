@@ -21,6 +21,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
 import { ActivityIndicator } from "react-native-paper";
 import withZero from "../../helpers/withZero";
+import { getSelectedDate } from "../../helpers/todaysDate";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -155,10 +156,7 @@ function ReminderActiveList({props, drugs }) {
 
     const renderContent = (section, _, isActive) => {
         const { reminders } = section
-        const todaysNewDate = new Date()
-        const todaysYear = todaysNewDate.getFullYear()
-        const todaysMonth = todaysNewDate.getMonth()
-        const todaysDate = todaysNewDate.getDate()
+        const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(new Date())
         const todaysReminder = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
