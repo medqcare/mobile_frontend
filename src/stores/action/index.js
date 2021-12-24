@@ -8,6 +8,11 @@ import {
 import { getPrescriptions } from './prescription';
 import { getReminders } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+=======
+import { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument } from './medical_resume';
+import { getDrugs } from './drugs'
+import { getReminders } from './reminders'
+import AsyncStorage from '@react-native-async-storage/async-sto
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
 
@@ -1113,6 +1118,18 @@ export function deleteImage(patientId, token) {
 
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
+
 export { getPrescriptions };
+
+export {
+  getDocumentByPatient,
+  uploadDocument,
+  renameDocument,
+  deleteDocument
+}
+
+export {
+  getDrugs
+}
 
 export { getReminders };

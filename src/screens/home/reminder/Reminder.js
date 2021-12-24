@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getPrescriptions, getReminders } from '../../../stores/action'
+import { getDrugs, getReminders } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -28,15 +28,15 @@ function Reminder(props) {
 
 	const [load, setLoad] = useState(true)
 	
-	const [activePrescriptions, setActivePrescriptions] = useState([])
-	const [finishedPrescriptions, setFinishedPrescriptions] = useState([])
+	const [activeDrugs, setActiveDrugs] = useState([])
+	const [finishedDrugs, setFinishedDrugs] = useState([])
 
 	useEffect( async () => {
 		try {
 			let token = await AsyncStorage.getItem("token");
 			token = JSON.parse(token).token
 			const patientID = props.userData._id
-			await props.getPrescriptions(patientID, token)
+			await props.getDrugs(patientID, token)
 			await props.getReminders(patientID, token)
 		} catch (error){
 			console.log(error, 'error di Reminder Page')
@@ -44,19 +44,19 @@ function Reminder(props) {
 	}, [])
 
 	useEffect(async () => {
-		if(activePrescriptions.length === 0) await filter()
+		if(activeDrugs.length === 0) await filter()
 		setLoad(false)
 	}, [])
 
 	async function filter(){
 		const active = []
 		const finsihed = []
-		for(let i = 0; i < userData.prescriptions.length; i++){
-			if(userData.prescriptions[i].isFinished) finsihed.push(userData.prescriptions[i])
-			else active.push(userData.prescriptions[i])
+		for(let i = 0; i < userData.drugs.length; i++){
+			if(userData.drugs[i].isFinished) finsihed.push(userData.drugs[i])
+			else active.push(userData.drugs[i])
 		}
-		setFinishedPrescriptions(finsihed)
-		setActivePrescriptions(active)
+		setFinishedDrugs(finsihed)
+		setActiveDrugs(active)
 	}
 
 	function firstName(){
@@ -117,10 +117,10 @@ function Reminder(props) {
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
+						<ReminderActiveList props={props} drugs={activeDrugs}/>
 					</ScrollView>
 					<ScrollView>
-						<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
+						{/* <ReminderFinishedList props={props} drugs={finishedDrugs}/> */}
 					</ScrollView>
 				</Swiper>
 			}
@@ -186,7 +186,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	getPrescriptions,
+	getDrugs,
 	getReminders
 }
 

@@ -15,8 +15,8 @@ import { AntDesign } from '@expo/vector-icons';
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderFinishedList({props, prescriptions}) {
-    const data = prescriptions.length > 0 ? prescriptions : null
+function ReminderFinishedList({props, drugs}) {
+    const data = drugs.length > 0 ? drugs : null
   
     return (
         data ? (  
