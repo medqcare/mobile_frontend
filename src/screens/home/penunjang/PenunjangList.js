@@ -2229,32 +2229,21 @@ const DUMMIES_TEST = [
     price: 56500,
   },
 ];
-const DUMMMIES_SPECIMENTS = [];
-
-DUMMIES_TEST.forEach((test) => {
-  const isInclude = DUMMMIES_SPECIMENTS.find(
-    (speciment) => speciment.speciment_name === test.speciment
-  );
-
-  if (!isInclude) {
-    const speciment = {
-      speciment_name: test.speciment,
-      selected: false,
-    };
-    DUMMMIES_SPECIMENTS.push(speciment);
-  }
-});
 
 function PenunjangList(props) {
   const [speciments, setSpeciments] = useState([]);
   const [tests, setTests] = useState([]);
   const [filteredTests, setFilteredTests] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [search, setSearch] = useState('');
-  const [specimentSelected, setSpecimentSelected] = useState();
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedTests, setSelectedTests] = useState([]);
+  const [search, setSearch] = useState('');
+  const [specimentSelected, setSpecimentSelected] = useState({
+    speciment_name: null,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingFilter, setIsLoadingFilter] = useState(false);
   const [isPreparation, setIsPreparation] = useState(true);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
   const PPN = totalPrice * (10 / 100);
 
   useEffect(() => {
@@ -2263,7 +2252,7 @@ function PenunjangList(props) {
   }, []);
 
   useEffect(() => {
-    if (search === '' && specimentSelected) {
+    if (search === '' && specimentSelected && isSearchActive) {
       const testsBySpeciment = tests.filter(
         (test) => test.speciment === specimentSelected.speciment_name
       );
@@ -2279,15 +2268,37 @@ function PenunjangList(props) {
   }, [selectedTests]);
 
   useEffect(() => {
+    if (specimentSelected.speciment_name) {
+      const testsFilteredBySpecimentName = [];
+      let newTotalPrice = 0;
+      for (let i = 0; i < tests.length; i++) {
+        const test = tests[i];
+
+        if (test.selected === true) {
+          newTotalPrice += test.price;
+        }
+
+        if (test.speciment === specimentSelected.speciment_name) {
+          testsFilteredBySpecimentName.push(test);
+        }
+      }
+
+      setTotalPrice(newTotalPrice);
+      setFilteredTests(testsFilteredBySpecimentName);
+      setIsLoadingFilter(false);
+    }
+  }, [specimentSelected]);
+
+  useEffect(() => {
     if (speciments.length === 0 && tests.length !== 0) {
       let objectWithKeySpecimentName = {};
       for (let i = 0; i < tests.length; i++) {
         const { speciment } = tests[i];
+        const test = tests[i];
 
         if (!objectWithKeySpecimentName[speciment]) {
           objectWithKeySpecimentName[speciment] = {
             speciment_name: speciment,
-            selected: false,
           };
         }
       }
@@ -2305,9 +2316,15 @@ function PenunjangList(props) {
 
   const specimentStyleBehavior = (speciment) => ({
     container: {
-      backgroundColor: speciment.selected ? '#212D3D' : '#2F2F2F',
+      backgroundColor:
+        speciment.speciment_name === specimentSelected.speciment_name
+          ? '#212D3D'
+          : '#2F2F2F',
       borderWidth: 1,
-      borderColor: speciment.selected ? '#77BFF4' : 'transparent',
+      borderColor:
+        speciment.speciment_name === specimentSelected.speciment_name
+          ? '#77BFF4'
+          : 'transparent',
       padding: 10,
       borderRadius: 4,
       alignSelf: 'flex-start',
@@ -2316,48 +2333,41 @@ function PenunjangList(props) {
       marginRight: 6,
     },
     text: {
-      color: speciment.selected ? '#77BFF4' : '#B5B5B5',
+      color:
+        speciment.speciment_name === specimentSelected.speciment_name
+          ? '#77BFF4'
+          : '#B5B5B5',
       fontSize: 14,
       textTransform: 'capitalize',
     },
   });
 
-  const onSpecimentSelected = (specimentName) => {
-    let newSpecimentSelected = null;
-    const newSpeciments = speciments.map((speciment) => {
-      if (speciment.speciment_name === specimentName) {
-        speciment.selected = true;
-        newSpecimentSelected = speciment;
-      } else {
-        speciment.selected = false;
-      }
-      return speciment;
-    });
-    const testsFilteredBySpecimentName = [];
-    let newTotalPrice = 0;
-    for (let i = 0; i < tests.length; i++) {
-      const test = tests[i];
+  const onSpecimentSelected = (speciment) => {
+    // const testsFilteredBySpecimentName = [];
+    // let newTotalPrice = 0;
+    // for (let i = 0; i < tests.length; i++) {
+    //   const test = tests[i];
 
-      if (test.selected === true) {
-        newTotalPrice += test.price;
-      }
+    //   if (test.selected === true) {
+    //     newTotalPrice += test.price;
+    //   }
 
-      if (test.speciment === specimentName) {
-        testsFilteredBySpecimentName.push(test);
-      }
-    }
-
-    setSpecimentSelected(newSpecimentSelected);
-    setFilteredTests(testsFilteredBySpecimentName);
-    setTotalPrice(newTotalPrice);
-    setSpeciments(newSpeciments);
+    //   if (test.speciment === speciment.speciment_name) {
+    //     testsFilteredBySpecimentName.push(test);
+    //   }
+    // }
+    setIsLoadingFilter(true);
+    setSpecimentSelected(speciment);
+    // setFilteredTests(testsFilteredBySpecimentName);
+    // setTotalPrice(newTotalPrice);
   };
 
   const onTestSelected = (testId) => {
     let newTotalPrice = totalPrice;
+    const newTestsFiltered = [];
     const newTests = tests.map((test) => {
       if (test.test_id === testId) {
-        const isSelected = test.selected;
+        const isSelected = !!test.selected;
 
         if (isSelected === true) {
           test.selected = false;
@@ -2367,10 +2377,16 @@ function PenunjangList(props) {
           newTotalPrice += test.price;
         }
       }
+      if (test.speciment === specimentSelected.speciment_name) {
+        newTestsFiltered.push(test);
+      }
       return test;
     });
     setTotalPrice(newTotalPrice);
     setTests(newTests);
+    if (search === '') {
+      setFilteredTests(newTestsFiltered);
+    }
   };
 
   const searchHandler = (text) => {
@@ -2394,7 +2410,7 @@ function PenunjangList(props) {
     return (
       <TouchableOpacity
         style={container}
-        onPress={() => onSpecimentSelected(speciment_name)}
+        onPress={() => onSpecimentSelected(item)}
       >
         <Text style={text}>{speciment_name}</Text>
       </TouchableOpacity>
@@ -2403,18 +2419,19 @@ function PenunjangList(props) {
 
   const renderTests = ({ item }) => {
     return (
-      <View style={styles.specimentItemSection}>
+      <TouchableOpacity
+        style={styles.specimentItemSection}
+        onPress={() => onTestSelected(item.test_id)}
+      >
         <Text style={styles.specimentItemText}>{item.test_name}</Text>
         <Checkbox
           value={item.selected}
           color={item.selected ? '#017EF9' : null}
           onValueChange={() => onTestSelected(item.test_id)}
         />
-      </View>
+      </TouchableOpacity>
     );
   };
-
-  console.log(filteredTests, '>>>>> ini adalah filtered tests');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -2431,6 +2448,7 @@ function PenunjangList(props) {
               placeholder="Cari test atau sampel"
               onChangeText={searchHandler}
               setSearch={setSearch}
+              onFocus={() => setIsSearchActive(true)}
             />
 
             {/* speciment */}
@@ -2451,18 +2469,31 @@ function PenunjangList(props) {
 
             {/* test by speciment */}
             {filteredTests.length !== 0 ? (
-              <FlatList
-                data={filteredTests}
-                style={styles.specimentItemContainer}
-                renderItem={renderTests}
-                showsVerticalScrollIndicator={true}
-                persistentScrollbar={true}
-                keyExtractor={(item) => `${item.test_id}-test`}
-              ></FlatList>
+              <>
+                {isLoadingFilter ? (
+                  <View
+                    style={{
+                      height: 250,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <ActivityIndicator color="white" size="large" />
+                  </View>
+                ) : (
+                  <FlatList
+                    data={filteredTests}
+                    style={styles.specimentItemContainer}
+                    renderItem={renderTests}
+                    showsVerticalScrollIndicator={true}
+                    persistentScrollbar={true}
+                    keyExtractor={(item) => `${item.test_id}-test`}
+                  ></FlatList>
+                )}
+              </>
             ) : null}
           </View>
 
-          {/* button action */}
           <View>
             {/* price preview */}
             {totalPrice !== 0 ? (
@@ -2471,7 +2502,7 @@ function PenunjangList(props) {
                   <Text style={styles.costTitle}>Perkiraan Biaya</Text>
                   <View style={styles.costDetailSectionContainer}>
                     {tests.map((test) => {
-                      if (test.selected === true) {
+                      if (!!test.selected) {
                         return (
                           <View
                             style={styles.costDetailSection}
@@ -2519,19 +2550,21 @@ function PenunjangList(props) {
                 </View>
               </View>
             ) : null}
-            <TouchableOpacity
-              style={styles.buttonWithIcon}
-              onPress={() => toScreenClinic()}
-            >
-              {isLoading ? (
-                <ActivityIndicator size={'small'} color="#FFF" />
-              ) : (
-                <>
-                  <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
-                  <RightArrow />
-                </>
-              )}
-            </TouchableOpacity>
+            {totalPrice !== 0 ? (
+              <TouchableOpacity
+                style={styles.buttonWithIcon}
+                onPress={() => toScreenClinic()}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size={'small'} color="#FFF" />
+                ) : (
+                  <>
+                    <Text style={styles.buttonWithIconLabel}>Lanjutkan</Text>
+                    <RightArrow />
+                  </>
+                )}
+              </TouchableOpacity>
+            ) : null}
           </View>
         </>
       )}
