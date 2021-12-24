@@ -22,8 +22,9 @@ export function getDrugs(patientID, token){
                 type: 'GET_DRUGS_DATA',
                 payload: data.data
             })
+            return data.data
         } catch (error) {
-            console.log(error, 'error di action prescription')
+            console.log(error, 'error di action drugs')
         }
     }
 }

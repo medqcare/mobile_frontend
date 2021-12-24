@@ -24,9 +24,11 @@ const dimWidth = Dimensions.get("window").width;
 function Reminder(props) {
 	const swiper = useRef(null)
 
-	const userData = props.userData
+	const [userData, setUserData] = useState(props.userData)
+	const [drugs, setDrugs] = useState([])
 
 	const [load, setLoad] = useState(true)
+	const [loadGetDrugs, setLoadGetDrugs] = useState(true)
 	
 	const [activeDrugs, setActiveDrugs] = useState([])
 	const [finishedDrugs, setFinishedDrugs] = useState([])
@@ -36,24 +38,27 @@ function Reminder(props) {
 			let token = await AsyncStorage.getItem("token");
 			token = JSON.parse(token).token
 			const patientID = props.userData._id
-			await props.getDrugs(patientID, token)
-			await props.getReminders(patientID, token)
+			const allDrugs = await props.getDrugs(patientID, token)
+			setDrugs(allDrugs)
+			setLoadGetDrugs(false)
 		} catch (error){
 			console.log(error, 'error di Reminder Page')
 		}
 	}, [])
 
 	useEffect(async () => {
-		if(activeDrugs.length === 0) await filter()
-		setLoad(false)
-	}, [])
+		if(!loadGetDrugs){
+			await filter()
+			setLoad(false)
+		}
+	}, [loadGetDrugs])
 
 	async function filter(){
 		const active = []
 		const finsihed = []
-		for(let i = 0; i < userData.drugs.length; i++){
-			if(userData.drugs[i].isFinished) finsihed.push(userData.drugs[i])
-			else active.push(userData.drugs[i])
+		for(let i = 0; i < drugs.length; i++){
+			if(drugs[i].isFinished) finsihed.push(drugs[i])
+			else active.push(drugs[i])
 		}
 		setFinishedDrugs(finsihed)
 		setActiveDrugs(active)
@@ -78,7 +83,6 @@ function Reminder(props) {
 					<TouchableOpacity
 						activeOpacity={1}
 						style={index === 0 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						// onPress={() => changeStatus('Active')}
 						onPress={() => {
 							if(index === 1){
 								swiper.current.scrollBy(-1)}
@@ -94,7 +98,6 @@ function Reminder(props) {
 								swiper.current.scrollBy(1)}
 							}
 						}
-						// onPress={() => changeStatus('Finished')}
 						style={index === 1 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
 					>
 						<Text style={index === 1 ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
@@ -120,7 +123,7 @@ function Reminder(props) {
 						<ReminderActiveList props={props} drugs={activeDrugs}/>
 					</ScrollView>
 					<ScrollView>
-						{/* <ReminderFinishedList props={props} drugs={finishedDrugs}/> */}
+						<ReminderFinishedList props={props} drugs={finishedDrugs}/>
 					</ScrollView>
 				</Swiper>
 			}

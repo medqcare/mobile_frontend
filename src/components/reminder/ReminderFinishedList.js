@@ -57,7 +57,7 @@ function ReminderFinishedList({props, drugs}) {
             })
         ) : (
             <View style={styles.noDataContainer}>
-                <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
+                <Text style={styles.lighterText}>Belum ada obat yang selesai</Text>
             </View>
         )
     );
