@@ -263,7 +263,13 @@ const buatJanji = (props) => {
 
       var forsend = {
         ...book,
-        patient: { ...patient2, patientTitle: getTitle(patient2) },
+        patient: {
+          ...patient2,
+          patientTitle: getTitle(patient2),
+          photo: patient2.photo
+            ? patient2.photo
+            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+        },
       };
       console.log(forsend, '>>>>> data untuk send');
       var sendCreate = {

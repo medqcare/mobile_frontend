@@ -1,16 +1,16 @@
-import { createStackNavigator } from "react-navigation-stack";
-import Prescription from '../../screens/home/prescription/prescription'
+import { createStackNavigator } from 'react-navigation-stack';
+import Prescription from '../../screens/home/prescription/prescription.js';
 
 export default StackResep = createStackNavigator(
   {
     Prescription: {
       screen: Prescription,
       navigationOptions: {
-        headerShown: false
+        headerShown: false,
       },
-    }
+    },
   },
   {
-    initialRouteName: "Prescription"
+    initialRouteName: 'Prescription',
   }
 );
