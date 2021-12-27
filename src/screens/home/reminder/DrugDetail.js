@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   TextInput,
+  BackHandler,
 } from "react-native";
 import { connect } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
@@ -47,6 +48,11 @@ function DrugDetail({navigation, userData}){
         }
         setDrugReminders(selectedDateReminders)
     }
+
+    BackHandler.addEventListener("hardwareBackPress", () => {
+	    navigation.pop();
+		return true;
+	});
 
     return (
         <View style={styles.container}>
