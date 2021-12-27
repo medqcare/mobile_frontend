@@ -15,7 +15,7 @@ import medresStack from "./medresStack";
 import dokumenMedisStack from "./dokumenMedisStack";
 import penunjangStack from "./penunjangStack";
 import rujukanStack from "./rujukanStack";
-import resepStack from "./resepStack";
+import prescriptionStack from "./prescriptionStack";
 import reminderStack from "./reminderStack";
 
 export default StackHome = createStackNavigator(
@@ -104,8 +104,8 @@ export default StackHome = createStackNavigator(
         headerShown: false,
       },
     },
-    ResepStack: {
-      screen: resepStack,
+    PrescriptionStack: {
+      screen: prescriptionStack,
       navigationOptions: {
         headerShown: false,
       },
