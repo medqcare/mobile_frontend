@@ -47,7 +47,7 @@ return (
          <Text style={{ marginTop:10, textAlign:'center',color:'white',fontSize:12}}> Reminder </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('ResepStack') : navigation.navigate('Sign')}>
+      <TouchableOpacity style={style.content} onPress={() => data ? navigation.navigate('PrescriptionStack') : navigation.navigate('Sign')}>
          <Image style={style.image}source={require('../../../assets/png/Resep.png')}/>
          <Text style={{ marginTop:10,textAlign:'center',color:'white',fontSize:12}}> Resep </Text>
       </TouchableOpacity>
