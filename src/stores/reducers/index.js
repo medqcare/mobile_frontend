@@ -58,6 +58,14 @@ export default (state = initState, action) => {
         ...state,
         userData: action.payload
       }
+	case 'GET_PRESCRIPTION_DATA':
+		return {
+			...state,
+			userData: {
+				...state.userData,
+				prescriptions: action.payload
+			}
+		}
     case 'GET_DRUGS_DATA':
       return {
         ...state,
