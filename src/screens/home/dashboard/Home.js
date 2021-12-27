@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,10 @@ import {
   Dimensions,
   TextInput,
 } from 'react-native';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import GetLocation from 'react-native-get-location';
-import {LinearGradient} from 'expo-linear-gradient';
+import * as Location from 'expo-location';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   setCurrentLocation,
   changeLogin,
@@ -24,7 +25,7 @@ import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SearchBar from '../../../components/headers/SearchBar'
+import SearchBar from '../../../components/headers/SearchBar';
 
 import Lonceng from '../../../assets/svg/home-blue/lonceng';
 import LottieLoader from 'lottie-react-native';
@@ -32,35 +33,59 @@ import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
 // import PushNotification from 'react-native-push-notification';
 
-const dimHeight = Dimensions.get('window').height
-
+const dimHeight = Dimensions.get('window').height;
 
 function HomePage(props) {
   const [myLocation, setMyLocation] = useState(null);
+  const [location, setLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {
       id: 1,
-      url:  require('../../../assets/png/Promo1.png'),
+      url: require('../../../assets/png/Promo1.png'),
     },
     {
       id: 2,
       url: require('../../../assets/png/Promo2.png'),
     },
   ]);
+  console.log(props.userData, '>>>>>>>>.');
+  console.log(props.myLocation, '>>>>>>>> my location');
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      console.log(location, '>>>>>>>>>>>>>>>>> hai');
+      setMyLocation({
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      });
+      props.setCurrentLocation({
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      });
+    })();
+  }, []);
 
   const _getLocation = () => {
     GetLocation.getCurrentPosition({
       enableHighAccuracy: true,
     })
-      .then(location => {
-        setMyLocation({
-          lng: location.longitude,
-          lat: location.latitude,
-        });
+      .then((location) => {
+        console.log(location, '>>>>>>> ini location');
+        // setMyLocation({
+        //   lng: location.longitude,
+        //   lat: location.latitude,
+        // });
         setRefreshing(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setRefreshing(false);
       });
   };
@@ -79,19 +104,19 @@ function HomePage(props) {
   useEffect(() => {
     _getLocation();
     _checkLogin()
-      .then(async data => {
+      .then(async (data) => {
         try {
           if (data) {
             let x = await props.GetUser(
               JSON.parse(data).token,
               props.navigation,
-              () => setModalW(true),
+              () => setModalW(true)
             );
             if (!myLocation) {
-              setMyLocation({
-                lat: x.location.coordinates[1],
-                lng: x.location.coordinates[0],
-              });
+              // setMyLocation({
+              //   lat: x.location.coordinates[1],
+              //   lng: x.location.coordinates[0],
+              // });
             }
             setload(false);
           } else {
@@ -101,14 +126,14 @@ function HomePage(props) {
           setload(false);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         setload(false);
       });
   }, []);
 
-  useEffect(() => {
-    props.setCurrentLocation(myLocation);
-  }, [myLocation]);
+  // useEffect(() => {
+  //   props.setCurrentLocation(myLocation);
+  // }, [myLocation]);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -116,12 +141,12 @@ function HomePage(props) {
     setRefreshing(true);
     await _getLocation();
     _checkLogin()
-      .then(async data => {
+      .then(async (data) => {
         try {
           if (data) {
             let x = await props.GetUser(
               JSON.parse(data).token,
-              props.navigation,
+              props.navigation
             );
             setload(false);
           } else {
@@ -131,11 +156,11 @@ function HomePage(props) {
           setload(false);
         }
       })
-      .catch(err => (setload(false), console.log(err, 'ga ada yang login')));
+      .catch((err) => (setload(false), console.log(err, 'ga ada yang login')));
   }, [refreshing]);
 
   return (
-    <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
+    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
       <StatusBar
         barStyle="light-content"
         translucent={true}
@@ -148,7 +173,7 @@ function HomePage(props) {
           loop
         />
       ) : (
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <View style={style.topMenu}>
             <ImageBackground
               imageStyle={{
@@ -157,13 +182,15 @@ function HomePage(props) {
                 resizeMode: 'stretch',
               }}
               source={require('../../../assets/background/RectangleHeader.png')}
-              style={style.headerImage}>
-              <View style={{flex: 1, marginTop: 50, marginHorizontal: 20}}>
+              style={style.headerImage}
+            >
+              <View style={{ flex: 1, marginTop: 50, marginHorizontal: 20 }}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                  }}>
+                  }}
+                >
                   <Image
                     style={{
                       height: dimHeight * 0.035,
@@ -173,54 +200,65 @@ function HomePage(props) {
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
                   {props.userData && (
-                    <View style={{flexDirection: 'row'}}>
-                      <View style={{marginTop: 1}}>
+                    <View style={{ flexDirection: 'row' }}>
+                      <View style={{ marginTop: 1 }}>
                         <Lonceng />
                       </View>
 
                       <TouchableOpacity
                         onPress={() => {
                           props.navigation.navigate('ProfileStack');
-                        }}>
-                        <View style={{marginLeft: 10}}>
+                        }}
+                      >
+                        <View style={{ marginLeft: 10 }}>
                           <Image
                             style={style.profilePicture}
-                            source={{ uri: props.userData?.imageUrl ? props.userData?.imageUrl : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r' }}
+                            source={{
+                              uri: props.userData?.imageUrl
+                                ? props.userData?.imageUrl
+                                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                            }}
                           />
                         </View>
                       </TouchableOpacity>
                     </View>
                   )}
                 </View>
-                <SearchBar placeholder={"cari dokter atau spesialis"} onFocus={() =>  props.navigation.navigate("Doctor", {query: "SearchFromHome"})}/>
+                <SearchBar
+                  placeholder={'cari dokter atau spesialis'}
+                  onFocus={() =>
+                    props.navigation.navigate('Doctor', {
+                      query: 'SearchFromHome',
+                    })
+                  }
+                />
               </View>
             </ImageBackground>
           </View>
 
-          <MenuNavigator navigation={props.navigation} data={props.userData}/>
+          <MenuNavigator navigation={props.navigation} data={props.userData} />
           <View style={style.container}>
             {props.userData && (
-              <View >
-                <Text
-                  style={[
-                    style.tagTitle,
-                    {color: '#DDDDDD'},
-                  ]}>
+              <View>
+                <Text style={[style.tagTitle, { color: '#DDDDDD' }]}>
                   Aktifitas
                 </Text>
-                <View style={{height: 170}}>
-                <RecentActivity navigation={props.navigation} />
+                <View style={{ height: 170 }}>
+                  <RecentActivity navigation={props.navigation} />
                 </View>
               </View>
             )}
-            <View style={{marginTop: !props.userData ? 70 : null}}>
-              <ActivityAction navigation={props.navigation} data={props.userData}/>
+            <View style={{ marginTop: !props.userData ? 70 : null }}>
+              <ActivityAction
+                navigation={props.navigation}
+                data={props.userData}
+              />
             </View>
             <View>
               <FlatList
                 data={promos}
-                keyExtractor={item => item.id + ''}
-                renderItem={({item}) => <CardPromo data={item} />}
+                keyExtractor={(item) => item.id + ''}
+                renderItem={({ item }) => <CardPromo data={item} />}
                 horizontal={true}
                 style={style.promos}
               />
@@ -275,13 +313,16 @@ const style = StyleSheet.create({
     right: 25,
     top: 25,
   },
-  // profilePicture: { 
+  // profilePicture: {
   //   borderRadius: 25 / 2,
   //   width: 25,
   //   height: 25,
   // },
-  profilePicture: { 
-    borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2,
+  profilePicture: {
+    borderRadius:
+      Math.round(
+        Dimensions.get('window').width + Dimensions.get('window').height
+      ) / 2,
     width: Dimensions.get('window').width * 0.05787037,
     height: Dimensions.get('window').width * 0.05787037,
   },
@@ -319,7 +360,7 @@ const style = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 
@@ -330,7 +371,4 @@ const mapDispatchToProps = {
   GetUser,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(HomePage);
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

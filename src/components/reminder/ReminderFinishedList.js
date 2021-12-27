@@ -28,7 +28,7 @@ function ReminderFinishedList({props, drugs}) {
                     <View style={styles.eachDrugContainer} key={index}>
                         <TouchableOpacity
                             style={styles.touchable}
-                            onPress={() => console.log('See Detail', index)}
+                            onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: el})}
                         >
                             <View style={styles.drugTopContainer}>
                                 <AntDesign 

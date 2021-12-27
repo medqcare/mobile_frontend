@@ -16,28 +16,30 @@ import {
   BackHandler,
   RefreshControl,
   ToastAndroid,
-  StatusBar
+  StatusBar,
 } from 'react-native';
 import { connect } from 'react-redux';
 import CardHospital from '../../../components/home/hospital/card-hospital';
 import { getDataHospital } from '../../../stores/action';
-import SearchBar from '../../../components/headers/SearchBar'
+import SearchBar from '../../../components/headers/SearchBar';
 
 import axios from 'axios';
 
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Ionicons';
-import latLongToKM from '../../../helpers/latlongToKM'
+import latLongToKM from '../../../helpers/latlongToKM';
 import Search from '../../../assets/svg/Search';
-import ArrowBack from '../../../assets/svg/ArrowBack'
+import ArrowBack from '../../../assets/svg/ArrowBack';
 
 import { baseURL } from '../../../config';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
   // console.log(props.navigation.state.params.facility,'ini params')
-  let mainFac = props.navigation.state.params.facility
-  const [loader, setLoad] = useState(false)
+  console.log(props.myLocation);
+  console.log(props.userData);
+  let mainFac = props.navigation.state.params.facility;
+  const [loader, setLoad] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [location, setLocation] = useState(props.myLocation);
   const [show, setShow] = useState([]);
@@ -48,21 +50,24 @@ function SearchDoctorPage(props) {
     fetchHospitalPagination();
   }, []);
 
-
   const fetchHospitalPagination = async () => {
     try {
-      console.log("====================");
+      console.log('====================');
       console.log(location.lat, location.lng);
-      let { data } = await axios({
-        method: 'POST',
-        // url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
-        url: `${baseURL}/api/v1/members/searchFacility`,
-        data: {
-          lat: location ? location.lat : -6.268809,
-          lon: location ? location.lng : 106.974705,
-          maxDistance: 100000,
+      let { data } = await axios(
+        {
+          method: 'POST',
+          // url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
+          url: `${baseURL}/api/v1/members/searchFacility`,
+          data: {
+            lat: location ? location.lat : -6.268809,
+            lon: location ? location.lng : 106.974705,
+            maxDistance: 100000,
+          },
         },
-      }, { timeout: 4000 });
+        { timeout: 4000 }
+      );
+      console.log(data, '>>>>>> woi data aku');
       setShow(data.data);
       setLoading(false);
       // let nextPage = currentPage + 1;
@@ -73,54 +78,66 @@ function SearchDoctorPage(props) {
     }
   };
 
-  const _textChange = async facility => {
+  const _textChange = async (facility) => {
     setLoading(true);
     setShow([]);
     try {
       let { data, status } = await axios.get(
-        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=${mainFac}`, { timeout: 4000 }
+        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=${mainFac}`,
+        { timeout: 4000 }
       );
       if (status == 204) {
         setLoading(false);
       } else {
         console.log('===========================');
         data.data.sort((a, b) => {
-          let distanceA = latLongToKM(a.location.coordinates[1], a.location.coordinates[0], location.lat, location.lng).toFixed(1)
-          let distanceB = latLongToKM(b.location.coordinates[1], b.location.coordinates[0], location.lat, location.lng).toFixed(1)
-          return distanceA - distanceB
-        })
+          let distanceA = latLongToKM(
+            a.location.coordinates[1],
+            a.location.coordinates[0],
+            location.lat,
+            location.lng
+          ).toFixed(1);
+          let distanceB = latLongToKM(
+            b.location.coordinates[1],
+            b.location.coordinates[0],
+            location.lat,
+            location.lng
+          ).toFixed(1);
+          return distanceA - distanceB;
+        });
         setShow(data.data);
         setLoading(false);
       }
     } catch (error) {
       console.log(error);
-      ToastAndroid.show(error.message, ToastAndroid.LONG)
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
     }
   };
 
   const onRefresh = React.useCallback(() => {
-    fetchHospitalPagination()
+    fetchHospitalPagination();
   }, [loader]);
 
-  BackHandler.addEventListener("hardwareBackPress", () => {
-    return props.navigation.navigate('Home')
-  })
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    return props.navigation.navigate('Home');
+  });
   // console.log(show, 'show')
   return (
     <KeyboardAvoidingView
       style={styles.Container}
       behavior="height"
-      enabled={false}>
-      <StatusBar hidden/>
+      enabled={false}
+    >
+      <StatusBar hidden />
       <View style={{ height: '15%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
-          style={{ flex: 1 }}>
-          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1, }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.pop()} >
+          style={{ flex: 1 }}
+        >
+          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1 }}>
+            <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{ flexDirection: 'row' }}>
-                <View style={{marginTop: 3}}>
+                <View style={{ marginTop: 3 }}>
                   <ArrowBack />
                 </View>
                 <Text
@@ -128,46 +145,51 @@ function SearchDoctorPage(props) {
                     fontSize: 18,
                     color: '#ffff',
                     position: 'relative',
-                    marginLeft: 10
-                  }}>
+                    marginLeft: 10,
+                  }}
+                >
                   Daftar Klinik
-                  </Text>
-                </View>
+                </Text>
+              </View>
             </TouchableOpacity>
-            <SearchBar placeholder={'cari klinik'} onChangeText={text => _textChange(text)}/>
+            <SearchBar
+              placeholder={'cari klinik'}
+              onChangeText={(text) => _textChange(text)}
+            />
           </View>
         </ImageBackground>
       </View>
 
       <View style={{ flex: 4.8, backgroundColor: '#121212' }}>
-        {showLoading ? <ActivityIndicator size="large" color="#0000ff" /> :
-          show?.length > 0 ? (
-            <FlatList
-              refreshControl={
-                <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-              }
-              data={show}
-              keyExtractor={(item, index) => String(index)}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() =>
-                    props.navigation.navigate('DetailHospital', { data: item })
-                  }>
-                  <View>
-                    <CardHospital data={item} />
-                    {/* <Text style={{backgroundColor:'#F1D5CC', marginVertical:10}}>{JSON.stringify(item, null, 2)}</Text> */}
-                  </View>
-                </TouchableOpacity>
-              )}
-              // onEndReached={() => fetchHospitalPagination()}
-              onEndReachedThreshold={1}
-            />
-          ) : (
-              <View style={{ flex: 1, padding: 20, alignItems: 'center' }}>
-                <Text style={{color: '#DDDDDD'}}>Tidak ada klinik terdekat</Text>
-              </View>
-            )
-        }
+        {showLoading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : show?.length > 0 ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+            }
+            data={show}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  props.navigation.navigate('DetailHospital', { data: item })
+                }
+              >
+                <View>
+                  <CardHospital data={item} />
+                  {/* <Text style={{backgroundColor:'#F1D5CC', marginVertical:10}}>{JSON.stringify(item, null, 2)}</Text> */}
+                </View>
+              </TouchableOpacity>
+            )}
+            // onEndReached={() => fetchHospitalPagination()}
+            onEndReachedThreshold={1}
+          />
+        ) : (
+          <View style={{ flex: 1, padding: 20, alignItems: 'center' }}>
+            <Text style={{ color: '#DDDDDD' }}>Tidak ada klinik terdekat</Text>
+          </View>
+        )}
 
         {search === false && (
           <View
@@ -176,7 +198,8 @@ function SearchDoctorPage(props) {
               justifyContent: 'center',
               backgroundColor: '#FFF',
               flex: 1,
-            }}>
+            }}
+          >
             <Image
               source={{ uri: 'https://i.imgur.com/FPC6uwX.jpg' }}
               style={{ height: '30%', width: '40%' }}
@@ -251,7 +274,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderRadius: 25,
     flexDirection: 'row',
-    width: '90%'
+    width: '90%',
   },
   headerImage: {
     width: '100%',
@@ -260,7 +283,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 

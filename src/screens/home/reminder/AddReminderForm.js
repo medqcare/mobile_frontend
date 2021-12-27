@@ -416,14 +416,14 @@ function AddReminderForm(props) {
 						</View>
 					</View>
 				</View>
-				<View style={styles.reminderFormContainer}>
+				{/* <View style={styles.reminderFormContainer}> */}
 					{/* Title */}
-					<View style={styles.reminderTitle}>
+					{/* <View style={styles.reminderTitle}>
 						<Text style={styles.lightText}>Atur waktu pengingat</Text>
-					</View>
+					</View> */}
 
 					{/* Reminder time */}
-					<View style={{paddingTop: 14,}}>
+					{/* <View style={{paddingTop: 14,}}>
 						<View style={styles.reminderTimeContainer}>
 							<View style={{paddingHorizontal: 10}}>
 								<View style={styles.reminderTopContainer}>
@@ -454,48 +454,9 @@ function AddReminderForm(props) {
 								</View>
 							</View>
 						</View>
-					</View>
-					{/* <View style={{paddingTop: 14}}>
-						<View style={styles.reminderTimeContainer}>
-							<View style={{paddingHorizontal: 10}}>
-								<View style={styles.reminderTopContainer}>
-									<Text style={styles.lightText}>Jam kedua</Text>
-								</View>
-								<View style={styles.reminderLowerContainer}>
-									<View style={{flexDirection: "row"}}>
-										<MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-										<Text style={styles.reminderTimeText}>13:00</Text>
-									</View>
-									<TouchableOpacity
-										onPress={() => create()}
-									>
-										<MaterialCommunityIcons name="pencil" size={24} color="rgba(128, 128, 128, 1)" />
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
-					</View>
-					<View style={{paddingTop: 14}}>
-						<View style={styles.reminderTimeContainer}>
-							<View style={{paddingHorizontal: 10}}>
-								<View style={styles.reminderTopContainer}>
-									<Text style={styles.lightText}>Jam ketiga</Text>
-								</View>
-								<View style={styles.reminderLowerContainer}>
-									<View style={{flexDirection: "row"}}>
-										<MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-										<Text style={styles.reminderTimeText}>18:00</Text>
-									</View>
-									<TouchableOpacity
-										onPress={() => create()}
-									>
-										<MaterialCommunityIcons name="pencil" size={24} color="rgba(128, 128, 128, 1)" />
-									</TouchableOpacity>
-								</View>
-							</View>
-						</View>
 					</View> */}
-				</View>
+				{/* </View> */}
+				
 				<View style={styles.buttonContainer}>
 					
 					<TouchableOpacity

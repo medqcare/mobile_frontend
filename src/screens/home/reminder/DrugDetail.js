@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   TextInput,
+  BackHandler,
 } from "react-native";
 import { connect } from "react-redux";
 import { ScrollView } from "react-native-gesture-handler";
@@ -25,7 +26,6 @@ function DrugDetail({navigation, userData}){
     const  { drugDetail } = navigation.state.params
 
     const { reminders, notes } = drugDetail
-    console.log(reminders)
     const [drugReminders, setDrugReminders] = useState([])
     const consumedDrugs = reminders.filter(el => el.status === true)
     const skippedDrugs = reminders.filter(el => el.status === false)
@@ -48,6 +48,11 @@ function DrugDetail({navigation, userData}){
         }
         setDrugReminders(selectedDateReminders)
     }
+
+    BackHandler.addEventListener("hardwareBackPress", () => {
+	    navigation.pop();
+		return true;
+	});
 
     return (
         <View style={styles.container}>
@@ -117,38 +122,43 @@ function DrugDetail({navigation, userData}){
                 {/* Calendar */}
                 <View style={styles.calendarContainer}>
                     <Calendar onDateSelected={setDate} isDateBlackList={false}/>
-                    <Text style={styles.upperCenteredSectionText}>CALENDAR</Text>
                 </View>
 
                 {/* Bottom Container */}
-                <DataTable style={styles.bottomContainer}>
-                    {drugReminders.map(el => {
-                        const status = el.status
-                        const alarmTime = new Date(el.alarmTime)
-                        const hours = alarmTime.getHours()
-                        const minutes = alarmTime.getMinutes()
-                        const displayTime = `${withZero(hours)}:${withZero(minutes)}`
-                        return (
-                            <>
-                                <DataTable.Row style={{borderBottomWidth: 0 }}>
-                                    <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><FontAwesome name="circle" size={10} color="#B5B5B5" /></DataTable.Cell>
-                                    <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>{displayTime}</Text></DataTable.Cell>
-                                </DataTable.Row>
-                                <DataTable.Row style={{borderBottomWidth: 0}}>
-                                    <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
-                                    <DataTable.Cell>
-                                        {status === null ?
-                                            <Text style={{color: 'white'}}>-</Text> :
-                                            status ? 
-                                                <Text style={{color: 'green'}}>DIMINUM</Text> :
-                                                <Text style={{color: 'red'}}>TERLEWAT</Text> 
-                                        }
-                                    </DataTable.Cell>
-                                </DataTable.Row>
-                            </>
-                        )
-                    })}
-                </DataTable>
+                {drugReminders.length > 0 ?
+                    <DataTable style={styles.bottomContainer}>
+                        {drugReminders.map((el, index) => {
+                            // const status = el.status
+                            let { statusChangedAt, status, alarmTime } = el
+                            // const alarmTime = new Date(el.alarmTime)
+                            if(statusChangedAt) statusChangedAt = new Date(statusChangedAt)
+                            else statusChangedAt = new Date(alarmTime)
+                            const hours = statusChangedAt.getHours()
+                            const minutes = statusChangedAt.getMinutes()
+                            const displayTime = `${withZero(hours)}:${withZero(minutes)}`
+                            return (
+                                <View key={index}>
+                                    <DataTable.Row style={{borderBottomWidth: 0 }}>
+                                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><FontAwesome name="circle" size={10} color="#B5B5B5" /></DataTable.Cell>
+                                        <DataTable.Cell><Text style={{color: 'rgba(221, 221, 221, 1)'}}>{displayTime}</Text></DataTable.Cell>
+                                    </DataTable.Row>
+                                    <DataTable.Row style={{borderBottomWidth: 0}}>
+                                        <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
+                                        <DataTable.Cell>
+                                            {status === null ?
+                                                <Text style={{color: 'white'}}>-</Text> :
+                                                status ? 
+                                                    <Text style={{color: 'green'}}>DIMINUM</Text> :
+                                                    <Text style={{color: 'red'}}>TERLEWAT</Text> 
+                                            }
+                                        </DataTable.Cell>
+                                    </DataTable.Row>
+                                </View>
+                            )
+                        })}
+                    </DataTable> :
+                    <View><Text style={styles.inputText}>Tidak ada data</Text></View>
+                }
             </ScrollView>
         </View>
     )

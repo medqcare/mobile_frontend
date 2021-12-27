@@ -30,7 +30,7 @@ function SearchDoctorPage(props) {
   // const [searchFromHome, setSearchFromHome] = useState(true)
   const [location, setLocation] = useState(props.myLocation);
   const [currentPage, setCurrentPage] = useState(0);
-
+  console.log(props.myLocation, '>>>> ini location awak');
   const [show, setShow] = useState([]);
   const [showLoading, setLoading] = useState(true);
   const [loader, setLoad] = useState(false);

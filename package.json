@@ -26,6 +26,7 @@
     "expo-google-sign-in": "~10.0.3",
     "expo-image-picker": "~11.0.3",
     "expo-linear-gradient": "~10.0.3",
+    "expo-location": "~13.0.4",
     "expo-media-library": "^13.0.3",
     "expo-sharing": "~10.0.3",
     "expo-status-bar": "~1.1.0",

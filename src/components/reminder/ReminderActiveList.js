@@ -22,16 +22,16 @@ import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
 import { ActivityIndicator } from "react-native-paper";
 import withZero from "../../helpers/withZero";
 import { getSelectedDate } from "../../helpers/todaysDate";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, drugs }) {
     const [load, setLoad] = useState(true)
-    const { reminderDetails } = props.userData
     const [content, setContent] = useState(null)
-    const [loadContent, setLoadContent] = useState(true)
-    const [reminders, setReminders] = useState(null)
+    const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
+    const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
 
     useEffect(() => {
         if(drugs.length > 0){
@@ -45,24 +45,13 @@ function ReminderActiveList({props, drugs }) {
             }))
             .then(result => {
                 setContent(result)
-                setLoadContent(false)
+                setLoad(false)
             })
         } else {
             setContent([])
             setLoad(false)
         }
     }, [])
-
-    useEffect(() => {
-        if(!loadContent){
-            const newReminders = content.map(el => {
-                return el.reminder
-            })
-            setReminders(newReminders)
-            setLoad(false)
-        }
-    }, [loadContent])
-
     
     const toggleSwitch = (index) => {
         const newArray = content.map((el, idx) => {
@@ -86,6 +75,62 @@ function ReminderActiveList({props, drugs }) {
             setActiveSections(sections.includes(undefined) ? [] : sections);
         }
     }; 
+
+    const changeReminderStatus = async (status, reminderID, _, index,) => {
+        if(status){
+            const newLoad = loadChangeStatusTrue.map((el, idx) => {
+                if(idx === index){
+                    el = true
+                }
+                return el
+            }) 
+            setLoadChangeStatusTrue(newLoad)
+        } else {
+            const newLoad = loadChangeStatusFalse.map((el, idx) => {
+                if(idx === index){
+                    el = true
+                }
+                return el
+            }) 
+            setLoadChangeStatusFalse(newLoad)
+        }
+        const token = JSON.parse(await AsyncStorage.getItem('token')).token
+        await props.changeReminderStatus(status, reminderID, token)
+
+        const newReminders= content[_].reminders.map(el => {
+            if(el._id === reminderID){
+                el.status = status
+                el.statusChangedAt = new Date()
+            }
+            return el
+        })
+
+        const newContent = content.map((el, idx) => {
+            if(el._id === content[_]._id){
+                el.reminders = newReminders
+            }
+            return el
+        })
+
+        setContent(newContent)
+        if(status){
+            const newLoad = loadChangeStatusTrue.map((el, idx) => {
+                if(idx === index){
+                    el = false
+                }
+                return el
+            }) 
+            setLoadChangeStatusTrue(newLoad)
+        } else {
+            const newLoad = loadChangeStatusFalse.map((el, idx) => {
+                if(idx === index){
+                    el = false
+                }
+                return el
+            }) 
+            setLoadChangeStatusFalse(newLoad)
+        }
+    }
 
     const renderHeader = (section, _, isActive,) => {
         return (
@@ -183,28 +228,36 @@ function ReminderActiveList({props, drugs }) {
                                             <Text style={styles.reminderTimeText}>{alarmHours}</Text>
                                         </View>
                                             {status === null ? 
-                                                <View style={{flexDirection: "row", justifyContent: "space-between", width: 170, }}>
+                                                <View style={{flexDirection: "row", justifyContent: "space-between", width: 190 }}>
                                                     <TouchableOpacity
-                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
-                                                    >
-                                                        <Text style={{color: 'rgba(119, 191, 244, 1)'}}>TERLEWAT</Text>
-                                                    </TouchableOpacity>
+                                                        onPress={() => changeReminderStatus(false, el._id, _, index)}
+                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20, width: 89, justifyContent: "center", alignItems: "center"}}
+                                                        >
+                                                            {loadChangeStatusFalse[index] ? 
+                                                                <ActivityIndicator size={"small"} color={"red"} /> : 
+                                                                <Text style={{color: 'rgba(119, 191, 244, 1)'}}>TERLEWAT</Text>
+                                                            }
+                                                    </TouchableOpacity>    
                                                     <TouchableOpacity
-                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20}}
-                                                    >
-                                                        <Text style={{color: 'rgba(119, 191, 244, 1)'}}>DIMINUM</Text>
+                                                        onPress={() => changeReminderStatus(true, el._id, _, index)}
+                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20, width: 89, justifyContent: "center", alignItems: "center"}}
+                                                        >
+                                                        {loadChangeStatusTrue[index] ? 
+                                                            <ActivityIndicator size={"small"} color={"green"} /> : 
+                                                            <Text style={{color: 'rgba(119, 191, 244, 1)'}}>DIMINUM</Text>
+                                                        }
                                                     </TouchableOpacity>
                                                 </View> :
                                                 <View style={{flexDirection: "row", alignItems: "center"}}>
                                                     {status ?
                                                         <>
-                                                            <ReminderSkippedLogo/>
-                                                            <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
+                                                            <FontAwesome name="check" size={24} color="green" />
+                                                            <Text style={{color: 'green', paddingLeft: 5}}>DIMINUM</Text>
                                                         </>
                                                     :
                                                         <>
-                                                            <FontAwesome name="check" size={24} color="green" />
-                                                            <Text style={{color: 'green', paddingLeft: 5}}>DIMINUM</Text>
+                                                            <ReminderSkippedLogo/>
+                                                            <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
                                                         </>
                                                     }
                                                 </View>
