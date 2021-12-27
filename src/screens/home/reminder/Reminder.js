@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getPrescriptions, getReminders } from '../../../stores/action'
+import { getDrugs, getReminders } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -24,39 +24,44 @@ const dimWidth = Dimensions.get("window").width;
 function Reminder(props) {
 	const swiper = useRef(null)
 
-	const userData = props.userData
+	const [userData, setUserData] = useState(props.userData)
+	const [drugs, setDrugs] = useState([])
 
 	const [load, setLoad] = useState(true)
+	const [loadGetDrugs, setLoadGetDrugs] = useState(true)
 	
-	const [activePrescriptions, setActivePrescriptions] = useState([])
-	const [finishedPrescriptions, setFinishedPrescriptions] = useState([])
+	const [activeDrugs, setActiveDrugs] = useState([])
+	const [finishedDrugs, setFinishedDrugs] = useState([])
 
 	useEffect( async () => {
 		try {
 			let token = await AsyncStorage.getItem("token");
 			token = JSON.parse(token).token
 			const patientID = props.userData._id
-			await props.getPrescriptions(patientID, token)
-			await props.getReminders(patientID, token)
+			const allDrugs = await props.getDrugs(patientID, token)
+			setDrugs(allDrugs)
+			setLoadGetDrugs(false)
 		} catch (error){
 			console.log(error, 'error di Reminder Page')
 		}
 	}, [])
 
 	useEffect(async () => {
-		if(activePrescriptions.length === 0) await filter()
-		setLoad(false)
-	}, [])
+		if(!loadGetDrugs){
+			await filter()
+			setLoad(false)
+		}
+	}, [loadGetDrugs])
 
 	async function filter(){
 		const active = []
 		const finsihed = []
-		for(let i = 0; i < userData.prescriptions.length; i++){
-			if(userData.prescriptions[i].isFinished) finsihed.push(userData.prescriptions[i])
-			else active.push(userData.prescriptions[i])
+		for(let i = 0; i < drugs.length; i++){
+			if(drugs[i].isFinished) finsihed.push(drugs[i])
+			else active.push(drugs[i])
 		}
-		setFinishedPrescriptions(finsihed)
-		setActivePrescriptions(active)
+		setFinishedDrugs(finsihed)
+		setActiveDrugs(active)
 	}
 
 	function firstName(){
@@ -78,7 +83,6 @@ function Reminder(props) {
 					<TouchableOpacity
 						activeOpacity={1}
 						style={index === 0 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
-						// onPress={() => changeStatus('Active')}
 						onPress={() => {
 							if(index === 1){
 								swiper.current.scrollBy(-1)}
@@ -94,7 +98,6 @@ function Reminder(props) {
 								swiper.current.scrollBy(1)}
 							}
 						}
-						// onPress={() => changeStatus('Finished')}
 						style={index === 1 ? styles.selectedStatusInnerContainer: styles.unSelectedStatusInnerContainer}
 					>
 						<Text style={index === 1 ? styles.selectedStatusText: styles.unSelectedStatusText}>SELESAI</Text>
@@ -117,10 +120,10 @@ function Reminder(props) {
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<ReminderActiveList props={props} prescriptions={activePrescriptions}/>
+						<ReminderActiveList props={props} drugs={activeDrugs}/>
 					</ScrollView>
 					<ScrollView>
-						<ReminderFinishedList props={props} prescriptions={finishedPrescriptions}/>
+						<ReminderFinishedList props={props} drugs={finishedDrugs}/>
 					</ScrollView>
 				</Swiper>
 			}
@@ -186,7 +189,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	getPrescriptions,
+	getDrugs,
 	getReminders
 }
 

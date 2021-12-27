@@ -11,12 +11,11 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
   Image,
-  Alert,
 } from 'react-native';
 
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+
 import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -153,10 +152,6 @@ function DokumenList(props) {
       url: require('../../../assets/png/documentPage/detail.png'),
     },
     {
-      label: 'Share',
-      url: require('../../../assets/png/documentPage/ic_share.png'),
-    },
-    {
       label: 'Unduh',
       url: require('../../../assets/png/documentPage/unduh.png'),
     },
@@ -216,12 +211,6 @@ function DokumenList(props) {
         setModalDelete(true);
         break;
 
-      case 'Share': {
-        (async () => {
-          await shareFile();
-        })();
-      }
-
       default:
         break;
     }
@@ -255,24 +244,6 @@ function DokumenList(props) {
       .catch((error) => {
         console.error(error);
       });
-  };
-
-  const shareFile = async () => {
-    const fileUri = FileSystem.documentDirectory + selectedName;
-    try {
-      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
-
-      if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert('Failed to share file');
-      }
-
-      await Sharing.shareAsync(uri);
-    } catch (error) {
-      ToastAndroid.show(
-        'Failed to share file, please try again later',
-        ToastAndroid.LONG
-      );
-    }
   };
 
   const saveFile = async (uri) => {
@@ -415,7 +386,7 @@ function DokumenList(props) {
           renameAction(newName);
         }}
         nameBefore={selectedName}
-        optionRightText={'Simpan'}
+        optionRightText={'Rename'}
         warning={'Masukkan Nama Baru'}
         load={modalLoad}
       />

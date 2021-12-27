@@ -20,11 +20,13 @@ import Animated, {
 import Accordion from 'react-native-collapsible/Accordion';
 import ReminderSkippedLogo from '../../assets/svg/ReminderSkippedLogo'
 import { ActivityIndicator } from "react-native-paper";
+import withZero from "../../helpers/withZero";
+import { getSelectedDate } from "../../helpers/todaysDate";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, prescriptions }) {
+function ReminderActiveList({props, drugs }) {
     const [load, setLoad] = useState(true)
     const { reminderDetails } = props.userData
     const [content, setContent] = useState(null)
@@ -32,8 +34,8 @@ function ReminderActiveList({props, prescriptions }) {
     const [reminders, setReminders] = useState(null)
 
     useEffect(() => {
-        if(prescriptions.length > 0){
-            Promise.all(prescriptions.map(el => {
+        if(drugs.length > 0){
+            Promise.all(drugs.map(el => {
                 const newObject = {
                     ...el,
                     type: 'Tablet',
@@ -60,6 +62,7 @@ function ReminderActiveList({props, prescriptions }) {
             setLoad(false)
         }
     }, [loadContent])
+
     
     const toggleSwitch = (index) => {
         const newArray = content.map((el, idx) => {
@@ -153,13 +156,23 @@ function ReminderActiveList({props, prescriptions }) {
 
     const renderContent = (section, _, isActive) => {
         const { reminders } = section
+        const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(new Date())
+        const todaysReminder = []
+        for(let i = 0; i < reminders.length; i++){
+            const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
+            const reminderMonth = new Date(reminders[i].alarmTime).getMonth()
+            const reminderDate = new Date(reminders[i].alarmTime).getDate()
+            if(reminderYear === todaysYear && reminderMonth === todaysMonth && reminderDate === todaysDate) todaysReminder.push(reminders[i])
+        }
         return (
             <Animatable.View
                 key={_}
                 duration={400}
                 style={styles.reminderContainer}
                 transition="backgroundColor">
-                    {reminders.map((el, index) => {
+                    {todaysReminder.map((el, index) => {
+                        const alarmTime = new Date(reminders[index].alarmTime).getHours()
+                        const alarmHours = `${withZero(alarmTime)}:00`
                         const status = el.status
                         return (
                             <View key={index}>
@@ -167,7 +180,7 @@ function ReminderActiveList({props, prescriptions }) {
                                     <View style={styles.reminderLowerContainer}>
                                         <View style={{flexDirection: "row"}}>
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                            <Text style={styles.reminderTimeText}>{reminders[index].alarmTime}</Text>
+                                            <Text style={styles.reminderTimeText}>{alarmHours}</Text>
                                         </View>
                                             {status === null ? 
                                                 <View style={{flexDirection: "row", justifyContent: "space-between", width: 170, }}>
