@@ -313,18 +313,13 @@ const style = StyleSheet.create({
     right: 25,
     top: 25,
   },
-  // profilePicture: {
-  //   borderRadius: 25 / 2,
-  //   width: 25,
-  //   height: 25,
-  // },
   profilePicture: {
     borderRadius:
       Math.round(
         Dimensions.get('window').width + Dimensions.get('window').height
       ) / 2,
-    width: Dimensions.get('window').width * 0.05787037,
-    height: Dimensions.get('window').width * 0.05787037,
+    width: Dimensions.get('window').width * 0.07,
+    height: Dimensions.get('window').width * 0.07,
   },
   greeting: {
     position: 'absolute',
