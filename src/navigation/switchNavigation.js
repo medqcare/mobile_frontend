@@ -1,9 +1,8 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import LoadingPage from '../screens/profile/loading'
 import Card_Stack from './card'
-import Profile_Stack from "./profile"
 import Undefined from '../screens/404'
-// import Activity_Stack from './activity'
+
 
 const Switch = createSwitchNavigator({
     Loading: {
@@ -18,11 +17,7 @@ const Switch = createSwitchNavigator({
     CardStack: {
         screen: Card_Stack,
     },
-    // ProfileStack: {
-    //     screen: Profile_Stack,
-    // }
 }, {
-    initialRouteName: 'Loading',
-    // initialRouteName: 'RegistrationUser'
+    initialRouteName: 'Loading'
 })
 export default createAppContainer(Switch); 
