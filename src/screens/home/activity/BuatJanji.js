@@ -53,6 +53,8 @@ const mapStateToProps = (state) => {
 };
 
 const buatJanji = (props) => {
+  const [insuranceNumber, setInsuranceNumber] = useState(null);
+  const [bpjsNumber, setBpjsNumber] = useState(null);
   let datadoctor = props.navigation.getParam('data');
   const [getDay, setGetDay] = useState('');
   let dayChoose = null;
@@ -264,6 +266,9 @@ const buatJanji = (props) => {
           ...patient2,
           patientTitle: getTitle(patient2),
           resus: filterForcreate2.resus,
+          paymentMethod: dompet,
+          insuranceNumber: insuranceNumber,
+          bpjsNumber: bpjsNumber,
           photo: patient2.photo
             ? patient2.photo
             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
@@ -638,7 +643,7 @@ const buatJanji = (props) => {
             <View style={cardStyle.dompet}>
               <TouchableOpacity
                 style={cardStyle.pembayaran}
-                onPress={() => setDompet('mandiri')}
+                onPress={() => setDompet('Mandiri')}
               >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
@@ -650,8 +655,8 @@ const buatJanji = (props) => {
                     Mandiri
                   </Text>
                 </View>
-                <TouchableOpacity onPress={() => setDompet('mandiri')}>
-                  {dompet === 'mandiri' ? (
+                <TouchableOpacity onPress={() => setDompet('Mandiri')}>
+                  {dompet === 'Mandiri' ? (
                     <View
                       style={{
                         height: 15,
@@ -687,7 +692,7 @@ const buatJanji = (props) => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={cardStyle.pembayaran}
-                onPress={() => setDompet('bni')}
+                onPress={() => setDompet('BNI')}
               >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
@@ -697,8 +702,8 @@ const buatJanji = (props) => {
                   />
                   <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BNI</Text>
                 </View>
-                <TouchableOpacity onPress={() => setDompet('bni')}>
-                  {dompet === 'bni' ? (
+                <TouchableOpacity onPress={() => setDompet('BNI')}>
+                  {dompet === 'BNI' ? (
                     <View
                       style={{
                         height: 15,
@@ -793,8 +798,31 @@ const buatJanji = (props) => {
             <View style={cardStyle.pembayaran}>
               <TextInput
                 placeholder={'Masukkan nomor BPJS'}
+                keyboardType="number-pad"
                 placeholderTextColor={'#B5B5B5'}
                 style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+                value={bpjsNumber}
+                onChangeText={setBpjsNumber}
+              />
+            </View>
+          </View>
+        )}
+
+        {patient.patient.insuranceStatus === 'ASURANSI' && (
+          <View
+            style={{
+              ...cardStyle.container,
+              borderWidth: 1,
+              borderColor: '#545454',
+            }}
+          >
+            <View style={cardStyle.pembayaran}>
+              <TextInput
+                placeholder={'Masukkan nomor Asuransi'}
+                placeholderTextColor={'#B5B5B5'}
+                style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+                value={insuranceNumber}
+                onChangeText={setInsuranceNumber}
               />
             </View>
           </View>
