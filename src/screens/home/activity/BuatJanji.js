@@ -104,6 +104,7 @@ const buatJanji = (props) => {
       address: null,
       placeOfBirth: null,
       mobilePhone: null,
+      resus: null,
     },
   });
 
@@ -128,6 +129,7 @@ const buatJanji = (props) => {
       placeOfBirth: null,
       mobilePhone: null,
       patientTitle: null,
+      resus: null,
     },
   });
   const [jadwal, setJadwal] = useState(null);
@@ -197,6 +199,7 @@ const buatJanji = (props) => {
           address: patient.patient?.address,
           placeOfBirth: patient.patient?.placeOfBirth || '',
           patientTitle: '',
+          resus: patient.patient?.resus || '+',
         },
       });
     }
@@ -260,6 +263,7 @@ const buatJanji = (props) => {
         patient: {
           ...patient2,
           patientTitle: getTitle(patient2),
+          resus: filterForcreate2.resus,
           photo: patient2.photo
             ? patient2.photo
             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
@@ -318,6 +322,7 @@ const buatJanji = (props) => {
             : family[0]?.address,
           placeOfBirth: family[0]?.placeOfBirth || '',
           patientTitle: '',
+          resus: family[0]?.resus || '+',
         },
       });
     }
