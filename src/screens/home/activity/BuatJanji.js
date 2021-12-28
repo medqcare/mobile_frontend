@@ -477,7 +477,8 @@ const buatJanji = (props) => {
         </View>
         {patient.patient.insuranceStatus === 'UMUM' && (
           <View>
-            <Text
+            {/* E-Wallet */}
+            {/* <Text
               style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
             >
               Dompet Digital
@@ -628,7 +629,7 @@ const buatJanji = (props) => {
                   )}
                 </TouchableOpacity>
               </TouchableOpacity>
-            </View>
+            </View> */}
             <Text
               style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
             >

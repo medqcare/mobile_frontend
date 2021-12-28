@@ -61,7 +61,7 @@ function RiwayatPage(props) {
         </ScrollView>
       </View>
 
-      {page === 'Daftar Janji' && <Pemesanan />}
+      {page === 'Daftar Janji' && <Pemesanan {...props} />}
       {page === 'Transaksi' && <Transaksi {...props} />}
       {/* { page === 'Resume Medis' && <ResumeMedis navigation={props.navigation}/> } */}
     </KeyboardAvoidingView>

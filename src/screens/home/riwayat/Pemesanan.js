@@ -14,7 +14,7 @@ import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieLoader from 'lottie-react-native';
 
-function Pemesanan(props) {
+export default function Pemesanan(props) {
   const [appoinment, setAppoinment] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [Load, setLoad] = useState(false);
@@ -172,7 +172,18 @@ function Pemesanan(props) {
                       }}
                     >
                       {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          const data = {
+                            doctorID: item.doctor.doctorID,
+                          };
+
+                          props.navigation.navigate('DetailDoctor', {
+                            data,
+                            back: 'Riwayat',
+                          });
+                        }}
+                      >
                         <View
                           style={{
                             backgroundColor: '#005EA2',
@@ -288,10 +299,3 @@ const styles = StyleSheet.create({
     // color: '#33E204'
   },
 });
-
-const mapDispatchToProps = {};
-const mapStateToProps = (state) => {
-  return state;
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Pemesanan);
