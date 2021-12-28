@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,15 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
-import { connect } from "react-redux";
-import InsuranceModal from "../../../components/modals/InsuranceModal";
+} from 'react-native';
+import { connect } from 'react-redux';
+import InsuranceModal from '../../../components/modals/InsuranceModal';
 
-import { formatNumberToRupiah } from "../../../helpers/formatRupiah";
-import ArrowDownWhite from "../../../assets/svg/ArrowDownWhite";
-import getFullName from "../../../helpers/getFullName";
-import ButtonPrimary from "../../../components/ButtonPrimary";
-import { TextInput } from "react-native-gesture-handler";
+import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
+import ArrowDownWhite from '../../../assets/svg/ArrowDownWhite';
+import getFullName from '../../../helpers/getFullName';
+import ButtonPrimary from '../../../components/ButtonPrimary';
+import { TextInput } from 'react-native-gesture-handler';
 
 const initialPatient = {
   patientID: null,
@@ -23,36 +23,36 @@ const initialPatient = {
   nik: null,
   photo: null,
   dob: null,
-  insuranceStatus: "Umum",
+  insuranceStatus: 'Umum',
 };
 
 const paymentMethod = {
   digitalWallets: [
     {
-      name: "Go-Pay",
-      iconUrl: require("../../../assets/png/ic_gopay.png"),
+      name: 'Go-Pay',
+      iconUrl: require('../../../assets/png/ic_gopay.png'),
     },
     {
-      name: "LinkAja",
-      iconUrl: require("../../../assets/png/ic_linkaja.png"),
+      name: 'LinkAja',
+      iconUrl: require('../../../assets/png/ic_linkaja.png'),
     },
     {
-      name: "OVO",
-      iconUrl: require("../../../assets/png/ic_ovo.png"),
+      name: 'OVO',
+      iconUrl: require('../../../assets/png/ic_ovo.png'),
     },
   ],
   banks: [
     {
-      name: "Transfer Virtual Mandiri",
-      iconUrl: require("../../../assets/png/ic_mandiri.png"),
+      name: 'Transfer Virtual Mandiri',
+      iconUrl: require('../../../assets/png/ic_mandiri.png'),
     },
     {
-      name: "BNI",
-      iconUrl: require("../../../assets/png/ic_BNI.png"),
+      name: 'BNI',
+      iconUrl: require('../../../assets/png/ic_BNI.png'),
     },
     {
-      name: "BCA",
-      iconUrl: require("../../../assets/png/ic_BCA.png"),
+      name: 'BCA',
+      iconUrl: require('../../../assets/png/ic_BCA.png'),
     },
   ],
 };
@@ -65,10 +65,10 @@ function Circle({ selected }) {
         height: 16,
         borderRadius: 100,
         borderWidth: 1,
-        borderColor: selected ? "#1380C3" : "#B5B5B5",
-        backgroundColor: selected ? "#1380C3" : "transparent",
-        alignItems: "center",
-        justifyContent: "center",
+        borderColor: selected ? '#1380C3' : '#B5B5B5',
+        backgroundColor: selected ? '#1380C3' : 'transparent',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       {selected ? (
@@ -77,7 +77,7 @@ function Circle({ selected }) {
             height: 7,
             width: 7,
             borderRadius: 7,
-            backgroundColor: "#DDDDDD",
+            backgroundColor: '#DDDDDD',
           }}
         />
       ) : null}
@@ -87,9 +87,9 @@ function Circle({ selected }) {
 
 function Payment(props) {
   const { clinic, tests, bookingTime, bookingSchedule } =
-    props.navigation.getParam("penunjang");
+    props.navigation.getParam('penunjang');
   const [patient, setPatient] = useState(initialPatient);
-  const [payment, setPayment] = useState("");
+  const [payment, setPayment] = useState('');
   const [isModalPaymentVisible, setIsModalPaymentVisible] = useState(false);
   const [numberBPJS, setNumberBPJS] = useState(null);
 
@@ -97,14 +97,14 @@ function Payment(props) {
     setPatient({ ...patient, insuranceStatus: insuranceName });
   };
   const onPressHandler = () => {
-    props.navigation.navigate("TransactionDetail", {
+    props.navigation.navigate('TransactionDetail', {
       penunjang: {
         clinic,
         bookingTime,
         bookingSchedule,
         patient,
-        numberBpjs: patient.insuranceStatus === "BPJS" ? numberBPJS : null,
-        paymentMethod: patient.insuranceStatus === "Umum" ? payment : null,
+        numberBpjs: patient.insuranceStatus === 'BPJS' ? numberBPJS : null,
+        paymentMethod: patient.insuranceStatus === 'Umum' ? payment : null,
       },
     });
   };
@@ -149,7 +149,7 @@ function Payment(props) {
               <View>
                 <View style={styles.patientInfoContainer}>
                   <Text style={styles.textGreyNormal}>
-                    Pasien:{" "}
+                    Pasien:{' '}
                     <Text style={styles.textWhiteNormal}>
                       {getFullName(props.userData)}
                     </Text>
@@ -174,9 +174,9 @@ function Payment(props) {
         </View>
         <TouchableOpacity
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
             paddingHorizontal: 13,
             paddingVertical: 16,
             backgroundColor: colors.lightGrey,
@@ -192,9 +192,10 @@ function Payment(props) {
         </TouchableOpacity>
         <View>
           {/* Umum */}
-          {patient.insuranceStatus === "Umum" ? (
+          {patient.insuranceStatus === 'Umum' ? (
             <>
-              <View style={{ marginBottom: 16 }}>
+              {/* Wallets */}
+              {/* <View style={{ marginBottom: 16 }}>
                 <Text style={styles.paymentTitle}>Dompet Digital</Text>
                 <View style={styles.paymentContainer}>
                   {paymentMethod.digitalWallets.map((wallet, index) => {
@@ -226,7 +227,7 @@ function Payment(props) {
                     );
                   })}
                 </View>
-              </View>
+              </View> */}
               <View>
                 <Text style={styles.paymentTitle}>Transfer Bank</Text>
                 <View style={styles.paymentContainer}>
@@ -236,16 +237,16 @@ function Payment(props) {
                     return (
                       <TouchableOpacity
                         style={{
-                          flexDirection: "row",
-                          justifyContent: "space-between",
-                          alignItems: "center",
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                           marginBottom: !isLastIndex ? 20 : 0,
                         }}
                         key={`${index}-transfer-bank`}
                         onPress={() => setPayment(data)}
                       >
                         <View
-                          style={{ flexDirection: "row", alignItems: "center" }}
+                          style={{ flexDirection: 'row', alignItems: 'center' }}
                         >
                           <Image source={data.iconUrl} width={20} height={20} />
                           <Text style={styles.paymentName}>{data.name}</Text>
@@ -261,7 +262,7 @@ function Payment(props) {
 
           {/*  BPJS */}
 
-          {patient.insuranceStatus === "BPJS" ? (
+          {patient.insuranceStatus === 'BPJS' ? (
             <View>
               <TextInput
                 placeholder="Masukan nomor BPJS"
@@ -281,9 +282,9 @@ function Payment(props) {
           ) : null}
         </View>
       </ScrollView>
-      {(patient.insuranceStatus === "Umum" && !!payment) ||
-      (patient.insuranceStatus === "BPJS" && !!numberBPJS) ? (
-        <ButtonPrimary label={"Lanjutkan"} onPress={onPressHandler} />
+      {(patient.insuranceStatus === 'Umum' && !!payment) ||
+      (patient.insuranceStatus === 'BPJS' && !!numberBPJS) ? (
+        <ButtonPrimary label={'Lanjutkan'} onPress={onPressHandler} />
       ) : null}
       {isModalPaymentVisible ? (
         <InsuranceModal
@@ -297,16 +298,16 @@ function Payment(props) {
 }
 
 const colors = {
-  white: "#DDDDDD",
-  grey: "#B5B5B5",
-  lightGrey: "#2F2F2F",
-  borderColor: "#515151",
+  white: '#DDDDDD',
+  grey: '#B5B5B5',
+  lightGrey: '#2F2F2F',
+  borderColor: '#515151',
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1F1F1F",
+    backgroundColor: '#1F1F1F',
     paddingHorizontal: 16,
     paddingVertical: 24,
   },
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
   },
   clinicInfoContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   clinicInfoImage: {
     width: 60,
@@ -337,12 +338,12 @@ const styles = StyleSheet.create({
   },
   clinicInfoTextTitle: {
     color: colors.white,
-    fontWeight: "500",
+    fontWeight: '500',
     fontSize: 12,
     marginBottom: 6,
   },
   clinicInfoAddressContainer: {
-    width: "60%",
+    width: '60%',
     marginBottom: 6,
   },
   clinicInfoTextNormal: {
@@ -350,32 +351,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   borderLine: {
-    width: "100%",
+    width: '100%',
     height: 1,
     backgroundColor: colors.borderColor,
     marginVertical: 12,
   },
   patientInfoContainer: {
     marginBottom: 6,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   dateInfoContainer: {
     marginBottom: 6,
-    flexDirection: "row",
-    alignSelf: "flex-start",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    alignItems: 'center',
   },
   dividingPoint: {
     height: 4,
     width: 4,
     borderRadius: 100,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     marginHorizontal: 8,
   },
   priceInfoContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   priceInfoTextWhite: {
     color: colors.white,
