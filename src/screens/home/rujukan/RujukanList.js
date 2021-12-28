@@ -146,7 +146,9 @@ function RujukanList(props) {
         />
       ) : (
         <View style={styles.content}>
-          <SafeAreaView style={styles.document}>
+          {
+            referenceFiles.length > 0 ? (
+              <SafeAreaView style={styles.document}>
             <FlatList
               data={referenceFiles}
               numColumns={2}
@@ -195,12 +197,12 @@ function RujukanList(props) {
               }}
             />
           </SafeAreaView>
-          {/* <TouchableOpacity
-            style={styles.buttonAdd}
-            onPress={() => setModalAdd(true)}
-          >
-            <Text style={styles.textButton}>Minta Rujukan</Text>
-          </TouchableOpacity> */}
+            ) : (
+              <View style={{ alignItems: 'center', marginTop: 25 }}>
+                <Text style={{ color: '#fff' }}>Tidak ada surat rujukan</Text>
+            </View>
+            )
+          }
         </View>
       )}
       <PictureModal
