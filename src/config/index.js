@@ -1,5 +1,5 @@
 // let baseURL = "https://api-medqcare.applimetis.id"
-let baseURL = 'http://d696-180-252-114-68.ngrok.io';
+let baseURL = "http://192.168.43.100"
 module.exports = {
   baseURL,
 };
