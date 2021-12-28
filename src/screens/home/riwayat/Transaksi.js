@@ -14,15 +14,16 @@ import { connect } from 'react-redux';
 import { baseURL } from '../../../config';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import LottieLoader from 'lottie-react-native';
+import getPaymentMethod from '../../../helpers/getPaymentMethod';
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
   "'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90'";
 
-function Transaksi(props) {
+export default function Transaksi(props) {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  console.log(props);
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -59,7 +60,7 @@ function Transaksi(props) {
       }
 
       default: {
-        return { name: 'Belum Dibayar', style: { color: '#facc15' } };
+        return { name: 'Menunggu Pembayaran', style: { color: '#facc15' } };
       }
     }
   };
@@ -83,7 +84,7 @@ function Transaksi(props) {
             keyExtractor={(item) => `${item._id}`}
             renderItem={({ item }) => {
               const status = getTransactionStatus(item.status);
-
+              const payment = getPaymentMethod(item.paymentMethod);
               return (
                 <TouchableOpacity
                   style={{
@@ -91,6 +92,13 @@ function Transaksi(props) {
                     padding: 10,
                     borderRadius: 5,
                     marginBottom: 12,
+                  }}
+                  onPress={() => {
+                    props.navigation.navigate('DetailTransaction', {
+                      transaction: {
+                        ...item,
+                      },
+                    });
                   }}
                 >
                   <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
@@ -161,7 +169,7 @@ function Transaksi(props) {
                           width: 50,
                           marginTop: 5,
                         }}
-                        source={require('../../../assets/png/ic_mandiri.png')}
+                        source={payment.iconUrl}
                       />
                       <View style={{ flexDirection: 'column', marginLeft: 12 }}>
                         <Text
@@ -206,18 +214,18 @@ const styles = StyleSheet.create({
     margin: 15,
   },
   borderImage: {
-    height: 40,
-    width: 40,
-    borderRadius: 40,
+    height: 60,
+    width: 60,
+    borderRadius: 100,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },
   image: {
-    height: 40,
-    width: 40,
-    borderRadius: 40,
+    height: 60,
+    width: 60,
     backgroundColor: 'transparent',
+    resizeMode: 'stretch',
   },
   line: {
     backgroundColor: '#515151',
@@ -246,11 +254,3 @@ const styles = StyleSheet.create({
     color: '#B5B5B5',
   },
 });
-
-const mapStateToProps = (state) => {
-  return state;
-};
-
-const mapDispatchToProps = {};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Transaksi);

@@ -62,7 +62,7 @@ function RiwayatPage(props) {
       </View>
 
       {page === 'Daftar Janji' && <Pemesanan />}
-      {page === 'Transaksi' && <Transaksi />}
+      {page === 'Transaksi' && <Transaksi {...props} />}
       {/* { page === 'Resume Medis' && <ResumeMedis navigation={props.navigation}/> } */}
     </KeyboardAvoidingView>
   );
