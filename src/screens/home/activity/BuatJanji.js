@@ -104,7 +104,7 @@ const buatJanji = (props) => {
       address: null,
       placeOfBirth: null,
       mobilePhone: null,
-      resus: null
+      resus: null,
     },
   });
 
@@ -129,7 +129,7 @@ const buatJanji = (props) => {
       placeOfBirth: null,
       mobilePhone: null,
       patientTitle: null,
-      resus: null
+      resus: null,
     },
   });
   const [jadwal, setJadwal] = useState(null);
@@ -234,14 +234,12 @@ const buatJanji = (props) => {
   };
 
   const validation = () => {
-    console.log(book, 'forc');
     Object.filter = (obj, predicate) =>
       Object.keys(obj)
         .filter((key) => predicate(obj[key]))
         .reduce((res, key) => ((res[key] = obj[key]), res), {});
 
     var filter = Object.filter(book, (value) => value == null);
-    console.log(Object.keys(filter));
     if (Object.keys(filter).length) {
       ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
     } else {
@@ -271,7 +269,6 @@ const buatJanji = (props) => {
             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
         },
       };
-
       var sendCreate = {
         facilityID: book.healthFacility.facilityID,
         patient: {
@@ -325,7 +322,7 @@ const buatJanji = (props) => {
             : family[0]?.address,
           placeOfBirth: family[0]?.placeOfBirth || '',
           patientTitle: '',
-          resus: family[0]?.resus || '+'
+          resus: family[0]?.resus || '+',
         },
       });
     }
@@ -372,14 +369,12 @@ const buatJanji = (props) => {
 
   function formatDate(date) {
     let arrDate = date.split('-');
-    console.log(date, arrDate);
     arrDate[2].length === 1 ? (arrDate[2] = '0' + arrDate[2]) : null;
     arrDate[1].length === 1 ? (arrDate[1] = '0' + arrDate[1]) : null;
     return arrDate.join('-');
   }
 
   function setSelectedValue(data) {
-    console.log(data, 'datanya adalah modal');
     setPatient({
       patient: {
         patientID: data._id,
@@ -488,7 +483,10 @@ const buatJanji = (props) => {
               Dompet Digital
             </Text>
             <View style={cardStyle.dompet}>
-              <View style={cardStyle.pembayaran}>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('gopay')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_gopay.png')}
@@ -533,8 +531,11 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
-              <View style={cardStyle.pembayaran}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('linkaja')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_linkaja.png')}
@@ -579,8 +580,11 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
-              <View style={cardStyle.pembayaran}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('ovo')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_ovo.png')}
@@ -623,7 +627,7 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
             <Text
               style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
@@ -631,7 +635,10 @@ const buatJanji = (props) => {
               Transfer Bank
             </Text>
             <View style={cardStyle.dompet}>
-              <View style={cardStyle.pembayaran}>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('mandiri')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_mandiri.png')}
@@ -676,8 +683,11 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
-              <View style={cardStyle.pembayaran}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('bni')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_BNI.png')}
@@ -720,8 +730,11 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
-              <View style={cardStyle.pembayaran}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('BCA')}
+              >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
                   <Image
                     source={require('../../../assets/png/ic_BCA.png')}
@@ -764,7 +777,7 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         )}
