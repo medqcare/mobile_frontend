@@ -26,7 +26,7 @@ const dimHeight = Dimensions.get("window").height;
 
 function MedicalResume(props) {
   console.log(props.userData, "ini dari resume medis");
-  const [dataMedRes, setDataMedres] = useState(null);
+  const [dataMedRes, setDataMedres] = useState([]);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
   const [lengthData, setLengthData] = useState(0);
@@ -113,7 +113,7 @@ function MedicalResume(props) {
     );
   }
 
-  console.log(patient, ">>>>>>>>");
+  console.log(dataMedRes, ">>>>>>>>");
 
   return (
     <View style={{ backgroundColor: "#1F1F1F", flex: 1 }}>
@@ -161,7 +161,7 @@ function MedicalResume(props) {
             </View>
           );
         })}
-        {!dataMedRes && (
+        {dataMedRes.length === 0 && (
           <View style={{ alignItems: "center", marginTop: 25 }}>
             <Text style={{ color: "#fff" }}>
               Tidak ada riwayat Resume Medis
