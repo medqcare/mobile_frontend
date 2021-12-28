@@ -1,6 +1,8 @@
 import { createStackNavigator } from 'react-navigation-stack';
 import Riwayat from '../../screens/home/riwayat/Riwayat';
 import DetailTransaction from '../../screens/home/riwayat/DetailTransaction.js';
+import DetailDoctor from '../../screens/home/doctor/DetailDoctor';
+import BuatJanji from '../../screens/home/activity/BuatJanji';
 export default StackRiwayat = createStackNavigator(
   {
     Riwayat: {
@@ -11,6 +13,19 @@ export default StackRiwayat = createStackNavigator(
     },
     DetailTransaction: {
       screen: DetailTransaction,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    DetailDoctor: {
+      screen: DetailDoctor,
+      navigationOptions: {
+        tabBarVisible: false,
+        headerShown: false,
+      },
+    },
+    BuatJanji: {
+      screen: BuatJanji,
       navigationOptions: {
         headerShown: false,
       },

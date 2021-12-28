@@ -83,7 +83,7 @@ function Tagihan(props) {
         navigate={props.navigation.navigate}
         navigateBack="Home"
       />
-      {transaction ? (
+      {transaction?._id ? (
         <CardDetailTransaction transaction={transaction} />
       ) : (
         <View style={{ alignItems: 'center', marginTop: 25 }}>
