@@ -25,7 +25,7 @@ function CardHospital({ data, myLocation }) {
         <View style={styles.borderPhoto}>
           <Image
             style={styles.Photo}
-            source={{ uri: (!data.photo) ? 'https://insidelatinamerica.net/wp-content/uploads/2018/01/noImg_2.jpg' : data.photo }}
+            source={(data.photo) ? { uri: (data.photo) }  : require('../../../assets/png/klinik.png')}
           />
         </View>
         <View style={styles.DetailDokter}>
