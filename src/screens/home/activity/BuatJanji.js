@@ -894,7 +894,7 @@ const buatJanji = (props) => {
               }}
             >
               <Text style={{ marginVertical: 20, color: '#DDDDDD' }}>
-                Please check your email for Confirmation
+                Reservasi berhasil
               </Text>
             </View>
           </View>

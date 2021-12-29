@@ -42,7 +42,7 @@ export default function GradientHeader({
                 barStyle="light-content"
                 translucent={true}
                 backgroundColor={'transparent'}
-                hidden
+                // hidden
                 />
             <View style={styles.innerContainer}>
                 <TouchableOpacity
@@ -65,20 +65,20 @@ export default function GradientHeader({
 
 const styles = StyleSheet.create({
     container: {
-        height: hp('8%'),
+        height: hp('11%'),
     },
 
     innerContainer: {
         flex: 1, 
         position: 'relative',
-        paddingTop: 16,
+        paddingTop: 25,
         flexDirection: 'row', 
         alignItems: 'center',
     },
 
     content: { 
         flexDirection: 'row', 
-        marginBottom: 15
+        marginBottom: 10
     },
 
     backArrow: { 

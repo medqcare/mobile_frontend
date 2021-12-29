@@ -122,7 +122,7 @@ function MedicalResume(props) {
       <View
         style={{
           position: "absolute",
-          marginTop: dimHeight * 0.02,
+          marginTop: dimHeight * 0.04,
           alignSelf: "flex-end",
           paddingRight: 15,
         }}

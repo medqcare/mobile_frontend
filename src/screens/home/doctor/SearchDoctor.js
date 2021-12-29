@@ -176,21 +176,20 @@ function SearchDoctorPage(props) {
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.pop();
   });
-  console.log(props.userData, '>>>>> dari props user data');
-  // console.log(show, 'ini show')
+  // console.log(props.userData, '>>>>> dari props user data');
   return (
     <KeyboardAvoidingView
       style={styles.Container}
       behavior="height"
       enabled={false}
     >
-      <StatusBar hidden />
-      <View style={{ height: '15%' }}>
+      {/* <StatusBar hidden /> */}
+      <View style={{ height: '16%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{ flex: 1 }}
         >
-          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1 }}>
+          <View style={{ marginTop: 35, marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ marginTop: 3 }}>
