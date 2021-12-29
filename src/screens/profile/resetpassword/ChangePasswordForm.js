@@ -166,7 +166,7 @@ function ChangePasswordForm({navigation, changePassword}){
     )
 }
 
-const dimension = Dimensions.get('window')
+const dimension = Dimensions.get('screen')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#1f1f1f',
         height: dimHeight,
         width: dimWidth,
-        flex: 1
+        flex: 1,
+        paddingTop: dimHeight * 0.15
     },
 
 	header: {

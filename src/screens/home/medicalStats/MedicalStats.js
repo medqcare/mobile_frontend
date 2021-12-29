@@ -320,7 +320,7 @@ function MedicalResume(props) {
                   backgroundColor: '#2F2F2F',
                 }}
               >
-                <QRCode size={180} value={'test'} />
+                <QRCode size={180} value={patient.patient.patientID} />
               </View>
               <Text
                 style={{ color: '#B5B5B5', textAlign: 'center', marginTop: 20 }}
