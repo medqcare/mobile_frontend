@@ -28,6 +28,8 @@ export default StackMedres = createStackNavigator(
   },
   {
     initialRouteName: 'MedResList',
-    ...TransitionPresets.SlideFromRightIOS,
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );
