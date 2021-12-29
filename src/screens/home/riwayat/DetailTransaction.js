@@ -16,7 +16,7 @@ export default function DetailTransaction(props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181818' }}>
-      <StatusBar hidden />
+      {/* <StatusBar hidden /> */}
       <Header
         title="Detail Transaksi"
         navigate={props.navigation.navigate}

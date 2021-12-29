@@ -33,7 +33,7 @@ function RiwayatPage(props) {
       behavior="height"
       enabled={false}
     >
-      <StatusBar hidden />
+      {/* <StatusBar hidden /> */}
 
       <Header title={'Riwayat ' + page} navigate={props.navigation.navigate} />
 

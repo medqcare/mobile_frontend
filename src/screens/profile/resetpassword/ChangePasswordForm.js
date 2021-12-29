@@ -58,7 +58,7 @@ function ChangePasswordForm({navigation, changePassword}){
 
     return (
         <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
-			<StatusBar hidden/>
+			{/* <StatusBar hidden/> */}
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Header */}
 				<View style={styles.header}>
