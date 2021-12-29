@@ -243,7 +243,7 @@ function HomePage(props) {
                 <Text style={[style.tagTitle, { color: '#DDDDDD' }]}>
                   Aktifitas
                 </Text>
-                <View style={{ height: 170 }}>
+                <View style={{ height: dimHeight * 0.2 }}>
                   <RecentActivity navigation={props.navigation} />
                 </View>
               </View>
@@ -271,13 +271,13 @@ function HomePage(props) {
 }
 const style = StyleSheet.create({
   topMenu: {
-    height: '22%',
+    height: dimHeight * 0.22,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 0,
   },
   container: {
-    height: '70%',
+    height: dimHeight * 0.2,
     flexDirection: 'column',
     marginTop: dimHeight * 0.115,
     marginHorizontal: '5%',
@@ -295,8 +295,6 @@ const style = StyleSheet.create({
   },
   promos: {
     minHeight: 40,
-    marginVertical: 2,
-    marginRight: 5,
   },
   articles: {
     minHeight: 100,

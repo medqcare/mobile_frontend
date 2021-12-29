@@ -135,7 +135,7 @@ export default StackHome = createStackNavigator(
   {
     initialRouteName: 'Home',
     defaultNavigationOptions: {
-      ...TransitionPresets.ModalSlideFromBottomIOS,
+      ...TransitionPresets.ModalSlideFromBottomIOS
     },
   }
 );
