@@ -28,10 +28,10 @@ export default function RenameModal({modal, optionLeftFunction, optionLeftText, 
                         <View style={styles.warning}>
                             <Text style={styles.warningText}>{warning}</Text>
                         </View>
-                        <View style={{width: '100%', marginHorizontal: 15}}>
+                        <View style={{width: '100%', paddingHorizontal: 20}}>
                             <TextInput 
                                 value={value}
-                                style={{borderWidth: 1, borderColor: '#fff', width: '100%', color: '#fff'}}
+                                style={{borderWidth: 1, borderColor: '#fff', width: '100%', color: '#fff', padding: 10, borderRadius: 5}}
                                 onChangeText={(text) => setValue(text)}
                             />
                         </View>
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     base: {
-        width: _width * 0.6,
+        width: _width * 0.7,
         height: _height * 0.23,
     },
     confirmationCard: {
@@ -82,15 +82,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#2F2F2F',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 13
+        borderRadius: 13,
     },
     warning: {
         width: '100%',
+        textAlign: 'center',
         justifyContent: 'center',
-        alignItems: 'flex-start',
-        paddingTop: 25,
-        paddingBottom: 15,
-        paddingLeft: 30,
+        alignItems: 'center',
+        padding: 20
     },
     warningText: {
         color: '#DDDDDD',
@@ -103,14 +102,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingTop: 15,
         paddingBottom: 25,
-        paddingHorizontal: 30,
+        paddingHorizontal: 20
     },
     optionButtonCancel: {
-        flex: 0.3,
+        flex: 0.35,
         alignItems: 'flex-end'
     },
     optionButtonConfirm: {
-        flex: 0.3,
+        flex: 0.35,
         alignItems: 'flex-end'
     },
     optionTextCancel: {

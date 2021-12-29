@@ -128,13 +128,13 @@ function SearchDoctorPage(props) {
       behavior="height"
       enabled={false}
     >
-      <StatusBar hidden />
-      <View style={{ height: '15%' }}>
+      {/* <StatusBar hidden /> */}
+      <View style={{ height: '16%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{ flex: 1 }}
         >
-          <View style={{ marginTop: 20, marginHorizontal: 20, flex: 1 }}>
+          <View style={{ marginTop: 35, marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ marginTop: 3 }}>
