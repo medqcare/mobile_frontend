@@ -19,6 +19,7 @@ import RightArrow from '../../../assets/svg/RightArrow';
 import InformationIcon from '../../../assets/svg/information';
 import ClearableSearchBar from '../../../components/headers/ClearableSearchBar';
 import LottieLoader from 'lottie-react-native';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -2662,7 +2663,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 8,
     flexDirection: 'row',
-    maxWidth: dimWidth * 0.44,
+    width: widthPercentageToDP('45%'),
     borderRadius: 4,
   },
   subTotalContainer: {

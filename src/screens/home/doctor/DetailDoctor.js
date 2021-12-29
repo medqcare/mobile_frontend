@@ -355,6 +355,7 @@ function DetailDoctorPage(props) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                paddingHorizontal: 20,
               }}
             >
               <TouchableOpacity
@@ -364,7 +365,6 @@ function DetailDoctorPage(props) {
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    marginHorizontal: 20,
                   }}
                 >
                   <ArrowBack />
@@ -382,7 +382,6 @@ function DetailDoctorPage(props) {
               </TouchableOpacity>
               {props.userData && (
                 <TouchableOpacity
-                  style={{ marginRight: 40 }}
                   onPress={() => {
                     changeTapLove();
                   }}
@@ -499,6 +498,8 @@ function DetailDoctorPage(props) {
                           marginVertical: 5,
                           paddingLeft: 10,
                           paddingVertical: 10,
+                          paddingRight: 10,
+                          borderRadius: 5,
                         }}
                       >
                         <View>
@@ -531,6 +532,10 @@ function DetailDoctorPage(props) {
                               </Text>
                             </View>
                             <TouchableOpacity
+                              style={{
+                                alignSelf: 'flex-start',
+                                transform: [{ translateX: 10 }],
+                              }}
                               onPress={() =>
                                 _openMap(
                                   item.location.coordinates[1],
@@ -546,11 +551,11 @@ function DetailDoctorPage(props) {
                                   borderRadius: 40,
                                   borderColor: '#7D7D7D',
                                   borderWidth: 1,
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
                                 }}
                               >
-                                <View style={{ marginTop: 8 }}>
-                                  <ButtonMap />
-                                </View>
+                                <ButtonMap />
                               </View>
                             </TouchableOpacity>
                             {/* <View style={containerStyle.maps} >
@@ -620,7 +625,6 @@ function DetailDoctorPage(props) {
                               <View
                                 style={{
                                   flexDirection: 'row',
-                                  width: '40%',
                                   justifyContent: 'space-between',
                                 }}
                               >
@@ -693,7 +697,12 @@ function DetailDoctorPage(props) {
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                               >
-                                <View style={{ flexDirection: 'row' }}>
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    // paddingHorizontal: 12,
+                                  }}
+                                >
                                   {Array.from(
                                     Array(
                                       month === new Date().getMonth()
@@ -702,7 +711,7 @@ function DetailDoctorPage(props) {
                                             1
                                         : bookingDate.getDaysInMonth()
                                     ).keys()
-                                  ).map((key) => {
+                                  ).map((key, index) => {
                                     return (
                                       <TouchableOpacity
                                         key={key}
@@ -857,9 +866,9 @@ function DetailDoctorPage(props) {
                                 </ScrollView>
                               ) : null}
                             </View>
-                            <Text style={{ color: '#DDDDDD' }}>
+                            {/* <Text style={{ color: '#DDDDDD' }}>
                               Lihat Semua Jadwal {'>'}
-                            </Text>
+                            </Text> */}
                           </View>
                         ) : null}
                       </View>
