@@ -32,6 +32,7 @@ import Search from '../../../assets/svg/Search';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 
 import { baseURL } from '../../../config';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
@@ -129,12 +130,12 @@ function SearchDoctorPage(props) {
       enabled={false}
     >
       {/* <StatusBar hidden /> */}
-      <View style={{ height: '16%' }}>
+      <View style={{ height: '18%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
-          style={{ flex: 1 }}
+          style={{ flex: 1, paddingTop: heightPercentageToDP('4%') }}
         >
-          <View style={{ marginTop: 35, marginHorizontal: 20, flex: 1 }}>
+          <View style={{ marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ marginTop: 3 }}>

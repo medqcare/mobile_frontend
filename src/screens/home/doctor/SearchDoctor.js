@@ -13,6 +13,7 @@ import {
   ToastAndroid,
   ScrollView,
   StatusBar,
+  Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
@@ -24,6 +25,7 @@ import SearchBar from '../../../components/headers/SearchBar';
 
 import Shortby from '../../../components/modals/doctors/modalSortBy';
 import ArrowBack from '../../../assets/svg/ArrowBack';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
@@ -184,12 +186,15 @@ function SearchDoctorPage(props) {
       enabled={false}
     >
       {/* <StatusBar hidden /> */}
-      <View style={{ height: '16%' }}>
+      <View style={{ height: heightPercentageToDP('18%') }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
-          style={{ flex: 1 }}
+          style={{
+            flex: 1,
+            paddingTop: heightPercentageToDP('4%'),
+          }}
         >
-          <View style={{ marginTop: 35, marginHorizontal: 20, flex: 1 }}>
+          <View style={{ marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>
               <View style={{ flexDirection: 'row' }}>
                 <View style={{ marginTop: 3 }}>
@@ -221,7 +226,7 @@ function SearchDoctorPage(props) {
               style={{
                 backgroundColor: name === 'All' ? '#005EA2' : null,
                 borderWidth: name !== 'All' ? 1 : null,
-                borderColor: name !== 'All' ? '#DDDDDD' : null,
+                borderColor: name !== 'All' ? '#515151' : null,
                 borderRadius: 30,
                 height: 40,
                 padding: 10,
@@ -244,7 +249,7 @@ function SearchDoctorPage(props) {
                     backgroundColor: item.name === name ? '#005EA2' : null,
                     borderRadius: 30,
                     borderWidth: item.name !== name ? 1 : null,
-                    borderColor: item.name !== name ? '#DDDDDD' : null,
+                    borderColor: item.name !== name ? '#515151' : null,
                     height: 40,
                     padding: 10,
                     marginRight: 5,
