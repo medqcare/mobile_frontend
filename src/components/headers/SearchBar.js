@@ -27,9 +27,9 @@ export default function GradientHeader({ onChangeText, onFocus, placeholder }) {
           onFocus={onFocus || null}
         />
       </View>
-      <View style={{ marginTop: 28 }}>
+      {/* <View style={{ marginTop: 28 }}>
         <IcFilter />
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -45,10 +45,10 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderWidth: 0.5,
     height: 40,
-    marginTop: 20,
+    marginTop: 17,
     borderRadius: 25,
     flexDirection: 'row',
-    width: '90%',
+    width: '100%',
     // backgroundColor: "blue",
     alignItems: 'center',
     justifyContent: 'space-between',

@@ -133,7 +133,7 @@ function SearchDoctorPage(props) {
       <View style={{ height: '18%' }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
-          style={{ flex: 1, paddingTop: heightPercentageToDP('4%') }}
+          style={{ flex: 1, paddingTop: heightPercentageToDP('5%') }}
         >
           <View style={{ marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => props.navigation.pop()}>

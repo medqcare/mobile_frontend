@@ -191,7 +191,7 @@ function SearchDoctorPage(props) {
           source={require('../../../assets/background/RectangleHeader.png')}
           style={{
             flex: 1,
-            paddingTop: heightPercentageToDP('4%'),
+            paddingTop: heightPercentageToDP('5%'),
           }}
         >
           <View style={{ marginHorizontal: 20, flex: 1 }}>

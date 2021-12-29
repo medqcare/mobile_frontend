@@ -132,7 +132,7 @@ function HomePage(props) {
                 style={{
                   marginHorizontal: 20,
                   justifyContent: 'center',
-                  transform: [{ translateY: hp('5%') }],
+                  transform: [{ translateY: hp('5.8%') }],
                 }}
               >
                 <View
