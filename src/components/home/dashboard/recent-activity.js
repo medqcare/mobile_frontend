@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -6,92 +6,94 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Dimensions
-} from "react-native";
+  Dimensions,
+} from 'react-native';
 
-const heightDim = Dimensions.get("screen").height;
-const widthDim = Dimensions.get("screen").width;
+const heightDim = Dimensions.get('screen').height;
+const widthDim = Dimensions.get('screen').width;
 
 const RecentActivity = ({ navigation }) => {
   return (
-    <View style={{ marginTop: 10 }}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={([style.container], { marginRight: 10 })}>
-          <View style={style.borderIcon}>
-            <TouchableOpacity
-              style={style.clickArea}
-              onPress={() => navigation.navigate("Appointment")}
-            >
-              <Image
-                source={require("../../../assets/png/ic_aplist.png")}
-                style={{ width: 25, height: 25 }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#DDDDDD",
-                  marginTop: 8,
-                  textAlign: "center",
-                }}
-              >
-                Appointment
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={([style.container], { marginRight: 10 })}>
-          <View style={style.borderIcon}>
-            <TouchableOpacity
-              style={style.clickArea}
-              onPress={() => {
-                navigation.navigate("ActivityStack");
+    <View
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+    >
+      <View style={[style.container]}>
+        <View style={style.borderIcon}>
+          <TouchableOpacity
+            style={style.clickArea}
+            onPress={() => navigation.navigate('Appointment')}
+          >
+            <Image
+              source={require('../../../assets/png/ic_aplist.png')}
+              style={{ width: 25, height: 25 }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: '#DDDDDD',
+                marginTop: 8,
+                textAlign: 'center',
               }}
             >
-              <Image
-                source={require("../../../assets/png/ic_antrian.png")}
-                style={{ width: 25, height: 25 }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#DDDDDD",
-                  marginTop: 8,
-                  textAlign: "center",
-                }}
-              >
-                Antrian
-              </Text>
-            </TouchableOpacity>
-          </View>
+              Appointment
+            </Text>
+          </TouchableOpacity>
         </View>
+      </View>
 
-        <View style={([style.container], { marginRight: 10 })}>
-          <View style={style.borderIcon}>
-            <TouchableOpacity
-              style={style.clickArea}
-              onPress={() => {
-                navigation.navigate("MedicalStats", { goback: "Home" });
+      <View style={[style.container]}>
+        <View style={style.borderIcon}>
+          <TouchableOpacity
+            style={style.clickArea}
+            onPress={() => {
+              navigation.navigate('ActivityStack');
+            }}
+          >
+            <Image
+              source={require('../../../assets/png/ic_antrian.png')}
+              style={{ width: 25, height: 25 }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: '#DDDDDD',
+                marginTop: 8,
+                textAlign: 'center',
               }}
             >
-              <Image
-                source={require("../../../assets/png/Medical.png")}
-                style={{ width: 26, height: 26 }}
-              />
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#DDDDDD",
-                  marginTop: 8,
-                  textAlign: "center",
-                }}
-              >
-                Resume Medis
-              </Text>
-            </TouchableOpacity>
-          </View>
+              Antrian
+            </Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
+
+      <View style={[style.container]}>
+        <View style={style.borderIcon}>
+          <TouchableOpacity
+            style={style.clickArea}
+            onPress={() => {
+              navigation.navigate('MedicalStats', { goback: 'Home' });
+            }}
+          >
+            <Image
+              source={require('../../../assets/png/Medical.png')}
+              style={{ width: 26, height: 26 }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+                color: '#DDDDDD',
+                marginTop: 8,
+                textAlign: 'center',
+              }}
+            >
+              Resume Medis
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -111,16 +113,16 @@ const style = StyleSheet.create({
   borderIcon: {
     height: heightDim * 0.1,
     width: widthDim * 0.28,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 3,
     paddingVertical: 15,
-    backgroundColor: "#2F2F2F",
+    backgroundColor: '#2F2F2F',
   },
   clickArea: {
     padding: widthDim * 0.01,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });
 

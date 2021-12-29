@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   TextInput,
+  Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
 import GetLocation from 'react-native-get-location';
@@ -31,6 +32,11 @@ import Lonceng from '../../../assets/svg/home-blue/lonceng';
 import LottieLoader from 'lottie-react-native';
 import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import { ScrollView } from 'react-native-gesture-handler';
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
@@ -49,8 +55,6 @@ function HomePage(props) {
       url: require('../../../assets/png/Promo2.png'),
     },
   ]);
-  console.log(props.userData, '>>>>>>>>.');
-  console.log(props.myLocation, '>>>>>>>> my location');
 
   useEffect(() => {
     (async () => {
@@ -61,7 +65,6 @@ function HomePage(props) {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      console.log(location, '>>>>>>>>>>>>>>>>> hai');
       setMyLocation({
         lat: location.coords.latitude,
         lng: location.coords.longitude,
@@ -73,94 +76,35 @@ function HomePage(props) {
     })();
   }, []);
 
-  const _getLocation = () => {
-    GetLocation.getCurrentPosition({
-      enableHighAccuracy: true,
-    })
-      .then((location) => {
-        console.log(location, '>>>>>>> ini location');
-        // setMyLocation({
-        //   lng: location.longitude,
-        //   lat: location.latitude,
-        // });
-        setRefreshing(false);
-      })
-      .catch((err) => {
-        setRefreshing(false);
-      });
-  };
-
-  const _checkLogin = () => {
-    return new Promise(async (resolve, reject) => {
-      let data = await AsyncStorage.getItem('token');
-      resolve(data);
-    });
-  };
-
   useEffect(() => {
     notificationTrigger();
   }, []);
 
   useEffect(() => {
-    _getLocation();
-    _checkLogin()
-      .then(async (data) => {
-        try {
-          if (data) {
-            let x = await props.GetUser(
-              JSON.parse(data).token,
-              props.navigation,
-              () => setModalW(true)
-            );
-            if (!myLocation) {
-              // setMyLocation({
-              //   lat: x.location.coordinates[1],
-              //   lng: x.location.coordinates[0],
-              // });
-            }
-            setload(false);
-          } else {
-            setload(false);
-          }
-        } catch (error) {
-          setload(false);
-        }
-      })
-      .catch((err) => {
+    (async () => {
+      const tokenString = await AsyncStorage.getItem('token');
+
+      if (!tokenString) {
         setload(false);
-      });
+      }
+
+      const { token } = JSON.parse(tokenString);
+      try {
+        await props.GetUser(token, props.navigation);
+      } catch (error) {
+      } finally {
+        setload(false);
+      }
+    })();
   }, []);
 
-  // useEffect(() => {
-  //   props.setCurrentLocation(myLocation);
-  // }, [myLocation]);
-
-  const [refreshing, setRefreshing] = useState(false);
-
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    await _getLocation();
-    _checkLogin()
-      .then(async (data) => {
-        try {
-          if (data) {
-            let x = await props.GetUser(
-              JSON.parse(data).token,
-              props.navigation
-            );
-            setload(false);
-          } else {
-            setload(false);
-          }
-        } catch (error) {
-          setload(false);
-        }
-      })
-      .catch((err) => (setload(false), console.log(err, 'ga ada yang login')));
-  }, [refreshing]);
-
   return (
-    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#1F1F1F',
+      }}
+    >
       <StatusBar
         barStyle="light-content"
         translucent={true}
@@ -173,18 +117,24 @@ function HomePage(props) {
           loop
         />
       ) : (
-        <View style={{ flex: 1 }}>
+        <>
           <View style={style.topMenu}>
             <ImageBackground
               imageStyle={{
-                height: dimHeight * 0.25,
+                height: hp('25%'),
                 width: '100%',
                 resizeMode: 'stretch',
               }}
               source={require('../../../assets/background/RectangleHeader.png')}
               style={style.headerImage}
             >
-              <View style={{ flex: 1, marginTop: 50, marginHorizontal: 20 }}>
+              <View
+                style={{
+                  marginHorizontal: 20,
+                  justifyContent: 'center',
+                  transform: [{ translateY: hp('5%') }],
+                }}
+              >
                 <View
                   style={{
                     flexDirection: 'row',
@@ -236,58 +186,67 @@ function HomePage(props) {
             </ImageBackground>
           </View>
 
-          <MenuNavigator navigation={props.navigation} data={props.userData} />
           <View style={style.container}>
-            {props.userData && (
-              <View>
-                <Text style={[style.tagTitle, { color: '#DDDDDD' }]}>
-                  Aktifitas
-                </Text>
-                <View style={{ height: dimHeight * 0.2 }}>
-                  <RecentActivity navigation={props.navigation} />
-                </View>
-              </View>
-            )}
-            <View style={{ marginTop: !props.userData ? 70 : null }}>
-              <ActivityAction
+            <View style={{ marginBottom: hp('2%') }}>
+              <MenuNavigator
                 navigation={props.navigation}
                 data={props.userData}
               />
             </View>
-            <View>
-              <FlatList
-                data={promos}
-                keyExtractor={(item) => item.id + ''}
-                renderItem={({ item }) => <CardPromo data={item} />}
-                horizontal={true}
-                style={style.promos}
-              />
-            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {props.userData && (
+                <View style={{ marginBottom: hp('4%') }}>
+                  <Text
+                    style={[
+                      style.tagTitle,
+                      { color: '#DDDDDD', marginBottom: 12 },
+                    ]}
+                  >
+                    Aktifitas
+                  </Text>
+                  <View>
+                    <RecentActivity navigation={props.navigation} />
+                  </View>
+                </View>
+              )}
+              <View style={{ marginBottom: hp('4%') }}>
+                <ActivityAction
+                  navigation={props.navigation}
+                  data={props.userData}
+                />
+              </View>
+              <View style={{ marginBottom: hp('2%') }}>
+                <FlatList
+                  data={promos}
+                  keyExtractor={(item) => item.id + ''}
+                  renderItem={({ item }) => <CardPromo data={item} />}
+                  horizontal={true}
+                  style={style.promos}
+                />
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        </>
       )}
     </View>
   );
 }
 const style = StyleSheet.create({
   topMenu: {
-    height: dimHeight * 0.22,
+    height: hp(25),
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 0,
   },
   container: {
-    height: dimHeight * 0.2,
     flexDirection: 'column',
-    marginTop: dimHeight * 0.115,
-    marginHorizontal: '5%',
+    marginHorizontal: 16,
+    transform: [{ translateY: -hp('5.5%') }],
+    height: hp('75%'),
   },
   headerImage: {
     width: '100%',
     height: '100%',
-  },
-  advertisement: {
-    marginTop: '5%',
   },
   tagTitle: {
     color: 'white',
