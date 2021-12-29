@@ -321,6 +321,18 @@ function DetailDoctorPage(props) {
                   alignItems: "center",
                   marginHorizontal: 20,
                 }}
+            <View
+              style={{
+                height: 40,
+                marginTop: 32,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingHorizontal: 20,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate(_back)}
               >
                 <ArrowBack />
                 <Text
@@ -329,6 +341,8 @@ function DetailDoctorPage(props) {
                     color: "#ffff",
                     position: "relative",
                     marginLeft: 20,
+                    flexDirection: 'row',
+                    alignItems: 'center',
                   }}
                 >
                   Profil Dokter
@@ -366,6 +380,53 @@ function DetailDoctorPage(props) {
                             : dataDoctor.photo,
                         }}
                       />
+              {props.userData && (
+                <TouchableOpacity
+                  onPress={() => {
+                    changeTapLove();
+                  }}
+                >
+                  {thisFavorite ? (
+                    <Icon name="ios-heart" color="#F37335" size={20} />
+                  ) : (
+                    <Icon name="ios-heart" color="#CACACA" size={20} />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+          </ImageBackground>
+
+          <View style={{ flex: 1 }}>
+            <View>
+              <View style={containerStyle.dataDoctor}>
+                <View style={containerStyle.spesialis}>
+                  <View style={styles.borderAvatar}>
+                    <Image
+                      style={styles.avatar}
+                      source={{
+                        uri: !dataDoctor.photo
+                          ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
+                          : dataDoctor.photo,
+                      }}
+                    />
+                  </View>
+                </View>
+                <View style={containerStyle.personalData}>
+                  <Text style={fontStyles.name}>
+                    {dataDoctor.title} {dataDoctor.doctorName}
+                  </Text>
+                  <Text style={fontStyles.titleSp}>
+                    Spesialis {dataDoctor.specialist}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: 15,
+                    }}
+                  >
+                    <View style={{ marginRight: 12 }}>
+                      <RatingStar />
                     </View>
                   </View>
                   <View style={containerStyle.personalData}>
@@ -437,6 +498,25 @@ function DetailDoctorPage(props) {
                       <Image
                         source={{
                           uri: "https://dikertas.com/repository/notfound2.png",
+                      style={{ height: 110, width: 110 }}
+                    />
+                    <Text>Facility Kosong</Text>
+                  </View>
+                </View>
+              )}
+              {facility !== null && Object.keys(facility).length !== 0 && (
+                <View style={containerStyle.bodyContent}>
+                  {dataDoctor.facility.map((item, indexFacility) => {
+                    return (
+                      <View
+                        key={indexFacility}
+                        style={{
+                          backgroundColor: '#2F2F2F',
+                          marginVertical: 5,
+                          paddingLeft: 10,
+                          paddingVertical: 10,
+                          paddingRight: 10,
+                          borderRadius: 5,
                         }}
                         style={{ height: 110, width: 110 }}
                       />
@@ -540,6 +620,106 @@ function DetailDoctorPage(props) {
                                           .facilityMainType,
                                     },
                                   });
+                              )}
+                              <Text style={fontStyles.address}>
+                                3.1 km dari Anda
+                              </Text>
+                            </View>
+                            <TouchableOpacity
+                              style={{
+                                alignSelf: 'flex-start',
+                                transform: [{ translateX: 10 }],
+                              }}
+                              onPress={() =>
+                                _openMap(
+                                  item.location.coordinates[1],
+                                  item.location.coordinates[0]
+                                )
+                              }
+                            >
+                              <View
+                                style={{
+                                  alignItems: 'center',
+                                  height: 40,
+                                  width: 40,
+                                  borderRadius: 40,
+                                  borderColor: '#7D7D7D',
+                                  borderWidth: 1,
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <ButtonMap />
+                              </View>
+                            </TouchableOpacity>
+                            {/* <View style={containerStyle.maps} >
+                            <TouchableOpacity onPress={() => _openMap(item.location.coordinates[1], item.location.coordinates[0])}>
+                              <MCIcon name={'google-maps'} size={30} color={'#848280'} />
+                            </TouchableOpacity>
+                          </View> */}
+                          </View>
+                          {showDetail !== indexFacility ? (
+                            <TouchableOpacity
+                              onPress={() => {
+                                // setNewData(null);
+                                setShowDetail(indexFacility);
+                                setNewData({
+                                  ...newData,
+                                  [item.facilityName]: [
+                                    checkSchedule(bookingDate.getDay()),
+                                    item.facilitySchedule[
+                                      checkSchedule(bookingDate.getDay())
+                                    ],
+                                  ],
+                                });
+                                setDataDoctor({
+                                  ...dataDoctor,
+                                  healthFacility: {
+                                    facilityID:
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityID,
+                                    facilityName:
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityName,
+                                    facilityType:
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityType,
+                                    facilityMainType:
+                                      dataDoctor.facility[indexFacility]
+                                        .facilityMainType,
+                                  },
+                                });
+                              }}
+                            >
+                              <View style={{ flexDirection: 'row' }}>
+                                <Text style={{ color: '#F37335' }}>
+                                  Selengkapnya
+                                </Text>
+                                <View style={{ marginLeft: 8, marginTop: 5 }}>
+                                  <ArrowDown />
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              onPress={() => setShowDetail(null)}
+                            >
+                              <View style={{ flexDirection: 'row' }}>
+                                <Text style={{ color: '#F37335' }}>Tutup</Text>
+                                <View style={{ marginLeft: 8, marginTop: 5 }}>
+                                  <ArrowUp />
+                                </View>
+                              </View>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                        {showDetail === indexFacility ? (
+                          <View>
+                            <View style={dateStyle.chooseMonth}>
+                              <View
+                                style={{
+                                  flexDirection: 'row',
+                                  justifyContent: 'space-between',
                                 }}
                               >
                                 <View style={{ flexDirection: "row" }}>
@@ -633,6 +813,74 @@ function DetailDoctorPage(props) {
                                           fontSize: 16,
                                           color: "#DDDDDD",
                                           marginTop: -2,
+                                      {'>'}
+                                    </Text>
+                                  </View>
+                                </TouchableOpacity>
+                              </View>
+
+                              <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                              >
+                                <View
+                                  style={{
+                                    flexDirection: 'row',
+                                    // paddingHorizontal: 12,
+                                  }}
+                                >
+                                  {Array.from(
+                                    Array(
+                                      month === new Date().getMonth()
+                                        ? bookingDate.getDaysInMonth() -
+                                            bookingDate.getDate() +
+                                            1
+                                        : bookingDate.getDaysInMonth()
+                                    ).keys()
+                                  ).map((key, index) => {
+                                    return (
+                                      <TouchableOpacity
+                                        key={key}
+                                        disabled={
+                                          !item.facilitySchedule[
+                                            checkSchedule(key)
+                                          ]
+                                        }
+                                        onPress={() => {
+                                          setBookingTime('');
+                                          setChooseDate(calcDate(key));
+                                          checkSchedule(key);
+                                          // const checkDay = new Date(`${month + 1}/${calcDate(key)}/${new Date().getFullYear()}`).getDay()
+                                          setNewData({
+                                            ...newData,
+                                            [item.facilityName]: [
+                                              checkSchedule(key),
+                                              item.facilitySchedule[
+                                                checkSchedule(key)
+                                              ],
+                                            ],
+                                          });
+                                          setDataDoctor({
+                                            ...dataDoctor,
+                                            healthFacility: {
+                                              facilityID:
+                                                dataDoctor.facility[
+                                                  indexFacility
+                                                ].facilityID,
+                                              facilityName:
+                                                dataDoctor.facility[
+                                                  indexFacility
+                                                ].facilityName,
+                                              facilityType:
+                                                dataDoctor.facility[
+                                                  indexFacility
+                                                ].facilityType,
+                                              facilityMainType:
+                                                dataDoctor.facility[
+                                                  indexFacility
+                                                ].facilityMainType,
+                                            },
+                                          });
                                         }}
                                       >
                                         {">"}
@@ -817,14 +1065,18 @@ function DetailDoctorPage(props) {
                                 Lihat Semua Jadwal {">"}
                               </Text>
                             </View>
-                          ) : null}
-                        </View>
-                      );
-                    })}
-                  </View>
-                )}
-              </ScrollView>
-            </View>
+                            {/* <Text style={{ color: '#DDDDDD' }}>
+                              Lihat Semua Jadwal {'>'}
+                            </Text> */}
+                          </View>
+                        ) : null}
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </ScrollView>
+          </View>
 
             <TouchableOpacity
               onPress={async () => {
