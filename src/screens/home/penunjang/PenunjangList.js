@@ -2444,6 +2444,7 @@ function PenunjangList(props) {
       ) : (
         <>
           <View>
+            <StatusBar barStyle="light-content" />
             <ClearableSearchBar
               placeholder="Cari test atau sampel"
               onChangeText={searchHandler}
