@@ -62,6 +62,28 @@ const ListApointment = (props) => {
     })();
   };
 
+  //   <TouchableOpacity
+  //   style={{ alignSelf: 'flex-start' }}
+  //   onPress={() => {
+  //     openMapHandler();
+  //   }}
+  // >
+  //   <View
+  //     style={{
+  //       alignItems: 'center',
+  //       height: 40,
+  //       width: 40,
+  //       borderRadius: 40,
+  //       borderColor: '#7D7D7D',
+  //       borderWidth: 1,
+  //       alignItems: 'center',
+  //       justifyContent: 'center',
+  //     }}
+  //   >
+  //     <ButtonMap />
+  //   </View>
+  // </TouchableOpacity>
+
   //function
   function socketConnection() {
     let socketIO = `${baseURL}`; //use this for production
@@ -97,7 +119,6 @@ const ListApointment = (props) => {
             }}
             style={styles.container}
           >
-            {/* <Text style={{ backgroundColor: 'yellow' }}>{JSON.stringify(dataPatient, null, 2)}</Text> */}
             <View
               style={{
                 height: 30,
@@ -105,18 +126,30 @@ const ListApointment = (props) => {
                 alignItems: 'center',
                 borderTopEndRadius: 5,
                 borderTopStartRadius: 5,
+                flexDirection: 'row',
+                justifyContent: 'center',
               }}
             >
               <Text
                 style={{
                   color: '#DDDDDD',
                   fontStyle: 'italic',
-                  marginTop: 7,
                   fontSize: 12,
                 }}
               >
                 Telah dipesan
               </Text>
+              {dataPatient.status !== 'canceled' && (
+                <TouchableOpacity
+                  style={styles.deleteContainer}
+                  onPress={() => {
+                    props.setModalDelete(true);
+                    props.function();
+                  }}
+                >
+                  <CloseButton />
+                </TouchableOpacity>
+              )}
             </View>
             <View
               style={{
@@ -140,28 +173,46 @@ const ListApointment = (props) => {
                 />
               </View>
               <View style={{ flex: 1 }}>
-                <View style={{ marginRight: 30 }}>
-                  <Text style={styles.name}>
-                    {dataPatient.doctor.title} {dataPatient.doctor.doctorName}
-                  </Text>
-                  <Text style={styles.poli}>
-                    {dataPatient.doctor.doctorSpecialist}
-                  </Text>
-                  <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
-                    {dataPatient.healthFacility.facilityName}
-                  </Text>
-                </View>
-                {dataPatient.status !== 'canceled' && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <View>
+                    <Text style={styles.name}>
+                      {dataPatient.doctor.title} {dataPatient.doctor.doctorName}{' '}
+                    </Text>
+                    <Text style={styles.poli}>
+                      {dataPatient.doctor.doctorSpecialist}
+                    </Text>
+                    <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
+                      {dataPatient.healthFacility.facilityName}
+                    </Text>
+                  </View>
                   <TouchableOpacity
-                    style={styles.deleteContainer}
                     onPress={() => {
-                      props.setModalDelete(true);
-                      props.function();
+                      openMapHandler();
                     }}
                   >
-                    <CloseButton />
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        height: 25,
+                        width: 25,
+                        borderRadius: 40,
+                        borderColor: '#7D7D7D',
+                        borderWidth: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <ButtonMap />
+                    </View>
                   </TouchableOpacity>
-                )}
+                </View>
+
                 <View style={styles.line}></View>
                 <View
                   style={{
@@ -190,27 +241,6 @@ const ListApointment = (props) => {
                             <View style={styles.dot} />
                             <Text style={styles.status}>{dataPatient.status}</Text>
                         </View> */}
-                  <TouchableOpacity
-                    style={{ alignSelf: 'flex-start' }}
-                    onPress={() => {
-                      openMapHandler();
-                    }}
-                  >
-                    <View
-                      style={{
-                        alignItems: 'center',
-                        height: 40,
-                        width: 40,
-                        borderRadius: 40,
-                        borderColor: '#7D7D7D',
-                        borderWidth: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <ButtonMap />
-                    </View>
-                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -374,7 +404,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   line: {
-    backgroundColor: '#B5B5B5',
+    backgroundColor: '#515151',
     height: 1,
     marginVertical: 10,
   },
@@ -418,14 +448,12 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   deleteContainer: {
+    right: 14,
     position: 'absolute',
-    alignSelf: 'flex-end',
-    paddingRight: 10,
   },
   delete: {},
   status: {
     flexGrow: 1,
-    // color: '#33E204'
   },
 });
 
