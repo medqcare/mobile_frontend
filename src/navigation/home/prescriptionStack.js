@@ -1,4 +1,7 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
 import Prescription from '../../screens/home/prescription/prescription.js';
 
 export default StackResep = createStackNavigator(
@@ -12,5 +15,8 @@ export default StackResep = createStackNavigator(
   },
   {
     initialRouteName: 'Prescription',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

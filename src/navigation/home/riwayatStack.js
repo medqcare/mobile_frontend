@@ -1,4 +1,7 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
 import Riwayat from '../../screens/home/riwayat/Riwayat';
 import DetailTransaction from '../../screens/home/riwayat/DetailTransaction.js';
 import DetailDoctor from '../../screens/home/doctor/DetailDoctor';
@@ -33,5 +36,8 @@ export default StackRiwayat = createStackNavigator(
   },
   {
     initialRouteName: 'Riwayat',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

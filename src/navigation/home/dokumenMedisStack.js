@@ -1,6 +1,9 @@
-import { createStackNavigator } from "react-navigation-stack";
-import DokumenMedisList from "../../screens/home/dokumenMedis/DokumenMedisList";
-import ShowDokumen from "../../screens/home/dokumenMedis/ShowDokumen";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
+import DokumenMedisList from '../../screens/home/dokumenMedis/DokumenMedisList';
+import ShowDokumen from '../../screens/home/dokumenMedis/ShowDokumen';
 
 export default StackDokumenMedis = createStackNavigator(
   {
@@ -18,6 +21,9 @@ export default StackDokumenMedis = createStackNavigator(
     },
   },
   {
-    initialRouteName: "ListDokumenMedis",
+    initialRouteName: 'ListDokumenMedis',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

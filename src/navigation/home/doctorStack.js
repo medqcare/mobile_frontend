@@ -1,46 +1,54 @@
-import { createStackNavigator } from "react-navigation-stack"
-import SearchDoctor from '../../screens/home/doctor/SearchDoctor'
-import DetailDoctor from '../../screens/home/doctor/DetailDoctor'
-import MedicalFasility from "../../screens/home/doctor/MedicalFacility"
-import BuatJanjiPage from '../../screens/home/activity/BuatJanji'
-import filterDokterStack from "../activity/filterDokterStack"
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
+import SearchDoctor from '../../screens/home/doctor/SearchDoctor';
+import DetailDoctor from '../../screens/home/doctor/DetailDoctor';
+import MedicalFasility from '../../screens/home/doctor/MedicalFacility';
+import BuatJanjiPage from '../../screens/home/activity/BuatJanji';
+import filterDokterStack from '../activity/filterDokterStack';
 
-const StackDoctor = createStackNavigator({
-  SearchDoctor: {
-    screen: SearchDoctor,
-    navigationOptions: {
-      headerShown: false
-    }
+const StackDoctor = createStackNavigator(
+  {
+    SearchDoctor: {
+      screen: SearchDoctor,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    DetailDoctor: {
+      screen: DetailDoctor,
+      navigationOptions: {
+        tabBarVisible: false,
+        headerShown: false,
+      },
+    },
+    BuatJanji: {
+      screen: BuatJanjiPage,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    Filter: {
+      screen: filterDokterStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    MedFacility: {
+      screen: MedicalFasility,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
   },
-  DetailDoctor: {
-    screen: DetailDoctor,
-    navigationOptions: {
-      tabBarVisible: false,
-      headerShown: false,
-    }
-  },
-  BuatJanji: {
-    screen: BuatJanjiPage,
-    navigationOptions: {
-      headerShown: false
-    }
-  },
-  Filter: {
-    screen: filterDokterStack,
-    navigationOptions: {
-      headerShown: false
-    }
-  },
-  MedFacility: {
-    screen: MedicalFasility,
-    navigationOptions:{
-      headerShown: false,
-    }
+  {
+    initialRouteName: 'SearchDoctor',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
-}, {
-  initialRouteName: 'SearchDoctor'
-})
-
+);
 
 // StackDoctor.navigationOptions = ({ navigation }) => {
 //   console.log(navigation,'ini navigation-=-=-=')
@@ -60,4 +68,4 @@ const StackDoctor = createStackNavigator({
 //   };
 // };
 
-export default StackDoctor
+export default StackDoctor;
