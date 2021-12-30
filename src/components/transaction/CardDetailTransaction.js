@@ -98,16 +98,18 @@ export default function CardDetailTransaction({ transaction }) {
           }}
         />
         {/* Payment Method */}
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: dimHeight * 0.01,
-          }}
-        >
-          <Text style={styles.textcontent}>Metode Pembayaran</Text>
-          <Text style={styles.textcontent}>{payment.name}</Text>
-        </View>
+        {transaction.paymentMethod ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: dimHeight * 0.01,
+            }}
+          >
+            <Text style={styles.textcontent}>Metode Pembayaran</Text>
+            <Text style={styles.textcontent}>{payment.name}</Text>
+          </View>
+        ) : null}
         <View style={styles.line} />
 
         {/* Transaction status & amount transaction */}
