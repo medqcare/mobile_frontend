@@ -163,14 +163,14 @@ export default function Transaksi(props) {
                         alignItems: 'center',
                       }}
                     >
-                      <Image
+                      {item.paymentMethod ? <Image
                         style={{
                           height: 30,
                           width: 50,
                           marginTop: 5,
                         }}
                         source={payment.iconUrl}
-                      />
+                      /> : null}
                       <View style={{ flexDirection: 'column', marginLeft: 12 }}>
                         <Text
                           style={{
