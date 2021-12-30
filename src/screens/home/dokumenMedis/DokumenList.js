@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,34 +11,35 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
   Image,
-} from "react-native";
+} from 'react-native';
 
-import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
-import { connect } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { connect } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   deleteDocument,
   getDocumentByPatient,
   renameDocument,
   uploadDocument,
-} from "../../../stores/action";
+} from '../../../stores/action';
 
-import PictureModal from "../../../components/modals/profilePictureModal";
-import DocumentOptionModal from "../../../components/modals/docOptionModal";
-import RenameModal from "../../../components/modals/modalRename";
-import ConfirmationModal from "../../../components/modals/ConfirmationModal";
+import PictureModal from '../../../components/modals/profilePictureModal';
+import DocumentOptionModal from '../../../components/modals/docOptionModal';
+import RenameModal from '../../../components/modals/modalRename';
+import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 
-import LottieLoader from "lottie-react-native";
+import LottieLoader from 'lottie-react-native';
 
-import Ic_Sort from "../../../assets/svg/ic_sort";
-import Ic_Dokumen from "../../../assets/svg/ic_documen";
-import Ic_Option from "../../../assets/svg/ic_option";
-import * as DocumentPicker from "expo-document-picker";
+import Ic_Sort from '../../../assets/svg/ic_sort';
+import Ic_Dokumen from '../../../assets/svg/ic_documen';
+import Ic_Option from '../../../assets/svg/ic_option';
+import * as DocumentPicker from 'expo-document-picker';
 
-const dimHeight = Dimensions.get("window").height;
-const dimWidth = Dimensions.get("window").width;
+const dimHeight = Dimensions.get('window').height;
+const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
   const [data, setData] = useState([]);
@@ -64,7 +65,7 @@ function DokumenList(props) {
 
   const _fetchData = async () => {
     setLoading(true);
-    let token = JSON.parse(await AsyncStorage.getItem("token")).token;
+    let token = JSON.parse(await AsyncStorage.getItem('token')).token;
     getDocumentByPatient(token, patientID)
       .then(({ data }) => {
         setData(data.data);
@@ -82,7 +83,7 @@ function DokumenList(props) {
   };
 
   const upload = async (data) => {
-    let token = JSON.parse(await AsyncStorage.getItem("token")).token;
+    let token = JSON.parse(await AsyncStorage.getItem('token')).token;
     uploadDocument(token, patientID, data)
       .then(({ data }) => {
         console.log(data);
@@ -97,7 +98,7 @@ function DokumenList(props) {
   };
 
   const renameAction = async (newName) => {
-    const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
     const payload = {
       documentid: selectedId,
       name: newName,
@@ -116,7 +117,7 @@ function DokumenList(props) {
   };
 
   const deleteAction = async () => {
-    const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
     const payload = {
       documentid: selectedId,
       key: selectedKey,
@@ -137,43 +138,47 @@ function DokumenList(props) {
 
   const addDocumentOptions = [
     {
-      label: "Kamera",
-      url: require("../../../assets/png/ic_kamera.png"),
+      label: 'Kamera',
+      url: require('../../../assets/png/ic_kamera.png'),
     },
     {
-      label: "Galeri",
-      url: require("../../../assets/png/ic_galeri.png"),
+      label: 'Galeri',
+      url: require('../../../assets/png/ic_galeri.png'),
     },
   ];
 
   const documentAction = [
     {
-      label: "Detail",
-      url: require("../../../assets/png/documentPage/detail.png"),
+      label: 'Detail',
+      url: require('../../../assets/png/documentPage/detail.png'),
     },
     {
-      label: "Unduh",
-      url: require("../../../assets/png/documentPage/unduh.png"),
+      label: 'Unduh',
+      url: require('../../../assets/png/documentPage/unduh.png'),
     },
     {
-      label: "Ganti Nama",
-      url: require("../../../assets/png/documentPage/rename.png"),
+      label: 'Share',
+      url: require('../../../assets/png/documentPage/ic_share.png'),
     },
     {
-      label: "Hapus",
-      url: require("../../../assets/png/documentPage/delete.png"),
+      label: 'Ganti Nama',
+      url: require('../../../assets/png/documentPage/rename.png'),
+    },
+    {
+      label: 'Hapus',
+      url: require('../../../assets/png/documentPage/delete.png'),
     },
   ];
 
   async function setSelectedValue(label) {
     switch (label) {
-      case "Kamera":
+      case 'Kamera':
         // await props.navigation.navigate("ProfilePictureCamera", {
         //   destination: "DokumenMedisStack",
         // });
         break;
 
-      case "Galeri":
+      case 'Galeri':
         let result = await DocumentPicker.getDocumentAsync({});
         console.log(result.uri);
         console.log(result);
@@ -182,11 +187,11 @@ function DokumenList(props) {
           let uri = result.uri;
           let name =
             result.name +
-            new Date().toLocaleDateString().split("/").join("") +
-            new Date().toLocaleTimeString().split(":").join("");
+            new Date().toLocaleDateString().split('/').join('') +
+            new Date().toLocaleTimeString().split(':').join('');
           let type = result.mimeType;
           const data = new FormData();
-          data.append("avatar", { uri, name, type });
+          data.append('avatar', { uri, name, type });
           console.log(data);
           upload(data);
         }
@@ -199,15 +204,19 @@ function DokumenList(props) {
 
   async function setSelectedAction(label) {
     switch (label) {
-      case "Unduh":
+      case 'Unduh':
         downloadFile();
         break;
 
-      case "Ganti Nama":
+      case 'Share':
+        shareFileHandler();
+        break;
+
+      case 'Ganti Nama':
         setModalRename(true);
         break;
 
-      case "Hapus":
+      case 'Hapus':
         setModalDelete(true);
         break;
 
@@ -225,7 +234,7 @@ function DokumenList(props) {
 
   const askPermission = async () => {
     const result = await PermissionsAndroid.request(
-      "android.permission.WRITE_EXTERNAL_STORAGE"
+      'android.permission.WRITE_EXTERNAL_STORAGE'
     );
     return result;
   };
@@ -236,7 +245,7 @@ function DokumenList(props) {
       await askPermission();
     }
     let fileUri = FileSystem.documentDirectory + selectedName;
-    ToastAndroid.show("Download Started", ToastAndroid.LONG);
+    ToastAndroid.show('Download Started', ToastAndroid.LONG);
     FileSystem.downloadAsync(selectedUrl, fileUri)
       .then(({ uri }) => {
         saveFile(uri);
@@ -246,20 +255,33 @@ function DokumenList(props) {
       });
   };
 
+  const shareFileHandler = () => {
+    (async () => {
+      const permission = await checkPermission();
+      if (!permission) {
+        await askPermission();
+      }
+
+      let fileUri = FileSystem.documentDirectory + selectedName;
+      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
+      await Sharing.shareAsync(uri);
+    })();
+  };
+
   const saveFile = async (uri) => {
     const asset = await MediaLibrary.createAssetAsync(uri);
-    const album = await MediaLibrary.getAlbumAsync("Download");
+    const album = await MediaLibrary.getAlbumAsync('Download');
     console.log(album);
     if (album == null) {
-      await MediaLibrary.createAlbumAsync("Download", asset, false);
+      await MediaLibrary.createAlbumAsync('Download', asset, false);
       ToastAndroid.show(
-        "Download berhasil, check on your download folder",
+        'Download berhasil, check on your download folder',
         ToastAndroid.LONG
       );
     } else {
       await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
       ToastAndroid.show(
-        "Download berhasil, check on your download folder",
+        'Download berhasil, check on your download folder',
         ToastAndroid.LONG
       );
     }
@@ -288,18 +310,18 @@ function DokumenList(props) {
                   <View style={styles.cardDokumen}>
                     <TouchableOpacity
                       onPress={() =>
-                        props.navigation.navigate("ShowDokumen", {
+                        props.navigation.navigate('ShowDokumen', {
                           uri: item.fileUrl,
                           name: item.name,
-                          backTo: "ListDokumenMedis",
+                          backTo: 'ListDokumenMedis',
                         })
                       }
                       style={styles.imageDokumen}
                     >
-                      <View style={{alignItems: 'center'}}>
+                      <View style={{ alignItems: 'center' }}>
                         <Image
                           style={{ height: 50, width: 50 }}
-                          source={require("../../../assets/png/pdf.png")}
+                          source={require('../../../assets/png/pdf.png')}
                         />
                       </View>
                     </TouchableOpacity>
@@ -319,7 +341,7 @@ function DokumenList(props) {
                       <View
                         style={{
                           maxWidth: dimWidth * 0.25,
-                          justifyContent: "center",
+                          justifyContent: 'center',
                         }}
                       >
                         <Text style={styles.dokumentName}>{item.name}</Text>
@@ -338,12 +360,12 @@ function DokumenList(props) {
         <>
           {loading ? (
             <LottieLoader
-              source={require("../../animation/loading.json")}
+              source={require('../../animation/loading.json')}
               autoPlay
               loop
             />
           ) : (
-            <View style={{ ...styles.document, alignItems: "center" }}>
+            <View style={{ ...styles.document, alignItems: 'center' }}>
               <Text style={styles.textItem}>Tidak ada dokumen</Text>
             </View>
           )}
@@ -358,7 +380,7 @@ function DokumenList(props) {
         >
           {uploadLoading ? (
             <LottieLoader
-              source={require("../../../screens/animation/orange-pulse.json")}
+              source={require('../../../screens/animation/orange-pulse.json')}
               autoPlay
               loop
             />
@@ -384,26 +406,26 @@ function DokumenList(props) {
       <RenameModal
         modal={modalRename}
         optionLeftFunction={() => setModalRename(false)}
-        optionLeftText={"Batal"}
+        optionLeftText={'Batal'}
         optionRightFunction={(newName) => {
           setModalLoad(true);
           renameAction(newName);
         }}
         nameBefore={selectedName}
-        optionRightText={"Rename"}
-        warning={"Masukkan Nama Baru"}
+        optionRightText={'Rename'}
+        warning={'Masukkan Nama Baru'}
         load={modalLoad}
       />
       <ConfirmationModal
         modal={modalDelete}
         optionLeftFunction={() => setModalDelete(false)}
-        optionLeftText={"Batal"}
+        optionLeftText={'Batal'}
         optionRightFunction={() => {
           setModalLoad(true);
           deleteAction();
         }}
-        optionRightText={"Hapus"}
-        warning={"Yakin ingin menghapus dokumen ini"}
+        optionRightText={'Hapus'}
+        warning={'Yakin ingin menghapus dokumen ini'}
         load={modalLoad}
       />
     </View>
@@ -414,15 +436,15 @@ const styles = StyleSheet.create({
   container: {
     padding: dimHeight * 0.02,
     height: dimHeight * 0.84,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   textHeader: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: dimHeight * 0.02,
   },
   document: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     paddingBottom: dimHeight * 0.04,
   },
   cardDokumen: {
@@ -430,35 +452,35 @@ const styles = StyleSheet.create({
     width: dimWidth * 0.48,
   },
   textItem: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
   },
   dokumentName: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
     fontSize: 11,
-    textAlign: "center",
+    textAlign: 'center',
   },
   buttonAdd: {
-    alignItems: "center",
-    alignSelf: "center",
+    alignItems: 'center',
+    alignSelf: 'center',
     width: dimWidth * 0.4,
     minHeight: dimHeight * 0.04,
-    backgroundColor: "#005EA2",
+    backgroundColor: '#005EA2',
     borderRadius: 25,
     padding: 10,
   },
   detailCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     maxWidth: dimWidth * 0.4,
     paddingVertical: 10,
   },
   imageDokumen: {
     height: dimHeight * 0.12,
     width: dimWidth * 0.4,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
-    display: "flex",
-    justifyContent: "center",
+    display: 'flex',
+    justifyContent: 'center',
   },
   iconDoc: {
     paddingTop: dimHeight * 0.005,
