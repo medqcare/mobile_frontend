@@ -15,6 +15,7 @@ import {
 
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -156,6 +157,10 @@ function DokumenList(props) {
       url: require('../../../assets/png/documentPage/unduh.png'),
     },
     {
+      label: 'Share',
+      url: require('../../../assets/png/documentPage/ic_share.png'),
+    },
+    {
       label: 'Ganti Nama',
       url: require('../../../assets/png/documentPage/rename.png'),
     },
@@ -203,6 +208,10 @@ function DokumenList(props) {
         downloadFile();
         break;
 
+      case 'Share':
+        shareFileHandler();
+        break;
+
       case 'Ganti Nama':
         setModalRename(true);
         break;
@@ -244,6 +253,19 @@ function DokumenList(props) {
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  const shareFileHandler = () => {
+    (async () => {
+      const permission = await checkPermission();
+      if (!permission) {
+        await askPermission();
+      }
+
+      let fileUri = FileSystem.documentDirectory + selectedName;
+      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
+      await Sharing.shareAsync(uri);
+    })();
   };
 
   const saveFile = async (uri) => {
@@ -295,10 +317,14 @@ function DokumenList(props) {
                         })
                       }
                       style={styles.imageDokumen}
-                    />
-                    {/* <Image style={{height: 50, width: 50}} source={{uri: ''}}>
-
-                    </Image> */}
+                    >
+                      <View style={{ alignItems: 'center' }}>
+                        <Image
+                          style={{ height: 50, width: 50 }}
+                          source={require('../../../assets/png/pdf.png')}
+                        />
+                      </View>
+                    </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
                         setSelectedId(item._id);
@@ -451,8 +477,10 @@ const styles = StyleSheet.create({
   imageDokumen: {
     height: dimHeight * 0.12,
     width: dimWidth * 0.4,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
+    display: 'flex',
+    justifyContent: 'center',
   },
   iconDoc: {
     paddingTop: dimHeight * 0.005,

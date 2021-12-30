@@ -1,30 +1,36 @@
-import { createStackNavigator } from "react-navigation-stack";
-import Reminder from "../../screens/home/reminder/Reminder";
-import AddReminderForm from "../../screens/home/reminder/AddReminderForm";
-import DrugDetail from "../../screens/home/reminder/DrugDetail";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
+import Reminder from '../../screens/home/reminder/Reminder';
+import AddReminderForm from '../../screens/home/reminder/AddReminderForm';
+import DrugDetail from '../../screens/home/reminder/DrugDetail';
 
 export default StackReminder = createStackNavigator(
   {
     Reminder: {
       screen: Reminder,
       navigationOptions: {
-        headerShown: false
+        headerShown: false,
       },
     },
     AddReminderForm: {
       screen: AddReminderForm,
       navigationOptions: {
-        headerShown: false
-      }
+        headerShown: false,
+      },
     },
     DrugDetail: {
       screen: DrugDetail,
       navigationOptions: {
-        headerShown: false
-      }
+        headerShown: false,
+      },
     },
   },
   {
-    initialRouteName: "Reminder"
+    initialRouteName: 'Reminder',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

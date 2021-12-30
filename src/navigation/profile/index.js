@@ -1,4 +1,4 @@
-import { createStackNavigator } from 'react-navigation-stack'
+import { createStackNavigator, TransitionPresets } from 'react-navigation-stack'
 import settingStack from '../../navigation/profile/settingStack'
 import ProfilePage from '../../screens/profile/profile'
 import AddFamilyPage from './addFamilyStack'
@@ -85,7 +85,10 @@ export default ProfileTab = createStackNavigator({
         }
     },
 }, {
-    initialRouteName: 'ProfileStack'
+    initialRouteName: 'ProfileStack',
+    defaultNavigationOptions: {
+    ...TransitionPresets.SlideFromRightIOS,
+    },
 })
 
 ProfileTab.navigationOptions = ({ navigation }) => {

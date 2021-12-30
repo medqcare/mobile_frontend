@@ -7,7 +7,7 @@ import {baseURL} from '../../config';
 
 const activeActivity = props => {
   // console.log(Object.keys(props.data.registration))
-  let {queuingNumber} = props.data.registration;
+  let queuingNumber = props.data.queuingNumber;
   const [quesekarang, setquesekarang] = useState(props.currentQueue);
 
   useEffect(() => {
@@ -18,18 +18,15 @@ const activeActivity = props => {
       socketer.close();
     };
   }, []);
-
   function socketers() {
     let socketIO = `${baseURL}`;
     // let socketIO = `http://192.168.43.100:3004` // only development
     let socket = io(socketIO);
-
     socket.on(`que-${JSON.parse(props.queueId)}`, data => {
       console.log('ini console.log dari socket ', `que-${props.queueId}`);
       console.log(data);
       setquesekarang(data);
     });
-
     return socket;
   }
   return (
@@ -40,10 +37,20 @@ const activeActivity = props => {
           <View style={{marginTop: 2}}>
             <IcPatient />
           </View>
-          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.registration.patient.patientName}</Text>
+          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.patient.patientName}</Text>
         </View>
       </View>
-      
+
+
+    
+          
+            
+    
+
+          
+    
+    
+  
           
       <View
         style={{
@@ -102,7 +109,6 @@ const activeActivity = props => {
     </View>
   );
 };
-
 const Styles = StyleSheet.create({
   containerComponent: {
     // height: 150,

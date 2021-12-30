@@ -30,7 +30,7 @@ export default function GreyHeader({
                 barStyle="light-content"
                 translucent={true}
                 backgroundColor={'transparent'}
-                hidden={hidden}
+                // hidden={hidden}
             />
             <View style={styles.touchableContent}>
                 <TouchableOpacity
@@ -64,7 +64,7 @@ export default function GreyHeader({
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: hp('8%'),
+        height: hp('10%'),
         width: '100%',
         backgroundColor: '#2F2F2F',
         justifyContent: 'space-between',
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flexDirection: 'row', 
-        marginBottom: 20
+        marginBottom: 10
     },
     backArrow: { 
         paddingHorizontal: 17.64

@@ -1,22 +1,25 @@
-import { createStackNavigator } from "react-navigation-stack";
-import doctorStack from "./doctorStack";
-import hospitalStack from "./hospitalStack";
-import Home from "../../screens/home/dashboard/Home";
-import ScanMe from "../../screens/home/dashboard/ScanMe";
-import Appointment from "../../screens/home/appointment/AppointmentList";
-import Tagihan from "../../screens/home/activity/Tagihan";
-import AllergyStack from "./allergystack";
-import Undefined from "../../screens/404";
-import profileStack from "../profile";
-import SignStack from "../profile/signStack";
-import Activity_Stack from "../activity";
-import riwayatStack from "./riwayatStack";
-import medresStack from "./medresStack";
-import dokumenMedisStack from "./dokumenMedisStack";
-import penunjangStack from "./penunjangStack";
-import rujukanStack from "./rujukanStack";
-import prescriptionStack from "./prescriptionStack";
-import reminderStack from "./reminderStack";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
+import doctorStack from './doctorStack';
+import hospitalStack from './hospitalStack';
+import Home from '../../screens/home/dashboard/Home';
+import ScanMe from '../../screens/home/dashboard/ScanMe';
+import Appointment from '../../screens/home/appointment/AppointmentList';
+import Tagihan from '../../screens/home/activity/Tagihan';
+import AllergyStack from './allergystack';
+import Undefined from '../../screens/404';
+import profileStack from '../profile';
+import SignStack from '../profile/signStack';
+import Activity_Stack from '../activity';
+import riwayatStack from './riwayatStack';
+import medresStack from './medresStack';
+import dokumenMedisStack from './dokumenMedisStack';
+import penunjangStack from './penunjangStack';
+import rujukanStack from './rujukanStack';
+import prescriptionStack from './prescriptionStack';
+import reminderStack from './reminderStack';
 
 export default StackHome = createStackNavigator(
   {
@@ -130,12 +133,15 @@ export default StackHome = createStackNavigator(
     },
   },
   {
-    initialRouteName: "Home",
+    initialRouteName: 'Home',
+    defaultNavigationOptions: {
+      ...TransitionPresets.ModalSlideFromBottomIOS
+    },
   }
 );
 
 StackHome.navigationOptions = ({ navigation }) => {
-  console.log(navigation.state.index, "Ini adalah jumlah stack di home");
+  console.log(navigation.state.index, 'Ini adalah jumlah stack di home');
   let tabBarVisible = true;
   if (navigation.state.index > 0) {
     tabBarVisible = false;

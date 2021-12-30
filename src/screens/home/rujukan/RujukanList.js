@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   FlatList,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import Header from '../../../components/headers/GradientHeader';
 import PictureModal from '../../../components/modals/profilePictureModal';
@@ -85,7 +86,10 @@ function RujukanList(props) {
     const isAvailable = await Sharing.isAvailableAsync();
 
     if (!isAvailable) {
-      Alert.alert("Uh oh, sharing isn't available on your platform");
+      ToastAndroid.show(
+        "Uh oh, sharing isn't available on your platform",
+        ToastAndroid.LONG
+      );
       return;
     }
 
@@ -146,61 +150,61 @@ function RujukanList(props) {
         />
       ) : (
         <View style={styles.content}>
-          <SafeAreaView style={styles.document}>
-            <FlatList
-              data={referenceFiles}
-              numColumns={2}
-              keyExtractor={(item, idx) => String(idx)}
-              renderItem={({ item, index }) => {
-                return (
-                  <View style={styles.cardDokumen}>
-                    <TouchableOpacity
-                      style={styles.imageDokumen}
-                      onPress={() =>
-                        props.navigation.navigate('ShowDokumen', {
-                          name: item.referral.title,
-                          base64:
-                            'data:application/pdf;base64,' +
-                            item.referral.base64,
-                          backTo: 'ListRujukan',
-                        })
-                      }
-                    />
-                    <TouchableOpacity
-                      style={styles.detailCard}
-                      onPress={() => {
-                        setModalOption(true);
-                        setSelectedReferenceFile(item);
-                      }}
-                    >
-                      <View style={styles.iconDoc}>
-                        <Ic_Dokumen />
-                      </View>
-                      <View
-                        style={{
-                          maxWidth: dimWidth * 0.25,
-                          justifyContent: 'center',
+          {referenceFiles.length > 0 ? (
+            <SafeAreaView style={styles.document}>
+              <FlatList
+                data={referenceFiles}
+                numColumns={2}
+                keyExtractor={(item, idx) => String(idx)}
+                renderItem={({ item, index }) => {
+                  return (
+                    <View style={styles.cardDokumen}>
+                      <TouchableOpacity
+                        style={styles.imageDokumen}
+                        onPress={() =>
+                          props.navigation.navigate('ShowDokumen', {
+                            name: item.referral.title,
+                            base64:
+                              'data:application/pdf;base64,' +
+                              item.referral.base64,
+                            backTo: 'ListRujukan',
+                          })
+                        }
+                      />
+                      <TouchableOpacity
+                        style={styles.detailCard}
+                        onPress={() => {
+                          setModalOption(true);
+                          setSelectedReferenceFile(item);
                         }}
                       >
-                        <Text style={styles.dokumentName}>
-                          {item.referral.title}
-                        </Text>
-                      </View>
-                      <View style={styles.iconOption}>
-                        <Ic_Option />
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              }}
-            />
-          </SafeAreaView>
-          {/* <TouchableOpacity
-            style={styles.buttonAdd}
-            onPress={() => setModalAdd(true)}
-          >
-            <Text style={styles.textButton}>Minta Rujukan</Text>
-          </TouchableOpacity> */}
+                        <View style={styles.iconDoc}>
+                          <Ic_Dokumen />
+                        </View>
+                        <View
+                          style={{
+                            maxWidth: dimWidth * 0.25,
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Text style={styles.dokumentName}>
+                            {item.referral.title}
+                          </Text>
+                        </View>
+                        <View style={styles.iconOption}>
+                          <Ic_Option />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }}
+              />
+            </SafeAreaView>
+          ) : (
+            <View style={{ alignItems: 'center', marginTop: 25 }}>
+              <Text style={{ color: '#fff' }}>Tidak ada surat rujukan</Text>
+            </View>
+          )}
         </View>
       )}
       <PictureModal

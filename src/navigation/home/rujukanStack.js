@@ -1,4 +1,7 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
 import RujukanList from '../../screens/home/rujukan/RujukanList';
 
 export default StackRujukan = createStackNavigator(
@@ -12,5 +15,8 @@ export default StackRujukan = createStackNavigator(
   },
   {
     initialRouteName: 'ListRujukan',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

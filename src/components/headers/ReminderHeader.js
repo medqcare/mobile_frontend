@@ -56,7 +56,7 @@ export default function ReminderHeader({
                         barStyle="light-content"
                         translucent={true}
                         backgroundColor={'transparent'}
-                        hidden={hidden}
+                        // hidden={hidden}
                     />
                     
                         <View style={styles.innerContainer}>
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingLeft: dimWidth * 0.0578,
         paddingBottom: dimHeight * 0.0275,
-        paddingTop: dimHeight * 0.0345 
+        paddingTop: dimHeight * 0.05 
     },
 
     greetingText: {

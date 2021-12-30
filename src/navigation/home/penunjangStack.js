@@ -1,8 +1,40 @@
-import { createStackNavigator } from "react-navigation-stack";
-import FindClinic from "../../screens/home/penunjang/FindClinic";
-import Payment from "../../screens/home/penunjang/Payment";
-import PenunjangList from "../../screens/home/penunjang/PenunjangList";
-import TransactionDetail from "../../screens/home/penunjang/TransactionDetail";
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from 'react-navigation-stack';
+import FindClinic from '../../screens/home/penunjang/FindClinic';
+import Payment from '../../screens/home/penunjang/Payment';
+import PenunjangList from '../../screens/home/penunjang/PenunjangList';
+import TransactionDetail from '../../screens/home/penunjang/TransactionDetail';
+
+import { Animated, Easing, Platform } from 'react-native';
+
+function fromLeft(duration = 300) {
+  return {
+    transitionSpec: {
+      duration,
+      easing: Easing.out(Easing.poly(4)),
+      timing: Animated.timing,
+      useNativeDriver: true,
+    },
+    screenInterpolator: ({ layout, position, scene }) => {
+      const { index } = scene;
+      const { initWidth } = layout;
+
+      const translateX = position.interpolate({
+        inputRange: [index - 1, index, index + 1],
+        outputRange: [-initWidth, 0, 0],
+      });
+
+      const opacity = position.interpolate({
+        inputRange: [index - 1, index - 0.99, index],
+        outputRange: [0, 1, 1],
+      });
+
+      return { opacity, transform: [{ translateX }] };
+    },
+  };
+}
 
 export default StackPenunjang = createStackNavigator(
   {
@@ -16,11 +48,11 @@ export default StackPenunjang = createStackNavigator(
       screen: FindClinic,
       navigationOptions: {
         headerShown: true,
-        title: "Temukan Klinik",
+        title: 'Temukan Klinik',
         headerStyle: {
-          backgroundColor: "#2F2F2F",
+          backgroundColor: '#2F2F2F',
         },
-        headerTintColor: "#DDDDDD",
+        headerTintColor: '#DDDDDD',
         headerTitleStyle: {
           fontSize: 16,
           letterSpacing: 1,
@@ -31,11 +63,11 @@ export default StackPenunjang = createStackNavigator(
       screen: Payment,
       navigationOptions: {
         headerShown: true,
-        title: "Metode Pembayaran",
+        title: 'Metode Pembayaran',
         headerStyle: {
-          backgroundColor: "#2F2F2F",
+          backgroundColor: '#2F2F2F',
         },
-        headerTintColor: "#DDDDDD",
+        headerTintColor: '#DDDDDD',
         headerTitleStyle: {
           fontSize: 16,
           letterSpacing: 1,
@@ -46,11 +78,11 @@ export default StackPenunjang = createStackNavigator(
       screen: TransactionDetail,
       navigationOptions: {
         headerShown: true,
-        title: "Detail Transaksi",
+        title: 'Detail Transaksi',
         headerStyle: {
-          backgroundColor: "#2F2F2F",
+          backgroundColor: '#2F2F2F',
         },
-        headerTintColor: "#DDDDDD",
+        headerTintColor: '#DDDDDD',
         headerTitleStyle: {
           fontSize: 16,
           letterSpacing: 1,
@@ -59,6 +91,9 @@ export default StackPenunjang = createStackNavigator(
     },
   },
   {
-    initialRouteName: "PenunjangList",
+    initialRouteName: 'PenunjangList',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+    },
   }
 );

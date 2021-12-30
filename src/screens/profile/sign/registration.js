@@ -241,7 +241,7 @@ const DataCompletion = props => {
 	return (
 		<KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
 			{/* <View style={styles.container}> */}
-			<StatusBar hidden/>
+			{/* <StatusBar hidden/> */}
             <ScrollView showsVerticalScrollIndicator={false}>
 
 				{/* Header */}
