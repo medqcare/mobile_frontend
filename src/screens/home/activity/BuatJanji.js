@@ -224,6 +224,14 @@ const buatJanji = (props) => {
     return age;
   };
 
+  const isValidPayment = () => {
+    return (
+      (patient.patient.insuranceStatus === 'UMUM' && dompet) ||
+      (patient.patient.insuranceStatus === 'BPJS' && bpjsNumber) ||
+      (patient.patient.insuranceStatus === 'ASURANSI' && insuranceNumber)
+    );
+  };
+
   const validation = () => {
     Object.filter = (obj, predicate) =>
       Object.keys(obj)
@@ -817,30 +825,35 @@ const buatJanji = (props) => {
           </View>
         )}
       </ScrollView>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: '#1F1F1F',
-          height: 65,
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}
-      >
-        <TouchableOpacity onPress={() => validation()} style={viewStyle.button}>
-          {load ? (
-            <ActivityIndicator size={'small'} color={'#FFF'} />
-          ) : (
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ marginTop: 2 }}>
-                <BuatJanji />
+      {isValidPayment() ? (
+        <View
+          style={{
+            padding: 10,
+            backgroundColor: '#1F1F1F',
+            height: 65,
+            justifyContent: 'center',
+            alignContent: 'center',
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => validation()}
+            style={viewStyle.button}
+          >
+            {load ? (
+              <ActivityIndicator size={'small'} color={'#FFF'} />
+            ) : (
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ marginTop: 2 }}>
+                  <BuatJanji />
+                </View>
+                <Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
+                  Buat Janji
+                </Text>
               </View>
-              <Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
-                Buat Janji
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
+            )}
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       {
         // modals &&
