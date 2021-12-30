@@ -21,6 +21,8 @@ import {
   changeLogin,
   GetUser,
   setLoading,
+  getDrugs,
+  getReminders
 } from '../../../stores/action';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
@@ -32,6 +34,7 @@ import Lonceng from '../../../assets/svg/home-blue/lonceng';
 import LottieLoader from 'lottie-react-native';
 import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
+import { getSelectedDate } from '../../../helpers/todaysDate'
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -75,6 +78,10 @@ function HomePage(props) {
       });
     })();
   }, []);
+  
+	
+
+	
 
   useEffect(() => {
     notificationTrigger();
@@ -83,7 +90,6 @@ function HomePage(props) {
   useEffect(() => {
     (async () => {
       const tokenString = await AsyncStorage.getItem('token');
-
       if (!tokenString) {
         setload(false);
       }
@@ -321,6 +327,8 @@ const mapDispatchToProps = {
   setCurrentLocation,
   changeLogin,
   GetUser,
+  getDrugs,
+  getReminders
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
