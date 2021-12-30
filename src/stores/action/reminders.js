@@ -19,10 +19,11 @@ export function getReminders(patientID, token){
                     authorization: token
                 },
             })
-            await dispatch({
-                type: 'GET_REMINDER_DATA',
-                payload: data.data
-            })
+            // await dispatch({
+            //     type: 'GET_REMINDER_DATA',
+            //     payload: data.data
+            // })
+            return data.data
         } catch (error) {
             console.log(error) 
         }
