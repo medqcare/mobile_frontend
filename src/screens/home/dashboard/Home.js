@@ -20,6 +20,8 @@ import {
   changeLogin,
   GetUser,
   setLoading,
+  getDrugs,
+  getReminders
 } from '../../../stores/action';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
@@ -31,6 +33,7 @@ import Lonceng from '../../../assets/svg/home-blue/lonceng';
 import LottieLoader from 'lottie-react-native';
 import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
+import { getSelectedDate } from '../../../helpers/todaysDate'
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
@@ -49,8 +52,8 @@ function HomePage(props) {
       url: require('../../../assets/png/Promo2.png'),
     },
   ]);
-  console.log(props.userData, '>>>>>>>>.');
-  console.log(props.myLocation, '>>>>>>>> my location');
+  // console.log(props.userData, '>>>>>>>>.');
+  // console.log(props.myLocation, '>>>>>>>> my location');
 
   useEffect(() => {
     (async () => {
@@ -61,7 +64,7 @@ function HomePage(props) {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      console.log(location, '>>>>>>>>>>>>>>>>> hai');
+      // console.log(location, '>>>>>>>>>>>>>>>>> hai');
       setMyLocation({
         lat: location.coords.latitude,
         lng: location.coords.longitude,
@@ -72,6 +75,10 @@ function HomePage(props) {
       });
     })();
   }, []);
+  
+	
+
+	
 
   const _getLocation = () => {
     GetLocation.getCurrentPosition({
@@ -112,6 +119,7 @@ function HomePage(props) {
               props.navigation,
               () => setModalW(true)
             );
+			
             if (!myLocation) {
               // setMyLocation({
               //   lat: x.location.coordinates[1],
@@ -126,10 +134,137 @@ function HomePage(props) {
           setload(false);
         }
       })
+	  .then( async (res) => {
+		const patientID = props.userData._id
+		const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+		await props.getDrugs(patientID, token)
+	  })
       .catch((err) => {
         setload(false);
       });
   }, []);
+
+	// const [alarms, setAlarms] = useState(props.userData?.drugs?.reminders?.alarmTime)
+	const [reminders, setReminders] = useState([])
+	const [alarms, setAlarms] = useState([])
+
+	// useEffect(async () => {
+		
+	// }, [load])
+
+  const [scheduler, setScheduler] = useState(null);
+  // useEffect(() => {
+  //   props.navigation.addListener('focus', async () => {
+  //     if(!load){
+  //       const patientID = props.userData._id
+  //       const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+  //       const reminders = await props.getReminders(patientID, token)
+  //       const arrayOfAlarms = reminders.map(el => {
+  //         return el.alarmTime
+  //       })
+  //       setAlarms(arrayOfAlarms)
+  //     }
+  //     setScheduler(setInterval(fetchState, 10000));
+  //   });
+  //   props.navigation.addListener('blur', async () => {
+  //     clearInterval(scheduler);
+  //   });
+  //   fetchState();
+  // }, [load]);
+
+  // async function fetchState () {
+  //   const { 
+  //     		todaysYear,
+  //     		todaysMonth,
+  //     		todaysDate,
+  //     		todaysHour,
+  //     		todaysMinute,
+  //     		todaysSecond,
+  //     		todaysMillisecond
+  //     	} = getSelectedDate()
+    
+  //     	for(let i = 0; i < alarms.length; i++){
+  //     		const alarmYear = new Date(alarms[i]).getYear()
+  //     		const alarmMonth = new Date(alarms[i]).getMonth()
+  //     		const alarmDate = new Date(alarms[i]).getDate()
+  //     		const alarmHour = new Date(alarms[i]).getHours()
+  //     		const alarmMinute = new Date(alarms[i]).getMinutes()
+  //     		const alarmSecond = new Date(alarms[i]).getSeconds()
+  //     		const alarmMilisecond = new Date(alarms[i]).getMilliseconds()
+  //     		if(
+  //     			alarmYear === todaysYear && 
+  //     			alarmMonth === todaysMonth &&
+  //     			alarmDate === todaysDate &&
+  //     			alarmHour === todaysHour &&
+  //     			alarmMinute === todaysMinute &&
+  //     			alarmSecond === todaysSecond
+  //     		){
+  //     			console.log('Alarm ring')
+  //     		} else {
+  //     			console.log('No alarms', new Date().getMilliseconds())
+  //     			// const patientID = props.userData._id
+  //     			// const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+  //     			// const reminders = await props.getReminders(patientID, token)
+  //     			// // setReminders(reminders)
+  //     			// const arrayOfAlarms = reminders.map(el => {
+  //     			// 	return el.alarmTime
+  //     			// })
+  //     			// setAlarms(arrayOfAlarms)
+  //     			// const arrayOfAlarms = reminders.map(el => {
+  //     			// 	return el.alarmTime
+  //     			// })
+  //     			// setAlarms(arrayOfAlarms)
+  //     		}
+  //       }
+  // }
+
+	// useEffect( async () => {
+	// 	const { 
+	// 		todaysYear,
+	// 		todaysMonth,
+	// 		todaysDate,
+	// 		todaysHour,
+	// 		todaysMinute,
+	// 		todaysSecond,
+	// 		todaysMillisecond
+	// 	} = getSelectedDate()
+
+	// 	for(let i = 0; i < alarms.length; i++){
+	// 		const alarmYear = new Date(alarms[i]).getYear()
+	// 		const alarmMonth = new Date(alarms[i]).getMonth()
+	// 		const alarmDate = new Date(alarms[i]).getDate()
+	// 		const alarmHour = new Date(alarms[i]).getHours()
+	// 		const alarmMinute = new Date(alarms[i]).getMinutes()
+	// 		const alarmSecond = new Date(alarms[i]).getSeconds()
+	// 		const alarmMilisecond = new Date(alarms[i]).getMilliseconds()
+	// 		if(
+	// 			alarmYear === todaysYear && 
+	// 			alarmMonth === todaysMonth &&
+	// 			alarmDate === todaysDate &&
+	// 			alarmHour === todaysHour &&
+	// 			alarmMinute === todaysMinute &&
+	// 			alarmSecond === todaysSecond
+	// 		){
+	// 			console.log('Alarm ring')
+	// 		} else {
+	// 			console.log('No alarms', new Date().getMilliseconds())
+	// 			// const patientID = props.userData._id
+	// 			// const token = JSON.parse(await AsyncStorage.getItem("token")).token;
+	// 			// const reminders = await props.getReminders(patientID, token)
+	// 			// // setReminders(reminders)
+	// 			// const arrayOfAlarms = reminders.map(el => {
+	// 			// 	return el.alarmTime
+	// 			// })
+	// 			// setAlarms(arrayOfAlarms)
+	// 			// const arrayOfAlarms = reminders.map(el => {
+	// 			// 	return el.alarmTime
+	// 			// })
+	// 			// setAlarms(arrayOfAlarms)
+	// 		}
+	// 	}
+
+		
+	// })
 
   // useEffect(() => {
   //   props.setCurrentLocation(myLocation);
@@ -369,6 +504,8 @@ const mapDispatchToProps = {
   setCurrentLocation,
   changeLogin,
   GetUser,
+  getDrugs,
+  getReminders
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
