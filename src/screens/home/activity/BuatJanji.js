@@ -3,21 +3,15 @@ import { connect } from 'react-redux';
 import {
   View,
   Text,
-  Picker,
   StyleSheet,
   ScrollView,
   Image,
   TouchableOpacity,
   ActivityIndicator,
   ToastAndroid,
-  SafeAreaView,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  ImageBackground,
   TextInput,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import DatePicker from 'react-native-datepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   bookDoctor,
@@ -26,15 +20,13 @@ import {
   setLoading,
 } from '../../../stores/action';
 
-import Icon from 'react-native-vector-icons/Ionicons';
+
 import ArrowDownWhite from '../../../assets/svg/ArrowDownWhite';
 import Vector from '../../../assets/svg/Vector';
-import VectorPlus from '../../../assets/svg/VectorPlus';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import formatRP from '../../../helpers/rupiah';
 import Header from '../../../components/headers/GradientHeader';
 
-import ArrowBack from '../../../assets/svg/ArrowBack';
 import SettingModal from '../../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
 import Modal from 'react-native-modal';
@@ -221,9 +213,6 @@ const buatJanji = (props) => {
 
     let age = yearNow - yearBirthDay;
 
-    // 2002 5 23
-    // 2021 12 23
-    // 2021 - 2002 => 19
     if (monthBirthDay > monthNow) {
       age -= 1;
     }
@@ -265,7 +254,6 @@ const buatJanji = (props) => {
         patient: {
           ...patient2,
           patientTitle: getTitle(patient2),
-          resus: filterForcreate2.resus,
           paymentMethod: dompet,
           insuranceNumber: insuranceNumber,
           bpjsNumber: bpjsNumber,
@@ -398,7 +386,8 @@ const buatJanji = (props) => {
           : data.address,
         age: getAge(data.dob),
         patientTitle: '',
-        placeOfBirth: data.placeOfBirth || '',
+        placeOfBirth: data.placeOfBirth || data.location.province,
+        resus: data.resus || '+'
       },
     });
     setDisplayName(
