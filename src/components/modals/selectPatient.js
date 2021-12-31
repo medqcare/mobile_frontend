@@ -31,7 +31,6 @@ export default function SelectPatient({modal, setModal, title, accountOwner, fam
 		object.firstName + ' ' + object.lastName :
 		object.firstName
 	}
-	console.log(accountOwner)
     return (
         <Modal
             isVisible={modal}
