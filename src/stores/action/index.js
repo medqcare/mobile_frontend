@@ -5,7 +5,11 @@ import {
   renameDocument,
   deleteDocument,
 } from './medical_resume';
-import { getAllPrescriptions } from './prescription'
+import { 
+  getAllPrescriptions,
+  getTodaysPrescriptions,
+  getPrescriptionHistory
+} from './prescription'
 import { getDrugs } from './drugs';
 import { getReminders, changeReminderStatus } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1111,10 +1115,22 @@ export function deleteImage(patientId, token) {
   };
 }
 
-export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
+export { 
+  getDocumentByPatient, 
+  uploadDocument, 
+  renameDocument, 
+  deleteDocument 
+};
 
-export { getAllPrescriptions };
+export { 
+  getAllPrescriptions, 
+  getTodaysPrescriptions,
+  getPrescriptionHistory 
+};
 
 export { getDrugs };
 
-export { getReminders, changeReminderStatus };
+export { 
+  getReminders, 
+  changeReminderStatus
+};
