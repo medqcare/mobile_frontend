@@ -23,6 +23,7 @@ import { ActivityIndicator } from "react-native-paper";
 import withZero from "../../helpers/withZero";
 import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fullMonthFormat } from '../../helpers/dateFormat'
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -32,23 +33,6 @@ function PrescriptionTodaysList({props, prescriptions }) {
     const [content, setContent] = useState(prescriptions)
 
     useEffect(() => {
-        // if(drugs.length > 0){
-        //     Promise.all(drugs.map(el => {
-        //         const newObject = {
-        //             ...el,
-        //             type: 'Tablet',
-        //             imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-        //         }
-        //         return newObject
-        //     }))
-        //     .then(result => {
-        //         setContent(result)
-        //         setLoad(false)
-        //     })
-        // } else {
-        //     setContent([])
-        //     setLoad(false)
-        // }
     }, [])
 
 
@@ -67,27 +51,58 @@ function PrescriptionTodaysList({props, prescriptions }) {
     
 
     const renderHeader = (section, _, isActive,) => {
+        const created = new Date(section.createdAt)
+        const date = `${created.getDate()}/${created.getMonth()}/${created.getFullYear()}`
+        const formattedDate = `${fullMonthFormat(date, created.getDay())}`
+        const drugAmount = section.drugs.length
         return (
           <Animatable.View
             key={_}
             duration={400}
-            style={styles.eachDrugContainer}
+            style={styles.eachPrescriptionContainer}
             transition="backgroundColor"
         >
-           
+           <View style={styles.headerInnerContainer}>
+                <Text style={styles.headerDate}>{formattedDate}</Text>
+                {isActive ? null : 
+                    <>
+                        <Text style={styles.drugAmount}>Total {drugAmount} Obat</Text>
+                        <View
+                            style={{flexDirection: "row", alignItems: "center"}}    
+                        >
+                            <Text style={styles.expandButton}>Selengkapnya</Text>
+                            <MaterialIcons 
+                                name="keyboard-arrow-down" 
+                                size={dimWidth * 0.05} 
+                                color="rgba(243, 115, 53, 1)"
+                                style={{paddingTop: dimHeight * 0.01219, paddingLeft: 5}} 
+                            />
+                        </View>
+                    </>
+                }
+           </View>
         </Animatable.View>
         );
     };
 
     const renderContent = (section, _, isActive) => {
-        
+        const { drugs } = section
         return (
             <Animatable.View
                 key={_}
                 duration={400}
-                style={styles.reminderContainer}
-                transition="backgroundColor">
-                    
+                style={styles.drugsContainer}
+                transition="backgroundColor"
+            >
+                <View style={styles.contentInnerContainer}>
+                    {drugs.map((el, index) => {
+                        return (
+                            <View key={index}>
+                                <Text style={textStyles.lighterText}>{el.drugName}</Text>
+                            </View>
+                        )
+                    })}
+                </View>
             </Animatable.View>
         );
     };
@@ -132,7 +147,39 @@ const textStyles = {
 }
 
 const styles = StyleSheet.create({
-	
+	eachPrescriptionContainer: {
+        backgroundColor: 'rgba(47, 47, 47, 1)',
+        width: dimWidth * 0.9
+    },
+
+    headerInnerContainer: {
+        paddingVertical: dimHeight * 0.01219,
+        paddingHorizontal: dimWidth * 0.02431
+    },
+
+    headerDate: {
+        ...textStyles.lighterText,
+    },
+
+    drugAmount: {
+        ...textStyles.lighterText,
+        paddingTop: dimHeight * 0.01219
+    },
+
+    expandButton: {
+        ...textStyles.redText,
+        paddingTop: dimHeight * 0.01219
+    },
+
+    drugsContainer: {
+        backgroundColor: 'rgba(47, 47, 47, 1)',
+        width: dimWidth * 0.9,
+    },
+
+    contentInnerContainer: {
+        paddingVertical: dimHeight * 0.01219,
+        paddingHorizontal: dimWidth * 0.02431
+    },
 });
 
 
