@@ -109,7 +109,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
   
     return (
         load ? <ActivityIndicator color="blue" size={'small'}/> :
-        content.length > 0 ? 
+        content?.length > 0 ? 
             <Accordion
                 activeSections={activeSections}
                 sections={content}

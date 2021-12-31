@@ -3,32 +3,27 @@ import {connect} from 'react-redux';
 import {
   View,
   Text,
-  ImageBackground,
   TouchableOpacity,
-  ScrollView,
   FlatList,
   RefreshControl,
-  Alert,
   StyleSheet,
   BackHandler,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import Icon from 'react-native-vector-icons/Ionicons';
 import ListAppointment from '../../../components/home/appointment/list-appointment';
 import axios from 'axios';
 import {baseURL} from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../../components/headers/GradientHeader'
 
-import ArrowBack from '../../../assets/svg/ArrowBack'
 import {cancelRecervation} from '../../../stores/action';
-import SettingModal from '../../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
+
+import Qrcode from '../../../assets/svg/Qrcode'
 
 const Appointment = props => {
   const [appoinment, setAppoinment] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [cancelR, setCancelR] = useState(false);
   const [idpatient, setIdPatient] = useState(null);
   const [Load, setLoad] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -36,7 +31,6 @@ const Appointment = props => {
   const _getData = () => {
     return new Promise(async (resolve, reject) => {
       let token = await AsyncStorage.getItem('token');
-      // console.log(token, 'ini tokennya')
       let {data} = await axios({
         url: `${baseURL}/api/v1/members/getReservation`,
         method: 'POST',
@@ -49,7 +43,6 @@ const Appointment = props => {
   const _fetchDataAppoinment = async () => {
     _getData().then(data => {
       try {
-        // console.log(appoinment, 'sebelum di set ==============<<<<')
         let datakebalik = data.data.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
@@ -59,7 +52,6 @@ const Appointment = props => {
         });
         setAppoinment(newAppoinment);
         setLoad(false);
-        // console.log('ini abis nembak >>>>>>>>>>>', appoinment)
       } catch (error) {
         setRefreshing(false);
         setLoad(false);
@@ -96,6 +88,11 @@ const Appointment = props => {
   return (
     <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
       <Header title={'Daftar Janji'} navigate={props.navigation.navigate}/>
+      {/* <TouchableOpacity onPress={() => {
+        props.navigation.navigate('Scanner', {props})
+      }}>
+        <Qrcode />
+      </TouchableOpacity> */}
       {Load ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
@@ -127,21 +124,6 @@ const Appointment = props => {
               <Text style={{color: '#FFFFFF'}}>Tidak ada Daftar Janji</Text>
             </View>
           )}
-          {/* {cancelR && (
-            <SettingModal
-              _visible={cancelR}
-              _navigationRight={() => {
-                props.cancelRecervation(idpatient);
-                onRefresh();
-                setCancelR(false);
-              }}
-              _navigationLeft={() => setCancelR(false)}
-              _textRight={'Yes'}
-              _textLeft={'No'}
-              _message={'Are you sure canceled this reservation ?'}
-              _iconId={'warning'}
-            />
-          )} */}
         </>
       )}
       {
