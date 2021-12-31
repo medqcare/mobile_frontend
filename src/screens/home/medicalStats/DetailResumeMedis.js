@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-} from 'react-native';
-import { getFormattedDate } from '../../../helpers/dateFormat';
-import ButtonPrevious from '../../../assets/svg/ic_previous';
-import ButtonNext from '../../../assets/svg/ic_next';
-import BUttonClose from '../../../assets/svg/ic_close';
-import Swiper from 'react-native-swiper';
-import { ActivityIndicator } from 'react-native-paper';
+} from "react-native";
+import { getFormattedDate } from "../../../helpers/dateFormat";
+import ButtonPrevious from "../../../assets/svg/ic_previous";
+import ButtonNext from "../../../assets/svg/ic_next";
+import BUttonClose from "../../../assets/svg/ic_close";
+import Swiper from "react-native-swiper";
+import { ActivityIndicator } from "react-native-paper";
 
 export default function DetailResumeMedis(props) {
   const { data, idx } = props.navigation.state.params;
@@ -28,7 +28,7 @@ export default function DetailResumeMedis(props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: "row" }}>
           <View style={{}}>
             <TouchableOpacity
               style={{ paddingRight: 10 }}
@@ -38,7 +38,7 @@ export default function DetailResumeMedis(props) {
               disabled={activePage <= 0}
             >
               <ButtonPrevious
-                color={activePage === 0 ? '#B5B5B5' : '#DDDDDD'}
+                color={activePage === 0 ? "#B5B5B5" : "#DDDDDD"}
               />
             </TouchableOpacity>
           </View>
@@ -51,7 +51,7 @@ export default function DetailResumeMedis(props) {
               disabled={activePage === lengthData - 1}
             >
               <ButtonNext
-                color={activePage === lengthData - 1 ? '#B5B5B5' : '#DDDDDD'}
+                color={activePage === lengthData - 1 ? "#B5B5B5" : "#DDDDDD"}
               />
             </TouchableOpacity>
           </View>
@@ -116,17 +116,16 @@ export default function DetailResumeMedis(props) {
                       <View style={styles.line} />
                       <View style={styles.card}>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>22 Nov 2018</Text>
-                          <Text style={styles.textItem}>Tipes</Text>
+                          <Text style={styles.textItem}>Belum ada history</Text>
                         </View>
-                        <View style={styles.item}>
+                        {/* <View style={styles.item}>
                           <Text style={styles.textItem}>10 Jan 2014</Text>
                           <Text style={styles.textItem}>DBD</Text>
                         </View>
                         <View style={styles.item}>
                           <Text style={styles.textItem}>18 Feb 2012</Text>
                           <Text style={styles.textItem}>Patah Kaki</Text>
-                        </View>
+                        </View> */}
                       </View>
                     </View>
                     <View style={styles.contentHeader}>
@@ -195,7 +194,7 @@ export default function DetailResumeMedis(props) {
                                   style={{
                                     ...styles.textItem,
                                     fontSize: 15,
-                                    color: '#DDDDDD',
+                                    color: "#DDDDDD",
                                   }}
                                 >
                                   {item.facilityDest}
@@ -204,21 +203,15 @@ export default function DetailResumeMedis(props) {
                               {item.orderDetail.map((action, idx) => {
                                 return (
                                   <View key={idx}>
-                                    {item.facilityDest === 'Laboratory' ? (
+                                    {item.facilityDest === "Laboratory" ? (
                                       <View style={styles.item}>
-                                        <Text style={styles.textItem}>
-                                          {action.group_name}
-                                        </Text>
                                         <Text style={styles.textItem}>
                                           {action.name}
                                         </Text>
                                       </View>
                                     ) : null}
-                                    {item.facilityDest === 'Radiology' ? (
+                                    {item.facilityDest === "Radiology" ? (
                                       <View style={styles.item}>
-                                        <Text style={styles.textItem}>
-                                          {action.HeadRad}
-                                        </Text>
                                         <Text style={styles.textItem}>
                                           {action.NameTest}
                                         </Text>
@@ -244,42 +237,52 @@ export default function DetailResumeMedis(props) {
                       <Text style={styles.textHeader}>DIAGNOSIS</Text>
                       <View style={styles.line} />
                       <View style={styles.card}>
-                        <View style={styles.item}>
-                          <Text style={styles.textItem}>Diagnosa</Text>
-                          <Text style={styles.textItem}>
-                            {resumeMedis.examination.diagnose}
-                          </Text>
-                        </View>
-                        <View style={styles.item}>
-                          <Text style={styles.textItem}>ICD Kode</Text>
-                          <Text style={styles.textItem}>
-                            {resumeMedis.examination.ICD}
-                          </Text>
-                        </View>
-                        <View style={styles.item}>
-                          <Text style={styles.textItem}>ICD Info</Text>
-                          <Text style={styles.textItem}>
-                            {resumeMedis.examination.icdInfo}
-                          </Text>
-                        </View>
+                        {resumeMedis.examination.diagnose !== '' && (
+                            <View style={styles.item}>
+                              <Text style={styles.textItem}>Diagnosa</Text>
+                              <Text style={styles.textItem}>
+                                {resumeMedis.examination.diagnose}
+                              </Text>
+                            </View>
+                        )}
+                        {resumeMedis.examination.ICD !== '' && (
+                          <View style={styles.item}>
+                            <Text style={styles.textItem}>ICD Kode</Text>
+                            <Text style={styles.textItem}>
+                              {resumeMedis.examination.ICD}
+                            </Text>
+                          </View>
+                        )}
+                        {resumeMedis.examination.icdInfo !== '' && (
+                          <View style={styles.item}>
+                            <Text style={styles.textItem}>ICD Info</Text>
+                            <Text style={styles.textItem}>
+                              {resumeMedis.examination.icdInfo}
+                            </Text>
+                          </View>
+                        )}
                       </View>
                     </View>
-                    <View style={styles.contentHeader}>
-                      <Text style={styles.textHeader}>PENGOBATAN</Text>
-                      <View style={styles.line} />
-                    </View>
                     <View
-                      style={{ ...styles.contentHeader, marginBottom: '20%' }}
+                      style={{ ...styles.contentHeader, marginBottom: "20%" }}
                     >
                       <Text style={styles.textHeader}>NOTES</Text>
                       <View style={styles.line} />
-                      <View style={styles.card}>
-                        <View style={{}}>
-                          <Text style={styles.textItem}>
-                            {resumeMedis.soap.doctorNotes}
-                          </Text>
+                      {resumeMedis.soap ? (
+                        <View style={styles.card}>
+                          <View style={{}}>
+                            <Text style={styles.textItem}>
+                              {resumeMedis.soap.doctorNotes}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
+                      ) : (
+                        <View style={styles.card}>
+                          <View style={{}}>
+                            <Text style={styles.textItem}>Tidak ada Notes</Text>
+                          </View>
+                        </View>
+                      )}
                     </View>
                   </View>
                 )}
@@ -296,45 +299,45 @@ export default function DetailResumeMedis(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    backgroundColor: '#181818',
+    justifyContent: "flex-start",
+    backgroundColor: "#181818",
     margin: 0,
     padding: 15,
   },
   content: {
-    height: '95%',
-    backgroundColor: '#2F2F2F',
+    height: "95%",
+    backgroundColor: "#2F2F2F",
     borderRadius: 10,
     padding: 15,
   },
   header: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-between",
     marginVertical: 20,
   },
   contentHeader: {
     marginBottom: 10,
   },
   textHeader: {
-    color: '#FBB632',
+    color: "#FBB632",
     fontSize: 14,
   },
   line: {
-    backgroundColor: '#515151',
+    backgroundColor: "#515151",
     height: 1.5,
     marginVertical: 10,
   },
   title: {
-    color: '#DDDDDD',
+    color: "#DDDDDD",
     fontSize: 14,
   },
   card: {
     marginBottom: 10,
   },
   item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
   contentBox: {
@@ -344,14 +347,14 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   textContent: {
-    color: '#B5B5B5',
+    color: "#B5B5B5",
   },
   textSubHeader: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 12,
   },
   textItem: {
-    color: '#B5B5B5',
+    color: "#B5B5B5",
     fontSize: 12,
   },
 });
