@@ -37,11 +37,14 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 		try {
 			const token = JSON.parse(await AsyncStorage.getItem('token')).token
 			const patientID = userData._id
+
 			await getAllPrescriptions(patientID, token)
 			const today = await getTodaysPrescriptions(patientID, token)
 			setTodaysPrescriptions(today)
+
 			const history = await getPrescriptionHistory(patientID, token)
 			setPrescriptionHistory(history)
+			
 			setLoad(false)
 		} catch (error) {
 			console.log(error)
@@ -121,7 +124,7 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 						}
 					}
 					style={index === 0 ? styles.selectedSwiperOptions : styles.unSelectedSwiperOption}>
-					<Text style={styles.textItem}>Saat Ini</Text>
+					<Text style={styles.textItem}>Sedang Berlangsung</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity 
