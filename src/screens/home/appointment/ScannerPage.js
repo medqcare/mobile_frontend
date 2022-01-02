@@ -25,7 +25,8 @@ const Assistant_scan = (props) => {
   }, []);
 
   const handleBarCodeScanned = ({ data }) => {
-    console.log(JSON.parse(data));
+    console.log(data);  // validate location in range 1km 
+    // console.log(JSON.parse(data));
   };
 
   if (hasPermission === null) {
@@ -54,10 +55,10 @@ const Assistant_scan = (props) => {
             justifyContent: "center",
           }}
         >
-          {/* <Image
-            source={require("../../assets/png/Calender.png")}
+          <Image
+            source={require('../../../assets/png/bracket.png')}
             style={{ width: 200, height: 200 }}
-          /> */}
+          />
         </View>
       </BarCodeScanner>
 
