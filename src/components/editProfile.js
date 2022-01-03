@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   Text,
@@ -12,434 +12,445 @@ import {
   TouchableOpacity,
   Picker,
   BackHandler,
-} from "react-native";
+} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from 'react-native-responsive-screen';
 
 // Radio Form
-import RadioForm from "react-native-simple-radio-button";
-import DatePicker from "react-native-datepicker";
-import { edit_profile, setLoading } from "../stores/action";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import RadioForm from 'react-native-simple-radio-button';
+import DatePicker from 'react-native-datepicker';
+import { edit_profile, setLoading } from '../stores/action';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Modal
-import { fullMonthFormat } from "../helpers/dateFormat";
-import SelectModal from "./modals/modalPicker";
-import GradientHeader from "./headers/GradientHeader";
-import LocationModalPicker from '../components/modals/LocationModalPicker'
+import { fullMonthFormat } from '../helpers/dateFormat';
+import SelectModal from './modals/modalPicker';
+import GradientHeader from './headers/GradientHeader';
+import LocationModalPicker from '../components/modals/LocationModalPicker';
 
 // for proper case
-import capitalFirst from "../helpers/capitalFirst";
+import capitalFirst from '../helpers/capitalFirst';
 
 const editProfile = (props) => {
-	// Moment
-	var moment = require("moment");
+  // Moment
+  var moment = require('moment');
 
+  // UserData
+  const [userData, setUserData] = useState({
+    photo: props.userData.photo || '',
+    nik: props.userData.nik.toString(),
+    firstName: props.userData.firstName,
+    lastName: props.userData.lastName,
+    gender: props.userData.gender || 'Male',
+    dob: moment(props.userData.dob).format('DD/MM/YYYY'),
+    bloodType: props.userData.bloodType || 'A',
+    resus: props.userData.resus || '+',
+    phoneNumber: props.userData.phoneNumber,
+    location: props.userData.location,
+    insuranceStatus: props.userData.insuranceStatus || 'UMUM',
+  });
 
+  // Region
+  const region = require('../assets/Region/province');
 
+  // Province; 34 provinces
+  const [province, setProvince] = useState(region.province);
+  const [provinceModal, setProvinceModal] = useState(false);
+  const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
+    userData.location.province
+  );
+  const provinceSelection = province;
 
+  // District
+  const provinceObject = province.filter((el) => {
+    return el.name === selectedProvinceLabel;
+  });
+  const provinceId = provinceObject[0].id;
+  const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
+  const [districtModal, setDistrictModal] = useState(false);
+  const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
+    userData.location.city
+  );
 
-	// UserData
-	const [userData, setUserData] = useState({
-		photo: props.userData.photo || "",
-		nik: props.userData.nik.toString(),
-		firstName: props.userData.firstName,
-		lastName: props.userData.lastName,
-		gender: props.userData.gender || "Male",
-		dob: moment(props.userData.dob).format("DD/MM/YYYY"),
-		bloodType: props.userData.bloodType || "A",
-		resus: props.userData.resus || "+",
-		phoneNumber: props.userData.phoneNumber || "UMUM",
-		location: props.userData.location,
-		insuranceStatus: props.userData.insuranceStatus,
-	});
+  const chosenDate = fullMonthFormat(userData.dob);
 
-	// Region
-	const region = require("../assets/Region/province");
+  // Loading animation for submit button
+  const [load, setLoad] = useState(false);
 
-	// Province; 34 provinces
-	const [province, setProvince] = useState(region.province);
-	const [provinceModal, setProvinceModal] = useState(false)
-	const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(userData.location.province)
-	const provinceSelection = province
+  const [modalF, setModalF] = useState(false);
+  const [modalS, setModalS] = useState(false);
+  const [valid, setValid] = useState(false);
 
-	// District
-	const provinceObject = province.filter(el => {
-		return el.name ===selectedProvinceLabel
-	})
-	const provinceId = provinceObject[0].id
-	const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
-	const [districtModal, setDistrictModal] = useState(false)
-	const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(userData.location.city)
+  // Gender radio
+  var radio_props = [
+    { label: 'Laki-laki', value: 'Male' },
+    { label: 'Perempuan', value: 'Female' },
+  ];
 
+  // Bloodtype
+  const [bloodTypeModal, setBloodTypeModal] = useState(false);
+  const bloodTypeSelection = ['A', 'AB', 'B', 'O'];
+  const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
+    userData.bloodType
+  );
 
-	const chosenDate = fullMonthFormat(userData.dob);
+  // Rhesus type
+  const [rhesusTypeModal, setRhesusModal] = useState(false);
+  const rhesusTypeSelection = ['+', '-'];
+  const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(
+    userData.resus
+  );
 
-	// Loading animation for submit button
-	const [load, setLoad] = useState(false);
-	
-	const [modalF, setModalF] = useState(false);
-	const [modalS, setModalS] = useState(false);
-	const [valid, setValid] = useState(false);
+  // Insurance status
+  const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
+  const insuranceStatusSelection = [
+    {
+      label: 'Umum',
+      value: 'UMUM',
+    },
+    {
+      label: 'BPJS',
+      value: 'BPJS',
+    },
+    {
+      label: 'Asuransi',
+      value: 'ASURANSI',
+    },
+  ];
+  const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
+    capitalFirst(userData.insuranceStatus)
+  );
 
-	// Gender radio
-	var radio_props = [
-		{ label: "Laki-laki", value: "Male" },
-		{ label: "Perempuan", value: "Female" },
-	];
-
-	// Bloodtype 
-	const [bloodTypeModal, setBloodTypeModal] = useState(false);
-	const bloodTypeSelection = ["A", "AB", "B", "O"];
-	const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(userData.bloodType)
-
-	// Rhesus type
-	const [rhesusTypeModal, setRhesusModal] = useState(false);
-	const rhesusTypeSelection = ["+", "-"];
-	const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(userData.resus)
-	
-	// Insurance status
-	const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
-	const insuranceStatusSelection = [
-		{
-			label: "Umum",
-			value: "UMUM",
-		},
-		{
-			label: "BPJS",
-			value: "BPJS",
-		},
-		{
-			label: "Asuransi",
-			value: "ASURANSI",
-		},
-	];
-  	const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(capitalFirst(userData.insuranceStatus));
-
-
-	useEffect(() => {
-		if (province.length && district.length) {
-		}
-	}, [district, selectedDistrictLabel, userData])
-		
-	// Function for change data
-	function setSelectedValue(value, changeKey, changeInnerKey, name, coordinatesKey){
-        if(changeKey === 'location'){
-            const firstIndex = region.kabupatenkota(value)[0]
-            coordinatesKey =  coordinatesKey ? coordinatesKey: [firstIndex.longitude, firstIndex.latitude]
-            if(changeInnerKey === 'province'){
-                setDistrict(region.kabupatenkota(value))
-                setSelectedDistrictLabel(firstIndex.name)
-                setUserData({
-                    ...userData,
-                    [changeKey]: {
-                        ...userData[changeKey],
-                        [changeInnerKey]: name,
-                        city: firstIndex.name,
-                        coordinates: [coordinatesKey[0], coordinatesKey[1]],
-                    }
-                })
-            } else {
-                setSelectedDistrictLabel(name)
-                setUserData({
-                    ...userData,
-                    [changeKey]: {
-                        ...userData[changeKey],
-                        [changeInnerKey]: name,
-                        coordinates: [coordinatesKey[0], coordinatesKey[1]]
-                    }
-                })
-            }
-		} else {
-            setUserData({
-                ...userData,
-                [changeKey] :value
-            })
-        }
+  useEffect(() => {
+    if (province.length && district.length) {
     }
+  }, [district, selectedDistrictLabel, userData]);
 
-	// Function for validation
-	function validation() {
-		if (
-			(userData.nik !== null &&
-				userData.nik.length > 0 &&
-				userData.nik.length !== 16) ||
-			userData.firstName == "" ||
-			userData.firstName == null ||
-			userData.dob == null ||
-			userData.phoneNumber == null
-		) {
-			setValid(true);
-			setModalF(true);
-		} else {
-			setValid(false);
-			_filterdataSend();
-		}
-	}
+  // Function for change data
+  function setSelectedValue(
+    value,
+    changeKey,
+    changeInnerKey,
+    name,
+    coordinatesKey
+  ) {
+    if (changeKey === 'location') {
+      const firstIndex = region.kabupatenkota(value)[0];
+      coordinatesKey = coordinatesKey
+        ? coordinatesKey
+        : [firstIndex.longitude, firstIndex.latitude];
+      if (changeInnerKey === 'province') {
+        setDistrict(region.kabupatenkota(value));
+        setSelectedDistrictLabel(firstIndex.name);
+        setUserData({
+          ...userData,
+          [changeKey]: {
+            ...userData[changeKey],
+            [changeInnerKey]: name,
+            city: firstIndex.name,
+            coordinates: [coordinatesKey[0], coordinatesKey[1]],
+          },
+        });
+      } else {
+        setSelectedDistrictLabel(name);
+        setUserData({
+          ...userData,
+          [changeKey]: {
+            ...userData[changeKey],
+            [changeInnerKey]: name,
+            coordinates: [coordinatesKey[0], coordinatesKey[1]],
+          },
+        });
+      }
+    } else {
+      setUserData({
+        ...userData,
+        [changeKey]: value,
+      });
+    }
+  }
 
-	// Function for data preparation
-	const _filterdataSend = () => {
-		let dataSend;
-		// Methode
-		Object.filter = (obj, predicate) =>
-		Object.keys(obj)
-			.filter((key) => predicate(obj[key]))
-			.reduce((res, key) => ((res[key] = obj[key]), res), {});
-		dataSend = Object.filter(userData, (value) => value !== null);
-		dataSend = Object.filter(dataSend, (value) => value !== undefined);
-		dataSend = Object.filter(dataSend, (value) => value !== "");
-		sendData(dataSend);
-	};
+  // Function for validation
+  function validation() {
+    if (
+      (userData.nik !== null &&
+        userData.nik.length > 0 &&
+        userData.nik.length !== 16) ||
+      userData.firstName == '' ||
+      userData.firstName == null ||
+      userData.dob == null ||
+      userData.phoneNumber == null
+    ) {
+      setValid(true);
+      setModalF(true);
+    } else {
+      setValid(false);
+      _filterdataSend();
+    }
+  }
 
-	// Function for sending data to server
-	async function sendData(data) {
-		setLoad(true);
-		let token = await AsyncStorage.getItem("token");
-		console.log(data.dob, "ini dob");
-		let wantedDate = data.dob.split("/");
-		wantedDate = `${wantedDate[1]}/${wantedDate[0]}/${wantedDate[2]}`;
-		data.dob = new Date(wantedDate);
-		props
-		.edit_profile(data, props.userData._id, JSON.parse(token).token)
-		.then((backData) => {
-			setLoad(false);
-			setModalS(true);
-			props.navigation.navigate("ProfileDetail")
-		})
-		.catch((err) => {
-			setLoad(false);
-			console.log(err);
-		});
-	}
+  // Function for data preparation
+  const _filterdataSend = () => {
+    let dataSend;
+    // Methode
+    Object.filter = (obj, predicate) =>
+      Object.keys(obj)
+        .filter((key) => predicate(obj[key]))
+        .reduce((res, key) => ((res[key] = obj[key]), res), {});
+    dataSend = Object.filter(userData, (value) => value !== null);
+    dataSend = Object.filter(dataSend, (value) => value !== undefined);
+    dataSend = Object.filter(dataSend, (value) => value !== '');
+    sendData(dataSend);
+  };
 
-	BackHandler.addEventListener("hardwareBackPress", () => {
-		props.navigation.pop();
-		return true;
-	});
+  // Function for sending data to server
+  async function sendData(data) {
+    setLoad(true);
+    let token = await AsyncStorage.getItem('token');
+    console.log(data.dob, 'ini dob');
+    let wantedDate = data.dob.split('/');
+    wantedDate = `${wantedDate[1]}/${wantedDate[0]}/${wantedDate[2]}`;
+    data.dob = new Date(wantedDate);
+    props
+      .edit_profile(data, props.userData._id, JSON.parse(token).token)
+      .then((backData) => {
+        setLoad(false);
+        setModalS(true);
+        props.navigation.navigate('ProfileDetail');
+      })
+      .catch((err) => {
+        setLoad(false);
+        console.log(err);
+      });
+  }
 
-	
-  	return (
-		<KeyboardAvoidingView
-			style={viewStyles.container}
-			behavior={"padding"}
-			enabled
-		>
-		<GradientHeader
-			navigate={props.navigation.navigate}
-			navigateBack={"ProfileDetail"}
-			title="Ubah Data"
-		/>
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    props.navigation.pop();
+    return true;
+  });
 
-		{/* Starts here */}
+  return (
+    <KeyboardAvoidingView
+      style={viewStyles.container}
+      behavior={'padding'}
+      enabled
+    >
+      <GradientHeader
+        navigate={props.navigation.navigate}
+        navigateBack={'ProfileDetail'}
+        title="Ubah Data"
+      />
 
-		<ScrollView showsVerticalScrollIndicator={false}>
-			{/* NIK */}
-			<View style={style.inputTopContainer}>
-				<View style={style.input}>
-					<TextInput
-					style={style.inputText}
-					autoCapitalize={"none"}
-					autoFocus={false}
-					placeholder={"NIK"}
-					keyboardType={"numeric"}
-					placeholderTextColor="#8b8b8b"
-					onChangeText={(text) => setUserData({ ...userData, nik: text })}
-					value={userData.nik}
-					/>
-				</View>
-			</View>
-			{/* NIK Error */}
-			{userData.nik !== null &&
-			userData.nik.length > 0 &&
-			userData.nik.length !== 16 && (
-				<Text style={{ color: "red" }}>
-					NIK must contain at 16 characters
-				</Text>
-			)}
+      {/* Starts here */}
 
-			{/* First name error */}
-			<View style={{ flexDirection: "row" }}>
-			{!userData.firstName && valid && (
-				<Text
-				style={{
-					color: "red",
-					marginVertical: 10,
-					marginLeft: 5,
-					fontSize: 14,
-				}}
-				>
-				*
-				</Text>
-			)}
-			</View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* NIK */}
+        <View style={style.inputTopContainer}>
+          <View style={style.input}>
+            <TextInput
+              style={style.inputText}
+              autoCapitalize={'none'}
+              autoFocus={false}
+              placeholder={'NIK'}
+              keyboardType={'numeric'}
+              placeholderTextColor="#8b8b8b"
+              onChangeText={(text) => setUserData({ ...userData, nik: text })}
+              value={userData.nik}
+            />
+          </View>
+        </View>
+        {/* NIK Error */}
+        {userData.nik !== null &&
+          userData.nik.length > 0 &&
+          userData.nik.length !== 16 && (
+            <Text style={{ color: 'red' }}>
+              NIK must contain at 16 characters
+            </Text>
+          )}
 
-			{/* First name form */}
-			<View style={style.inputMiddleContainer}>
-				<View style={style.input}>
-					<TextInput
-						style={style.inputText}
-						autoCapitalize={"sentences"}
-						autoFocus={false}
-						placeholder={"Nama Depan"}
-						placeholderTextColor="#8b8b8b"
-						onChangeText={(text) =>
-							setUserData({ ...userData, firstName: text })
-						}
-						value={userData.firstName}
-					/>
-				</View>
-			</View>
+        {/* First name error */}
+        <View style={{ flexDirection: 'row' }}>
+          {!userData.firstName && valid && (
+            <Text
+              style={{
+                color: 'red',
+                marginVertical: 10,
+                marginLeft: 5,
+                fontSize: 14,
+              }}
+            >
+              *
+            </Text>
+          )}
+        </View>
 
-			{/* Last name form */}
-			<View style={style.inputMiddleContainer}>
-				<View style={style.input}>
-					<TextInput
-						style={style.inputText}
-						autoCapitalize={"sentences"}
-						autoFocus={false}
-						placeholder={"Nama Belakang"}
-						placeholderTextColor="#8b8b8b"
-						onChangeText={(text) =>
-							setUserData({ ...userData, lastName: text })
-						}
-						value={userData.lastName}
-					/>
-				</View>
-			</View>
+        {/* First name form */}
+        <View style={style.inputMiddleContainer}>
+          <View style={style.input}>
+            <TextInput
+              style={style.inputText}
+              autoCapitalize={'sentences'}
+              autoFocus={false}
+              placeholder={'Nama Depan'}
+              placeholderTextColor="#8b8b8b"
+              onChangeText={(text) =>
+                setUserData({ ...userData, firstName: text })
+              }
+              value={userData.firstName}
+            />
+          </View>
+        </View>
 
-			{/* Gender Form */}
-			<View style={style.inputMiddleContainer}>
-				<View
-					style={{
-					...style.input,
-					justifyContent: "center",
-					backgroundColor: "transparent",
-					borderWidth: 0,
-					}}
-				>
-					<RadioForm
-						radio_props={radio_props}
-						initial={0}
-						onPress={(value) => {
-							setUserData({ ...userData, gender: value });
-					}}
-					formHorizontal={true}
-					labelHorizontal={true}
-					animation={false}
-					labelStyle={{ paddingRight: 10, fontSize: 14, color: "#DDDDDD" }}
-					style={style.inputText}
-					buttonOuterSize={20}
-					/>
-				</View>
-			</View>
+        {/* Last name form */}
+        <View style={style.inputMiddleContainer}>
+          <View style={style.input}>
+            <TextInput
+              style={style.inputText}
+              autoCapitalize={'sentences'}
+              autoFocus={false}
+              placeholder={'Nama Belakang'}
+              placeholderTextColor="#8b8b8b"
+              onChangeText={(text) =>
+                setUserData({ ...userData, lastName: text })
+              }
+              value={userData.lastName}
+            />
+          </View>
+        </View>
 
-			{/* DOB error */}
-			<View style={{ flexDirection: "row" }}>
-			{!userData.dob && valid && (
-				<Text
-				style={{
-					color: "red",
-					marginVertical: 15,
-					marginLeft: 5,
-					fontSize: 14,
-				}}
-				>
-				*
-				</Text>
-			)}
-			</View>
+        {/* Gender Form */}
+        <View style={style.inputMiddleContainer}>
+          <View
+            style={{
+              ...style.input,
+              justifyContent: 'center',
+              backgroundColor: 'transparent',
+              borderWidth: 0,
+            }}
+          >
+            <RadioForm
+              radio_props={radio_props}
+              initial={0}
+              onPress={(value) => {
+                setUserData({ ...userData, gender: value });
+              }}
+              formHorizontal={true}
+              labelHorizontal={true}
+              animation={false}
+              labelStyle={{ paddingRight: 10, fontSize: 14, color: '#DDDDDD' }}
+              style={style.inputText}
+              buttonOuterSize={20}
+            />
+          </View>
+        </View>
 
-			{/* DOB Form */}
-			<View style={style.inputMiddleContainer}>
-				<View
-					style={{
-					...style.input,
-					justifyContent: "space-between",
-					alignItems: "center",
-					flexDirection: "row",
-					}}
-				>
-					<Text style={style.inputText}>{chosenDate}</Text>
-					<DatePicker
-						date={chosenDate} //initial date from state
-						mode="date" //The enum of date, datetime and time
-						format="DD/MMMM/YYYY"
-						maxDate={new Date()}
-						confirmBtnText="Confirm"
-						cancelBtnText="Cancel"
-						customStyles={{
-							dateIcon: {
-							display: "none",
-							position: "absolute",
-							right: 0,
-							justifyContent: "center",
-							alignItems: "center",
-							shadowColor: "black",
-							},
-							dateInput: {
-							marginLeft: 0,
-							borderWidth: 0,
-							borderColor: "#D5EDE1",
-							},
-							dateText: {
-							display: "none",
-							},
-						}}
-						onDateChange={(date) => {
-							setUserData({ ...userData, dob: date });
-						}}
-					/>
-				</View>
-			</View>
+        {/* DOB error */}
+        <View style={{ flexDirection: 'row' }}>
+          {!userData.dob && valid && (
+            <Text
+              style={{
+                color: 'red',
+                marginVertical: 15,
+                marginLeft: 5,
+                fontSize: 14,
+              }}
+            >
+              *
+            </Text>
+          )}
+        </View>
 
-			{/* Phone number form */}
-			<View style={style.inputMiddleContainer}>
-				<View style={style.input}>
-					<TextInput
-						style={style.inputText}
-						autoCapitalize={"none"}
-						autoFocus={false}
-						placeholder={"Nomor Hp"}
-						placeholderTextColor="#8b8b8b"
-						keyboardType={"numeric"}
-						onChangeText={(text) =>
-							setUserData({ ...userData, phoneNumber: text })
-						}
-						value={userData.phoneNumber}
-					/>
-				</View>
-			</View>
+        {/* DOB Form */}
+        <View style={style.inputMiddleContainer}>
+          <View
+            style={{
+              ...style.input,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexDirection: 'row',
+            }}
+          >
+            <Text style={style.inputText}>{chosenDate}</Text>
+            <DatePicker
+              date={chosenDate} //initial date from state
+              mode="date" //The enum of date, datetime and time
+              format="DD/MMMM/YYYY"
+              maxDate={new Date()}
+              confirmBtnText="Confirm"
+              cancelBtnText="Cancel"
+              customStyles={{
+                dateIcon: {
+                  display: 'none',
+                  position: 'absolute',
+                  right: 0,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: 'black',
+                },
+                dateInput: {
+                  marginLeft: 0,
+                  borderWidth: 0,
+                  borderColor: '#D5EDE1',
+                },
+                dateText: {
+                  display: 'none',
+                },
+              }}
+              onDateChange={(date) => {
+                setUserData({ ...userData, dob: date });
+              }}
+            />
+          </View>
+        </View>
 
-			{/* Bloodtype form */}
-			<View style={{ ...style.inputMiddleContainer, flexDirection: "row" }}>
-			<TouchableOpacity
-				onPress={() => setBloodTypeModal(true)}
-				style={style.button}
-			>
-				<Text style={style.inputText}>{selectedBloodTypeLabel}</Text>
-				<Image source={require("../assets/png/ArrowDown.png")} />
-			</TouchableOpacity>
-			<SelectModal
-				modal={bloodTypeModal}
-				setModal={setBloodTypeModal}
-				selection={bloodTypeSelection}
-				title="Silahkan pilih golongan darah anda"
-				subtitle="Pilihan yang tersedia"
-				setSelectedValue={setSelectedValue}
-				setSelectedLabel={setselectedBloodTypeLabel}
-				changeKey="bloodType"
-			/>
-			{/* Rhesus form */}
-			<TouchableOpacity
-				onPress={() => setRhesusModal(true)}
-				style={style.button}
-			>
-				<Text style={style.inputText}>{selectedRhesusLabel}</Text>
-				<Image source={require("../assets/png/ArrowDown.png")} />
-			</TouchableOpacity>
-			{/* <Picker
+        {/* Phone number form */}
+        <View style={style.inputMiddleContainer}>
+          <View style={style.input}>
+            <TextInput
+              style={style.inputText}
+              autoCapitalize={'none'}
+              autoFocus={false}
+              placeholder={'Nomor Hp'}
+              placeholderTextColor="#8b8b8b"
+              keyboardType={'numeric'}
+              onChangeText={(text) =>
+                setUserData({ ...userData, phoneNumber: text })
+              }
+              value={userData.phoneNumber}
+            />
+          </View>
+        </View>
+
+        {/* Bloodtype form */}
+        <View style={{ ...style.inputMiddleContainer, flexDirection: 'row' }}>
+          <TouchableOpacity
+            onPress={() => setBloodTypeModal(true)}
+            style={style.button}
+          >
+            <Text style={style.inputText}>{selectedBloodTypeLabel}</Text>
+            <Image source={require('../assets/png/ArrowDown.png')} />
+          </TouchableOpacity>
+          <SelectModal
+            modal={bloodTypeModal}
+            setModal={setBloodTypeModal}
+            selection={bloodTypeSelection}
+            title="Silahkan pilih golongan darah anda"
+            subtitle="Pilihan yang tersedia"
+            setSelectedValue={setSelectedValue}
+            setSelectedLabel={setselectedBloodTypeLabel}
+            changeKey="bloodType"
+          />
+          {/* Rhesus form */}
+          <TouchableOpacity
+            onPress={() => setRhesusModal(true)}
+            style={style.button}
+          >
+            <Text style={style.inputText}>{selectedRhesusLabel}</Text>
+            <Image source={require('../assets/png/ArrowDown.png')} />
+          </TouchableOpacity>
+          {/* <Picker
 								selectedValue={userData.resus}
 								placeholderTextColor="#DDDDDD"
 								style={style.inputText}
@@ -451,20 +462,20 @@ const editProfile = (props) => {
 								<Picker.Item label="-" value="-" key={1}  />
 								<Picker.Item label="+" value="+" key={2} />
 							</Picker> */}
-			<SelectModal
-				modal={rhesusTypeModal}
-				setModal={setRhesusModal}
-				selection={rhesusTypeSelection}
-				title="Silahkan pilih rhesus darah anda"
-				subtitle="Pilihan yang tersedia"
-				setSelectedValue={setSelectedValue}
-				setSelectedLabel={setSelectedRhesusLabel}
-				changeKey="resus"
-			/>
-			</View>
+          <SelectModal
+            modal={rhesusTypeModal}
+            setModal={setRhesusModal}
+            selection={rhesusTypeSelection}
+            title="Silahkan pilih rhesus darah anda"
+            subtitle="Pilihan yang tersedia"
+            setSelectedValue={setSelectedValue}
+            setSelectedLabel={setSelectedRhesusLabel}
+            changeKey="resus"
+          />
+        </View>
 
-			{/* Relation form */}
-			{/* <View style={style.inputMiddleContainer}>
+        {/* Relation form */}
+        {/* <View style={style.inputMiddleContainer}>
 						<View style={style.input}>
 							<Picker
 								selectedValue={userData.statusFamily}
@@ -491,15 +502,18 @@ const editProfile = (props) => {
 						</View>
 					</View> */}
 
-			<View style={style.inputMiddleContainer}>
-			<TouchableOpacity
-				onPress={() => setInsuranceStatusModal(true)}
-				style={style.button}
-			>
-				<Text style={style.inputText}>{selectedInsuranceLabel}</Text>
-				<Image source={require("../assets/png/ArrowDown.png")} />
-			</TouchableOpacity>
-			{/* <Picker
+        <View style={style.inputMiddleContainer}>
+          {/* Insurance Status */}
+
+          {/* <TouchableOpacity
+            onPress={() => setInsuranceStatusModal(true)}
+            style={style.button}
+          >
+            <Text style={style.inputText}>{selectedInsuranceLabel}</Text>
+            <Image source={require('../assets/png/ArrowDown.png')} />
+          </TouchableOpacity> */}
+
+          {/* <Picker
 								mode="dropdown"
 								selectedValue={userData.InsuranceStatus}
 								// style={style.inputText}
@@ -512,40 +526,39 @@ const editProfile = (props) => {
 								<Picker.Item label={'BPJS'} value={'BPJS'} key={0} />
 								<Picker.Item label={'Asuransi'} value={'ASURANSI'} key={0} />
 							</Picker> */}
-			<SelectModal
-				modal={insuranceStatusModal}
-				setModal={setInsuranceStatusModal}
-				selection={insuranceStatusSelection}
-				title="Silahkan pilih tipe asuransi anda"
-				subtitle="Pilihan yang tersedia"
-				setSelectedValue={setSelectedValue}
-				setSelectedLabel={setSelectedInsuranceLabel}
-				changeKey="insuranceStatus"
-			/>
-			</View>
+          {/* Imsurance Status Modal */}
+          {/* <SelectModal
+            modal={insuranceStatusModal}
+            setModal={setInsuranceStatusModal}
+            selection={insuranceStatusSelection}
+            title="Silahkan pilih tipe asuransi anda"
+            subtitle="Pilihan yang tersedia"
+            setSelectedValue={setSelectedValue}
+            setSelectedLabel={setSelectedInsuranceLabel}
+            changeKey="insuranceStatus"
+          /> */}
+        </View>
 
-			<View style={style.inputMiddleContainer}>
-				<TouchableOpacity 
-					onPress={() => setProvinceModal(true)}
-					style={style.button}
-				>
-					<Text style={style.inputText}>{selectedProvinceLabel}</Text>
-					<Image
-						source={require('../assets/png/ArrowDown.png')}
-					/>
-				</TouchableOpacity>
-				<LocationModalPicker
-					modal={provinceModal}
-					setModal={setProvinceModal}
-					selection={provinceSelection}
-					title='Silahkan pilih lokasi provinsi anda'
-					subtitle='Pilihan yang tersedia'
-					setSelectedValue={setSelectedValue}
-					setSelectedLabel={setSelectedProvinceLabel}
-					changeKey='location'
-					changeInnerKey='province'
-				/>
-			{/* {province.length > 0 ? (
+        <View style={style.inputMiddleContainer}>
+          <TouchableOpacity
+            onPress={() => setProvinceModal(true)}
+            style={style.button}
+          >
+            <Text style={style.inputText}>{selectedProvinceLabel}</Text>
+            <Image source={require('../assets/png/ArrowDown.png')} />
+          </TouchableOpacity>
+          <LocationModalPicker
+            modal={provinceModal}
+            setModal={setProvinceModal}
+            selection={provinceSelection}
+            title="Silahkan pilih lokasi provinsi anda"
+            subtitle="Pilihan yang tersedia"
+            setSelectedValue={setSelectedValue}
+            setSelectedLabel={setSelectedProvinceLabel}
+            changeKey="location"
+            changeInnerKey="province"
+          />
+          {/* {province.length > 0 ? (
 				<View style={style.input}>
 				<Picker
 					selectedValue={userData.location.province}
@@ -581,30 +594,28 @@ const editProfile = (props) => {
 			) : (
 				<ActivityIndicator size={"small"} color={"blue"} />
 			)} */}
-			</View>
+        </View>
 
-			<View style={style.inputBottomContainer}>
-			<TouchableOpacity 
-				onPress={() => setDistrictModal(true)}
-				style={style.button}
-			>
-				<Text style={style.inputText}>{selectedDistrictLabel}</Text>
-				<Image
-					source={require('../assets/png/ArrowDown.png')}
-				/>
-			</TouchableOpacity>
-			<LocationModalPicker
-				modal={districtModal}
-				setModal={setDistrictModal}
-				selection={district}
-				title='Silahkan pilih lokasi kota anda'
-				subtitle='Pilihan yang tersedia'
-				setSelectedValue={setSelectedValue}
-				setSelectedLabel={setSelectedDistrictLabel}
-				changeKey='location'
-				changeInnerKey='city'
-			/>
-			{/* {district.length > 0 ? (
+        <View style={style.inputBottomContainer}>
+          <TouchableOpacity
+            onPress={() => setDistrictModal(true)}
+            style={style.button}
+          >
+            <Text style={style.inputText}>{selectedDistrictLabel}</Text>
+            <Image source={require('../assets/png/ArrowDown.png')} />
+          </TouchableOpacity>
+          <LocationModalPicker
+            modal={districtModal}
+            setModal={setDistrictModal}
+            selection={district}
+            title="Silahkan pilih lokasi kota anda"
+            subtitle="Pilihan yang tersedia"
+            setSelectedValue={setSelectedValue}
+            setSelectedLabel={setSelectedDistrictLabel}
+            changeKey="location"
+            changeInnerKey="city"
+          />
+          {/* {district.length > 0 ? (
 				<View style={style.input}>
 				<Picker
 					selectedValue={userData.location.city}
@@ -638,24 +649,24 @@ const editProfile = (props) => {
 			) : (
 				<ActivityIndicator size={"small"} color={"blue"} />
 			)} */}
-			</View>
+        </View>
 
-			<View style={style.buttonContainer}>
-			<TouchableOpacity
-				onPress={() => {
-				validation();
-				}}
-				style={container.button}
-			>
-				{load ? (
-				<ActivityIndicator size={"small"} color="#FFF" />
-				) : (
-				<Text style={{ fontSize: 18, color: "#FFF" }}>Simpan Data</Text>
-				)}
-			</TouchableOpacity>
-			</View>
-		</ScrollView>
-		</KeyboardAvoidingView>
+        <View style={style.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              validation();
+            }}
+            style={container.button}
+          >
+            {load ? (
+              <ActivityIndicator size={'small'} color="#FFF" />
+            ) : (
+              <Text style={{ fontSize: 18, color: '#FFF' }}>Simpan Data</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -681,12 +692,12 @@ const style = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 3,
-    backgroundColor: "#2F2F2F",
-    justifyContent: "center",
+    backgroundColor: '#2F2F2F',
+    justifyContent: 'center',
   },
 
   inputText: {
-    color: "#DDDDDD",
+    color: '#DDDDDD',
   },
 
   button: {
@@ -695,15 +706,15 @@ const style = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 3,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#2F2F2F",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#2F2F2F',
   },
 
   buttonText: {
     fontSize: 15,
-    color: "#DDDDDD",
+    color: '#DDDDDD',
   },
 
   content: {
@@ -712,9 +723,9 @@ const style = StyleSheet.create({
 
   buttonContainer: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 60,
   },
 });
@@ -723,72 +734,72 @@ const container = StyleSheet.create({
   base: {
     flex: 1,
     // backgroundColor: '#CCEDBF',
-    alignItems: "center",
+    alignItems: 'center',
     paddingVertical: 20,
   },
   photoContainer: {
     height: 80,
     width: 80,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   photo: {
-    height: "100%",
-    width: "100%",
-    backgroundColor: "yellow",
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'yellow',
     borderRadius: 50,
   },
   editphoto: {
-    width: "30%",
+    width: '30%',
     height: 30,
-    backgroundColor: "#33691E",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#33691E',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 20,
     marginTop: 10,
   },
   input: {
     height: 50,
-    borderColor: "#33691E",
+    borderColor: '#33691E',
     borderWidth: 1,
     paddingHorizontal: 20,
     borderRadius: 3,
   },
   pickerContainer: {
     height: 50,
-    borderColor: "#33691E",
+    borderColor: '#33691E',
     borderWidth: 1,
     borderRadius: 3,
-    justifyContent: "center",
+    justifyContent: 'center',
     paddingHorizontal: 10,
   },
   dob: {
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
     height: 50,
-    borderColor: "#33691E",
+    borderColor: '#33691E',
     borderWidth: 1,
     borderRadius: 3,
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: 10,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   button: {
     height: 50,
-    width: "85%",
-    backgroundColor: "#005ea2",
+    width: '85%',
+    backgroundColor: '#005ea2',
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: 10,
   },
 });
 const textStyle = StyleSheet.create({
   editphoto: {
-    color: "#FFF",
+    color: '#FFF',
   },
   header: {
-    color: "#33691E",
+    color: '#33691E',
     fontSize: 16,
     marginVertical: 10,
   },
@@ -796,33 +807,33 @@ const textStyle = StyleSheet.create({
 
 const viewStyles = StyleSheet.create({
   container: {
-    backgroundColor: "#1f1f1f",
-    minHeight: hp("100%"),
-    width: wp("100%"),
+    backgroundColor: '#1f1f1f',
+    minHeight: hp('100%'),
+    width: wp('100%'),
     flex: 1,
   },
   form: {
-    width: wp("90%"),
-    minHeight: hp("70%"),
-    backgroundColor: "#FFF",
-    marginLeft: "auto",
-    marginRight: "auto",
+    width: wp('90%'),
+    minHeight: hp('70%'),
+    backgroundColor: '#FFF',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     flex: 1,
   },
   name: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 });
 
 const textStyles = StyleSheet.create({
   textInput: {
     height: 40,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderBottomWidth: 1,
-    marginHorizontal: wp("2%"),
+    marginHorizontal: wp('2%'),
   },
   titleInput: {
-    marginLeft: wp("2%"),
+    marginLeft: wp('2%'),
     marginTop: 10,
   },
 });
