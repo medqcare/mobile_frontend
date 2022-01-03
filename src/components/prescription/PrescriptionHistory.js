@@ -22,6 +22,7 @@ import withZero from "../../helpers/withZero";
 import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fullMonthFormat } from '../../helpers/dateFormat'
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -95,7 +96,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 style={styles.eachDrugContainer}    
                             >
                                 <View style={index !== 0 ? styles.afterIndexZero : null}>
-                                    <Text style={textStyles.lighterText}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
+                                <Text style={[textStyles.lighterText, { fontSize: RFPercentage(2) }]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
                                 </View>
 
                                 <View style={styles.contentMiddleContainer}>
@@ -208,16 +209,19 @@ const styles = StyleSheet.create({
 
     headerDate: {
         ...textStyles.lighterText,
+        fontSize: RFPercentage(2)
     },
 
     drugAmount: {
         ...textStyles.lighterText,
-        paddingTop: dimHeight * 0.01219
+        paddingTop: dimHeight * 0.01219,
+        fontSize: RFPercentage(2)
     },
 
     expandButton: {
         ...textStyles.redText,
-        paddingTop: dimHeight * 0.01219
+        paddingTop: dimHeight * 0.01219,
+        fontSize: RFPercentage(2)
     },
 
     arrowDown: {
@@ -232,7 +236,7 @@ const styles = StyleSheet.create({
 
     contentInnerContainer: {
         paddingVertical: dimHeight * 0.01219,
-        paddingHorizontal: dimWidth * 0.02431
+        paddingHorizontal: dimWidth * 0.04431
     },
 
     eachDrugContainer: {
@@ -243,23 +247,25 @@ const styles = StyleSheet.create({
     },
 
     contentMiddleContainer: {
+        paddingTop: dimHeight * 0.01219, 
         flexDirection: "row", 
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 
     contentMiddleLeftContainer: {
-        paddingTop: dimHeight * 0.01219, 
         flexDirection: "row", 
         alignItems: "center"
     },
 
     ettiqueteText: {
         ...textStyles.darkerText,
-        paddingLeft: dimWidth * 0.02431
+        paddingLeft: dimWidth * 0.01631,
+        fontSize: RFPercentage(2)
     },
 
     paddingLeftFive: {
-        paddingLeft: dimWidth * 0.01216
+        paddingLeft: dimWidth * 0.01331
     },
 
     beforeMeal: {
@@ -284,7 +290,8 @@ const styles = StyleSheet.create({
 
     information: {
         ...textStyles.lighterText,
-        paddingLeft: dimWidth * 0.00973
+        paddingLeft: dimWidth * 0.00973,
+        fontSize: RFPercentage(2)
     },
 
     separator: {
