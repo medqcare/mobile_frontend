@@ -20,7 +20,7 @@ import ButtonMap from '../../../assets/svg/buttonMap';
 import CloseButton from '../../../assets/svg/CloseButton';
 import axios from 'axios';
 import openMap from '../../../helpers/openMap';
-import Qrcode from '../../../assets/svg/Qrcode'
+import Qrcode from '../../../assets/svg/Qrcode';
 
 const ListApointment = (props) => {
   const [address, setAddres] = useState(false);
@@ -303,7 +303,6 @@ const ListApointment = (props) => {
                       flex: 1,
                       alignItems: 'center',
                       margin: 5,
-                      // justifyContent: 'space-between'
                     }}
                   >
                     <View
@@ -313,39 +312,51 @@ const ListApointment = (props) => {
                         marginTop: 20,
                         borderColor: '#fff',
                         borderWidth: 5,
-                        backgroundColor: '#2F2F2F',
                       }}
                     >
-                      <QRCode
-                        size={180}
-                        value={dataPatient._id} 
-                      />
+                      <QRCode size={180} value={dataPatient._id} />
                     </View>
-                    <Text
+                    <View
                       style={{
-                        color: '#B5B5B5',
-                        textAlign: 'center',
-                        marginTop: 20,
+                        alignItems: 'center',
+                        marginTop: 12,
+                        justifyContent: 'space-between',
+                        height: '30%',
                       }}
                     >
-                      Show the QR to the registration section when you arrive
-                      and get the queue number{' '}
-                    </Text>
-                    <Text
-                        style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
+                      <Text
+                        style={{
+                          color: '#B5B5B5',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Show the QR to the registration section when you arrive
+                        and get the queue number{' '}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: '#B5B5B5',
+                        }}
                       >
                         OR
                       </Text>
-                    <TouchableOpacity onPress={() => {
-                        setmodal(false)
-                        props.route.navigate('Scanner', {props})
-                      }}>
-                      <Text
-                        style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
+                      <TouchableOpacity
+                        onPress={() => {
+                          setmodal(false);
+                          props.route.navigate('Scanner', { props });
+                        }}
                       >
-                        SCAN QR CODE
-                      </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: '#B5B5B5',
+                          }}
+                        >
+                          SCAN QR CODE
+                        </Text>
                       </TouchableOpacity>
+                    </View>
                   </View>
                 )}
               </>
