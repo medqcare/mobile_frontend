@@ -30,6 +30,24 @@ export function getReminders(patientID, token){
     }
 }
 
+export function changeReminderAlarmTime(reminderID, alarmTime, token){
+    return async dispatch => {
+        try {
+            const { data } = await reminderInstance({
+                method: 'PATCH',
+                url: `/changeReminderAlarmTime/${reminderID}`,
+                headers: {
+                    authorization: token
+                },
+                data: { alarmTime }
+            })
+            ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
 export function changeReminderStatus(status, reminderID, token){
     return async dispatch => {
         try {
