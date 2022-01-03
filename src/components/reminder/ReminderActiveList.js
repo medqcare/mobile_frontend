@@ -6,6 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useWindowDimensions,
+  PixelRatio
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -24,11 +26,23 @@ import withZero from "../../helpers/withZero";
 import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, drugs }) {
+    const window = useWindowDimensions()
+    const font = window.fontScale
+
+    function normalize(size, multiplier = 2) {
+        const scale = (dimWidth / dimHeight) * multiplier;
+      
+        const newSize = size * scale;
+      
+        return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    }
+
     const [load, setLoad] = useState(true)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
@@ -284,7 +298,7 @@ function ReminderActiveList({props, drugs }) {
                                                     >
                                                         {loadChangeStatusFalse[index] ? 
                                                             <ActivityIndicator size={"small"} color={"red"} /> : 
-                                                            <Text style={styles.statusReminderButtonText}>TERLEWAT</Text>
+                                                            <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>TERLEWAT</Text>
                                                         }
                                                 </TouchableOpacity>    
                                                 <TouchableOpacity
@@ -293,7 +307,7 @@ function ReminderActiveList({props, drugs }) {
                                                     >
                                                     {loadChangeStatusTrue[index] ? 
                                                         <ActivityIndicator size={"small"} color={"green"} /> : 
-                                                        <Text style={styles.statusReminderButtonText}>DIMINUM</Text>
+                                                        <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>DIMINUM</Text>
                                                     }
                                                 </TouchableOpacity>
                                             </View> :
@@ -498,17 +512,18 @@ const styles = StyleSheet.create({
         borderWidth: 1, 
         borderColor: 'rgba(156, 156, 156, 1)', 
         borderRadius: 20, 
+        // width: 90, 
         width: dimWidth * 0.231, 
         justifyContent: "center", 
         alignItems: "center",
     },
 
     statusReminderButtonText: {
-        color: 'rgba(119, 191, 244, 1)'
+        color: 'rgba(119, 191, 244, 1)',
     },
 
     statusReminderText: {
-        paddingLeft: dimWidth * 0.01216
+        paddingLeft: dimWidth * 0.01216,
     },
 	
     closeButton: {
