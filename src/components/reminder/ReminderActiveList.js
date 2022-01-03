@@ -93,18 +93,8 @@ function ReminderActiveList({props, drugs }) {
 
     useEffect(() => {
         if(drugs.length > 0){
-            Promise.all(drugs.map(el => {
-                const newObject = {
-                    ...el,
-                    type: 'Tablet',
-                    imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-                }
-                return newObject
-            }))
-            .then(result => {
-                setContent(result)
-                setLoad(false)
-            })
+            setContent(drugs)
+            setLoad(false)
         } else {
             setContent([])
             setLoad(false)
