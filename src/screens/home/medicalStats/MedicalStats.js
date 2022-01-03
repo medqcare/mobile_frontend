@@ -22,6 +22,7 @@ import Iconclose from '../../../assets/svg/ic_close';
 import Header from '../../../components/headers/GradientHeader';
 import SelectPatient from '../../../components/modals/selectPatient';
 import LottieLoader from 'lottie-react-native';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 const dimHeight = Dimensions.get('window').height;
 
@@ -51,6 +52,7 @@ function MedicalResume(props) {
       insuranceStatus: null,
     },
   });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (dataMedRes) {
@@ -60,6 +62,7 @@ function MedicalResume(props) {
 
   const _getData = async () => {
     let token = await AsyncStorage.getItem('token');
+    setLoading(true);
     try {
       let { data } = await axios({
         url: `${baseURL}/api/v1/members/getMedicalResume`,
@@ -69,11 +72,12 @@ function MedicalResume(props) {
           patientID: patient.patient.patientID,
         },
       });
-      console.log(data.data);
       setDataMedres(data.data);
       setLengthData(data.data.length);
     } catch (error) {
       console.log(error, 'ini error di resume medis');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,34 +151,51 @@ function MedicalResume(props) {
             <Text style={Styles.button}>UBAH</Text>
           </TouchableOpacity>
         </View>
-        {dataMedRes?.map((item, idx) => {
-          return (
-            <TouchableOpacity
-              style={Styles.card}
-              key={idx}
-              onPress={() => {
-                openMedicalResumeHandler(dataMedRes, idx);
-              }}
-            >
-              <Text style={{ color: '#B5B5B5' }}>
-                Taken Date {getFormattedDate(item.createdAt)}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  openMedicalResumeHandler(dataMedRes, idx);
-                }}
-              >
-                <Text style={Styles.button}>LIHAT</Text>
-              </TouchableOpacity>
-            </TouchableOpacity>
-          );
-        })}
-        {dataMedRes.length === 0 && (
-          <View style={{ alignItems: 'center', marginTop: 25 }}>
-            <Text style={{ color: '#fff' }}>
-              Tidak ada riwayat Resume Medis
-            </Text>
+
+        {loading ? (
+          <View
+            style={{
+              height: heightPercentageToDP('70%'),
+            }}
+          >
+            <LottieLoader
+              source={require('../../animation/loading.json')}
+              loop
+              autoPlay
+            />
           </View>
+        ) : (
+          <>
+            {dataMedRes?.map((item, idx) => {
+              return (
+                <TouchableOpacity
+                  style={Styles.card}
+                  key={idx}
+                  onPress={() => {
+                    openMedicalResumeHandler(dataMedRes, idx);
+                  }}
+                >
+                  <Text style={{ color: '#B5B5B5' }}>
+                    Taken Date {getFormattedDate(item.createdAt)}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      openMedicalResumeHandler(dataMedRes, idx);
+                    }}
+                  >
+                    <Text style={Styles.button}>LIHAT</Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              );
+            })}
+            {dataMedRes.length === 0 && (
+              <View style={{ alignItems: 'center', marginTop: 25 }}>
+                <Text style={{ color: '#fff' }}>
+                  Tidak ada riwayat Resume Medis
+                </Text>
+              </View>
+            )}
+          </>
         )}
       </View>
       <Modal visible={modalKonfirmasi} animationType="fade" transparent={true}>
@@ -352,6 +373,7 @@ function MedicalResume(props) {
         family={family}
         title="Pilih Patient"
         setSelectedValue={setSelectedValue}
+        navigateTo={(screen) => props.navigation.navigate(screen)}
       />
     </View>
   );
