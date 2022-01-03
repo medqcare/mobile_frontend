@@ -33,7 +33,12 @@ import ArrowBack from '../../../assets/svg/ArrowBack';
 
 import { baseURL } from '../../../config';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieLoader from 'lottie-react-native';
+
+/**
+ *
+ * <LottieLoader source={require("../../animation/loading.json")} loop autoplay/>
+ */
 
 function SearchDoctorPage(props) {
   // console.log(props.navigation.state.params.facility,'ini params')
@@ -53,8 +58,6 @@ function SearchDoctorPage(props) {
 
   const fetchHospitalPagination = async () => {
     try {
-      console.log('====================');
-      console.log(location.lat, location.lng);
       let { data } = await axios(
         {
           method: 'POST',
@@ -68,7 +71,6 @@ function SearchDoctorPage(props) {
         },
         { timeout: 4000 }
       );
-      console.log(data, '>>>>>> woi data aku');
       setShow(data.data);
       setLoading(false);
       // let nextPage = currentPage + 1;
@@ -122,7 +124,6 @@ function SearchDoctorPage(props) {
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.navigate('Home');
   });
-  // console.log(show, 'show')
   return (
     <KeyboardAvoidingView
       style={styles.Container}
@@ -163,7 +164,11 @@ function SearchDoctorPage(props) {
 
       <View style={{ flex: 4.8, backgroundColor: '#121212' }}>
         {showLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <LottieLoader
+            source={require('../../animation/loading.json')}
+            loop
+            autoPlay
+          />
         ) : show?.length > 0 ? (
           <FlatList
             refreshControl={

@@ -17,7 +17,7 @@ import openMap from '../../../helpers/openMap';
 import { connect } from 'react-redux';
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
 import ButtonPrimary from '../../../components/ButtonPrimary';
-
+import LottieLoader from 'lottie-react-native';
 const DUMMIES_CLINIC = [
   {
     Lab_name: 'Klinik APS',
@@ -6930,7 +6930,11 @@ function FindClinic(props) {
         <View
           style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <ActivityIndicator color="yellow" size="large" />
+          <LottieLoader
+            source={require('../../animation/loading.json')}
+            autoPlay
+            loop
+          />
         </View>
       ) : (
         <>
