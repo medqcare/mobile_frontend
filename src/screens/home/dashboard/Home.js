@@ -11,6 +11,7 @@ import {
   Dimensions,
   TextInput,
   Platform,
+  Alert,
 } from 'react-native';
 import { connect } from 'react-redux';
 import GetLocation from 'react-native-get-location';
@@ -40,10 +41,10 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import { ScrollView } from 'react-native-gesture-handler';
+import NotifService from '../../../../NotificationService';
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
-
 function HomePage(props) {
   const [myLocation, setMyLocation] = useState(null);
   const [location, setLocation] = useState(null);
@@ -58,7 +59,8 @@ function HomePage(props) {
       url: require('../../../assets/png/Promo2.png'),
     },
   ]);
-
+  const [registerToken, setRegisterToken] = useState('')
+  const [fcmRegistered, setFcmRegistered] = useState(false)
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -66,7 +68,7 @@ function HomePage(props) {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-
+      
       let location = await Location.getCurrentPositionAsync({});
       setMyLocation({
         lat: location.coords.latitude,
@@ -78,31 +80,42 @@ function HomePage(props) {
       });
     })();
   }, []);
-  
-	
-
-	
-
-  useEffect(() => {
-    notificationTrigger();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const tokenString = await AsyncStorage.getItem('token');
-      if (!tokenString) {
-        setload(false);
-      }
-
-      const { token } = JSON.parse(tokenString);
-      try {
-        await props.GetUser(token, props.navigation);
-      } catch (error) {
-      } finally {
-        setload(false);
-      }
-    })();
-  }, []);
+  // useEffect(() => {
+    //   notificationTrigger();
+    // }, []);
+    
+    useEffect(() => {
+      (async () => {
+        const tokenString = await AsyncStorage.getItem('token');
+        if (!tokenString) {
+          setload(false);
+        }
+        
+        const { token } = JSON.parse(tokenString);
+        try {
+          await props.GetUser(token, props.navigation);
+        } catch (error) {
+        } finally {
+          setload(false);
+        }
+      })();
+    }, []);
+    
+    // Notification
+    const onRegister = (token) => {
+      console.log(token, "this is token from device")
+      setRegisterToken(token.token)
+      setFcmRegistered(true)
+    }
+    
+    const onNotif = (notif) => {
+      Alert.alert(notif.title, notif.message)
+    }
+    
+    const notif = new NotifService(onRegister, onNotif)
+    const handlePerm = (perm) => {
+    Alert.alert('Permissions', JSON.stringify(perms))
+  }
 
   return (
     <View
@@ -157,9 +170,9 @@ function HomePage(props) {
                   />
                   {props.userData && (
                     <View style={{ flexDirection: 'row' }}>
-                      <View style={{ marginTop: 1 }}>
+                      <TouchableOpacity style={{ marginTop: 1 }} onPress={() => notif.localNotif()}>
                         <Lonceng />
-                      </View>
+                      </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={() => {
