@@ -68,7 +68,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 name="keyboard-arrow-down" 
                                 size={dimWidth * 0.05} 
                                 color="rgba(243, 115, 53, 1)"
-                                style={{paddingTop: dimHeight * 0.01219, paddingLeft: dimWidth * 0.01216}} 
+                                style={styles.arrowDown} 
                             />
                         </View>
                     </>
@@ -94,54 +94,38 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 key={index}
                                 style={styles.eachDrugContainer}    
                             >
-                                <View style={index !== 0 ? {marginTop: dimHeight * 0.02438} : null}>
+                                <View style={index !== 0 ? styles.afterIndexZero : null}>
                                     <Text style={textStyles.lighterText}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
                                 </View>
 
-                                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <View style={{paddingTop: dimHeight * 0.01219, flexDirection: "row", alignItems: "center"}}>
+                                <View style={styles.contentMiddleContainer}>
+                                    <View style={styles.contentMiddleLeftContainer}>
                                         <View style={{flexDirection: "row", alignItems: "center"}}>
                                             <AntDesign 
                                                 name="clockcircleo" 
                                                 size={dimWidth * 0.030} 
                                                 color="rgba(128, 128, 128, 1)" 
                                             />
-                                            <Text style={[textStyles.darkerText, {paddingLeft: 10}]}>{el.ettiquete.length} x sehari</Text>
+                                            <Text style={styles.ettiqueteText}>{el.ettiquete.length} x sehari</Text>
                                         </View>
-                                        <View style={{paddingLeft: dimWidth * 0.01216}}>
+                                        <View style={styles.paddingLeftFive}>
                                             <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)" />
                                         </View>
-                                        <View style={{paddingLeft: dimWidth * 0.01216}}>
+                                        <View style={styles.paddingLeftFive}>
                                             <Text style={textStyles.darkerText}>{el.dose[0]} Kapsul</Text>
                                         </View>
                                     </View>
 
                                     {el.information === 'Before Meal' ?
                                         <View 
-                                            style={{
-                                                flexDirection: "row", 
-                                                alignItems: "center", 
-                                                borderWidth: 1, 
-                                                borderRadius: 20, 
-                                                paddingVertical: dimHeight * 0.0061, 
-                                                paddingHorizontal: dimWidth * 0.02431,
-                                                borderColor: 'rgba(5, 102, 157, 1)'
-                                            }}>
+                                            style={styles.beforeMeal}>
                                             <Entypo name="controller-play" size={15} color="rgba(5, 102, 157, 1)"  style={{transform: [{rotateY: '180deg'}]}}/>
-                                            <Text style={[textStyles.lighterText, {paddingLeft: dimWidth * 0.00973}]}>Sebelum Makan</Text>
+                                            <Text style={styles.information}>Sebelum Makan</Text>
                                         </View> :
                                         <View 
-                                            style={{
-                                                flexDirection: "row", 
-                                                alignItems: "center", 
-                                                borderWidth: 1, 
-                                                borderRadius: 20, 
-                                                paddingVertical: dimHeight * 0.0061, 
-                                                paddingHorizontal: dimWidth * 0.02431,
-                                                borderColor: 'rgba(5, 157, 157, 1)'
-                                            }}>
+                                            style={styles.afterMeal}>
                                             <Entypo name="controller-play" size={15} color="rgba(5, 157, 157, 1)" />
-                                            <Text style={[textStyles.lighterText, {paddingLeft: dimWidth * 0.00973}]}>Sesudah Makan</Text>
+                                            <Text style={styles.information}>Sesudah Makan</Text>
                                         </View>
                                     }
                                 </View>
@@ -157,7 +141,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                     })}
                     
                     <TouchableOpacity 
-                        style={{flexDirection: "row", alignItems: "center", paddingTop: 15}}
+                        style={{flexDirection: "row", alignItems: "center", paddingTop:  dimHeight * 0.01829}}
                         onPress={() => setSections(activeSections, true, _)}
                     >
                         <Text style={textStyles.redText}>Tutup</Text>
@@ -236,6 +220,11 @@ const styles = StyleSheet.create({
         paddingTop: dimHeight * 0.01219
     },
 
+    arrowDown: {
+        paddingTop: dimHeight * 0.01219, 
+        paddingLeft: dimWidth * 0.01216
+    },
+
     drugsContainer: {
         backgroundColor: 'rgba(47, 47, 47, 1)',
         width: dimWidth * 0.9,
@@ -247,6 +236,55 @@ const styles = StyleSheet.create({
     },
 
     eachDrugContainer: {
+    },
+
+    afterIndexZero: {
+        marginTop: dimHeight * 0.02438
+    },
+
+    contentMiddleContainer: {
+        flexDirection: "row", 
+        justifyContent: "space-between"
+    },
+
+    contentMiddleLeftContainer: {
+        paddingTop: dimHeight * 0.01219, 
+        flexDirection: "row", 
+        alignItems: "center"
+    },
+
+    ettiqueteText: {
+        ...textStyles.darkerText,
+        paddingLeft: dimWidth * 0.02431
+    },
+
+    paddingLeftFive: {
+        paddingLeft: dimWidth * 0.01216
+    },
+
+    beforeMeal: {
+        flexDirection: "row", 
+        alignItems: "center", 
+        borderWidth: 1, 
+        borderRadius: 20, 
+        paddingVertical: dimHeight * 0.0061, 
+        paddingHorizontal: dimWidth * 0.02431,
+        borderColor: 'rgba(5, 102, 157, 1)'
+    },
+
+    afterMeal: {
+        flexDirection: "row", 
+        alignItems: "center", 
+        borderWidth: 1, 
+        borderRadius: 20, 
+        paddingVertical: dimHeight * 0.0061, 
+        paddingHorizontal: dimWidth * 0.02431,
+        borderColor: 'rgba(5, 157, 157, 1)'
+    },
+
+    information: {
+        ...textStyles.lighterText,
+        paddingLeft: dimWidth * 0.00973
     },
 
     separator: {
