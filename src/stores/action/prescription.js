@@ -29,6 +29,40 @@ export function getAllPrescriptions(patientID, token){
     }
 }
 
+export function getTodaysPrescriptions(patientID, token){
+    return async dispatch => {
+        try {
+            let { data } = await prescriptionInstance({
+                method: 'GET',
+                url: `/getTodaysPrescriptionByPatientID/${patientID}`,
+                headers: {
+                    authorization: token
+                },
+            })
+            return data.data
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+}
+
+export function getPrescriptionHistory(patientID, token){
+    return async dispatch => {
+        try {
+            let { data } = await prescriptionInstance({
+                method: 'GET',
+                url: `/getPrescriptionHistory/${patientID}`,
+                headers: {
+                    authorization: token
+                },
+            })
+            return data.data
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+}
+
 // export function changeReminderStatus(status, reminderID, token){
 //     return async dispatch => {
 //         try {

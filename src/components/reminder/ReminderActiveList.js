@@ -228,23 +228,23 @@ function ReminderActiveList({props, drugs }) {
                                             <Text style={styles.reminderTimeText}>{alarmHours}</Text>
                                         </View>
                                             {status === null ? 
-                                                <View style={{flexDirection: "row", justifyContent: "space-between", width: 190 }}>
+                                                <View style={{flexDirection: "row"}}>
                                                     <TouchableOpacity
                                                         onPress={() => changeReminderStatus(false, el._id, _, index)}
-                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20, width: 89, justifyContent: "center", alignItems: "center"}}
+                                                        style={styles.skippedButton}
                                                         >
                                                             {loadChangeStatusFalse[index] ? 
                                                                 <ActivityIndicator size={"small"} color={"red"} /> : 
-                                                                <Text style={{color: 'rgba(119, 191, 244, 1)'}}>TERLEWAT</Text>
+                                                                <Text style={styles.statusReminderButtonText}>TERLEWAT</Text>
                                                             }
                                                     </TouchableOpacity>    
                                                     <TouchableOpacity
                                                         onPress={() => changeReminderStatus(true, el._id, _, index)}
-                                                        style={{padding: 11, borderWidth: 1, borderColor: 'rgba(156, 156, 156, 1)', borderRadius: 20, width: 89, justifyContent: "center", alignItems: "center"}}
+                                                        style={[styles.skippedButton, { marginLeft: dimWidth * 0.02431 }]}
                                                         >
                                                         {loadChangeStatusTrue[index] ? 
                                                             <ActivityIndicator size={"small"} color={"green"} /> : 
-                                                            <Text style={{color: 'rgba(119, 191, 244, 1)'}}>DIMINUM</Text>
+                                                            <Text style={styles.statusReminderButtonText}>DIMINUM</Text>
                                                         }
                                                     </TouchableOpacity>
                                                 </View> :
@@ -252,12 +252,12 @@ function ReminderActiveList({props, drugs }) {
                                                     {status ?
                                                         <>
                                                             <FontAwesome name="check" size={24} color="green" />
-                                                            <Text style={{color: 'green', paddingLeft: 5}}>DIMINUM</Text>
+                                                            <Text style={[styles.statusReminderText, { color: 'green' }]}>DIMINUM</Text>
                                                         </>
                                                     :
                                                         <>
                                                             <ReminderSkippedLogo/>
-                                                            <Text style={{color: 'red', paddingLeft: 5}}>TERLEWAT</Text>
+                                                            <Text style={[styles.statusReminderText, { color: 'red' }]}>TERLEWAT</Text>
                                                         </>
                                                     }
                                                 </View>
@@ -300,6 +300,9 @@ function ReminderActiveList({props, drugs }) {
         )
     );
 }
+
+// dimWidth = 411.42857142857144
+// dimHeight = 820.5714285714286
 
 const textStyles = {
 	darkerText : {
@@ -351,12 +354,11 @@ const styles = StyleSheet.create({
 	drugNameText: {
 		...textStyles.lighterText,
 		fontWeight: '500',
-		fontSize: 16
 	},
 
     detailContainer: {
-        paddingHorizontal: 15,
-        paddingVertical: 3,
+        paddingHorizontal: dimWidth * 0.03646,
+        paddingVertical: dimHeight * 0.003656,
     },
 
     ettiqueteContainter: {
@@ -412,39 +414,49 @@ const styles = StyleSheet.create({
         width: '90%',
         justifyContent: "center",
         alignSelf: "center",
-        height: 64,
+        height: dimHeight * 0.078,
 		borderBottomWidth: 1,
 		borderBottomColor: 'rgba(71, 71, 71, 1)',
-	},
-
-    reminderTopContainer: {
-		alignSelf: "flex-start",
-		backgroundColor: 'rgba(47, 47, 47, 1)',
-		paddingVertical: 4,
-		paddingHorizontal: 6
 	},
 
     reminderLowerContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
         alignItems: "center"
-        // backgroundColor: 'blue'
 	},
 
 	reminderTimeText: {
 		color: 'rgba(181, 181, 181, 1)',
-		fontSize: 20,
 		fontWeight: '500',
-		paddingLeft: 5
+		paddingLeft: dimWidth * 0.01216
 	},
+
+    skippedButton: {
+        paddingHorizontal: dimWidth * 0.02431,
+        paddingVertical: dimHeight * 0.01219, 
+        borderWidth: 1, 
+        borderColor: 'rgba(156, 156, 156, 1)', 
+        borderRadius: 20, 
+        width: dimWidth * 0.231, 
+        justifyContent: "center", 
+        alignItems: "center",
+    },
+
+    statusReminderButtonText: {
+        color: 'rgba(119, 191, 244, 1)'
+    },
+
+    statusReminderText: {
+        paddingLeft: dimWidth * 0.01216
+    },
 	
     closeButton: {
         flexDirection: "row",
 		width: '90%',
         alignSelf: "center",
         alignItems: "center",
-        paddingBottom: 15,
-        paddingTop: 10
+        paddingBottom: dimHeight * 0.01829,
+        paddingTop: dimHeight * 0.01219
     },
 
     noDataContainer: {
@@ -458,7 +470,7 @@ const styles = StyleSheet.create({
 	},
 
     closeText: {
-        paddingRight: 10,
+        paddingRight: dimWidth * 0.02431,
         ...textStyles.redText
     }
 });

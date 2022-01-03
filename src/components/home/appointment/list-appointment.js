@@ -20,6 +20,7 @@ import ButtonMap from '../../../assets/svg/buttonMap';
 import CloseButton from '../../../assets/svg/CloseButton';
 import axios from 'axios';
 import openMap from '../../../helpers/openMap';
+import Qrcode from '../../../assets/svg/Qrcode'
 
 const ListApointment = (props) => {
   const [address, setAddres] = useState(false);
@@ -29,7 +30,6 @@ const ListApointment = (props) => {
   var moment = require('moment');
 
   useEffect(() => {
-    console.log('ini masuk useeffect -----------------------------------');
     setPatient(props.data);
   }, [props.data]);
 
@@ -237,10 +237,6 @@ const ListApointment = (props) => {
                       </Text>
                     </View>
                   </View>
-                  {/* <View style={styles.time}>
-                            <View style={styles.dot} />
-                            <Text style={styles.status}>{dataPatient.status}</Text>
-                        </View> */}
                 </View>
               </View>
             </View>
@@ -322,14 +318,7 @@ const ListApointment = (props) => {
                     >
                       <QRCode
                         size={180}
-                        value={dataPatient._id} //reservationId
-                        // value={JSON.stringify({
-                        //     data: {
-                        //         patientID: dataPatient.patient.patientID,
-                        //         facilityID: dataPatient.healthFacility.facilityID,
-                        //         reservationID: dataPatient._id,
-                        //     }
-                        // })}
+                        value={dataPatient._id} 
                       />
                     </View>
                     <Text
@@ -343,10 +332,20 @@ const ListApointment = (props) => {
                       and get the queue number{' '}
                     </Text>
                     <Text
-                      style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
-                    >
-                      SCAN QR CODE
-                    </Text>
+                        style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
+                      >
+                        OR
+                      </Text>
+                    <TouchableOpacity onPress={() => {
+                        setmodal(false)
+                        props.route.navigate('Scanner', {props})
+                      }}>
+                      <Text
+                        style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
+                      >
+                        SCAN QR CODE
+                      </Text>
+                      </TouchableOpacity>
                   </View>
                 )}
               </>

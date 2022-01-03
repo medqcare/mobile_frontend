@@ -1,19 +1,25 @@
-function fullMonthFormat(date){
+function fullMonthFormat(date, dayNumber){
     const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"]
+    const days = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
     const newDate = date.split('/')
     const year = newDate[2]
-    const day = newDate[0]
+    const dateNumber = newDate[0]
     const numberMonth = newDate[1]
     
     let month = ''
-    if(+numberMonth){
-        month = months[+numberMonth - 1]
+    if(typeof +numberMonth === 'number'){
+        month = months[+numberMonth]
     } else {
         month = numberMonth
     }
-    
-    const fullDate = `${day} ${month} ${year}`
-    return fullDate
+    if(dayNumber >= 0){
+        const day = days[dayNumber]
+        const fullDate = `${day}, ${dateNumber} ${month} ${year}`
+        return fullDate
+    } else {
+        const fullDate = `${dateNumber} ${month} ${year}`
+        return fullDate
+    }
 }
 
 function getFormattedDate(date) {
