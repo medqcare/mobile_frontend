@@ -11,7 +11,11 @@ import {
   getPrescriptionHistory
 } from './prescription'
 import { getDrugs } from './drugs';
-import { getReminders, changeReminderStatus } from './reminders';
+import { 
+  getReminders, 
+  changeReminderAlarmTime,
+  changeReminderStatus 
+} from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -1132,5 +1136,6 @@ export { getDrugs };
 
 export { 
   getReminders, 
+  changeReminderAlarmTime,
   changeReminderStatus
 };

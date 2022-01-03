@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, getReminders, changeReminderStatus } from '../../../stores/action'
+import { getDrugs, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -223,6 +223,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
 	getDrugs,
 	getReminders,
+	changeReminderAlarmTime,
 	changeReminderStatus
 }
 

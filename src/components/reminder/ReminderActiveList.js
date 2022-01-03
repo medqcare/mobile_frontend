@@ -6,6 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  useWindowDimensions,
+  PixelRatio
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -23,36 +25,82 @@ import { ActivityIndicator } from "react-native-paper";
 import withZero from "../../helpers/withZero";
 import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, drugs }) {
+    const window = useWindowDimensions()
+    const font = window.fontScale
+
+    function normalize(size, multiplier = 2) {
+        const scale = (dimWidth / dimHeight) * multiplier;
+      
+        const newSize = size * scale;
+      
+        return Math.round(PixelRatio.roundToNearestPixel(newSize));
+    }
+
     const [load, setLoad] = useState(true)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
 
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('time');
+    const [show, setShow] = useState(false);
+
+    const [reminderID, setReminderID] = useState(null)
+    const [currentIndex, setCurrentIndex] = useState(null)
+
+    const onChange = async (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShow(Platform.OS === 'ios');
+        setDate(currentDate);
+        const token = JSON.parse(await AsyncStorage.getItem('token')).token
+        await props.changeReminderAlarmTime(reminderID, currentDate, token)
+
+        const newReminders= content[currentIndex].reminders.map(el => {
+            if(el._id === reminderID){
+                el.alarmTime = currentDate
+            }
+            return el
+        })
+
+        const newContent = content.map((el, idx) => {
+            if(el._id === content[currentIndex]._id){
+                el.reminders = newReminders
+            }
+            return el
+        })
+
+        setContent(newContent)
+    };
+    
+    const showMode = (currentMode) => {
+        setShow(true);
+        setMode(currentMode);
+    };
+
+    const showTimepicker = (alarmTime, _id, _) => {
+        setDate(alarmTime)
+        setReminderID(_id)
+        setCurrentIndex(_)
+        showMode('time');
+    };
+
     useEffect(() => {
         if(drugs.length > 0){
-            Promise.all(drugs.map(el => {
-                const newObject = {
-                    ...el,
-                    type: 'Tablet',
-                    imageUrl: 'https://d2qjkwm11akmwu.cloudfront.net/products/25c2c4a4-0241-403c-a9c0-67b51923ba4d_product_image_url.webp',
-                }
-                return newObject
-            }))
-            .then(result => {
-                setContent(result)
-                setLoad(false)
-            })
+            setContent(drugs)
+            setLoad(false)
         } else {
             setContent([])
             setLoad(false)
         }
     }, [])
-    
+
     const toggleSwitch = (index) => {
         const newArray = content.map((el, idx) => {
             const newObject = {
@@ -216,52 +264,57 @@ function ReminderActiveList({props, drugs }) {
                 style={styles.reminderContainer}
                 transition="backgroundColor">
                     {todaysReminder.map((el, index) => {
-                        const alarmTime = new Date(reminders[index].alarmTime).getHours()
-                        const alarmHours = `${withZero(alarmTime)}:00`
+                        const alarmTime = new Date(reminders[index].alarmTime)
+                        const alarmHours = alarmTime.getHours()
+                        const displayAlarmHours = `${withZero(alarmHours)}:00`
                         const status = el.status
                         return (
                             <View key={index}>
                                 <View style={styles.reminderTimeContainer}>
                                     <View style={styles.reminderLowerContainer}>
-                                        <View style={{flexDirection: "row"}}>
+                                        <TouchableOpacity 
+                                            style={{flexDirection: "row", alignItems: "center"}}
+                                            onPress={() => showTimepicker(alarmTime, el._id, _)}
+                                        >
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-                                            <Text style={styles.reminderTimeText}>{alarmHours}</Text>
-                                        </View>
-                                            {status === null ? 
-                                                <View style={{flexDirection: "row"}}>
-                                                    <TouchableOpacity
-                                                        onPress={() => changeReminderStatus(false, el._id, _, index)}
-                                                        style={styles.skippedButton}
-                                                        >
-                                                            {loadChangeStatusFalse[index] ? 
-                                                                <ActivityIndicator size={"small"} color={"red"} /> : 
-                                                                <Text style={styles.statusReminderButtonText}>TERLEWAT</Text>
-                                                            }
-                                                    </TouchableOpacity>    
-                                                    <TouchableOpacity
-                                                        onPress={() => changeReminderStatus(true, el._id, _, index)}
-                                                        style={[styles.skippedButton, { marginLeft: dimWidth * 0.02431 }]}
-                                                        >
-                                                        {loadChangeStatusTrue[index] ? 
-                                                            <ActivityIndicator size={"small"} color={"green"} /> : 
-                                                            <Text style={styles.statusReminderButtonText}>DIMINUM</Text>
+                                            <Text style={styles.reminderTimeText}>{displayAlarmHours}</Text>
+                                        </TouchableOpacity>
+
+                                        {status === null ? 
+                                            <View style={{flexDirection: "row"}}>
+                                                <TouchableOpacity
+                                                    onPress={() => changeReminderStatus(false, el._id, _, index)}
+                                                    style={styles.skippedButton}
+                                                    >
+                                                        {loadChangeStatusFalse[index] ? 
+                                                            <ActivityIndicator size={"small"} color={"red"} /> : 
+                                                            <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>TERLEWAT</Text>
                                                         }
-                                                    </TouchableOpacity>
-                                                </View> :
-                                                <View style={{flexDirection: "row", alignItems: "center"}}>
-                                                    {status ?
-                                                        <>
-                                                            <FontAwesome name="check" size={24} color="green" />
-                                                            <Text style={[styles.statusReminderText, { color: 'green' }]}>DIMINUM</Text>
-                                                        </>
-                                                    :
-                                                        <>
-                                                            <ReminderSkippedLogo/>
-                                                            <Text style={[styles.statusReminderText, { color: 'red' }]}>TERLEWAT</Text>
-                                                        </>
+                                                </TouchableOpacity>    
+                                                <TouchableOpacity
+                                                    onPress={() => changeReminderStatus(true, el._id, _, index)}
+                                                    style={[styles.skippedButton, { marginLeft: dimWidth * 0.02431 }]}
+                                                    >
+                                                    {loadChangeStatusTrue[index] ? 
+                                                        <ActivityIndicator size={"small"} color={"green"} /> : 
+                                                        <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>DIMINUM</Text>
                                                     }
-                                                </View>
-                                            }
+                                                </TouchableOpacity>
+                                            </View> :
+                                            <View style={{flexDirection: "row", alignItems: "center"}}>
+                                                {status ?
+                                                    <>
+                                                        <FontAwesome name="check" size={24} color="green" />
+                                                        <Text style={[styles.statusReminderText, { color: 'green' }]}>DIMINUM</Text>
+                                                    </>
+                                                :
+                                                    <>
+                                                        <ReminderSkippedLogo/>
+                                                        <Text style={[styles.statusReminderText, { color: 'red' }]}>TERLEWAT</Text>
+                                                    </>
+                                                }
+                                            </View>
+                                        }
                                     </View>
                                 </View>
                             </View>
@@ -282,6 +335,7 @@ function ReminderActiveList({props, drugs }) {
     return (
         load ? <ActivityIndicator color="blue" size={'small'}/> :
         content.length > 0 ? 
+        <>
             <Accordion
                 activeSections={activeSections}
                 sections={content}
@@ -293,6 +347,17 @@ function ReminderActiveList({props, drugs }) {
                 onChange={setSections}
                 containerStyle={{alignItems: "center"}}
             /> 
+            {show && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    value={date}
+                    mode={mode}
+                    is24Hour={true}
+                    display="default"
+                    onChange={onChange}
+                />
+            )}
+        </>
         : (
             <View style={styles.noDataContainer}>
                 <Text style={styles.lighterText}>Belum Ada Pengingat</Text>
@@ -437,17 +502,18 @@ const styles = StyleSheet.create({
         borderWidth: 1, 
         borderColor: 'rgba(156, 156, 156, 1)', 
         borderRadius: 20, 
+        // width: 90, 
         width: dimWidth * 0.231, 
         justifyContent: "center", 
         alignItems: "center",
     },
 
     statusReminderButtonText: {
-        color: 'rgba(119, 191, 244, 1)'
+        color: 'rgba(119, 191, 244, 1)',
     },
 
     statusReminderText: {
-        paddingLeft: dimWidth * 0.01216
+        paddingLeft: dimWidth * 0.01216,
     },
 	
     closeButton: {
