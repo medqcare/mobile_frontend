@@ -6777,7 +6777,11 @@ function FindClinic(props) {
           }}
         >
           <Image
-            source={{ uri: clinic.image_url }}
+            source={
+              clinic.image_url
+                ? { uri: clinic.image_url }
+                : require('../../../assets/png/klinik.png')
+            }
             style={{
               width: 60,
               height: 60,
