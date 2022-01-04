@@ -6,8 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  useWindowDimensions,
-  PixelRatio
+  ToastAndroid,
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -27,26 +26,17 @@ import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import * as Calendar from 'expo-calendar';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, drugs }) {
-    const window = useWindowDimensions()
-    const font = window.fontScale
-
-    function normalize(size, multiplier = 2) {
-        const scale = (dimWidth / dimHeight) * multiplier;
-      
-        const newSize = size * scale;
-      
-        return Math.round(PixelRatio.roundToNearestPixel(newSize));
-    }
-
     const [load, setLoad] = useState(true)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
+    const [loadToggle, setLoadToggle] = useState(false)
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
@@ -54,6 +44,135 @@ function ReminderActiveList({props, drugs }) {
 
     const [reminderID, setReminderID] = useState(null)
     const [currentIndex, setCurrentIndex] = useState(null)
+
+    const [calendarID, setCalendarID] = useState(null)
+
+    useEffect(() => {
+		(async () => {
+		  const { status } = await Calendar.requestCalendarPermissionsAsync();
+		  if (status === 'granted') {
+			const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+            const arrayOfCalendarNames = calendars.map(el => {
+                return el.name
+            })
+			// console.log('Here are all your calendars:');
+			// console.log(calendars);
+            if(arrayOfCalendarNames.includes('Applimetis Parama Solusi')){
+                ToastAndroid.show('Calendar already created', ToastAndroid.SHORT)
+            } else {
+                await createCalendar()
+                ToastAndroid.show('Calendar created', ToastAndroid.SHORT)
+            }
+		  }
+          const afterCreatedCalendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+          const medQCareCalendar = afterCreatedCalendars.find(el => el.name === 'Applimetis Parama Solusi')
+          const medQCareID = medQCareCalendar.id
+          setCalendarID(medQCareID)
+        })();
+	}, []);
+
+    // Pertama kali dilakukan
+    async function createCalendar() {
+		const defaultCalendarSource =
+		  Platform.OS === 'ios'
+			? await getDefaultCalendarSource()
+			: { isLocalAccount: true, name: 'MedQCare Calendar' };
+
+        const options = {
+            title: 'Drug Reminders',
+            color: 'blue',
+            entityType: Calendar.EntityTypes.EVENT,
+            sourceId: defaultCalendarSource.id,
+            source: defaultCalendarSource,
+            name: 'Applimetis Parama Solusi',
+            ownerAccount: 'personal',
+            accessLevel: Calendar.CalendarAccessLevel.OWNER,
+        }
+
+		const newCalendarID = await Calendar.createCalendarAsync(options);
+	}
+
+    // Kedua dilakukan
+    async function createAlarm(alarmTime, drugID, drugName, i){
+		const startDate = new Date(alarmTime)
+		const endDate = new Date(alarmTime)
+		endDate.setMinutes(endDate.getMinutes() + 5)
+
+		const details = {
+			startDate,
+			endDate,
+			title: drugName,
+			timeZone: "GMT-7",
+			alarms:[ { 
+				relativeOffset: 0,
+				method: Calendar.AlarmMethod.ALERT,
+			} ],
+		}
+
+		const newAlarm = await Calendar.createEventAsync(calendarID, details) 
+        const createdAlarm = {
+            alarmID : newAlarm,
+            drugID
+        }
+        
+        return createdAlarm
+	}
+
+	async function deleteCalendar(id){
+		try {
+			const deleted = await Calendar.deleteCalendarAsync(id)
+			console.log(deleted)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	async function deleteEvent(drugID){
+		try {
+            const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+
+            const toBeDeleted = []
+            const notDeleted = []
+            for(let i = 0; i < alarmIDs.length; i++){
+                if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
+                else notDeleted.push(alarmIDs[i])
+            }
+
+            for(let i = 0; i < toBeDeleted.length; i ++){
+                const deleted = await Calendar.deleteEventAsync(toBeDeleted[i].alarmID)
+            }
+
+            const stringified = JSON.stringify(notDeleted)
+            await AsyncStorage.setItem(stringified)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	
+
+	async function openCalendar(id){
+		const calendar = Calendar.openEventInCalendar(id)
+	}
+
+	async function getEvents(id){
+		const event = await Calendar.getEventAsync(id)
+		console.log(new Date(event.startDate).getMinutes())
+		console.log(event)
+	}
+
+	async function getReminders(){
+		try {
+			const reminder = await Calendar.getReminderAsync("1")
+			console.log(reminder)
+			
+		} catch (error) {
+			console.log(error.message)
+		}
+	}
+
+	
+
 
     const onChange = async (event, selectedDate) => {
         const currentDate = selectedDate || date;
@@ -101,15 +220,51 @@ function ReminderActiveList({props, drugs }) {
         }
     }, [])
 
-    const toggleSwitch = (index) => {
-        const newArray = content.map((el, idx) => {
-            const newObject = {
-                ...el,
-                reminder: index === idx ? !el.reminder : el.reminder
+    const toggleSwitch = async (index, section) => {
+        try {
+            setLoadToggle(true)
+            const { reminders, reminder } = section
+            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            const drugID = section._id
+            const drugName = section.drugName
+            const change = await props.changeAlarmBoolean(drugID, token)
+            ToastAndroid.show(change, ToastAndroid.SHORT)
+
+            if(reminder){
+                const deletedAlarm = deleteEvent(drugID)
+            } else {
+                const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+                let alarmIDs = []
+                
+                if(foundAlarmIDs){
+                    alarmIDs = [...foundAlarmIDs]
+                }
+
+                for(let i = 0; i < reminders.length; i++){
+                    const alarmTime = reminders[i].alarmTime
+                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, i)
+                    alarmIDs.push(createdAlarm)
+                }
+
+                const stringified = JSON.stringify(alarmIDs)
+                await AsyncStorage.setItem('alarmIDs', stringified)
             }
-            return newObject
-        })
-        setContent(newArray)
+
+           
+            const newArray = content.map((el, idx) => {
+                const newObject = {
+                    ...el,
+                    reminder: index === idx ? !el.reminder : el.reminder
+                }
+                return newObject
+            })
+            setContent(newArray)
+            setLoadToggle(false)
+        } catch (error) {
+            console.log(error)
+        }
+        
+       
     }
 
     const [activeSections, setActiveSections] = useState([]);
@@ -180,6 +335,9 @@ function ReminderActiveList({props, drugs }) {
         }
     }
 
+    
+					
+
     const renderHeader = (section, _, isActive,) => {
         return (
           <Animatable.View
@@ -198,7 +356,16 @@ function ReminderActiveList({props, drugs }) {
                         animation={'wobble'}>
                             <TouchableOpacity
                             style={styles.detailContainer}
-                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                                // onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                                // onPress={() => console.log(section._id)}
+                                // onPress={() => createAlarm(new Date())}
+                                // onPress={() => getEvents("2036")}
+                                // onPress={() => getReminders()}
+                                // onPress={() => deleteCalendar("1")}
+                                onPress={() => deleteEvent("61d3bc4f8631aa42083ec865")}
+                                // onPress={() => createCalendar()}
+                                // onPress={() => openCalendar('2306')}
+                                // onPress={() => console.log(Calendar)}
                             >
                                     <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
@@ -239,7 +406,8 @@ function ReminderActiveList({props, drugs }) {
                             offColor="#767577"
                             size="medium"
                             animationSpeed={150}
-                            onToggle={isOn => toggleSwitch(_)}
+                            onToggle={isOn => toggleSwitch(_, section)}
+                            disabled={loadToggle}
                         />
                     </View>
             </View>
