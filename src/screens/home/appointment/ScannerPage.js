@@ -12,24 +12,84 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import GradientHeader from '../../../components/headers/GradientHeader';
 import { Camera } from 'expo-camera';
+import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
+import axios from 'axios';
+import { baseURL } from '../../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //action
 const Assistant_scan = (props) => {
+  const [reservationData, setReservationData] = useState(null);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [healthFacilityData, setHealthFacilityData] = useState(null);
 
   useEffect(() => {
     (async () => {
       const result = await Camera.requestCameraPermissionsAsync();
-      console.log(result);
       const { status } = result;
       setHasPermission(status === 'granted');
     })();
   }, []);
 
+  useEffect(() => {
+    const reservationData = props.navigation.getParam('reservationData');
+    const healthFacility = props.navigation.getParam('healthFacility');
+
+    setReservationData(reservationData);
+    setHealthFacilityData(healthFacility);
+  }, []);
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    console.log(data, 'scan result'); // validate location in range 1km
+    console.log(data, 'this is data from barcode');
+    const isValid = isValidBarCode(data);
+
+    if (!isValid) {
+      props.navigation.pop();
+      return;
+    }
+
+    (async () => {
+      const stringToken = await AsyncStorage.getItem('token');
+      const { token } = JSON.parse(stringToken);
+      const { data: responseRegistered } = await axios({
+        method: 'POST',
+        url: baseURL + '/api/v1/members/createRegistered',
+        headers: {
+          'X-Secret': 123456,
+          authorization: token,
+        },
+        data: {
+          queueNumber: '2-3',
+          reservationID: reservationData._id,
+          facilityID: reservationData.healthFacility.facilityID,
+        },
+      });
+
+      if (responseRegistered.status === true) {
+        props.navigation.navigate('Activity_List');
+      }
+    })();
+  };
+
+  const isValidBarCode = (dataBarCode) => {
+    const { clinicIdWeb } = reservationData.healthFacility;
+    const { location } = healthFacilityData;
+    const [lng, lat] = location.coordinates;
+    const { lat: latUser, lng: lngUser } = props.myLocation;
+    const distance = getDistanceFromLatLonInKm(latUser, lngUser, lat, lng);
+
+    if (Number(dataBarCode) !== Number(clinicIdWeb)) {
+      return false;
+    }
+
+    // currently, only allow distance under 100 km
+    if (distance > 100) {
+      return false;
+    }
+
+    return true;
   };
 
   if (hasPermission === null) {
