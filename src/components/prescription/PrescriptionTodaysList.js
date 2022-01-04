@@ -95,7 +95,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 style={styles.eachDrugContainer}    
                             >
                                 <View style={index !== 0 ? styles.afterIndexZero : null}>
-                                    <Text style={[textStyles.lighterText, { fontSize: RFPercentage(2) }]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
+                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
                                 </View>
 
                                 <View style={styles.contentMiddleContainer}>
@@ -110,7 +110,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                         </View>
                                         <View style={{flexDirection: "row", alignItems: "center"}}>
                                             <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)" />
-                                            <Text style={[textStyles.darkerText, {fontSize: RFPercentage(2)}]}>{el.dose[0]} Kapsul</Text>
+                                            <Text style={[textStyles.darkerText, {fontSize: RFValue(12, dimHeight)}]}>{el.dose[0]} Kapsul</Text>
                                         </View>
                                         <View >
                                         </View>
@@ -131,8 +131,8 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 </View>
 
                                 <View style={{paddingTop: dimHeight * 0.01219}}>
-                                    <Text style={[textStyles.lighterText, { fontSize: RFPercentage(2) }]}>Catatan: </Text>
-                                    <Text style={[textStyles.lighterText, { fontSize: RFPercentage(2) }]}>{el.notes}</Text>
+                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>Catatan: </Text>
+                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>{el.notes}</Text>
                                 </View>
 
                                 <View style={styles.separator}/>
@@ -144,7 +144,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                         style={{flexDirection: "row", alignItems: "center", paddingTop: dimHeight * 0.01829}}
                         onPress={() => setSections(activeSections, true, _)}
                     >
-                        <Text style={textStyles.redText}>Tutup</Text>
+                        <Text style={[textStyles.redText, { fontSize: RFValue(12, dimHeight) }]}>Tutup</Text>
                         <MaterialIcons 
                                 name="keyboard-arrow-up" 
                                 size={dimWidth * 0.05} 
@@ -208,19 +208,19 @@ const styles = StyleSheet.create({
 
     headerDate: {
         ...textStyles.lighterText,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(12, dimHeight)
     },
 
     drugAmount: {
         ...textStyles.lighterText,
         paddingTop: dimHeight * 0.01219,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(12, dimHeight)
     },
 
     expandButton: {
         ...textStyles.redText,
         paddingTop: dimHeight * 0.01219,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(12, dimHeight)
     },
 
     arrowDown: {
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     ettiqueteText: {
         ...textStyles.darkerText,
         paddingLeft: dimWidth * 0.01631,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(12, dimHeight)
     },
 
     paddingLeftFive: {
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     information: {
         ...textStyles.lighterText,
         paddingLeft: dimWidth * 0.00973,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(12, dimHeight)
     },
 
     separator: {
