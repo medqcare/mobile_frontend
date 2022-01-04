@@ -96,7 +96,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 style={styles.eachDrugContainer}    
                             >
                                 <View style={index !== 0 ? styles.afterIndexZero : null}>
-                                <Text style={[textStyles.lighterText, { fontSize: RFPercentage(2) }]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
+                                <Text style={[textStyles.lighterText, { fontSize: RFValue(10, dimHeight) }]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
                                 </View>
 
                                 <View style={styles.contentMiddleContainer}>
@@ -110,10 +110,10 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                             <Text style={styles.ettiqueteText}>{el.ettiquete.length} x sehari</Text>
                                         </View>
                                         <View style={styles.paddingLeftFive}>
-                                            <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)" />
+                                            <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)"  />
                                         </View>
                                         <View style={styles.paddingLeftFive}>
-                                            <Text style={textStyles.darkerText}>{el.dose[0]} Kapsul</Text>
+                                            <Text style={[textStyles.darkerText, { fontSize: RFValue(10, dimHeight)}]}>{el.dose[0]} Kapsul</Text>
                                         </View>
                                     </View>
 
@@ -132,8 +132,8 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                 </View>
 
                                 <View style={{paddingTop: dimHeight * 0.01219}}>
-                                    <Text style={textStyles.lighterText}>Catatan: </Text>
-                                    <Text style={textStyles.lighterText}>{el.notes}</Text>
+                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(10, dimHeight) }]}>Catatan: </Text>
+                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(10, dimHeight) }]}>{el.notes}</Text>
                                 </View>
 
                                 <View style={styles.separator}/>
@@ -145,7 +145,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                         style={{flexDirection: "row", alignItems: "center", paddingTop:  dimHeight * 0.01829}}
                         onPress={() => setSections(activeSections, true, _)}
                     >
-                        <Text style={textStyles.redText}>Tutup</Text>
+                        <Text style={[textStyles.redText, { fontSize: RFValue(10, dimHeight)} ]}>Tutup</Text>
                         <MaterialIcons 
                                 name="keyboard-arrow-up" 
                                 size={dimWidth * 0.05} 
@@ -209,19 +209,19 @@ const styles = StyleSheet.create({
 
     headerDate: {
         ...textStyles.lighterText,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(10, dimHeight)
     },
 
     drugAmount: {
         ...textStyles.lighterText,
         paddingTop: dimHeight * 0.01219,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(10, dimHeight)
     },
 
     expandButton: {
         ...textStyles.redText,
         paddingTop: dimHeight * 0.01219,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(10, dimHeight)
     },
 
     arrowDown: {
@@ -261,11 +261,11 @@ const styles = StyleSheet.create({
     ettiqueteText: {
         ...textStyles.darkerText,
         paddingLeft: dimWidth * 0.01631,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(10, dimHeight)
     },
 
     paddingLeftFive: {
-        paddingLeft: dimWidth * 0.01331
+        // paddingLeft: dimWidth * 0.01331
     },
 
     beforeMeal: {
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     information: {
         ...textStyles.lighterText,
         paddingLeft: dimWidth * 0.00973,
-        fontSize: RFPercentage(2)
+        fontSize: RFValue(10, dimHeight)
     },
 
     separator: {

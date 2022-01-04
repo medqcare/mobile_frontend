@@ -288,7 +288,7 @@ function ReminderActiveList({props, drugs }) {
                                                     >
                                                         {loadChangeStatusFalse[index] ? 
                                                             <ActivityIndicator size={"small"} color={"red"} /> : 
-                                                            <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>TERLEWAT</Text>
+                                                            <Text style={[styles.statusReminderButtonText, {fontSize: RFValue(11, dimHeight)}]}>TERLEWAT</Text>
                                                         }
                                                 </TouchableOpacity>    
                                                 <TouchableOpacity
@@ -297,7 +297,7 @@ function ReminderActiveList({props, drugs }) {
                                                     >
                                                     {loadChangeStatusTrue[index] ? 
                                                         <ActivityIndicator size={"small"} color={"green"} /> : 
-                                                        <Text style={[styles.statusReminderButtonText, {fontSize: RFPercentage(2)}]}>DIMINUM</Text>
+                                                        <Text style={[styles.statusReminderButtonText, {fontSize: RFValue(11, dimHeight)}]}>DIMINUM</Text>
                                                     }
                                                 </TouchableOpacity>
                                             </View> :
