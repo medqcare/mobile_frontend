@@ -20,16 +20,18 @@ import ButtonMap from '../../../assets/svg/buttonMap';
 import CloseButton from '../../../assets/svg/CloseButton';
 import axios from 'axios';
 import openMap from '../../../helpers/openMap';
+import Qrcode from '../../../assets/svg/Qrcode';
 
 const ListApointment = (props) => {
   const [address, setAddres] = useState(false);
   const [dataPatient, setPatient] = useState(null);
   const [modal, setmodal] = useState(false);
+  const [healthFacilityData, setHealthFacilityData] = useState(null);
+
   const [loadingLocation, setLoadingLocation] = useState(false);
   var moment = require('moment');
 
   useEffect(() => {
-    console.log('ini masuk useeffect -----------------------------------');
     setPatient(props.data);
   }, [props.data]);
 
@@ -43,23 +45,43 @@ const ListApointment = (props) => {
     setPatient(props.data);
   }, []);
 
+  const getHealthFacility = async () => {
+    const { data: response } = await axios({
+      method: 'POST',
+      url: `${baseURL}/api/v1/members/detailFacility/${dataPatient.healthFacility.facilityID}`,
+    });
+    return response.data;
+  };
+
   const openMapHandler = () => {
     (async () => {
-      setLoadingLocation(true);
       try {
-        const { data: response } = await axios({
-          method: 'POST',
-          url: `${baseURL}/api/v1/members/detailFacility/${dataPatient.healthFacility.facilityID}`,
-        });
-        const { location } = response.data;
+        const { location } = await getHealthFacility();
         const [lng, lat] = location.coordinates;
         openMap(lat, lng);
       } catch (error) {
         console.log(error, 'this is error from list-appointment');
-      } finally {
-        setLoadingLocation(false);
       }
     })();
+  };
+
+  const openScannerHandler = () => {
+    getHealthFacility()
+      .then((data) => {
+        console.log(data);
+        setmodal(false);
+        props.route.navigate('Scanner', {
+          reservationData: props.data,
+          healthFacility: data,
+        });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
+    return bookingSchedule === moment().format('DD/MM/YYYY');
   };
 
   //   <TouchableOpacity
@@ -108,56 +130,18 @@ const ListApointment = (props) => {
       socket.close();
     });
   }
-
   return (
     <View>
       {dataPatient && dataPatient.status !== 'canceled' && (
         <>
-          <TouchableOpacity
-            onPress={() => {
-              setmodal(true);
-            }}
-            style={styles.container}
-          >
-            <View
-              style={{
-                height: 30,
-                backgroundColor: '#005EA2',
-                alignItems: 'center',
-                borderTopEndRadius: 5,
-                borderTopStartRadius: 5,
-                flexDirection: 'row',
-                justifyContent: 'center',
-              }}
-            >
-              <Text
-                style={{
-                  color: '#DDDDDD',
-                  fontStyle: 'italic',
-                  fontSize: 12,
-                }}
-              >
-                Telah dipesan
-              </Text>
-              {dataPatient.status !== 'canceled' && (
-                <TouchableOpacity
-                  style={styles.deleteContainer}
-                  onPress={() => {
-                    props.setModalDelete(true);
-                    props.function();
-                  }}
-                >
-                  <CloseButton />
-                </TouchableOpacity>
-              )}
-            </View>
+          <View style={styles.container}>
             <View
               style={{
                 flexDirection: 'row',
                 backgroundColor: '#2F2F2F',
                 padding: 14,
-                borderBottomStartRadius: 5,
-                borderBottomEndRadius: 5,
+                borderTopStartRadius: 5,
+                borderTopEndRadius: 5,
               }}
             >
               <View style={styles.borderImage}>
@@ -237,14 +221,48 @@ const ListApointment = (props) => {
                       </Text>
                     </View>
                   </View>
-                  {/* <View style={styles.time}>
-                            <View style={styles.dot} />
-                            <Text style={styles.status}>{dataPatient.status}</Text>
-                        </View> */}
                 </View>
               </View>
             </View>
-          </TouchableOpacity>
+            <View
+              style={{
+                width: '100%',
+                padding: 14,
+                backgroundColor: '#4D4D4D',
+                borderBottomStartRadius: 5,
+                borderBottomEndRadius: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  props.setModalDelete(true);
+                  props.function();
+                }}
+              >
+                <Text
+                  style={{ color: '#F26359', fontWeight: '100', opacity: 0.8 }}
+                >
+                  Batalkan Pesanan
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={openScannerHandler}
+                disabled={
+                  !todaysDateIsMatchWithBookingSchedulesDate(
+                    dataPatient.bookingSchedule
+                  )
+                }
+              >
+                <Text
+                  style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
+                >
+                  Check-In
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </>
       )}
 
@@ -307,7 +325,6 @@ const ListApointment = (props) => {
                       flex: 1,
                       alignItems: 'center',
                       margin: 5,
-                      // justifyContent: 'space-between'
                     }}
                   >
                     <View
@@ -317,36 +334,46 @@ const ListApointment = (props) => {
                         marginTop: 20,
                         borderColor: '#fff',
                         borderWidth: 5,
-                        backgroundColor: '#2F2F2F',
                       }}
                     >
-                      <QRCode
-                        size={180}
-                        value={dataPatient._id} //reservationId
-                        // value={JSON.stringify({
-                        //     data: {
-                        //         patientID: dataPatient.patient.patientID,
-                        //         facilityID: dataPatient.healthFacility.facilityID,
-                        //         reservationID: dataPatient._id,
-                        //     }
-                        // })}
-                      />
+                      <QRCode size={180} value={dataPatient._id} />
                     </View>
-                    <Text
+                    <View
                       style={{
-                        color: '#B5B5B5',
-                        textAlign: 'center',
-                        marginTop: 20,
+                        alignItems: 'center',
+                        marginTop: 12,
+                        justifyContent: 'space-between',
+                        height: '30%',
                       }}
                     >
-                      Show the QR to the registration section when you arrive
-                      and get the queue number{' '}
-                    </Text>
-                    <Text
-                      style={{ fontSize: 16, color: '#B5B5B5', marginTop: 20 }}
-                    >
-                      SCAN QR CODE
-                    </Text>
+                      <Text
+                        style={{
+                          color: '#B5B5B5',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Show the QR to the registration section when you arrive
+                        and get the queue number{' '}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: '#B5B5B5',
+                        }}
+                      >
+                        OR
+                      </Text>
+                      <TouchableOpacity onPress={openScannerHandler}>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: '#B5B5B5',
+                          }}
+                        >
+                          SCAN QR CODE
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 )}
               </>
@@ -373,9 +400,6 @@ const ListApointment = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // flexDirection: 'row',
-    // backgroundColor: '#2F2F2F',
     margin: 13,
     shadowColor: '#000',
     shadowOffset: {

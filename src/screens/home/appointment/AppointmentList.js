@@ -19,7 +19,6 @@ import Header from '../../../components/headers/GradientHeader'
 import {cancelRecervation} from '../../../stores/action';
 import LottieLoader from 'lottie-react-native';
 
-import Qrcode from '../../../assets/svg/Qrcode'
 
 const Appointment = props => {
   const [appoinment, setAppoinment] = useState([]);
@@ -88,11 +87,6 @@ const Appointment = props => {
   return (
     <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
       <Header title={'Daftar Janji'} navigate={props.navigation.navigate}/>
-      {/* <TouchableOpacity onPress={() => {
-        props.navigation.navigate('Scanner', {props})
-      }}>
-        <Qrcode />
-      </TouchableOpacity> */}
       {Load ? (
         <LottieLoader
           source={require('../../animation/loading.json')}

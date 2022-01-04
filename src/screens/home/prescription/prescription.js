@@ -31,28 +31,31 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 	const [load, setLoad] = useState(true)
 	const [todaysPrescriptions, setTodaysPrescriptions] = useState(null)
 	const [prescriptionHistory, setPrescriptionHistory] = useState(null)
+	const [patientID, setPatientID] = useState(userData._id)
 	const swiper = useRef(null)
 
 	useEffect(async () => {
 		try {
+			setLoad(true)
 			const token = JSON.parse(await AsyncStorage.getItem('token')).token
-			const patientID = userData._id
+
 			await getAllPrescriptions(patientID, token)
 			const today = await getTodaysPrescriptions(patientID, token)
 			setTodaysPrescriptions(today)
+
 			const history = await getPrescriptionHistory(patientID, token)
 			setPrescriptionHistory(history)
+			
 			setLoad(false)
 		} catch (error) {
 			console.log(error)
 		}
-	}, [])
+	}, [patientID])
 	
   	const [prescriptions, setPrescriptions] = useState(userData.prescriptions)
 	  const [index, setIndex] = useState(0)
 
 	const [displayName, setDisplayName] = useState(userData.lastName? userData.firstName + " " + userData.lastName : userData.firstName)
-  	const [idUser, setIduser] = useState({firstName: null, _id: null});
 	const [modalPatient, setModalPatient] = useState(false);
 	const [accountOwner, setAccountOwner] = useState(userData);
 	const [family, setFamily] = useState([]);
@@ -77,7 +80,6 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 			  : el.firstName,
 		  });
 		});
-		setIduser(temp[0]);
 		setFamily(temp);
 	}
 
@@ -86,7 +88,7 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 		const fullName = data.lastName ? data.firstName + " " + data.lastName : data.firstName
 		const _id = data._id
 		setDisplayName(fullName)
-		setIduser({fullName, _id});
+		setPatientID(data._id)
 	}
 	
   
@@ -121,7 +123,7 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 						}
 					}
 					style={index === 0 ? styles.selectedSwiperOptions : styles.unSelectedSwiperOption}>
-					<Text style={styles.textItem}>Saat Ini</Text>
+					<Text style={styles.textItem}>Sedang Berlangsung</Text>
 				</TouchableOpacity>
 
 				<TouchableOpacity 

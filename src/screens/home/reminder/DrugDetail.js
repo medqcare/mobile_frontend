@@ -31,7 +31,7 @@ function DrugDetail({navigation, userData}){
     const skippedDrugs = reminders.filter(el => el.status === false)
     
     const [displayNotes, setDisplayNotes] = useState(notes)
-    const duration = drugDetail.quantityTotal / drugDetail.ettiquete.length
+    const duration = Math.ceil(drugDetail.quantityTotal / drugDetail.ettiquete.length)
 
     useEffect(() => {
         setDate(new Date())
@@ -65,7 +65,7 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: drugDetail.imageUrl}} style={styles.imageContainer}/>
+                    <Image source={{uri: drugDetail.imageUrl ? drugDetail.imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
@@ -84,8 +84,8 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
-                    <Text style={styles.drugNameText}>{drugDetail.drugName} 200 mg {drugDetail.drugQuantity} {drugDetail.type}</Text>
-                    <Text style={styles.drugDescriptionText}>Cordarone bermanfaat untuk mengatasi irama jantung yang tidak teratur (aritmia). Obat ini digunakan sebagai pengobatan lanjutan apabila antiaritmia lain tidak memberikan perkembangan.</Text>
+                    <Text style={styles.drugNameText}>{drugDetail.drugName} 200 mg {drugDetail.drugQuantity} {drugDetail.type ? drugDetail.type : ''}</Text>
+                    <Text style={drugDetail.description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{drugDetail.description ? drugDetail.description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
@@ -232,6 +232,12 @@ const styles = StyleSheet.create({
 
     drugDescriptionText: {
         color: 'rgba(181, 181, 181, 1)',
+        fontSize: 18,
+        fontWeight: '400'
+    },
+
+    noDrugDescriptionText: {
+        color: 'grey',
         fontSize: 18,
         fontWeight: '400'
     },

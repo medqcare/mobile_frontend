@@ -26,6 +26,8 @@ import SearchBar from '../../../components/headers/SearchBar';
 import Shortby from '../../../components/modals/doctors/modalSortBy';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
+import { ActivityIndicator } from 'react-native-paper';
+import LottieLoader from 'lottie-react-native';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
@@ -119,6 +121,7 @@ function SearchDoctorPage(props) {
     if (params === '') {
       setCurrentPage(0);
     }
+    setLoading(true);
     try {
       let { data, status } = await axios.get(
         `${baseURL}/api/v1/members/doctorByName?lat=${
@@ -269,63 +272,83 @@ function SearchDoctorPage(props) {
         isLoading={showLoading}
         layout={layoutSkeleton}
         boneColor={'#1F1F1F'}> */}
-      <View style={{ flex: 1 }}>
-        {show?.length > 0 ? (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'space-between',
-              marginTop: -10,
-            }}
-          >
-            <FlatList
-              refreshControl={
-                <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-              }
-              style={{ flex: 1 }}
-              data={show}
-              keyExtractor={(item, index) => String(index)}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    props.navigation.navigate('DetailDoctor', {
-                      data: item,
-                      back: 'SearchDoctor',
-                    });
+      {showLoading ? (
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: heightPercentageToDP('50%'),
+          }}
+        >
+          <LottieLoader
+            source={require('../../animation/loading.json')}
+            loop
+            autoPlay
+          />
+        </View>
+      ) : (
+        <>
+          <View style={{ flex: 1 }}>
+            {show?.length > 0 ? (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'space-between',
+                  marginTop: -10,
+                }}
+              >
+                <FlatList
+                  refreshControl={
+                    <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+                  }
+                  style={{ flex: 1 }}
+                  data={show}
+                  keyExtractor={(item, index) => String(index)}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.navigation.navigate('DetailDoctor', {
+                          data: item,
+                          back: 'SearchDoctor',
+                        });
+                      }}
+                    >
+                      <View style={{ marginHorizontal: dimWidth * 0.03 }}>
+                        <CardDoctor data={item} myLocation={props.myLocation} />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  onEndReached={() => {
+                    if (show.length >= 5) {
+                      _fetchDataDoctorPagination(name);
+                    }
+                  }}
+                  onEndReachedThreshold={1}
+                />
+              </View>
+            ) : (
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={loader} onRefresh={onRefresh} />
+                }
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 20,
                   }}
                 >
-                  <View style={{ marginHorizontal: dimWidth * 0.03 }}>
-                    <CardDoctor data={item} myLocation={props.myLocation} />
-                  </View>
-                </TouchableOpacity>
-              )}
-              onEndReached={() => {
-                if (show.length >= 5) {
-                  _fetchDataDoctorPagination(name);
-                }
-              }}
-              onEndReachedThreshold={1}
-            />
+                  <Text style={{ color: '#fff' }}>
+                    There is no doctor nearby
+                  </Text>
+                </View>
+              </ScrollView>
+            )}
           </View>
-        ) : (
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={loader} onRefresh={onRefresh} />
-            }
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 20,
-              }}
-            >
-              <Text style={{ color: '#fff' }}>There is no doctor nearby</Text>
-            </View>
-          </ScrollView>
-        )}
-      </View>
+        </>
+      )}
       {/* </SkeletonContent> */}
 
       {sortby && (
