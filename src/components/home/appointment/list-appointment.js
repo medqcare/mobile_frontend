@@ -26,6 +26,8 @@ const ListApointment = (props) => {
   const [address, setAddres] = useState(false);
   const [dataPatient, setPatient] = useState(null);
   const [modal, setmodal] = useState(false);
+  const [healthFacilityData, setHealthFacilityData] = useState(null);
+
   const [loadingLocation, setLoadingLocation] = useState(false);
   var moment = require('moment');
 
@@ -43,23 +45,39 @@ const ListApointment = (props) => {
     setPatient(props.data);
   }, []);
 
+  const getHealthFacility = async () => {
+    const { data: response } = await axios({
+      method: 'POST',
+      url: `${baseURL}/api/v1/members/detailFacility/${dataPatient.healthFacility.facilityID}`,
+    });
+    return response.data;
+  };
+
   const openMapHandler = () => {
     (async () => {
-      setLoadingLocation(true);
       try {
-        const { data: response } = await axios({
-          method: 'POST',
-          url: `${baseURL}/api/v1/members/detailFacility/${dataPatient.healthFacility.facilityID}`,
-        });
-        const { location } = response.data;
+        const { location } = await getHealthFacility();
         const [lng, lat] = location.coordinates;
         openMap(lat, lng);
       } catch (error) {
         console.log(error, 'this is error from list-appointment');
-      } finally {
-        setLoadingLocation(false);
       }
     })();
+  };
+
+  const openScannerHandler = () => {
+    getHealthFacility()
+      .then((data) => {
+        console.log(data);
+        setmodal(false);
+        props.route.navigate('Scanner', {
+          reservationData: props.data,
+          healthFacility: data,
+        });
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   //   <TouchableOpacity
@@ -108,7 +126,6 @@ const ListApointment = (props) => {
       socket.close();
     });
   }
-
   return (
     <View>
       {dataPatient && dataPatient.status !== 'canceled' && (
@@ -341,12 +358,7 @@ const ListApointment = (props) => {
                       >
                         OR
                       </Text>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setmodal(false);
-                          props.route.navigate('Scanner', { props });
-                        }}
-                      >
+                      <TouchableOpacity onPress={openScannerHandler}>
                         <Text
                           style={{
                             fontSize: 16,
