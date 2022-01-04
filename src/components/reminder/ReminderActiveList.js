@@ -129,6 +129,8 @@ function ReminderActiveList({props, drugs }) {
 
 	async function deleteEvent(drugID){
 		try {
+            // await AsyncStorage.removeItem('alarmIDs')
+            // await Calendar.deleteEventAsync('2122')
             const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
 
             const toBeDeleted = []
@@ -143,7 +145,9 @@ function ReminderActiveList({props, drugs }) {
             }
 
             const stringified = JSON.stringify(notDeleted)
-            await AsyncStorage.setItem(stringified)
+            
+            if(!stringified) await AsyncStorage.removeItem('alarmIDs')
+            else await AsyncStorage.setItem('alarmIDs', stringified)
 		} catch (error) {
 			console.log(error)
 		}
@@ -356,13 +360,14 @@ function ReminderActiveList({props, drugs }) {
                         animation={'wobble'}>
                             <TouchableOpacity
                             style={styles.detailContainer}
-                                // onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
                                 // onPress={() => console.log(section._id)}
                                 // onPress={() => createAlarm(new Date())}
                                 // onPress={() => getEvents("2036")}
                                 // onPress={() => getReminders()}
                                 // onPress={() => deleteCalendar("1")}
-                                onPress={() => deleteEvent("61d3bc4f8631aa42083ec865")}
+                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec865")}
+                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec864")}
                                 // onPress={() => createCalendar()}
                                 // onPress={() => openCalendar('2306')}
                                 // onPress={() => console.log(Calendar)}
