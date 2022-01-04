@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
+import { getDrugs, changeAlarmBoolean, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -16,9 +16,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
-import * as Calendar from 'expo-calendar';
-
-
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -26,35 +23,7 @@ const dimWidth = Dimensions.get("window").width;
 function Reminder(props) {
 	const swiper = useRef(null)
 
-	// useEffect(() => {
-	// 	(async () => {
-	// 	  const { status } = await Calendar.requestCalendarPermissionsAsync();
-	// 	  if (status === 'granted') {
-	// 		const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-	// 		console.log('Here are all your calendars:');
-	// 		console.log({ calendars });
-	// 	  }
-	// 	})();
-	// }, []);
-
-	// async function createCalendar() {
-	// 	const defaultCalendarSource =
-	// 	  Platform.OS === 'ios'
-	// 		? await getDefaultCalendarSource()
-	// 		: { isLocalAccount: true, name: 'Expo Calendar' };
-	// 	const newCalendarID = await Calendar.createCalendarAsync({
-	// 	  title: 'Expo Calendar',
-	// 	  color: 'blue',
-	// 	  entityType: Calendar.EntityTypes.EVENT,
-	// 	  sourceId: defaultCalendarSource.id,
-	// 	  source: defaultCalendarSource,
-	// 	  name: 'internalCalendarName',
-	// 	  ownerAccount: 'personal',
-	// 	  accessLevel: Calendar.CalendarAccessLevel.OWNER,
-	// 	});
-	// 	console.log(`Your new calendar ID is: ${newCalendarID}`);
-	// }
-
+	
 	const [userData, setUserData] = useState(props.userData)
 	const [drugs, setDrugs] = useState([])
 
@@ -137,7 +106,6 @@ function Reminder(props) {
 				<TouchableOpacity 
 					style={styles.optionAdd}
 					onPress={() => props.navigation.navigate('AddReminderForm')}
-					// onPress={() => createAlarm()}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
@@ -222,6 +190,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
 	getDrugs,
+	changeAlarmBoolean,
 	getReminders,
 	changeReminderAlarmTime,
 	changeReminderStatus
