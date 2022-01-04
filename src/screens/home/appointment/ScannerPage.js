@@ -85,7 +85,7 @@ const Assistant_scan = (props) => {
     }
 
     // currently, only allow distance under 100 km
-    if (distance < 100) {
+    if (distance > 100) {
       return false;
     }
 

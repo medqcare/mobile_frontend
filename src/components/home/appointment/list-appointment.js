@@ -80,6 +80,10 @@ const ListApointment = (props) => {
       });
   };
 
+  const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
+    return bookingSchedule === moment().format('DD/MM/YYYY');
+  };
+
   //   <TouchableOpacity
   //   style={{ alignSelf: 'flex-start' }}
   //   onPress={() => {
@@ -130,51 +134,14 @@ const ListApointment = (props) => {
     <View>
       {dataPatient && dataPatient.status !== 'canceled' && (
         <>
-          <TouchableOpacity
-            onPress={() => {
-              setmodal(true);
-            }}
-            style={styles.container}
-          >
-            <View
-              style={{
-                height: 30,
-                backgroundColor: '#005EA2',
-                alignItems: 'center',
-                borderTopEndRadius: 5,
-                borderTopStartRadius: 5,
-                flexDirection: 'row',
-                justifyContent: 'center',
-              }}
-            >
-              <Text
-                style={{
-                  color: '#DDDDDD',
-                  fontStyle: 'italic',
-                  fontSize: 12,
-                }}
-              >
-                Telah dipesan
-              </Text>
-              {dataPatient.status !== 'canceled' && (
-                <TouchableOpacity
-                  style={styles.deleteContainer}
-                  onPress={() => {
-                    props.setModalDelete(true);
-                    props.function();
-                  }}
-                >
-                  <CloseButton />
-                </TouchableOpacity>
-              )}
-            </View>
+          <View style={styles.container}>
             <View
               style={{
                 flexDirection: 'row',
                 backgroundColor: '#2F2F2F',
                 padding: 14,
-                borderBottomStartRadius: 5,
-                borderBottomEndRadius: 5,
+                borderTopStartRadius: 5,
+                borderTopEndRadius: 5,
               }}
             >
               <View style={styles.borderImage}>
@@ -257,7 +224,45 @@ const ListApointment = (props) => {
                 </View>
               </View>
             </View>
-          </TouchableOpacity>
+            <View
+              style={{
+                width: '100%',
+                padding: 14,
+                backgroundColor: '#4D4D4D',
+                borderBottomStartRadius: 5,
+                borderBottomEndRadius: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  props.setModalDelete(true);
+                  props.function();
+                }}
+              >
+                <Text
+                  style={{ color: '#F26359', fontWeight: '100', opacity: 0.8 }}
+                >
+                  Batalkan Pesanan
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={openScannerHandler}
+                disabled={
+                  !todaysDateIsMatchWithBookingSchedulesDate(
+                    dataPatient.bookingSchedule
+                  )
+                }
+              >
+                <Text
+                  style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
+                >
+                  Check-In
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </>
       )}
 
@@ -395,9 +400,6 @@ const ListApointment = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // flexDirection: 'row',
-    // backgroundColor: '#2F2F2F',
     margin: 13,
     shadowColor: '#000',
     shadowOffset: {
