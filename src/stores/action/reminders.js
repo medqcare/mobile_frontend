@@ -41,7 +41,6 @@ export function changeReminderAlarmTime(reminderID, alarmTime, token){
                 },
                 data: { alarmTime }
             })
-            ToastAndroid.show(data.message, ToastAndroid.SHORT)
         } catch (error) {
             console.log(error)
         }
