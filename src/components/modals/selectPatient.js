@@ -36,7 +36,6 @@ export default function SelectPatient({
   }
 
   function fullName(object) {
-    console.log(object);
     return object.lastName
       ? object.firstName + ' ' + object.lastName
       : object.firstName;
