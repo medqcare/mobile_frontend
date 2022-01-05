@@ -15,7 +15,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import VerticalLine from '../../../assets/svg/VerticalLine'
 import { DataTable } from 'react-native-paper'
 import { getSelectedDate } from "../../../helpers/todaysDate";
-import Calendar from "../../../components/Calendar";
+import Calendar from "../../../components/DrugCalendar";
 import withZero from "../../../helpers/withZero";
 
 const dimension = Dimensions.get('window')
@@ -121,21 +121,20 @@ function DrugDetail({navigation, userData}){
 
                 {/* Calendar */}
                 <View style={styles.calendarContainer}>
-                    <Calendar onDateSelected={setDate} isDateBlackList={false}/>
+                    <Calendar onDateSelected={setDate}/>
                 </View>
 
                 {/* Bottom Container */}
                 {drugReminders.length > 0 ?
                     <DataTable style={styles.bottomContainer}>
                         {drugReminders.map((el, index) => {
-                            // const status = el.status
                             let { statusChangedAt, status, alarmTime } = el
-                            // const alarmTime = new Date(el.alarmTime)
-                            if(statusChangedAt) statusChangedAt = new Date(statusChangedAt)
-                            else statusChangedAt = new Date(alarmTime)
-                            const hours = statusChangedAt.getHours()
-                            const minutes = statusChangedAt.getMinutes()
+
+                            const datedAlarmTime = new Date(alarmTime)
+                            const hours = datedAlarmTime.getHours()
+                            const minutes = datedAlarmTime.getMinutes()
                             const displayTime = `${withZero(hours)}:${withZero(minutes)}`
+
                             return (
                                 <View key={index}>
                                     <DataTable.Row style={{borderBottomWidth: 0 }}>
@@ -157,7 +156,9 @@ function DrugDetail({navigation, userData}){
                             )
                         })}
                     </DataTable> :
-                    <View><Text style={styles.inputText}>Tidak ada data</Text></View>
+                    <View style={styles.noDataContainer}>
+                        <Text style={styles.inputText}>Tidak ada data</Text>
+                    </View>
                 }
             </ScrollView>
         </View>
@@ -184,8 +185,6 @@ const styles = StyleSheet.create({
 
     centeredSection: {
         alignItems: "center",
-        // justifyContent: "space-between",
-        // height: 35,
     },
 
     topDetailContainer: {
@@ -276,13 +275,18 @@ const styles = StyleSheet.create({
     icon: {
         alignItems: "center",
         backgroundColor: 'yellow',
-
     },
 
     status: {
         paddingLeft: 7,
         backgroundColor: 'red',
     },
+
+    noDataContainer: {
+        alignItems: "center",
+        justifyContent: 'center',
+        marginTop: 20,
+    }
 })
 
 const mapStateToProps = state => {
