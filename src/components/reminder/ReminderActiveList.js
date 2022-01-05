@@ -42,8 +42,10 @@ function ReminderActiveList({props, drugs }) {
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
 
-    const [reminderID, setReminderID] = useState(null)
     const [currentIndex, setCurrentIndex] = useState(null)
+    const [alarmIndex, setAlarmIndex] = useState(0)
+    const [drugID, setDrugID] = useState(null)
+    const [currentReminderID, setcurrentReminderID] = useState(null)
 
     const [calendarID, setCalendarID] = useState(null)
 
@@ -93,7 +95,7 @@ function ReminderActiveList({props, drugs }) {
 	}
 
     // Kedua dilakukan
-    async function createAlarm(alarmTime, drugID, drugName, i){
+    async function createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i){
 		const startDate = new Date(alarmTime)
 		const endDate = new Date(alarmTime)
 		endDate.setMinutes(endDate.getMinutes() + 5)
@@ -112,7 +114,10 @@ function ReminderActiveList({props, drugs }) {
 		const newAlarm = await Calendar.createEventAsync(calendarID, details) 
         const createdAlarm = {
             alarmID : newAlarm,
-            drugID
+            reminderID,
+            drugID,
+            ettiqueteIndex,
+            startDate,
         }
         
         return createdAlarm
@@ -127,33 +132,13 @@ function ReminderActiveList({props, drugs }) {
 		}
 	}
 
-	async function deleteEvent(drugID){
+	async function deleteEvent(reminderID){
 		try {
-            // await AsyncStorage.removeItem('alarmIDs')
-            // await Calendar.deleteEventAsync('2122')
-            const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
-
-            const toBeDeleted = []
-            const notDeleted = []
-            for(let i = 0; i < alarmIDs.length; i++){
-                if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
-                else notDeleted.push(alarmIDs[i])
-            }
-
-            for(let i = 0; i < toBeDeleted.length; i ++){
-                const deleted = await Calendar.deleteEventAsync(toBeDeleted[i].alarmID)
-            }
-
-            const stringified = JSON.stringify(notDeleted)
-            
-            if(!stringified) await AsyncStorage.removeItem('alarmIDs')
-            else await AsyncStorage.setItem('alarmIDs', stringified)
+            const deleted = await Calendar.deleteEventAsync(reminderID)
 		} catch (error) {
 			console.log(error)
 		}
 	}
-
-	
 
 	async function openCalendar(id){
 		const calendar = Calendar.openEventInCalendar(id)
@@ -175,31 +160,84 @@ function ReminderActiveList({props, drugs }) {
 		}
 	}
 
-	
+    async function updateEvent(eventID, alarmTime){
+        try {
+            const startDate = new Date(alarmTime)
+            const endDate = new Date(alarmTime)
+            endDate.setMinutes(endDate.getMinutes() + 5)
 
+            const details = {
+                startDate,
+                endDate,
+                timeZone: "GMT-7",
+                alarms:[ { 
+                    relativeOffset: 0,
+                    method: Calendar.AlarmMethod.ALERT,
+                } ],
+            }
+
+            const updatedEvent = await Calendar.updateEventAsync(eventID, details)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const onChange = async (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
-        setDate(currentDate);
-        const token = JSON.parse(await AsyncStorage.getItem('token')).token
-        await props.changeReminderAlarmTime(reminderID, currentDate, token)
+        try {
+            const currentDate = selectedDate || date;
+            setShow(Platform.OS === 'ios');
+            setDate(currentDate);
 
-        const newReminders= content[currentIndex].reminders.map(el => {
-            if(el._id === reminderID){
-                el.alarmTime = currentDate
+            const newReminders= content[currentIndex].reminders.map(el => {
+                if(el._id === currentReminderID){
+                    el.alarmTime = currentDate
+                }
+                return el
+            })
+
+            const newContent = content.map((el, idx) => {
+                if(el._id === content[currentIndex]._id){
+                    el.reminders = newReminders
+                }
+                return el
+            })
+
+            setContent(newContent)
+            ToastAndroid.show('Successfully updated alarm time', ToastAndroid.SHORT)
+
+            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            const currentIndexDrugAlarmIDs = alarmIDs.filter(el => el.ettiqueteIndex === alarmIndex && el.drugID === drugID)
+            const hours = currentDate.getHours()
+            const minutes = currentDate.getMinutes()
+
+            if(currentIndexDrugAlarmIDs.length === 0){
+                const currentIndexReminder = content[currentIndex].reminders
+                // .filter(el => el.ettiqueteIndex === alarmIndex)
+                for(let i = 0; i < currentIndexReminder.length; i++){
+                    if(currentIndexReminder[i].ettiqueteIndex === alarmIndex){
+                        const alarmTime = new Date(currentIndexReminder[i].alarmTime)
+                        const { _id } = currentIndexReminder[i]
+                        alarmTime.setHours(hours)
+                        alarmTime.setMinutes(minutes)
+                        await props.changeReminderAlarmTime(_id, alarmTime, token)
+                    }
+                }
+
+            } else {
+                for(let i = 0; i < currentIndexDrugAlarmIDs.length; i++){
+                    const alarmTime = new Date(currentIndexDrugAlarmIDs[i].startDate)
+                    const { reminderID } = currentIndexDrugAlarmIDs[i]
+                    alarmTime.setHours(hours)
+                    alarmTime.setMinutes(minutes)
+                    await updateEvent(currentIndexDrugAlarmIDs[i].alarmID, alarmTime)
+                    await props.changeReminderAlarmTime(reminderID, alarmTime, token)
+                }
             }
-            return el
-        })
-
-        const newContent = content.map((el, idx) => {
-            if(el._id === content[currentIndex]._id){
-                el.reminders = newReminders
-            }
-            return el
-        })
-
-        setContent(newContent)
+        } catch (error) {
+            console.log(error)
+        }
+        
     };
     
     const showMode = (currentMode) => {
@@ -207,9 +245,11 @@ function ReminderActiveList({props, drugs }) {
         setMode(currentMode);
     };
 
-    const showTimepicker = (alarmTime, _id, _) => {
+    const showTimepicker = (alarmTime, _, index, drugID, _id) => {
+        setcurrentReminderID(_id)
+        setDrugID(drugID)
+        setAlarmIndex(index)
         setDate(alarmTime)
-        setReminderID(_id)
         setCurrentIndex(_)
         showMode('time');
     };
@@ -227,7 +267,8 @@ function ReminderActiveList({props, drugs }) {
     const toggleSwitch = async (index, section) => {
         try {
             setLoadToggle(true)
-            const { reminders, reminder } = section
+            const { reminders, reminder, ettiquete } = section
+            const ettiqueteLength = ettiquete.length
             const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const drugID = section._id
             const drugName = section.drugName
@@ -235,7 +276,24 @@ function ReminderActiveList({props, drugs }) {
             ToastAndroid.show(change, ToastAndroid.SHORT)
 
             if(reminder){
-                const deletedAlarm = deleteEvent(drugID)
+                const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+
+                const toBeDeleted = []
+                const notDeleted = []
+                for(let i = 0; i < alarmIDs.length; i++){
+                    if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
+                    else notDeleted.push(alarmIDs[i])
+                }
+
+                for(let i = 0; i < toBeDeleted.length; i ++){
+                    const deleted = await deleteEvent(toBeDeleted[i].alarmID)
+                }
+
+                const stringified = JSON.stringify(notDeleted)
+                
+                if(!stringified) await AsyncStorage.removeItem('alarmIDs')
+                else await AsyncStorage.setItem('alarmIDs', stringified)
+
             } else {
                 const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
                 let alarmIDs = []
@@ -244,9 +302,21 @@ function ReminderActiveList({props, drugs }) {
                     alarmIDs = [...foundAlarmIDs]
                 }
 
+                // let ettiqueteIndex = 0
                 for(let i = 0; i < reminders.length; i++){
                     const alarmTime = reminders[i].alarmTime
-                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, i)
+                    const reminderID = reminders[i]._id
+                    const ettiqueteIndex = reminders[i].ettiqueteIndex
+                    // if(i === 0){
+                    //     ettiqueteIndex = 0
+                    // }
+                    // else if(i % ettiqueteLength === 0){
+                    //     ettiqueteIndex = 0
+                    // }
+                    // else {
+                    //     ettiqueteIndex += 1
+                    // }
+                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i)
                     alarmIDs.push(createdAlarm)
                 }
 
@@ -339,9 +409,6 @@ function ReminderActiveList({props, drugs }) {
         }
     }
 
-    
-					
-
     const renderHeader = (section, _, isActive,) => {
         return (
           <Animatable.View
@@ -371,6 +438,7 @@ function ReminderActiveList({props, drugs }) {
                                 // onPress={() => createCalendar()}
                                 // onPress={() => openCalendar('2306')}
                                 // onPress={() => console.log(Calendar)}
+                                // onPress={() => updateEvent("2293", new Date())}
                             >
                                     <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
@@ -421,8 +489,9 @@ function ReminderActiveList({props, drugs }) {
     };
 
     const renderContent = (section, _, isActive) => {
-        const { reminders } = section
+        const { reminders, _id } = section
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(new Date())
+        // console.log(todaysDate, 'todays date')
         const todaysReminder = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
@@ -437,9 +506,10 @@ function ReminderActiveList({props, drugs }) {
                 style={styles.reminderContainer}
                 transition="backgroundColor">
                     {todaysReminder.map((el, index) => {
-                        const alarmTime = new Date(reminders[index].alarmTime)
+                        const alarmTime = new Date(el.alarmTime)
                         const alarmHours = alarmTime.getHours()
-                        const displayAlarmHours = `${withZero(alarmHours)}:00`
+                        const alarmMinutes = alarmTime.getMinutes()
+                        const displayAlarmHours = `${withZero(alarmHours)}:${withZero(alarmMinutes)}`
                         const status = el.status
                         return (
                             <View key={index}>
@@ -447,7 +517,7 @@ function ReminderActiveList({props, drugs }) {
                                     <View style={styles.reminderLowerContainer}>
                                         <TouchableOpacity 
                                             style={{flexDirection: "row", alignItems: "center"}}
-                                            onPress={() => showTimepicker(alarmTime, el._id, _)}
+                                            onPress={() => showTimepicker(alarmTime, _, index, _id, el._id)}
                                         >
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
                                             <Text style={styles.reminderTimeText}>{displayAlarmHours}</Text>
@@ -456,7 +526,7 @@ function ReminderActiveList({props, drugs }) {
                                         {status === null ? 
                                             <View style={{flexDirection: "row"}}>
                                                 <TouchableOpacity
-                                                    onPress={() => changeReminderStatus(false, el._id, _, index)}
+                                                    onPress={() => changeReminderStatus(false, el._id, _, index,)}
                                                     style={styles.skippedButton}
                                                     >
                                                         {loadChangeStatusFalse[index] ? 
