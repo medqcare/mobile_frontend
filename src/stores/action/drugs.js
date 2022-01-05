@@ -41,7 +41,7 @@ export function changeAlarmBoolean(drugID, token){
             })
             return data.message
         } catch (error) {
-            console.log(error.response.message, 'error at change alarm boolean')
+            console.log(error.message, 'error at change alarm boolean')
         }
     }
 }
