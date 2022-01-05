@@ -59,6 +59,7 @@ export default function SelectPatient({
         </View>
         <View style={styles.patient}>
           {family.map((lang, itemIndex) => {
+            console.log(lang.imageUrl, 'this is image url');
             return (
               <View key={itemIndex}>
                 <TouchableOpacity
@@ -71,13 +72,11 @@ export default function SelectPatient({
                   <View>
                     <Image
                       style={styles.photo}
-                      source={
-                        lang.imgageUrl
-                          ? { uri: lang.imageUrl }
-                          : {
-                              uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
-                            }
-                      }
+                      source={{
+                        uri: lang.imageUrl
+                          ? `${lang.imageUrl}?time=${new Date()}`
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                      }}
                     />
                     <Text style={styles.name}>
                       {smallLengthText(fullName(lang))}
