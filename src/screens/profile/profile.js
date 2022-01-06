@@ -73,7 +73,7 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.upperMenu}
                     >
                         <Text style={styles.menuText}>Aktifitas</Text>
@@ -88,7 +88,7 @@ const profile = (props) => {
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity
                         
                         style={styles.upperMenu}
