@@ -105,7 +105,7 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
-					onPress={() => props.navigation.navigate('AddReminderForm')}
+					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs})}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
