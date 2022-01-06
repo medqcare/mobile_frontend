@@ -91,7 +91,7 @@ const profile = (props) => {
                     </TouchableOpacity> */}
                     <TouchableOpacity
                         
-                        style={styles.upperMenu}
+                        style={styles.bottomMenu}
                         onPress={() => props.navigation.navigate('ChangePasswordForm', { email, destination: 'ProfileStack' })}
                     >
                         <Text style={styles.menuText}>Ubah Kata Sandi </Text>

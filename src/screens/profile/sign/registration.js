@@ -579,6 +579,7 @@ const styles = StyleSheet.create({
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,
+    paddingTop: hp('7%')
   },
 
   header: {
