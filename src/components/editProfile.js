@@ -20,31 +20,37 @@ import {
 
 // Radio Form
 import RadioForm from 'react-native-simple-radio-button';
-import DatePicker from 'react-native-datepicker';
 import { edit_profile, setLoading } from '../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Modal
-import { fullMonthFormat } from '../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../helpers/dateFormat';
 import SelectModal from './modals/modalPicker';
 import GradientHeader from './headers/GradientHeader';
 import LocationModalPicker from '../components/modals/LocationModalPicker';
 
 // for proper case
 import capitalFirst from '../helpers/capitalFirst';
-
+import DatePickerIcon from '../assets/svg/DatePickerIcon';
+import DatePicker from '@react-native-community/datetimepicker';
 const editProfile = (props) => {
-  // Moment
-  var moment = require('moment');
-
-  // UserData
+  const dateOfBirthDay = new Date(props.userData.dob);
+  console.log(dateOfBirthDay);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(dateOfBirthDay)
+  );
   const [userData, setUserData] = useState({
     photo: props.userData.photo || '',
     nik: props.userData.nik.toString(),
     firstName: props.userData.firstName,
     lastName: props.userData.lastName,
     gender: props.userData.gender || 'Male',
-    dob: moment(props.userData.dob).format('DD/MM/YYYY'),
+    dob: dateOfBirthDay,
     bloodType: props.userData.bloodType || 'A',
     resus: props.userData.resus || '+',
     phoneNumber: props.userData.phoneNumber,
@@ -73,8 +79,6 @@ const editProfile = (props) => {
   const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
     userData.location.city
   );
-
-  const chosenDate = fullMonthFormat(userData.dob);
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
@@ -209,10 +213,6 @@ const editProfile = (props) => {
   async function sendData(data) {
     setLoad(true);
     let token = await AsyncStorage.getItem('token');
-    console.log(data.dob, 'ini dob');
-    let wantedDate = data.dob.split('/');
-    wantedDate = `${wantedDate[1]}/${wantedDate[0]}/${wantedDate[2]}`;
-    data.dob = new Date(wantedDate);
     props
       .edit_profile(data, props.userData._id, JSON.parse(token).token)
       .then((backData) => {
@@ -230,6 +230,12 @@ const editProfile = (props) => {
     props.navigation.pop();
     return true;
   });
+
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    setChosenDate(selectedDate);
+    setUserData({ ...userData, dob: selectedDate });
+  };
 
   return (
     <KeyboardAvoidingView
@@ -372,8 +378,22 @@ const editProfile = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={style.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={style.inputText}>
+              {dateWithDDMMMYYYYFormat(chosenDate)}
+            </Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -401,7 +421,7 @@ const editProfile = (props) => {
               onDateChange={(date) => {
                 setUserData({ ...userData, dob: date });
               }}
-            />
+            /> */}
           </View>
         </View>
 

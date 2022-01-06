@@ -6,6 +6,8 @@ import {
   Alert,
   TouchableOpacity,
   Image,
+  ToastAndroid,
+  Modal,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -16,13 +18,23 @@ import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
 import axios from 'axios';
 import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GreyHeader from '../../../components/headers/GreyHeader';
+import LottieLoader from 'lottie-react-native';
+import InformationIcon from '../../../assets/svg/information';
+import { widthPercentageToDP } from 'react-native-responsive-screen';
+import BarcodeSvg from '../../../assets/svg/Barcode';
 
 //action
 const Assistant_scan = (props) => {
-  const [reservationData, setReservationData] = useState(null);
+  const reservationParam = props.navigation.getParam('reservationData');
+  const isToday = props.navigation.getParam('isToday');
+  const [reservationData, setReservationData] = useState(reservationParam);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [healthFacilityData, setHealthFacilityData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isScanFailed, setIsScanFailed] = useState(false);
+  const [loadingCheckin, setLoadingCheckin] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -32,43 +44,65 @@ const Assistant_scan = (props) => {
     })();
   }, []);
 
-  useEffect(() => {
-    const reservationData = props.navigation.getParam('reservationData');
-    const healthFacility = props.navigation.getParam('healthFacility');
-
-    setReservationData(reservationData);
-    setHealthFacilityData(healthFacility);
+  useEffect(async () => {
+    if (isToday) {
+      setLoading(true);
+      try {
+        const { data: response } = await axios({
+          method: 'POST',
+          url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
+        });
+        setHealthFacilityData(response.data);
+      } catch (error) {
+        vis;
+        console.log(error.message, 'this is error from scanner check in');
+      } finally {
+        setLoading(false);
+      }
+    }
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    console.log(data, 'this is data from barcode');
-    const isValid = isValidBarCode(data);
-
-    if (!isValid) {
-      props.navigation.pop();
+    const { status, message } = isValidBarCode(data);
+    console.log(status, message);
+    if (!status) {
+      setIsScanFailed(true);
+      ToastAndroid.show(message, ToastAndroid.LONG);
       return;
     }
+    setIsScanFailed(false);
+    setLoadingCheckin(true);
 
     (async () => {
-      const stringToken = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(stringToken);
-      const { data: responseRegistered } = await axios({
-        method: 'POST',
-        url: baseURL + '/api/v1/members/createRegistered',
-        headers: {
-          'X-Secret': 123456,
-          authorization: token,
-        },
-        data: {
-          queueNumber: '2-3',
-          reservationID: reservationData._id,
-          facilityID: reservationData.healthFacility.facilityID,
-        },
-      });
+      try {
+        const stringToken = await AsyncStorage.getItem('token');
+        const { token } = JSON.parse(stringToken);
+        const { data: responseRegistered } = await axios({
+          method: 'POST',
+          url: baseURL + '/api/v1/members/createRegistered',
+          headers: {
+            'X-Secret': 123456,
+            authorization: token,
+          },
+          data: {
+            queueNumber: '2-3',
+            reservationID: reservationData._id,
+            facilityID: reservationData.healthFacility.facilityID,
+          },
+        });
 
-      if (responseRegistered.status === true) {
-        props.navigation.navigate('Activity_List');
+        if (responseRegistered.status === true) {
+          props.navigation.navigate('Activity_List');
+        }
+      } catch (error) {
+        ToastAndroid.show(
+          'Check-In failed, please try again later',
+          ToastAndroid.LONG
+        );
+      } finally {
+        setLoadingCheckin(false);
+        setIsScanFailed(true);
       }
     })();
   };
@@ -81,15 +115,18 @@ const Assistant_scan = (props) => {
     const distance = getDistanceFromLatLonInKm(latUser, lngUser, lat, lng);
 
     if (Number(dataBarCode) !== Number(clinicIdWeb)) {
-      return false;
+      return { status: false, message: 'Invalid Barcode' };
     }
 
     // currently, only allow distance under 100 km
     if (distance > 100) {
-      return false;
+      return {
+        status: false,
+        message: 'Silahkahn Check-In ke Faskes yang sudah dipilih',
+      };
     }
 
-    return true;
+    return { status: true };
   };
 
   if (hasPermission === null) {
@@ -103,67 +140,186 @@ const Assistant_scan = (props) => {
     return <Text>No access to camera</Text>;
   }
 
+  if (!isToday) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+        <GreyHeader
+          title="Check-In"
+          navigate={props.navigation.navigate}
+          navigateBack="AppointmentList"
+        />
+        <View
+          style={{
+            padding: widthPercentageToDP('7'),
+            height: '90%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <View>
+            <View style={{ marginBottom: 8 }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: '#DDDDDD',
+                  fontWeight: '500',
+                }}
+              >
+                Petunjuk Check-In :
+              </Text>
+            </View>
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#3B340B',
+                paddingVertical: 6,
+                paddingHorizontal: 8,
+                flexDirection: 'row',
+                borderRadius: 4,
+              }}
+            >
+              <InformationIcon />
+              <Text
+                style={{
+                  color: '#B5B5B5',
+                  fontSize: 11,
+                  marginLeft: 8,
+                  fontStyle: 'italic',
+                }}
+                numberOfLines={2}
+              >
+                Untuk mendapatkan nomor antrian, silahkan datang ke faskes yang
+                Kamu tuju pada hari yang sudah kamu pilih
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            style={{
+              alignSelf: 'center',
+              paddingVertical: 12,
+              paddingHorizontal: 20,
+              borderWidth: 1,
+              borderColor: '#DDDDDD',
+              borderRadius: 4,
+            }}
+            onPress={() => {
+              props.navigation.pop();
+            }}
+          >
+            <Text style={{ color: '#DDDDDD' }}>Coba lagi nanti</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <>
-      <GradientHeader
-        title="Scan QR Code"
+    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+      <GreyHeader
+        title="Check-In"
         navigate={props.navigation.navigate}
         navigateBack="AppointmentList"
       />
-      <View style={styles.thisContainer}>
-        <Camera
-          onBarCodeScanned={!scanned ? handleBarCodeScanned : null}
-          ratio="16:9"
-          style={[
-            StyleSheet.absoluteFillObject,
-            { justifyContent: 'center', alignItems: 'center' },
-          ]}
-          type={Camera.Constants.Type.back}
-        >
-          <View
-            style={{
-              width: '100%',
-              height: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+      {loading ? (
+        <LottieLoader
+          source={require('../../animation/loading.json')}
+          loop
+          autoPlay
+        />
+      ) : (
+        <View style={styles.thisContainer}>
+          <Camera
+            onBarCodeScanned={!scanned ? handleBarCodeScanned : null}
+            ratio="16:9"
+            style={[
+              StyleSheet.absoluteFillObject,
+              { justifyContent: 'center', alignItems: 'center' },
+            ]}
+            type={Camera.Constants.Type.back}
           >
-            <Image
-              source={require('../../../assets/png/bracket.png')}
-              style={{ width: 200, height: 200 }}
-            />
-          </View>
-        </Camera>
+            <View
+              style={{
+                width: '100%',
+                height: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <BarcodeSvg />
+            </View>
+          </Camera>
 
-        {scanned && (
-          <TouchableOpacity
-            onPress={() => setScanned(false)}
-            style={styles.reScanTouch}
-          >
-            <View style={styles.reScanView}>
-              <MaterialCommunityIcons
-                name="qrcode-scan"
-                size={30}
-                color="white"
-              />
-              <Text style={styles.reScanText}> Re-Scan </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        {!scanned && (
-          <TouchableOpacity onPress={() => props.navigation.pop()}>
-            <View style={styles.reScanViewNull}>
-              <Text
-                style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}
-              >
-                {' '}
-                Back{' '}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
+          {scanned && isScanFailed && (
+            <TouchableOpacity
+              onPress={() => setScanned(false)}
+              style={styles.reScanTouch}
+            >
+              <View style={styles.reScanView}>
+                <MaterialCommunityIcons
+                  name="qrcode-scan"
+                  size={30}
+                  color="white"
+                />
+                <Text style={styles.reScanText}> Re-Scan </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {!scanned && (
+            <TouchableOpacity onPress={() => props.navigation.pop()}>
+              <View style={styles.reScanViewNull}>
+                <Text
+                  style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}
+                >
+                  {' '}
+                  Back{' '}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+      <CheckInProgress visible={loadingCheckin} />
+    </View>
+  );
+};
+
+const CheckInProgress = ({ visible }) => {
+  return (
+    <Modal
+      presentationStyle={'overFullScreen'}
+      statusBarTranslucent={false}
+      transparent
+      visible={visible}
+    >
+      <View
+        style={{
+          height: '120%',
+          width: '120%',
+          marginLeft: -30,
+          marginTop: -100,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <View style={{ width: '100%', height: '20%' }}>
+          <LottieLoader
+            source={require('../../animation/orange-pulse.json')}
+            autoPlay
+          />
+        </View>
+        <View
+          style={{
+            backgroundColor: '#2F2F2F',
+            width: '80%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 5,
+          }}
+        >
+          <Text style={{ color: '#DDDDDD' }}>On Progress</Text>
+        </View>
       </View>
-    </>
+    </Modal>
   );
 };
 
@@ -186,7 +342,8 @@ const styles = StyleSheet.create({
     height: 60,
     flexDirection: 'row',
     backgroundColor: 'limegreen',
-    borderRadius: 6,
+    borderTopRightRadius: 6,
+    borderTopLeftRadius: 6,
   },
   reScanViewNull: {
     width: '100%',

@@ -330,6 +330,8 @@ function DetailDoctorPage(props) {
       : key + 1;
   };
 
+  console.log(dataDoctor, 'this is data doctor');
+
   return (
     <View style={containerStyle.container}>
       <View style={containerStyle.container}>

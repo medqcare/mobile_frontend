@@ -80,11 +80,11 @@ function DokumenMedisList(props) {
                 width: dimHeight * 0.04,
                 borderRadius: dimHeight * 0.04,
               }}
-              source={
-                patient.imageUrl
-                  ? { uri: patient.imageUrl }
-                  : require('../../../assets/png/Profil.png')
-              }
+              source={{
+                uri: patient.imageUrl
+                  ? `${patient?.imageUrl}?time=${new Date()}`
+                  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+              }}
             />
           </TouchableOpacity>
         </View>
