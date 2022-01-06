@@ -31,7 +31,6 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 import RadioForm from 'react-native-simple-radio-button';
 
 // Date picker
-import DatePicker from 'react-native-datepicker';
 
 // For finding width percentage
 import {
@@ -40,15 +39,25 @@ import {
 } from 'react-native-responsive-screen';
 
 // For proper date format
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 
 // For proper number format
 import withZero from '../../../helpers/withZero';
 
+import DatePicker from '@react-native-community/datetimepicker';
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+
 const DataCompletion = (props) => {
   // Moment
   var moment = require('moment');
-
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(new Date());
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(chosenDate)
+  );
   // Region
   const region = require('../../../assets/Region/province');
 
@@ -77,7 +86,7 @@ const DataCompletion = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: moment(new Date()).format('DD/MMMM/YYYY'),
+    dob: chosenDate,
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -94,7 +103,6 @@ const DataCompletion = (props) => {
   const sendDate = `${withZero(newDate.getDate())}/${withZero(
     newDate.getMonth() + 1
   )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
@@ -271,6 +279,13 @@ const DataCompletion = (props) => {
     return true;
   });
 
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+    setUserData({ ...userData, dob: selectedDate });
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
       {/* <View style={styles.container}> */}
@@ -378,8 +393,20 @@ const DataCompletion = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>{dateForShowingToUser}</Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -408,7 +435,7 @@ const DataCompletion = (props) => {
                 setUserData({ ...userData, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 

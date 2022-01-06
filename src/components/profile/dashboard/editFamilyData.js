@@ -13,12 +13,17 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import DatePicker from 'react-native-datepicker';
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { connect } from 'react-redux';
 import { edit_profile, setLoading } from '../../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker';
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 import Header from '../../../components/headers/GradientHeader';
 import {
   widthPercentageToDP as wp,
@@ -31,12 +36,31 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 
 const editFamilyData = (props) => {
   let dataFamily = props.navigation.state.params.data;
-  var moment = require('moment');
+  const dateOfBirthDay = new Date(dataFamily.dob);
   const [load, setLoad] = useState(false);
   const [bloodTypeModal, setBloodTypeModal] = useState(false);
   const [rhesusTypeModal, setRhesusModal] = useState(false);
   const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
   const [statusfamilyModal, setStatusFamilyModal] = useState(false);
+
+  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(dateOfBirthDay)
+  );
+
+  const [changeData, setChangeData] = useState({
+    nik: dataFamily.nik.toString(),
+    firstName: dataFamily.firstName,
+    lastName: dataFamily.lastName,
+    gender: dataFamily.gender,
+    dob: chosenDate,
+    bloodType: dataFamily.bloodType,
+    resus: dataFamily.resus,
+    phoneNumber: dataFamily.phoneNumber,
+    insuranceStatus: dataFamily.insuranceStatus,
+    location: dataFamily.location,
+  });
+
   const bloodType = ['A', 'AB', 'B', 'O'];
   const resus = ['+', '-'];
 
@@ -70,19 +94,6 @@ const editFamilyData = (props) => {
     },
   ];
 
-  const [changeData, setChangeData] = useState({
-    nik: dataFamily.nik.toString(),
-    firstName: dataFamily.firstName,
-    lastName: dataFamily.lastName,
-    gender: dataFamily.gender,
-    dob: moment(dataFamily.dob).format('DD/MM/YYYY'),
-    bloodType: dataFamily.bloodType,
-    resus: dataFamily.resus,
-    phoneNumber: dataFamily.phoneNumber,
-    insuranceStatus: dataFamily.insuranceStatus,
-    location: dataFamily.location,
-  });
-
   // Region
   const region = require('../../../assets/Region/province');
 
@@ -92,6 +103,7 @@ const editFamilyData = (props) => {
   const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
     changeData.location.province
   );
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const provinceSelection = province;
 
   // District
@@ -219,7 +231,12 @@ const editFamilyData = (props) => {
   const sendDate = `${withZero(newDate.getDate())}/${withZero(
     newDate.getMonth() + 1
   )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+    setChangeData({ ...changeData, dob: selectedDate });
+  };
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Header
@@ -331,8 +348,21 @@ const editFamilyData = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>{dateForShowingToUser}</Text>
+            {showDatePicker && (
+              <DateTimePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -361,7 +391,7 @@ const editFamilyData = (props) => {
                 setChangeData({ ...changeData, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 

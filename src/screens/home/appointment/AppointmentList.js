@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import {
   View,
   Text,
@@ -12,67 +12,72 @@ import {
 import Modal from 'react-native-modal';
 import ListAppointment from '../../../components/home/appointment/list-appointment';
 import axios from 'axios';
-import {baseURL} from '../../../config';
+import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../../../components/headers/GradientHeader'
+import Header from '../../../components/headers/GradientHeader';
 
-import {cancelRecervation} from '../../../stores/action';
+import { cancelRecervation } from '../../../stores/action';
 import LottieLoader from 'lottie-react-native';
 
-
-const Appointment = props => {
+const Appointment = (props) => {
   const [appoinment, setAppoinment] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [idpatient, setIdPatient] = useState(null);
-  const [Load, setLoad] = useState(false);
+  const [Load, setLoad] = useState(true);
   const [modalDelete, setModalDelete] = useState(false);
 
-  const _getData = () => {
-    return new Promise(async (resolve, reject) => {
-      let token = await AsyncStorage.getItem('token');
-      let {data} = await axios({
-        url: `${baseURL}/api/v1/members/getReservation`,
-        method: 'POST',
-        headers: {Authorization: JSON.parse(token).token},
-      });
-      resolve(data);
-    });
-  };
+  // const _getData = () => {
+  //   return new Promise(async (resolve, reject) => {
+  //     let token = await AsyncStorage.getItem('token');
+  //     let { data } = await axios({
+  //       url: `${baseURL}/api/v1/members/getReservation`,
+  //       method: 'POST',
+  //       headers: { Authorization: JSON.parse(token).token },
+  //     });
+  //     resolve(data);
+  //   });
+  // };
 
   const _fetchDataAppoinment = async () => {
-    _getData().then(data => {
-      try {
-        let datakebalik = data.data.reverse();
-        let newAppoinment = [];
-        datakebalik.map((item, index) => {
-          if (item.status !== 'canceled' && item.status !== 'registered') {
-            newAppoinment.push(item);
-          }
-        });
-        setAppoinment(newAppoinment);
-        setLoad(false);
-      } catch (error) {
-        setRefreshing(false);
-        setLoad(false);
-        console.log(error);
-      }
-    });
+    setLoad(true);
+    try {
+      let token = await AsyncStorage.getItem('token');
+      let { data } = await axios({
+        url: `${baseURL}/api/v1/members/getReservation`,
+        method: 'POST',
+        headers: { Authorization: JSON.parse(token).token },
+      });
+      let datakebalik = data.data.reverse();
+      let newAppoinment = [];
+      datakebalik.map((item, index) => {
+        if (item.status !== 'canceled' && item.status !== 'registered') {
+          newAppoinment.push(item);
+        }
+      });
+      setAppoinment(newAppoinment);
+    } catch (error) {
+      console.log(error.message, 'this is error from appointment');
+    } finally {
+      setLoad(false);
+    }
   };
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-    _fetchDataAppoinment();
+    await _fetchDataAppoinment();
+    setAppoinment(appoinment.filter((el) => el._id === idpatient));
     setRefreshing(false);
   }, [refreshing]);
 
   useEffect(() => {
-    setLoad(true);
-    _fetchDataAppoinment();
+    (async () => {
+      await _fetchDataAppoinment();
+    })();
   }, []);
 
   useEffect(() => {
     if (appoinment) {
-      appoinment.sort(function(a, b) {
+      appoinment.sort(function (a, b) {
         var dateA = new Date(a.bookingSchedule);
         var dateB = new Date(b.bookingSchedule);
         return dateA - dateB;
@@ -85,8 +90,8 @@ const Appointment = props => {
   });
 
   return (
-    <View style={{flex: 1, backgroundColor: '#1F1F1F'}}>
-      <Header title={'Daftar Janji'} navigate={props.navigation.navigate}/>
+    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+      <Header title={'Daftar Janji'} navigate={props.navigation.navigate} />
       {Load ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
@@ -95,14 +100,14 @@ const Appointment = props => {
         />
       ) : (
         <>
-          {appoinment.length ? (
+          {appoinment.length !== 0 ? (
             <FlatList
               data={appoinment}
-              keyExtractor={item => item._id}
+              keyExtractor={(item) => item._id}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <ListAppointment
                   data={item}
                   route={props.navigation}
@@ -114,8 +119,8 @@ const Appointment = props => {
               )}
             />
           ) : (
-            <View style={{flex: 1, alignItems: 'center', padding: 20}}>
-              <Text style={{color: '#FFFFFF'}}>Tidak ada Daftar Janji</Text>
+            <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
+              <Text style={{ color: '#FFFFFF' }}>Tidak ada Daftar Janji</Text>
             </View>
           )}
         </>
@@ -130,7 +135,8 @@ const Appointment = props => {
             margin: 0,
           }}
           animationType="slide"
-          onRequestClose={() => setModalDelete(false)}>
+          onRequestClose={() => setModalDelete(false)}
+        >
           <View style={viewModalDelete.container}>
             <View style={viewModalDelete.header}>
               <View style={viewModalDelete.toogle} />
@@ -145,22 +151,21 @@ const Appointment = props => {
               <TouchableOpacity
                 onPress={() => {
                   setModalDelete(false);
-                }}>
+                }}
+              >
                 <View style={viewModalDelete.lanjutkan}>
-                    <Text style={viewModalDelete.name}>
-                      Lanjutkan Konsultasi
-                    </Text>
+                  <Text style={viewModalDelete.name}>Lanjutkan Konsultasi</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  console.log(idpatient);
                   props.cancelRecervation(idpatient);
                   setModalDelete(false);
                   onRefresh();
-                }}>
+                }}
+              >
                 <View style={viewModalDelete.cardName}>
-                    <Text style={viewModalDelete.name}>Batalkan Janji</Text>
+                  <Text style={viewModalDelete.name}>Batalkan Janji</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -223,11 +228,11 @@ const viewModalDelete = StyleSheet.create({
     backgroundColor: '#005EA2',
     borderRadius: 3,
     minHeight: 50,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   name: {
     color: '#DDDDDD',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   buttonAdd: {
     marginTop: 20,
@@ -242,11 +247,8 @@ const viewModalDelete = StyleSheet.create({
 const mapDispatchToProps = {
   cancelRecervation,
 };
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Appointment);
+export default connect(mapStateToProps, mapDispatchToProps)(Appointment);
