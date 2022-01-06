@@ -262,7 +262,7 @@ function ReminderActiveList({props, drugs }) {
             setContent([])
             setLoad(false)
         }
-    }, [])
+    }, [drugs])
 
     const toggleSwitch = async (index, section) => {
         try {
@@ -410,6 +410,7 @@ function ReminderActiveList({props, drugs }) {
     }
 
     const renderHeader = (section, _, isActive,) => {
+        const { drugName, drugQuantity, type, information, ettiquete, reminder } = section
         return (
           <Animatable.View
             key={_}
@@ -417,11 +418,9 @@ function ReminderActiveList({props, drugs }) {
             style={styles.eachDrugContainer}
             transition="backgroundColor"
         >
-            <View
-                style={styles.touchable}
-            >
+            <View style={styles.touchable}>
                 <View style={styles.drugTopContainer}>
-                    <Text style={styles.drugNameText}>{section.drugName} {section.drugQuantity} {section.type}</Text>
+                    <Text style={styles.drugNameText}>{drugName} {drugQuantity} {type}</Text>
                     {isActive ? 
                         <Animatable.View
                         animation={'wobble'}>
@@ -456,7 +455,7 @@ function ReminderActiveList({props, drugs }) {
                 </View>
                 <View style={styles.drugMiddleContainer}>
                     <View style={styles.informationContainer}>
-                        <Text style={styles.lighterText}>{section.information}</Text>
+                        <Text style={styles.lighterText}>{information}</Text>
                     </View>
                         {isActive ? null :
                             <View style={styles.ettiqueteContainter}>
@@ -465,7 +464,7 @@ function ReminderActiveList({props, drugs }) {
                                     size={dimWidth * 0.035} 
                                     color="rgba(128, 128, 128, 1)" 
                                 />
-                                <Text style={styles.ettiqueteText}>Hari ini {section.ettiquete.length}x sehari</Text>
+                                <Text style={styles.ettiqueteText}>Hari ini {ettiquete.length}x sehari</Text>
                             </View>
                         }
                 </View>
@@ -474,7 +473,7 @@ function ReminderActiveList({props, drugs }) {
                     <View style={styles.drugBottomContainer}>
                         <Text style={styles.darkerText}>Setel pengingat</Text>
                         <ToggleSwitch
-                            isOn={section.reminder}
+                            isOn={reminder}
                             onColor="rgba(10, 88, 237, 1)"
                             offColor="#767577"
                             size="medium"

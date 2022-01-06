@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseURL } from '../../config';
+import { baseURL, webBaseURL } from '../../config';
 
 const drugInstance = axios.create({
   baseURL: `${baseURL}/api/v1/members`,
@@ -7,6 +7,14 @@ const drugInstance = axios.create({
     'x-secret': 123456 
   }
 });
+
+const webDrugInstance = axios.create({
+    baseURL: `${webBaseURL}/api/v1/drug/materials/`,
+    headers: {
+        'x-secret': 123456,
+        'Service': 'drugList'
+    }
+})
 
 export function getDrugs(patientID, token){
     return async dispatch => {
@@ -25,6 +33,40 @@ export function getDrugs(patientID, token){
             return data.data
         } catch (error) {
             console.log(error, 'error di action drugs')
+        }
+    }
+}
+
+export async function searchDrugByName(query){
+    try {
+        let { data } = await webDrugInstance({
+            method: 'GET',
+            url: `/listdrugs?query=${query}`,
+            headers: {
+                authorization: token
+            },
+        })
+       
+        return data.data
+    } catch (error) {
+        console.log(error, 'error di action drugs')
+    }
+}
+
+export function createNewDrugFromUser(newDrug, token){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'POST',
+                url: `/createNewDrugFromUser`,
+                headers: {
+                    authorization: token
+                },
+                data: newDrug
+            })
+            return data.data
+        } catch (error) {
+            console.log(error.message, 'error at create new Drug')
         }
     }
 }
