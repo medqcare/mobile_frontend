@@ -38,7 +38,7 @@ import DatePickerIcon from '../assets/svg/DatePickerIcon';
 import DatePicker from '@react-native-community/datetimepicker';
 const editProfile = (props) => {
   const dateOfBirthDay = new Date(props.userData.dob);
-  console.log(dateOfBirthDay);
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
   const [dateForShowingToUser, setDateForShowingToUser] = useState(
@@ -185,7 +185,8 @@ const editProfile = (props) => {
       userData.firstName == '' ||
       userData.firstName == null ||
       userData.dob == null ||
-      userData.phoneNumber == null
+      userData.phoneNumber == null ||
+      isErrorPhoneNumber
     ) {
       setValid(true);
       setModalF(true);
@@ -435,12 +436,18 @@ const editProfile = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setUserData({ ...userData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setUserData({ ...userData, phoneNumber: text });
+              }}
               value={userData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}

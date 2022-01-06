@@ -34,7 +34,6 @@ import withZero from '../../../helpers/withZero';
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
 
 const familyForm = (props) => {
-  var moment = require('moment');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [chosenDate, setChosenDate] = useState(new Date());
   const [load, setLoad] = useState(false);
@@ -43,6 +42,7 @@ const familyForm = (props) => {
   const [rhesusTypeModal, setRhesusModal] = useState(false);
   const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
   const [statusfamilyModal, setStatusFamilyModal] = useState(false);
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
   const bloodType = ['A', 'AB', 'B', 'O'];
   const resus = ['+', '-'];
   const insuranceStatus = [
@@ -126,7 +126,8 @@ const familyForm = (props) => {
         dataFamily.nik.length > 1 &&
         dataFamily.nik.length !== 16) ||
       (dataFamily.firstName !== null && dataFamily.firstName.length == 0) ||
-      dataFamily.dob == null
+      dataFamily.dob == null ||
+      isErrorPhoneNumber
     ) {
       console.log(dataFamily, 'ini data family');
       setValid(true);
@@ -415,12 +416,18 @@ const familyForm = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setDataFamily({ ...dataFamily, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setDataFamily({ ...dataFamily, phoneNumber: text });
+              }}
               value={dataFamily.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Blood Input */}
