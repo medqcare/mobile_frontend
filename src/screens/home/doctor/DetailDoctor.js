@@ -558,14 +558,13 @@ function DetailDoctorPage(props) {
                             {showDetail !== indexFacility ? (
                               <TouchableOpacity
                                 onPress={() => {
-                                  // setNewData(null);
                                   setShowDetail(indexFacility);
                                   setNewData({
                                     ...newData,
                                     [item.facilityName]: [
-                                      checkSchedule(bookingDate.getDay()),
+                                      bookingDate.getDay(),
                                       item.facilitySchedule[
-                                        checkSchedule(bookingDate.getDay())
+                                        bookingDate.getDay()
                                       ],
                                     ],
                                   });
@@ -816,8 +815,10 @@ function DetailDoctorPage(props) {
                                   >
                                     {newData[item.facilityName][1].map(
                                       (time, fIndex) => {
+                                        console.log(newData[item.facilityName], 'inininini');
                                         return (
                                           <View key={fIndex}>
+                                            {/* <Text>{JSON.stringify(time[1])}</Text> */}
                                             {!(
                                               chooseDate ===
                                                 new Date().getDate() &&
