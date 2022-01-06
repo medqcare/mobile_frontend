@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Picker,
   BackHandler,
+  ToastAndroid,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -36,6 +37,7 @@ import LocationModalPicker from '../components/modals/LocationModalPicker';
 import capitalFirst from '../helpers/capitalFirst';
 import DatePickerIcon from '../assets/svg/DatePickerIcon';
 import DatePicker from '@react-native-community/datetimepicker';
+import nikValidation from '../helpers/validationNIK';
 const editProfile = (props) => {
   const dateOfBirthDay = new Date(props.userData.dob);
   const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
@@ -178,10 +180,13 @@ const editProfile = (props) => {
 
   // Function for validation
   function validation() {
+    if (!nikValidation(userData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+      return;
+    }
+
     if (
-      (userData.nik !== null &&
-        userData.nik.length > 0 &&
-        userData.nik.length !== 16) ||
+      !nikValidation(userData.nik) ||
       userData.firstName == '' ||
       userData.firstName == null ||
       userData.dob == null ||

@@ -32,10 +32,11 @@ import {
 } from '../../../helpers/dateFormat';
 import withZero from '../../../helpers/withZero';
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
+import nikValidation from '../../../helpers/validationNIK';
 
 const familyForm = (props) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [chosenDate, setChosenDate] = useState(new Date());
+  const [chosenDate, setChosenDate] = useState('');
   const [load, setLoad] = useState(false);
   const [valid, setValid] = useState(false);
   const [bloodTypeModal, setBloodTypeModal] = useState(false);
@@ -98,7 +99,7 @@ const familyForm = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: chosenDate,
+    dob: '',
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -118,17 +119,19 @@ const familyForm = (props) => {
   ];
 
   const validation = () => {
-    console.log('Validating new family data...');
+    console.log(nikValidation(dataFamily.nik), 'data nik');
+    if (!nikValidation(dataFamily.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.show);
+    }
 
     if (
       dataFamily.firstName == null ||
-      (dataFamily.nik !== null &&
-        dataFamily.nik.length > 1 &&
-        dataFamily.nik.length !== 16) ||
+      !nikValidation(dataFamily.nik) ||
       (dataFamily.firstName !== null && dataFamily.firstName.length == 0) ||
-      dataFamily.dob == null ||
+      !dataFamily.dob ||
       isErrorPhoneNumber ||
-      !dataFamily.phoneNumber
+      !dataFamily.phoneNumber ||
+      !chosenDate
     ) {
       console.log(dataFamily, 'ini data family');
       setValid(true);
@@ -336,22 +339,6 @@ const familyForm = (props) => {
           </View>
         </View>
 
-        {/* DOB Error */}
-        <View style={{ flexDirection: 'row' }}>
-          {!dataFamily.dob && valid && (
-            <Text
-              style={{
-                color: 'red',
-                marginVertical: 15,
-                marginLeft: 5,
-                fontSize: 14,
-              }}
-            >
-              *
-            </Text>
-          )}
-        </View>
-
         {/* DOB Form  */}
         <View style={styles.inputMiddleContainer}>
           <View
@@ -363,7 +350,9 @@ const familyForm = (props) => {
             }}
           >
             <Text style={styles.inputText}>
-              {dateWithDDMMMYYYYFormat(chosenDate)}
+              {chosenDate
+                ? dateWithDDMMMYYYYFormat(chosenDate)
+                : 'Pilih Tanggal lahir'}
             </Text>
             {showDatePicker && (
               <DatePicker

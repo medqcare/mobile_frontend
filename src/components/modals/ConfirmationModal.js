@@ -64,7 +64,7 @@ export default function ConfirmationModal({
                 disabled={load}
                 onPress={() => {
                   if (typeof optionRightFunction === 'function') {
-                    optionRightFunction(value);
+                    optionRightFunction();
                   }
                 }}
               >
