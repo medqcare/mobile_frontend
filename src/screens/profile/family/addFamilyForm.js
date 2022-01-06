@@ -11,7 +11,9 @@ import {
   Image,
   KeyboardAvoidingView,
 } from 'react-native';
-import DatePicker from 'react-native-datepicker';
+
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import DatePicker from '@react-native-community/datetimepicker';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -24,12 +26,17 @@ import { addFamily, setLoading } from '../../../stores/action';
 //Modal
 import { ToastAndroid } from 'react-native';
 
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 import withZero from '../../../helpers/withZero';
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
 
 const familyForm = (props) => {
   var moment = require('moment');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(new Date());
   const [load, setLoad] = useState(false);
   const [valid, setValid] = useState(false);
   const [bloodTypeModal, setBloodTypeModal] = useState(false);
@@ -91,7 +98,7 @@ const familyForm = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: moment(new Date()).format('DD/MMMM/YYYY') || null,
+    dob: chosenDate,
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -210,11 +217,12 @@ const familyForm = (props) => {
     dataFamily.relationship
   );
 
-  const newDate = new Date();
-  const sendDate = `${withZero(newDate.getDate())}/${withZero(
-    newDate.getMonth() + 1
-  )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    setChosenDate(selectedDate);
+    setDataFamily({ ...dataFamily, dob: selectedDate });
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Header
@@ -349,8 +357,22 @@ const familyForm = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>
+              {dateWithDDMMMYYYYFormat(chosenDate)}
+            </Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -379,7 +401,7 @@ const familyForm = (props) => {
                 setDataFamily({ ...dataFamily, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 
