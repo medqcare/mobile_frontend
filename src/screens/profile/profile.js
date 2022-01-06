@@ -99,14 +99,14 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.bottomMenu}
                     >
                         <Text style={styles.menuText}>Metode Pembayaran</Text>
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <View style={styles.separator}/>
                 <View style={styles.logoutMenu}>
