@@ -25,13 +25,14 @@ const dimWidth = dimension.width
 function DrugDetail({navigation, userData}){
     const  { drugDetail } = navigation.state.params
 
-    const { reminders, notes } = drugDetail
+    const { reminders, notes, imageUrl, ettiquete, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugReminders, setDrugReminders] = useState([])
-    const consumedDrugs = reminders.filter(el => el.status === true)
-    const skippedDrugs = reminders.filter(el => el.status === false)
+    
+    const [consumedDrugs, setConsumedDrugs] = useState([])
+    const [skippedDrugs, setSkippedDrugs] = useState([])
     
     const [displayNotes, setDisplayNotes] = useState(notes)
-    const duration = Math.ceil(drugDetail.quantityTotal / drugDetail.ettiquete.length)
+    const duration = Math.ceil(quantityTotal / ettiquete.length)
 
     useEffect(() => {
         setDate(new Date())
@@ -40,16 +41,29 @@ function DrugDetail({navigation, userData}){
     function setDate(date){
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(date)
         const selectedDateReminders = []
+        const consumed = []
+        const skipped = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
             const reminderMonth = new Date(reminders[i].alarmTime).getMonth()
             const reminderDate = new Date(reminders[i].alarmTime).getDate()
             if(reminderYear === todaysYear && reminderMonth === todaysMonth && reminderDate === todaysDate) selectedDateReminders.push(reminders[i])
+            if(reminders[i].status) consumed.push(reminders[i])
+            else if (reminders[i].status === false) skipped.push(reminders[i])
         }
         setDrugReminders(selectedDateReminders)
+        setConsumedDrugs(consumed)
+        setSkippedDrugs(skipped)
     }
 
-    BackHandler.addEventListener("hardwareBackPress", () => {
+    async function changeNotes(){
+        if(displayNotes !== notes){
+            console.log(displayNotes)
+        }
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", async () => {
+        await changeNotes()
 	    navigation.pop();
 		return true;
 	});
@@ -60,20 +74,21 @@ function DrugDetail({navigation, userData}){
                 title="Rincian Konsumsi Obat"
                 navigate={navigation.navigate}
                 navigateBack="Reminder"
+                additionalFunction={changeNotes}
             />
             <ScrollView>
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: drugDetail.imageUrl ? drugDetail.imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                    <Image source={{uri: imageUrl ? imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
-                           <Text style={styles.lowerCenteredSectionText}>{`${drugDetail.ettiquete.length}x Sehari`}</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{`${ettiquete.length}x Sehari`}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Dosis</Text>
-                           <Text style={styles.lowerCenteredSectionText}>1.0 Tablet</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{dose} {type}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Durasi</Text>
@@ -84,8 +99,8 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
-                    <Text style={styles.drugNameText}>{drugDetail.drugName} 200 mg {drugDetail.drugQuantity} {drugDetail.type ? drugDetail.type : ''}</Text>
-                    <Text style={drugDetail.description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{drugDetail.description ? drugDetail.description : 'No description provided by the manufacturer'}</Text>
+                    <Text style={styles.drugNameText}>{drugName} 200 mg {drugQuantity} {type ? type : ''}</Text>
+                    <Text style={description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{description ? description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
@@ -106,7 +121,7 @@ function DrugDetail({navigation, userData}){
                 {/* Middle Container */}
                 <View style={styles.drugStatusDetailContainer}>
                     <View style={styles.centeredSection}>
-                        <Text style={styles.upperCenteredSectionText}>{drugDetail.quantityTotal}</Text>
+                        <Text style={styles.upperCenteredSectionText}>{quantityTotal}</Text>
                         <Text style={styles.lowerCenteredSectionText}>TOTAL OBAT</Text>
                     </View>
                     <View style={styles.centeredSection}>
