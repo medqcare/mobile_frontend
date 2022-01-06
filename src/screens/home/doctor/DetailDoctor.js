@@ -155,6 +155,11 @@ function DetailDoctorPage(props) {
   }, [dataDoctor]);
 
   useEffect(() => {
+    !chooseDate ? setNewData(null) : null
+    setBookingTime('');
+  },[chooseDate])
+
+  useEffect(() => {
     getJadwalPerhari();
     about();
   }, [facility]);
@@ -629,6 +634,7 @@ function DetailDoctorPage(props) {
                                       setBookingDate(bookingDate.minusMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
+                                      setChooseDate(null)
                                     }}
                                   >
                                     <View
@@ -641,7 +647,8 @@ function DetailDoctorPage(props) {
                                       <Text
                                         style={{
                                           fontSize: 16,
-                                          color: '#DDDDDD',
+                                          color: bookingDate.getMonth() ===
+                                          new Date().getMonth() ? '#2F2F2F' : '#DDDFDD',
                                           marginTop: -2,
                                         }}
                                       >
@@ -660,6 +667,7 @@ function DetailDoctorPage(props) {
                                   </Text>
                                   <TouchableOpacity
                                     onPress={() => {
+                                      setChooseDate(null)
                                       setBookingDate(bookingDate.addMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
