@@ -1,262 +1,3 @@
-// import React, { useState } from 'react';
-
-// // import all the components we are going to use
-// import {
-//   SafeAreaView,
-//   Switch,
-//   ScrollView,
-//   StyleSheet,
-//   Text,
-//   View,
-//   TouchableOpacity,
-// } from 'react-native';
-
-// //import for the animation of Collapse and Expand
-// import * as Animatable from 'react-native-animatable';
-
-// //import for the collapsible/Expandable view
-// import Collapsible from 'react-native-collapsible';
-
-// //import for the Accordion view
-// import Accordion from 'react-native-collapsible/Accordion';
-
-// //Dummy content to show
-// //You can also use dynamic data by calling web service
-// const CONTENT = [
-//   {
-//     title: 'Terms and Conditions',
-//     content:
-//       'The following terms and conditions, together with any referenced documents (collectively, "Terms of Use") form a legal agreement between you and your employer, employees, agents, contractors and any other entity on whose behalf you accept these terms (collectively, “you” and “your”), and ServiceNow, Inc. (“ServiceNow,” “we,” “us” and “our”).',
-//   },
-//   {
-//     title: 'Privacy Policy',
-//     content:
-//       'A Privacy Policy agreement is the agreement where you specify if you collect personal data from your users, what kind of personal data you collect and what you do with that data.',
-//   },
-//   {
-//     title: 'Return Policy',
-//     content:
-//       'Our Return & Refund Policy template lets you get started with a Return and Refund Policy agreement. This template is free to download and use.According to TrueShip study, over 60% of customers review a Return/Refund Policy before they make a purchasing decision.',
-//   },
-// ];
-
-// //To make the selector (Something like tabs)
-// const SELECTORS = [
-//   { title: 'T&C', value: 0 },
-//   { title: 'Privacy Policy', value: 1 },
-//   { title: 'Return Policy', value: 2 },
-//   { title: 'Reset all' },
-// ];
-
-// const App = () => {
-//   // Ddefault active selector
-//   const [activeSections, setActiveSections] = useState([]);
-//   // Collapsed condition for the single collapsible
-//   const [collapsed, setCollapsed] = useState(true);
-//   // MultipleSelect is for the Multiple Expand allowed
-//   // True: Expand multiple at a time
-//   // False: One can be expand at a time
-//   const [multipleSelect, setMultipleSelect] = useState(false);
-
-//   const toggleExpanded = () => {
-//     //Toggling the state of single Collapsible
-//     setCollapsed(!collapsed);
-//   };
-
-//   const setSections = (sections) => {
-//     //setting up a active section state
-//     setActiveSections(sections.includes(undefined) ? [] : sections);
-//   };
-
-//   const renderHeader = (section, _, isActive) => {
-//     //Accordion Header view
-//     return (
-//       <Animatable.View
-//         duration={400}
-//         style={[styles.header, isActive ? styles.active : styles.inactive]}
-//         transition="backgroundColor">
-//         <Text style={styles.headerText}>{section.title}</Text>
-//       </Animatable.View>
-//     );
-//   };
-
-//   const renderContent = (section, _, isActive) => {
-//     //Accordion Content view
-//     return (
-//       <Animatable.View
-//         duration={400}
-//         style={[styles.content, isActive ? styles.active : styles.inactive]}
-//         transition="backgroundColor">
-//         <Animatable.Text
-//           animation={isActive ? 'bounceIn' : undefined}
-//           style={{ textAlign: 'center' }}>
-//           {section.content}
-//         </Animatable.Text>
-//       </Animatable.View>
-//     );
-//   };
-
-//   return (
-//     <SafeAreaView style={{ flex: 1 }}>
-//       <View style={styles.container}>
-//         <ScrollView>
-//           <Text style={styles.title}>
-//             Example of Collapsible/Accordion/Expandable List View in React
-//             Native
-//           </Text>
-
-//           {/*Code for Single Collapsible Start*/}
-//           <TouchableOpacity onPress={toggleExpanded}>
-//             <View style={styles.header}>
-//               <Text style={styles.headerText}>Single Collapsible</Text>
-//               {/*Heading of Single Collapsible*/}
-//             </View>
-//           </TouchableOpacity>
-//           {/*Content of Single Collapsible*/}
-//           <Collapsible collapsed={collapsed} align="center">
-//             <View style={styles.content}>
-//               <Text style={{ textAlign: 'center' }}>
-//                 This is a dummy text of Single Collapsible View
-//               </Text>
-//             </View>
-//           </Collapsible>
-//           {/*Code for Single Collapsible Ends*/}
-
-//           <View style={{ backgroundColor: '#000', height: 1, marginTop: 10 }} />
-//           <View style={styles.multipleToggle}>
-//             <Text style={styles.multipleToggle__title}>
-//               Multiple Expand Allowed?
-//             </Text>
-//             <Switch
-//               value={multipleSelect}
-//               onValueChange={(multipleSelect) =>
-//                 setMultipleSelect(multipleSelect)
-//               }
-//             />
-//           </View>
-//           <Text style={styles.selectTitle}>
-//             Please select below option to expand
-//           </Text>
-
-//           {/*Code for Selector starts here*/}
-//           <View style={styles.selectors}>
-//             {SELECTORS.map((selector) => (
-//               <TouchableOpacity
-//                 key={selector.title}
-//                 onPress={() => setSections([selector.value])}
-//                 //on Press of any selector sending the selector value to
-//                 // setSections function which will expand the Accordion accordingly
-//               >
-//                 <View style={styles.selector}>
-//                   <Text
-//                     style={
-//                       activeSections.includes(selector.value) &&
-//                       styles.activeSelector
-//                     }>
-//                     {selector.title}
-//                   </Text>
-//                 </View>
-//               </TouchableOpacity>
-//             ))}
-//           </View>
-//           {/*Code for Selector ends here*/}
-
-//           {/*Code for Accordion/Expandable List starts here*/}
-//           <Accordion
-//             activeSections={activeSections}
-//             //for any default active section
-//             sections={CONTENT}
-//             //title and content of accordion
-//             touchableComponent={TouchableOpacity}
-//             //which type of touchable component you want
-//             //It can be the following Touchables
-//             //TouchableHighlight, TouchableNativeFeedback
-//             //TouchableOpacity , TouchableWithoutFeedback
-//             expandMultiple={multipleSelect}
-//             //Do you want to expand mutiple at a time or single at a time
-//             renderHeader={renderHeader}
-//             //Header Component(View) to render
-//             renderContent={renderContent}
-//             //Content Component(View) to render
-//             duration={400}
-//             //Duration for Collapse and expand
-//             onChange={setSections}
-//             //setting the state of active sections
-//           />
-//           {/*Code for Accordion/Expandable List ends here*/}
-//         </ScrollView>
-//       </View>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default App;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#F5FCFF',
-//     paddingTop: 30,
-//   },
-//   title: {
-//     textAlign: 'center',
-//     fontSize: 18,
-//     fontWeight: '300',
-//     marginBottom: 20,
-//   },
-//   header: {
-//     backgroundColor: '#F5FCFF',
-//     padding: 10,
-//   },
-//   headerText: {
-//     textAlign: 'center',
-//     fontSize: 16,
-//     fontWeight: '500',
-//   },
-//   content: {
-//     padding: 20,
-//     backgroundColor: '#fff',
-//   },
-//   active: {
-//     backgroundColor: 'rgba(255,255,255,1)',
-//   },
-//   inactive: {
-//     backgroundColor: 'rgba(245,252,255,1)',
-//   },
-//   selectors: {
-//     marginBottom: 10,
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//   },
-//   selector: {
-//     backgroundColor: '#F5FCFF',
-//     padding: 10,
-//   },
-//   activeSelector: {
-//     fontWeight: 'bold',
-//   },
-//   selectTitle: {
-//     fontSize: 14,
-//     fontWeight: '500',
-//     padding: 10,
-//     textAlign: 'center',
-//   },
-//   multipleToggle: {
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//     marginVertical: 30,
-//     alignItems: 'center',
-//   },
-//   multipleToggle__title: {
-//     fontSize: 16,
-//     marginRight: 8,
-//   },
-// });
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -268,45 +9,81 @@ import {
   TextInput,
   NativeModules,
   ActivityIndicator,
-  Button
+  Button,
+  FlatList
 } from "react-native";
 import { connect } from "react-redux";
 import GreyHeader from '../../../components/headers/GreyHeader'
-import { MaterialCommunityIcons, MaterialIcons  } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, MaterialIcons, FontAwesome  } from '@expo/vector-icons'; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import withZero from '../../../helpers/withZero'
+import { ScrollView } from "react-native-gesture-handler";
+import { getFormattedDate, fullMonthFormat} from '../../../helpers/dateFormat'
+import { searchDrugByName, createNewDrugFromUser } from '../../../stores/action'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function AddReminderForm(props) {
+	const { activeDrugs, setActiveDrugs } = props.navigation.state.params
 
 	const [drugData, setDrugData] = useState({
 		drugName: '',
-		frequency: '',
 		dose: '',
 		duration: '',
 		notes: '',
+		ettiquete: [],
+		information: '',
+		drugQuantity: 0,
+		quantityTotal: 0,
+		expiredDate: ''
 	})
 
-	
+	const [filteredDrugs, setFilteredDrugs] = useState([])
 
 	const newDate = new Date()
-	const hours = newDate.getHours()
-	const minutes = newDate.getMinutes()
-	const [displayDate, setDisplayDate] = useState(`${withZero(hours)}:${withZero(minutes)}`)
+	const formattedDate = getFormattedDate(newDate)
+	const fullDateFormat = fullMonthFormat(formattedDate)
+	const [displayDate, setDisplayDate] = useState(fullDateFormat)
 	
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('time');
 	const [show, setShow] = useState(false);
 
+	const [ettiqueteList, setEttiqueteList] = useState([
+		{
+			id: 1,
+			value: 'Pagi',
+			selected: false
+		},
+		{
+			id: 2,
+			value: 'Siang',
+			selected: false,
+		},
+		{
+			id: 3,
+			value: 'Sore',
+			selected: false
+		},
+		{
+			id: 4,
+			value: 'Malam',
+			selected: false
+		},
+	])
+
 	const onChange = (event, selectedDate) => {
 		const currentDate = selectedDate || date;
 		const hours = currentDate.getHours()
 		const minutes = currentDate.getMinutes()
+		const formattedDate = getFormattedDate(currentDate)
+		const fullDateFormat = fullMonthFormat(formattedDate)
 		setShow(Platform.OS === 'ios');
 		setDate(currentDate);
-		setDisplayDate(`${withZero(hours)}:${withZero(minutes)}`);
+		setDisplayDate(fullDateFormat);
 	};
 
 	const showMode = (currentMode) => {
@@ -323,8 +100,65 @@ function AddReminderForm(props) {
 	};
 
 	const [load, setLoad] = useState(false)
-
 	const [time, setTime] = useState({time: ''})
+
+	function getDrugsByName(text){
+		setDrugData({...drugData, drugName: text})
+		// const result = await props.searchDrugByName(text)
+		// setFilteredDrugs(result)
+		
+		console.log(text)
+	}
+
+	function addEttiquete(value, index, id){
+		const newArray = []
+
+		const arrayOfEttiquetesList = ettiqueteList.map((el, idx) => {
+			if(el.selected === true && idx !== index){
+				newArray.push(el.value)
+			}
+			if(idx == index){
+				if(!el.selected){
+					newArray.push(value)
+				} 
+				el.selected = !el.selected
+			}
+			return el
+		})
+
+		setEttiqueteList(arrayOfEttiquetesList)
+		setDrugData({
+			...drugData,
+			ettiquete: newArray
+		})
+		
+	}
+
+	const Item = ({ value, selected, index, id}) => (
+		<TouchableOpacity 
+			style={styles.inputContainer}
+			onPress={() => addEttiquete(value, index, id)}
+		>
+			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
+				<Text style={styles.inputText}>{value}</Text>
+			</View>
+		</TouchableOpacity>
+	);
+
+	const renderItem = ({ item , index, id}) => (
+		<Item value={item.value} selected={item.selected} index={index} id={id} />
+	)
+
+	async function createDrug(){
+		const data = drugData
+		const token = JSON.parse(await AsyncStorage.getItem('token')).token
+		// const newDrug = await props.createNewDrugFromUser(data, token)
+		
+		// const newDrugs = [...activeDrugs, newDrug]
+		// setActiveDrugs(newDrugs)
+		props.navigation.pop()
+
+	}
 
 	
   	return (
@@ -341,59 +175,87 @@ function AddReminderForm(props) {
 					<View style={styles.inputContainer}>
 						<View style={styles.input}>
 							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Nama Obat'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.drugName}
-								/>
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Nama Obat'}
+								keyboardType={'default'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={text => 
+									getDrugsByName(text)
+								}
+								value={drugData.drugName}
+							/>
 						</View>
 					</View>
 
 					{/* Frequency */}
+					<FlatList
+						data={ettiqueteList}
+						renderItem={renderItem}
+						keyExtractor={item => item.id}
+						horizontal={false}
+						numColumns={3}
+					/>
+
 					<View style={styles.inputContainer}>
 						<View style={styles.input}>
-							<Text style={styles.inputText}>Seharusnya ini modal picker</Text>
+						<TouchableOpacity 
+							style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+							onPress={() => showDatepicker()}
+						>
+							<Text style={styles.reminderTimeText}>{displayDate}</Text>
+							<FontAwesome name="calendar" size={24} color="white" />
+						</TouchableOpacity>
 						</View>
 					</View>
+
+					{show && (
+						<DateTimePicker
+							testID="dateTimePicker"
+							value={date}
+							mode={mode}
+							is24Hour={true}
+							display="default"
+							onChange={onChange}
+							minimumDate={new Date()}
+
+						/>
+            		)}
 
 					{/* Dose */}
 					<View style={styles.inputContainer}>
 						<View style={styles.input}>
 							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Dosis'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.dose}
-								/>
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Dosis'}
+								keyboardType={'numeric'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={number =>
+									setDrugData({...drugData, dose: number})
+								}
+								value={drugData.dose}
+							/>
 						</View>
 					</View>
 
-					{/* Duration */}
+
+					{/* Quantity */}
 					<View style={styles.inputContainer}>
 						<View style={styles.input}>
 							<TextInput
 									style={styles.inputText}
 									autoCapitalize={'none'}
 									autoFocus={false}
-									placeholder={'Berapa lama dikonsumsi'}
+									placeholder={'Jumlah obat'}
 									keyboardType={'numeric'}
 									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
+									onChangeText={number =>
+										setDrugData({...drugData, quantityTotal: number, drugQuantity: number})
 									}
-									value={drugData.duration}
+									value={drugData.drugQuantity}
 								/>
 						</View>
 					</View>
@@ -406,61 +268,20 @@ function AddReminderForm(props) {
 									autoCapitalize={'none'}
 									autoFocus={false}
 									placeholder={'Contoh: Minum dengan air putih setelah makan'}
-									keyboardType={'numeric'}
+									keyboardType={'default'}
 									placeholderTextColor="#8b8b8b" 
 									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
+										setDrugData({...drugData, notes: text})
 									}
 									value={drugData.notes}
 								/>
 						</View>
 					</View>
 				</View>
-				{/* <View style={styles.reminderFormContainer}> */}
-					{/* Title */}
-					{/* <View style={styles.reminderTitle}>
-						<Text style={styles.lightText}>Atur waktu pengingat</Text>
-					</View> */}
-
-					{/* Reminder time */}
-					{/* <View style={{paddingTop: 14,}}>
-						<View style={styles.reminderTimeContainer}>
-							<View style={{paddingHorizontal: 10}}>
-								<View style={styles.reminderTopContainer}>
-									<Text style={styles.lightText}>Jam pertama</Text>
-								</View>
-								<View style={styles.reminderLowerContainer}>
-									<View style={{flexDirection: "row"}}>
-										<MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-										<Text style={styles.reminderTimeText}>{displayDate}</Text>
-									</View>
-									<TouchableOpacity 
-											onPress={showTimepicker} 
-											// onPress={() => createCalendar()} 
-											title="Show time picker!" 
-										>
-										<MaterialCommunityIcons name="pencil" size={24} color="rgba(128, 128, 128, 1)" />
-									</TouchableOpacity>
-									{show && (
-										<DateTimePicker
-											testID="dateTimePicker"
-											value={date}
-											mode={mode}
-											is24Hour={true}
-											display="default"
-											onChange={onChange}
-										/>
-									)}
-								</View>
-							</View>
-						</View>
-					</View> */}
-				{/* </View> */}
 				
-				<View style={styles.buttonContainer}>
-					
+				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
-						onPress={() => console.log('add reminder')}
+						onPress={() => createDrug()}
 						style={styles.button}
 					>
 						{load ? (
@@ -490,14 +311,15 @@ const styles = StyleSheet.create({
 	},
 	
 	content: {
-		height: dimHeight * 0.88,
-		justifyContent: "flex-start",
+		flex: 1,
+		justifyContent: 'space-between',
 		alignItems: 'center',
+		// height: 
 	},
 
 	inputFormContainer: {
 		paddingVertical: dimHeight * 0.02452,
-		width: dimWidth * 0.9
+		width: dimWidth * 0.9,
 	},
 
 	inputContainer: {
@@ -512,6 +334,30 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         backgroundColor: '#1F1F1F',
         justifyContent: 'center'
+    },
+
+	unselectedFlatListInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * (1/3),
+    },
+	
+	selectedFlatListInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: 'blue',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * 0.333,
     },
 
 	inputText: {
@@ -551,20 +397,17 @@ const styles = StyleSheet.create({
 
 	reminderTimeText: {
 		color: 'rgba(181, 181, 181, 1)',
-		fontSize: 20,
 		fontWeight: '500',
-		paddingLeft: 5
 	},
 	
 	
 	// SET ALL NUMBER TO DIMWIDTH OR DIMHEIGHT
 
 	buttonContainer: {
-		flex: 1,
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-		marginBottom: dimHeight * 0.07353,
+		marginBottom: 15
 	},
 
 	button: {
@@ -574,7 +417,7 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		alignItems: "center",
 		justifyContent: "center",
-		marginVertical: dimHeight * 0.012256,
+		// marginVertical: dimHeight * 0.012256,
 	},
 
 	buttonText: {
@@ -595,4 +438,9 @@ const mapStateToProps = state => {
     return state
 }
 
-export default connect(mapStateToProps)(AddReminderForm)
+const mapDispatchToProps = {
+	searchDrugByName,
+	createNewDrugFromUser
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddReminderForm)
