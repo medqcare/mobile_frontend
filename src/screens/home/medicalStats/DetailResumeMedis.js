@@ -203,20 +203,11 @@ export default function DetailResumeMedis(props) {
                               {item.orderDetail.map((action, idx) => {
                                 return (
                                   <View key={idx}>
-                                    {item.facilityDest === "Laboratory" ? (
                                       <View style={styles.item}>
                                         <Text style={styles.textItem}>
-                                          {action.name}
+                                          {action.name || action.NameTest}
                                         </Text>
                                       </View>
-                                    ) : null}
-                                    {item.facilityDest === "Radiology" ? (
-                                      <View style={styles.item}>
-                                        <Text style={styles.textItem}>
-                                          {action.NameTest}
-                                        </Text>
-                                      </View>
-                                    ) : null}
                                   </View>
                                 );
                               })}
