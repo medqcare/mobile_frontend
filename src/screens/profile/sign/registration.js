@@ -49,15 +49,13 @@ import withZero from '../../../helpers/withZero';
 
 import DatePicker from '@react-native-community/datetimepicker';
 import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import nikValidation from '../../../helpers/validationNIK';
 
 const DataCompletion = (props) => {
   // Moment
   var moment = require('moment');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [chosenDate, setChosenDate] = useState(new Date());
-  const [dateForShowingToUser, setDateForShowingToUser] = useState(
-    dateWithDDMMMYYYYFormat(chosenDate)
-  );
+  const [chosenDate, setChosenDate] = useState(null);
   // Region
   const region = require('../../../assets/Region/province');
 
@@ -88,7 +86,7 @@ const DataCompletion = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: chosenDate,
+    dob: '',
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -225,15 +223,21 @@ const DataCompletion = (props) => {
   // },
 
   // Function for validation
+
   function validation() {
+    if (!nikValidation(userData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+      return;
+    }
+
     if (
-      userData.nik == null ||
-      userData.nik.length !== 16 ||
+      !nikValidation(userData.nik) ||
       userData.firstName == null ||
-      userData.dob == null ||
+      !userData.dob ||
       userData.phoneNumber == null ||
       userData.phoneNumber.length == 0 ||
-      isErrorPhoneNumber
+      isErrorPhoneNumber ||
+      !chosenDate
     ) {
       ToastAndroid.show(
         'Please fill all the necessary data!',
@@ -288,7 +292,6 @@ const DataCompletion = (props) => {
       return;
     }
     setChosenDate(selectedDate);
-    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
     setUserData({ ...userData, dob: selectedDate });
   };
 
@@ -399,7 +402,11 @@ const DataCompletion = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{dateForShowingToUser}</Text>
+            <Text style={styles.inputText}>
+              {chosenDate
+                ? dateWithDDMMMYYYYFormat(chosenDate)
+                : 'Pilih Tanggal Lahir'}
+            </Text>
             {showDatePicker && (
               <DatePicker
                 value={new Date()}

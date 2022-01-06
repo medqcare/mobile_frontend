@@ -33,6 +33,7 @@ import {
 import withZero from '../../../helpers/withZero';
 //Modal
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
+import nikValidation from '../../../helpers/validationNIK';
 
 const editFamilyData = (props) => {
   let dataFamily = props.navigation.state.params.data;
@@ -168,11 +169,13 @@ const editFamilyData = (props) => {
   ];
 
   async function validation() {
-    console.log('Validating data...');
+    if (!nikValidation(changeData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.show);
+      return;
+    }
+
     if (
-      (changeData.nik !== null &&
-        changeData.nik.length > 1 &&
-        changeData.nik.length !== 16) ||
+      !nikValidation(changeData.nik) ||
       changeData.firstName == '' ||
       changeData.firstName == null ||
       changeData.dob == null ||
