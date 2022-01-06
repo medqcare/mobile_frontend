@@ -127,7 +127,8 @@ const familyForm = (props) => {
         dataFamily.nik.length !== 16) ||
       (dataFamily.firstName !== null && dataFamily.firstName.length == 0) ||
       dataFamily.dob == null ||
-      isErrorPhoneNumber
+      isErrorPhoneNumber ||
+      !dataFamily.phoneNumber
     ) {
       console.log(dataFamily, 'ini data family');
       setValid(true);

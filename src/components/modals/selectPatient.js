@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   TouchableHighlight,
   TouchableWithoutFeedback,
+  FlatList,
 } from 'react-native';
 import VectorPlus from '../../assets/svg/VectorPlus';
 
@@ -57,7 +58,39 @@ export default function SelectPatient({
           <Text style={styles.title}>{title}</Text>
         </View>
         <View style={styles.patient}>
-          {family.map((lang, itemIndex) => {
+          <FlatList
+            horizontal={true}
+            data={family}
+            renderItem={({ item: lang }) => {
+              return (
+                <View>
+                  <TouchableOpacity
+                    style={styles.touchable}
+                    onPress={() => {
+                      setSelectedValue(lang);
+                      setModal(false);
+                    }}
+                  >
+                    <View>
+                      <Image
+                        style={styles.photo}
+                        source={{
+                          uri: lang.imageUrl
+                            ? `${lang.imageUrl}?time=${new Date()}`
+                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                        }}
+                      />
+                      <Text style={styles.name}>
+                        {smallLengthText(fullName(lang))}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+            keyExtractor={(item) => item._id}
+          />
+          {/* {family.map((lang, itemIndex) => {
             console.log(lang.imageUrl, 'this is image url');
             return (
               <View key={itemIndex}>
@@ -84,7 +117,7 @@ export default function SelectPatient({
                 </TouchableOpacity>
               </View>
             );
-          })}
+          })} */}
         </View>
         <TouchableOpacity
           style={styles.buttonAdd}
