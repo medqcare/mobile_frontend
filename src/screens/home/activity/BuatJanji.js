@@ -925,6 +925,7 @@ const buatJanji = (props) => {
         patient={patient}
         setPatient={setPatient}
         family={family}
+        navigateTo={props.navigation.navigate}
       />
       {
         // modal Pilih Insurance
