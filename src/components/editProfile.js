@@ -234,7 +234,11 @@ const editProfile = (props) => {
 
   const onChange = (event, selectedDate) => {
     setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
     setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
     setUserData({ ...userData, dob: selectedDate });
   };
 

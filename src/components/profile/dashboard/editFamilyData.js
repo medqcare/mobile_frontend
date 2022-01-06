@@ -236,6 +236,9 @@ const editFamilyData = (props) => {
   )}/${withZero(newDate.getFullYear())}`;
   const onChange = (event, selectedDate) => {
     setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
     setChosenDate(selectedDate);
     setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
     setChangeData({ ...changeData, dob: selectedDate });

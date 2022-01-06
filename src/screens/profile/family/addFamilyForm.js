@@ -220,6 +220,9 @@ const familyForm = (props) => {
 
   const onChange = (event, selectedDate) => {
     setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
     setChosenDate(selectedDate);
     setDataFamily({ ...dataFamily, dob: selectedDate });
   };
