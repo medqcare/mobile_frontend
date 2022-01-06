@@ -10,7 +10,10 @@ import {
   getTodaysPrescriptions,
   getPrescriptionHistory
 } from './prescription'
-import { getDrugs } from './drugs';
+import {
+  getDrugs,
+  changeAlarmBoolean
+} from './drugs';
 import { 
   getReminders, 
   changeReminderAlarmTime,
@@ -1132,7 +1135,10 @@ export {
   getPrescriptionHistory 
 };
 
-export { getDrugs };
+export { 
+  getDrugs,
+  changeAlarmBoolean
+};
 
 export { 
   getReminders, 

@@ -73,7 +73,7 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.upperMenu}
                     >
                         <Text style={styles.menuText}>Aktifitas</Text>
@@ -88,10 +88,10 @@ const profile = (props) => {
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity
                         
-                        style={styles.upperMenu}
+                        style={styles.bottomMenu}
                         onPress={() => props.navigation.navigate('ChangePasswordForm', { email, destination: 'ProfileStack' })}
                     >
                         <Text style={styles.menuText}>Ubah Kata Sandi </Text>
@@ -99,14 +99,14 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.bottomMenu}
                     >
                         <Text style={styles.menuText}>Metode Pembayaran</Text>
                         <Image
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                 <View style={styles.separator}/>
                 <View style={styles.logoutMenu}>

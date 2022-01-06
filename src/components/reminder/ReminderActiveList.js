@@ -6,8 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  useWindowDimensions,
-  PixelRatio
+  ToastAndroid,
 } from "react-native";
 import { AntDesign, MaterialIcons, FontAwesome  } from '@expo/vector-icons';
 import ToggleSwitch from 'toggle-switch-react-native'
@@ -27,56 +26,218 @@ import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import * as Calendar from 'expo-calendar';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, drugs }) {
-    const window = useWindowDimensions()
-    const font = window.fontScale
-
-    function normalize(size, multiplier = 2) {
-        const scale = (dimWidth / dimHeight) * multiplier;
-      
-        const newSize = size * scale;
-      
-        return Math.round(PixelRatio.roundToNearestPixel(newSize));
-    }
-
     const [load, setLoad] = useState(true)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
+    const [loadToggle, setLoadToggle] = useState(false)
 
     const [date, setDate] = useState(new Date());
     const [mode, setMode] = useState('time');
     const [show, setShow] = useState(false);
 
-    const [reminderID, setReminderID] = useState(null)
     const [currentIndex, setCurrentIndex] = useState(null)
+    const [alarmIndex, setAlarmIndex] = useState(0)
+    const [drugID, setDrugID] = useState(null)
+    const [currentReminderID, setcurrentReminderID] = useState(null)
+
+    const [calendarID, setCalendarID] = useState(null)
+
+    useEffect(() => {
+		(async () => {
+		  const { status } = await Calendar.requestCalendarPermissionsAsync();
+		  if (status === 'granted') {
+			const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+            const arrayOfCalendarNames = calendars.map(el => {
+                return el.name
+            })
+			// console.log('Here are all your calendars:');
+			// console.log(calendars);
+            if(arrayOfCalendarNames.includes('Applimetis Parama Solusi')){
+                ToastAndroid.show('Calendar already created', ToastAndroid.SHORT)
+            } else {
+                await createCalendar()
+                ToastAndroid.show('Calendar created', ToastAndroid.SHORT)
+            }
+		  }
+          const afterCreatedCalendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+          const medQCareCalendar = afterCreatedCalendars.find(el => el.name === 'Applimetis Parama Solusi')
+          const medQCareID = medQCareCalendar.id
+          setCalendarID(medQCareID)
+        })();
+	}, []);
+
+    // Pertama kali dilakukan
+    async function createCalendar() {
+		const defaultCalendarSource =
+		  Platform.OS === 'ios'
+			? await getDefaultCalendarSource()
+			: { isLocalAccount: true, name: 'MedQCare Calendar' };
+
+        const options = {
+            title: 'Drug Reminders',
+            color: 'blue',
+            entityType: Calendar.EntityTypes.EVENT,
+            sourceId: defaultCalendarSource.id,
+            source: defaultCalendarSource,
+            name: 'Applimetis Parama Solusi',
+            ownerAccount: 'personal',
+            accessLevel: Calendar.CalendarAccessLevel.OWNER,
+        }
+
+		const newCalendarID = await Calendar.createCalendarAsync(options);
+	}
+
+    // Kedua dilakukan
+    async function createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i){
+		const startDate = new Date(alarmTime)
+		const endDate = new Date(alarmTime)
+		endDate.setMinutes(endDate.getMinutes() + 5)
+
+		const details = {
+			startDate,
+			endDate,
+			title: drugName,
+			timeZone: "GMT-7",
+			alarms:[ { 
+				relativeOffset: 0,
+				method: Calendar.AlarmMethod.ALERT,
+			} ],
+		}
+
+		const newAlarm = await Calendar.createEventAsync(calendarID, details) 
+        const createdAlarm = {
+            alarmID : newAlarm,
+            reminderID,
+            drugID,
+            ettiqueteIndex,
+            startDate,
+        }
+        
+        return createdAlarm
+	}
+
+	async function deleteCalendar(id){
+		try {
+			const deleted = await Calendar.deleteCalendarAsync(id)
+			console.log(deleted)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	async function deleteEvent(reminderID){
+		try {
+            const deleted = await Calendar.deleteEventAsync(reminderID)
+		} catch (error) {
+			console.log(error)
+		}
+	}
+
+	async function openCalendar(id){
+		const calendar = Calendar.openEventInCalendar(id)
+	}
+
+	async function getEvents(id){
+		const event = await Calendar.getEventAsync(id)
+		console.log(new Date(event.startDate).getMinutes())
+		console.log(event)
+	}
+
+	async function getReminders(){
+		try {
+			const reminder = await Calendar.getReminderAsync("1")
+			console.log(reminder)
+			
+		} catch (error) {
+			console.log(error.message)
+		}
+	}
+
+    async function updateEvent(eventID, alarmTime){
+        try {
+            const startDate = new Date(alarmTime)
+            const endDate = new Date(alarmTime)
+            endDate.setMinutes(endDate.getMinutes() + 5)
+
+            const details = {
+                startDate,
+                endDate,
+                timeZone: "GMT-7",
+                alarms:[ { 
+                    relativeOffset: 0,
+                    method: Calendar.AlarmMethod.ALERT,
+                } ],
+            }
+
+            const updatedEvent = await Calendar.updateEventAsync(eventID, details)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const onChange = async (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShow(Platform.OS === 'ios');
-        setDate(currentDate);
-        const token = JSON.parse(await AsyncStorage.getItem('token')).token
-        await props.changeReminderAlarmTime(reminderID, currentDate, token)
+        try {
+            const currentDate = selectedDate || date;
+            setShow(Platform.OS === 'ios');
+            setDate(currentDate);
 
-        const newReminders= content[currentIndex].reminders.map(el => {
-            if(el._id === reminderID){
-                el.alarmTime = currentDate
+            const newReminders= content[currentIndex].reminders.map(el => {
+                if(el._id === currentReminderID){
+                    el.alarmTime = currentDate
+                }
+                return el
+            })
+
+            const newContent = content.map((el, idx) => {
+                if(el._id === content[currentIndex]._id){
+                    el.reminders = newReminders
+                }
+                return el
+            })
+
+            setContent(newContent)
+            ToastAndroid.show('Successfully updated alarm time', ToastAndroid.SHORT)
+
+            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            const currentIndexDrugAlarmIDs = alarmIDs.filter(el => el.ettiqueteIndex === alarmIndex && el.drugID === drugID)
+            const hours = currentDate.getHours()
+            const minutes = currentDate.getMinutes()
+
+            if(currentIndexDrugAlarmIDs.length === 0){
+                const currentIndexReminder = content[currentIndex].reminders
+                // .filter(el => el.ettiqueteIndex === alarmIndex)
+                for(let i = 0; i < currentIndexReminder.length; i++){
+                    if(currentIndexReminder[i].ettiqueteIndex === alarmIndex){
+                        const alarmTime = new Date(currentIndexReminder[i].alarmTime)
+                        const { _id } = currentIndexReminder[i]
+                        alarmTime.setHours(hours)
+                        alarmTime.setMinutes(minutes)
+                        await props.changeReminderAlarmTime(_id, alarmTime, token)
+                    }
+                }
+
+            } else {
+                for(let i = 0; i < currentIndexDrugAlarmIDs.length; i++){
+                    const alarmTime = new Date(currentIndexDrugAlarmIDs[i].startDate)
+                    const { reminderID } = currentIndexDrugAlarmIDs[i]
+                    alarmTime.setHours(hours)
+                    alarmTime.setMinutes(minutes)
+                    await updateEvent(currentIndexDrugAlarmIDs[i].alarmID, alarmTime)
+                    await props.changeReminderAlarmTime(reminderID, alarmTime, token)
+                }
             }
-            return el
-        })
-
-        const newContent = content.map((el, idx) => {
-            if(el._id === content[currentIndex]._id){
-                el.reminders = newReminders
-            }
-            return el
-        })
-
-        setContent(newContent)
+        } catch (error) {
+            console.log(error)
+        }
+        
     };
     
     const showMode = (currentMode) => {
@@ -84,9 +245,11 @@ function ReminderActiveList({props, drugs }) {
         setMode(currentMode);
     };
 
-    const showTimepicker = (alarmTime, _id, _) => {
+    const showTimepicker = (alarmTime, _, index, drugID, _id) => {
+        setcurrentReminderID(_id)
+        setDrugID(drugID)
+        setAlarmIndex(index)
         setDate(alarmTime)
-        setReminderID(_id)
         setCurrentIndex(_)
         showMode('time');
     };
@@ -101,15 +264,81 @@ function ReminderActiveList({props, drugs }) {
         }
     }, [])
 
-    const toggleSwitch = (index) => {
-        const newArray = content.map((el, idx) => {
-            const newObject = {
-                ...el,
-                reminder: index === idx ? !el.reminder : el.reminder
+    const toggleSwitch = async (index, section) => {
+        try {
+            setLoadToggle(true)
+            const { reminders, reminder, ettiquete } = section
+            const ettiqueteLength = ettiquete.length
+            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            const drugID = section._id
+            const drugName = section.drugName
+            const change = await props.changeAlarmBoolean(drugID, token)
+            ToastAndroid.show(change, ToastAndroid.SHORT)
+
+            if(reminder){
+                const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+
+                const toBeDeleted = []
+                const notDeleted = []
+                for(let i = 0; i < alarmIDs.length; i++){
+                    if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
+                    else notDeleted.push(alarmIDs[i])
+                }
+
+                for(let i = 0; i < toBeDeleted.length; i ++){
+                    const deleted = await deleteEvent(toBeDeleted[i].alarmID)
+                }
+
+                const stringified = JSON.stringify(notDeleted)
+                
+                if(!stringified) await AsyncStorage.removeItem('alarmIDs')
+                else await AsyncStorage.setItem('alarmIDs', stringified)
+
+            } else {
+                const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+                let alarmIDs = []
+                
+                if(foundAlarmIDs){
+                    alarmIDs = [...foundAlarmIDs]
+                }
+
+                // let ettiqueteIndex = 0
+                for(let i = 0; i < reminders.length; i++){
+                    const alarmTime = reminders[i].alarmTime
+                    const reminderID = reminders[i]._id
+                    const ettiqueteIndex = reminders[i].ettiqueteIndex
+                    // if(i === 0){
+                    //     ettiqueteIndex = 0
+                    // }
+                    // else if(i % ettiqueteLength === 0){
+                    //     ettiqueteIndex = 0
+                    // }
+                    // else {
+                    //     ettiqueteIndex += 1
+                    // }
+                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i)
+                    alarmIDs.push(createdAlarm)
+                }
+
+                const stringified = JSON.stringify(alarmIDs)
+                await AsyncStorage.setItem('alarmIDs', stringified)
             }
-            return newObject
-        })
-        setContent(newArray)
+
+           
+            const newArray = content.map((el, idx) => {
+                const newObject = {
+                    ...el,
+                    reminder: index === idx ? !el.reminder : el.reminder
+                }
+                return newObject
+            })
+            setContent(newArray)
+            setLoadToggle(false)
+        } catch (error) {
+            console.log(error)
+        }
+        
+       
     }
 
     const [activeSections, setActiveSections] = useState([]);
@@ -199,6 +428,17 @@ function ReminderActiveList({props, drugs }) {
                             <TouchableOpacity
                             style={styles.detailContainer}
                                 onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                                // onPress={() => console.log(section._id)}
+                                // onPress={() => createAlarm(new Date())}
+                                // onPress={() => getEvents("2036")}
+                                // onPress={() => getReminders()}
+                                // onPress={() => deleteCalendar("1")}
+                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec865")}
+                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec864")}
+                                // onPress={() => createCalendar()}
+                                // onPress={() => openCalendar('2306')}
+                                // onPress={() => console.log(Calendar)}
+                                // onPress={() => updateEvent("2293", new Date())}
                             >
                                     <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
@@ -239,7 +479,8 @@ function ReminderActiveList({props, drugs }) {
                             offColor="#767577"
                             size="medium"
                             animationSpeed={150}
-                            onToggle={isOn => toggleSwitch(_)}
+                            onToggle={isOn => toggleSwitch(_, section)}
+                            disabled={loadToggle}
                         />
                     </View>
             </View>
@@ -248,8 +489,9 @@ function ReminderActiveList({props, drugs }) {
     };
 
     const renderContent = (section, _, isActive) => {
-        const { reminders } = section
+        const { reminders, _id } = section
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(new Date())
+        // console.log(todaysDate, 'todays date')
         const todaysReminder = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
@@ -264,9 +506,10 @@ function ReminderActiveList({props, drugs }) {
                 style={styles.reminderContainer}
                 transition="backgroundColor">
                     {todaysReminder.map((el, index) => {
-                        const alarmTime = new Date(reminders[index].alarmTime)
+                        const alarmTime = new Date(el.alarmTime)
                         const alarmHours = alarmTime.getHours()
-                        const displayAlarmHours = `${withZero(alarmHours)}:00`
+                        const alarmMinutes = alarmTime.getMinutes()
+                        const displayAlarmHours = `${withZero(alarmHours)}:${withZero(alarmMinutes)}`
                         const status = el.status
                         return (
                             <View key={index}>
@@ -274,7 +517,7 @@ function ReminderActiveList({props, drugs }) {
                                     <View style={styles.reminderLowerContainer}>
                                         <TouchableOpacity 
                                             style={{flexDirection: "row", alignItems: "center"}}
-                                            onPress={() => showTimepicker(alarmTime, el._id, _)}
+                                            onPress={() => showTimepicker(alarmTime, _, index, _id, el._id)}
                                         >
                                             <MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
                                             <Text style={styles.reminderTimeText}>{displayAlarmHours}</Text>
@@ -283,7 +526,7 @@ function ReminderActiveList({props, drugs }) {
                                         {status === null ? 
                                             <View style={{flexDirection: "row"}}>
                                                 <TouchableOpacity
-                                                    onPress={() => changeReminderStatus(false, el._id, _, index)}
+                                                    onPress={() => changeReminderStatus(false, el._id, _, index,)}
                                                     style={styles.skippedButton}
                                                     >
                                                         {loadChangeStatusFalse[index] ? 

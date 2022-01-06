@@ -28,3 +28,20 @@ export function getDrugs(patientID, token){
         }
     }
 }
+
+export function changeAlarmBoolean(drugID, token){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/changeAlarmBoolean/${drugID}`,
+                headers: {
+                    authorization: token
+                },
+            })
+            return data.message
+        } catch (error) {
+            console.log(error.message, 'error at change alarm boolean')
+        }
+    }
+}
