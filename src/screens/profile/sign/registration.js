@@ -76,6 +76,8 @@ const DataCompletion = (props) => {
   const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
     district[0].name
   );
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+
   // console.log(district[0])
   // console.log(selectedDistrictLabel)
 
@@ -230,7 +232,8 @@ const DataCompletion = (props) => {
       userData.firstName == null ||
       userData.dob == null ||
       userData.phoneNumber == null ||
-      userData.phoneNumber.length == 0
+      userData.phoneNumber.length == 0 ||
+      isErrorPhoneNumber
     ) {
       ToastAndroid.show(
         'Please fill all the necessary data!',
@@ -449,12 +452,18 @@ const DataCompletion = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setUserData({ ...userData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setUserData({ ...userData, phoneNumber: text });
+              }}
               value={userData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}
@@ -606,7 +615,7 @@ const styles = StyleSheet.create({
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,
-    paddingTop: hp('7%')
+    paddingTop: hp('7%'),
   },
 
   header: {

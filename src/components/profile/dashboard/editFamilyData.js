@@ -103,6 +103,8 @@ const editFamilyData = (props) => {
   const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
     changeData.location.province
   );
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const provinceSelection = province;
 
@@ -173,7 +175,8 @@ const editFamilyData = (props) => {
         changeData.nik.length !== 16) ||
       changeData.firstName == '' ||
       changeData.firstName == null ||
-      changeData.dob == null
+      changeData.dob == null ||
+      isErrorPhoneNumber
     ) {
       ToastAndroid.show('Please check the data', ToastAndroid.LONG);
     } else {
@@ -409,12 +412,18 @@ const editFamilyData = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setChangeData({ ...changeData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setChangeData({ ...changeData, phoneNumber: text });
+              }}
               value={changeData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}
