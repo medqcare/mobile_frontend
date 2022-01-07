@@ -22,6 +22,8 @@ import { getFormattedDate, fullMonthFormat} from '../../../helpers/dateFormat'
 import { searchDrugByName, searchAllDrugs, createNewDrugFromUser, getDrugs } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import SearchableDropdown from 'react-native-searchable-dropdown';
+import RadioForm from 'react-native-simple-radio-button';
+
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -86,18 +88,10 @@ function AddReminderForm(props) {
 		},
 	])
 
-	const [informationList, setInformationList] = useState([
-		{
-			id: 1,
-			value: 'Sebelum Makan',
-			selected: false
-		},
-		{
-			id: 2,
-			value: 'Sesudah Makan',
-			selected: false
-		}
-	])
+	const infromationList = [
+		{ label: 'Sebelum Makan', value: 'Sebelum Makan' },
+		{ label: 'Sesudah Makan', value: 'Sesudah Makan' },
+	];
 
 	const onChange = (event, selectedDate) => {
 		const currentDate = selectedDate || date;
@@ -153,30 +147,11 @@ function AddReminderForm(props) {
 				ettiquete: newArray
 			})
 		} 
-		else if(list === 'information'){
-			const arrayOfInformationList = informationList.map((el, idx) => {
-				if(el.selected === true && idx !== index){
-					el.selected = !el.selected
-				}
-				if(idx == index){
-					el.selected = !el.selected
-					setDrugData({
-						...drugData,
-						information: el.value
-					})
-				}
-				return el
-			})
-	
-			setInformationList(arrayOfInformationList)
-			
-		}
-		
 	}
 
 	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
-			style={styles.inputContainer}
+			style={[styles.inputContainer, {paddingLeft: index === 0 ? 0 : 5, justifyContent: "space-between"}]}
 			onPress={() => addEttiquete(value, index, 'ettiquete')}
 		>
 			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
@@ -184,27 +159,11 @@ function AddReminderForm(props) {
 			</View>
 		</TouchableOpacity>
 	);
-
 	
 	const renderEttiqueteItem = ({ item , index, id}) => (
 		<EttiqueteItem value={item.value} selected={item.selected} index={index} id={id} />
 	)
 		
-	const InformationItem = ({ value, selected, index, id}) => (
-		<TouchableOpacity 
-			style={styles.inputContainer}
-			onPress={() => addEttiquete(value, index, 'information')}
-		>
-			<View style={selected ? styles.selectedFlatListInformationInput : styles.unselectedFlatListInformationInput}>
-				<Text style={styles.inputText}>{value}</Text>
-			</View>
-		</TouchableOpacity>
-	);
-
-	const renderInformationItem = ({ item , index, id}) => (
-		<InformationItem value={item.value} selected={item.selected} index={index} id={id} />
-	)
-
 	async function createDrug(){
 		try {
 			const token = JSON.parse(await AsyncStorage.getItem('token')).token
@@ -277,42 +236,23 @@ function AddReminderForm(props) {
 						renderItem={renderEttiqueteItem}
 						keyExtractor={item => item.id}
 						horizontal={false}
-						numColumns={3}
+						numColumns={4}
 					/>
 
 					{/* Information */}
-					<FlatList
-						data={informationList}
-						renderItem={renderInformationItem}
-						keyExtractor={item => item.id}
-						horizontal={false}
-						numColumns={2}
+					<RadioForm
+						radio_props={infromationList}
+						initial={0}
+						onPress={(value) => {
+							setDrugData({ ...drugData, information: value });
+						}}
+						formHorizontal={true}
+						labelHorizontal={true}
+						animation={false}
+						labelStyle={{ paddingRight: 10, fontSize: 14, color: '#DDDDDD' }}
+						style={styles.inputContainer}
+						buttonOuterSize={20}
 					/>
-
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-						<TouchableOpacity 
-							style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
-							onPress={() => showDatepicker()}
-						>
-							<Text style={styles.reminderTimeText}>{displayDate}</Text>
-							<FontAwesome name="calendar" size={24} color="white" />
-						</TouchableOpacity>
-						</View>
-					</View>
-
-					{show && (
-						<DateTimePicker
-							testID="dateTimePicker"
-							value={date}
-							mode={mode}
-							is24Hour={true}
-							display="default"
-							onChange={onChange}
-							minimumDate={new Date()}
-
-						/>
-            		)}
 
 					{/* Dose */}
 					<View style={styles.inputContainer}>
@@ -350,6 +290,31 @@ function AddReminderForm(props) {
 								/>
 						</View>
 					</View>
+
+					<View style={styles.inputContainer}>
+						<View style={styles.input}>
+						<TouchableOpacity 
+							style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+							onPress={() => showDatepicker()}
+						>
+							<Text style={styles.reminderTimeText}>{displayDate}</Text>
+							<FontAwesome name="calendar" size={24} color="white" />
+						</TouchableOpacity>
+						</View>
+					</View>
+
+					{show && (
+						<DateTimePicker
+							testID="dateTimePicker"
+							value={date}
+							mode={mode}
+							is24Hour={true}
+							display="default"
+							onChange={onChange}
+							minimumDate={new Date()}
+
+						/>
+            		)}
 
 					{/* Optional Notes */}
 					<View style={styles.inputContainer}>
@@ -436,19 +401,19 @@ const styles = StyleSheet.create({
         backgroundColor: '#1F1F1F',
         justifyContent: 'center',
 		alignItems: "center",
-		width: (dimWidth * 0.9) * (1/3),
+		width: (dimWidth * 0.9) * 0.24,
     },
 	
 	selectedFlatListInput: {
         height: dimHeight * 0.06128,
         borderWidth: 2,
-		borderColor: 'rgba(84, 84, 84, 1)',
+		borderColor: '#77BFF4',
         paddingHorizontal: dimWidth * 0.04,
         borderRadius: 3,
-        backgroundColor: 'blue',
+        backgroundColor: '#212D3D',
         justifyContent: 'center',
 		alignItems: "center",
-		width: (dimWidth * 0.9) * (1/3),
+		width: (dimWidth * 0.9) * 0.24,
     },
 
 	unselectedFlatListInformationInput: {
