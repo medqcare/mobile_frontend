@@ -37,19 +37,35 @@ export function getDrugs(patientID, token){
     }
 }
 
-export async function searchDrugByName(query){
-    try {
-        let { data } = await webDrugInstance({
-            method: 'GET',
-            url: `/listdrugs?query=${query}`,
-            headers: {
-                authorization: token
-            },
-        })
-       
-        return data.data
-    } catch (error) {
-        console.log(error, 'error di action drugs')
+export function searchDrugByName(query){
+    return async dispatch => {
+        try {
+            let { data } = await webDrugInstance({
+                method: 'GET',
+                url: `/listdrugs?name=${query}`,
+            })
+            return data.data
+        } catch (error) {
+            console.log(error, 'error di action get drugs by name')
+        }
+    }
+}
+
+export function searchAllDrugs(){
+    return async dispatch => {
+        try {
+            let { data } = await webDrugInstance({
+                method: 'GET',
+                url: `/listdrugs`,
+            })
+            await dispatch({
+                type: 'SEARCH_ALL_DRUGS',
+                payload: data.data
+            })
+            return data.data
+        } catch (error) {
+            console.log(error, 'error di action get drugs by name')
+        }
     }
 }
 

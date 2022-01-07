@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, changeAlarmBoolean, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
+import { getDrugs, searchAllDrugs, changeAlarmBoolean, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -32,6 +32,18 @@ function Reminder(props) {
 	
 	const [activeDrugs, setActiveDrugs] = useState([])
 	const [finishedDrugs, setFinishedDrugs] = useState([])
+
+	const [allDrugs, setAllDrugs] = useState([])
+
+	useEffect( async () => {
+		await props.searchAllDrugs()
+		const revised = props.allDrugs.map(el => {
+			el.name = el.itemName
+			return el
+		})
+		setAllDrugs(revised)
+
+	}, [])
 
 	useEffect( async () => {
 		try {
@@ -105,7 +117,7 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
-					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs})}
+					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs, allDrugs: allDrugs})}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
@@ -190,6 +202,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
 	getDrugs,
+	searchAllDrugs,
 	changeAlarmBoolean,
 	getReminders,
 	changeReminderAlarmTime,
