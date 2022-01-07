@@ -12,6 +12,7 @@ import {
 } from './prescription'
 import {
   getDrugs,
+  searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
   changeAlarmBoolean
@@ -1139,6 +1140,7 @@ export {
 
 export { 
   getDrugs,
+  searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
   changeAlarmBoolean

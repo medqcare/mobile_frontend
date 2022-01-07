@@ -6,6 +6,7 @@ const initState = {
   dataDoctors: [],
   myLocation: null,
   userData: null,
+  allDrugs: [],
   activity: null,
   isPriority: true,
   RM_patient: null,
@@ -74,6 +75,13 @@ export default (state = initState, action) => {
           drugs: action.payload
         }
       }
+
+    case 'SEARCH_ALL_DRUGS':
+      return {
+        ...state,
+        allDrugs: action.payload
+      }
+
     case 'GET_REMINDER_DATA':
       return {
         ...state,

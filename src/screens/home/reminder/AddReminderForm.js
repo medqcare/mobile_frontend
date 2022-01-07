@@ -19,29 +19,40 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import withZero from '../../../helpers/withZero'
 import { ScrollView } from "react-native-gesture-handler";
 import { getFormattedDate, fullMonthFormat} from '../../../helpers/dateFormat'
-import { searchDrugByName, createNewDrugFromUser } from '../../../stores/action'
+import { searchDrugByName, searchAllDrugs, createNewDrugFromUser, getDrugs } from '../../../stores/action'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import SearchableDropdown from 'react-native-searchable-dropdown';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function AddReminderForm(props) {
-	const { activeDrugs, setActiveDrugs } = props.navigation.state.params
+
+	const items = [
+		 {
+		  "id": 1,
+		  "name": "Drug Name",
+		},
+	]
+
+	const { activeDrugs, setActiveDrugs, allDrugs } = props.navigation.state.params
 
 	const [drugData, setDrugData] = useState({
-		drugName: '',
 		dose: '',
 		duration: '',
 		notes: '',
 		ettiquete: [],
 		information: '',
-		drugQuantity: 0,
-		quantityTotal: 0,
-		expiredDate: ''
+		drugQuantity: '',
+		quantityTotal: '',
+		expiredDate: '',
+		patientID: props.userData._id
 	})
 
-	const [filteredDrugs, setFilteredDrugs] = useState([])
+	const [selectedItem, setSelectedItem] = useState({
+		id: 1,
+		name: 'loading...'
+	})
 
 	const newDate = new Date()
 	const formattedDate = getFormattedDate(newDate)
@@ -75,6 +86,19 @@ function AddReminderForm(props) {
 		},
 	])
 
+	const [informationList, setInformationList] = useState([
+		{
+			id: 1,
+			value: 'Sebelum Makan',
+			selected: false
+		},
+		{
+			id: 2,
+			value: 'Sesudah Makan',
+			selected: false
+		}
+	])
+
 	const onChange = (event, selectedDate) => {
 		const currentDate = selectedDate || date;
 		const hours = currentDate.getHours()
@@ -95,49 +119,65 @@ function AddReminderForm(props) {
 		showMode('date');
 	};
 
-	const showTimepicker = () => {
-		showMode('time');
-	};
-
 	const [load, setLoad] = useState(false)
-	const [time, setTime] = useState({time: ''})
 
-	function getDrugsByName(text){
-		setDrugData({...drugData, drugName: text})
-		// const result = await props.searchDrugByName(text)
-		// setFilteredDrugs(result)
-		
-		console.log(text)
+	
+
+	async function getDrugsByName(text){
+		try {
+		} catch (error) {
+			console.log(error.message)			
+		}
 	}
 
-	function addEttiquete(value, index, id){
+	function addEttiquete(value, index, list){
 		const newArray = []
 
-		const arrayOfEttiquetesList = ettiqueteList.map((el, idx) => {
-			if(el.selected === true && idx !== index){
-				newArray.push(el.value)
-			}
-			if(idx == index){
-				if(!el.selected){
-					newArray.push(value)
-				} 
-				el.selected = !el.selected
-			}
-			return el
-		})
-
-		setEttiqueteList(arrayOfEttiquetesList)
-		setDrugData({
-			...drugData,
-			ettiquete: newArray
-		})
+		if(list === 'ettiquete'){
+			const arrayOfEttiquetesList = ettiqueteList.map((el, idx) => {
+				if(el.selected === true && idx !== index){
+					newArray.push(el.value)
+				}
+				if(idx == index){
+					if(!el.selected){
+						newArray.push(value)
+					} 
+					el.selected = !el.selected
+				}
+				return el
+			})
+	
+			setEttiqueteList(arrayOfEttiquetesList)
+			setDrugData({
+				...drugData,
+				ettiquete: newArray
+			})
+		} 
+		else if(list === 'information'){
+			const arrayOfInformationList = informationList.map((el, idx) => {
+				if(el.selected === true && idx !== index){
+					el.selected = !el.selected
+				}
+				if(idx == index){
+					el.selected = !el.selected
+					setDrugData({
+						...drugData,
+						information: el.value
+					})
+				}
+				return el
+			})
+	
+			setInformationList(arrayOfInformationList)
+			
+		}
 		
 	}
 
-	const Item = ({ value, selected, index, id}) => (
+	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
 			style={styles.inputContainer}
-			onPress={() => addEttiquete(value, index, id)}
+			onPress={() => addEttiquete(value, index, 'ettiquete')}
 		>
 			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
 				<Text style={styles.inputText}>{value}</Text>
@@ -145,22 +185,43 @@ function AddReminderForm(props) {
 		</TouchableOpacity>
 	);
 
-	const renderItem = ({ item , index, id}) => (
-		<Item value={item.value} selected={item.selected} index={index} id={id} />
+	
+	const renderEttiqueteItem = ({ item , index, id}) => (
+		<EttiqueteItem value={item.value} selected={item.selected} index={index} id={id} />
+	)
+		
+	const InformationItem = ({ value, selected, index, id}) => (
+		<TouchableOpacity 
+			style={styles.inputContainer}
+			onPress={() => addEttiquete(value, index, 'information')}
+		>
+			<View style={selected ? styles.selectedFlatListInformationInput : styles.unselectedFlatListInformationInput}>
+				<Text style={styles.inputText}>{value}</Text>
+			</View>
+		</TouchableOpacity>
+	);
+
+	const renderInformationItem = ({ item , index, id}) => (
+		<InformationItem value={item.value} selected={item.selected} index={index} id={id} />
 	)
 
 	async function createDrug(){
-		const data = drugData
-		const token = JSON.parse(await AsyncStorage.getItem('token')).token
-		// const newDrug = await props.createNewDrugFromUser(data, token)
-		
-		// const newDrugs = [...activeDrugs, newDrug]
-		// setActiveDrugs(newDrugs)
-		props.navigation.pop()
+		try {
+			const token = JSON.parse(await AsyncStorage.getItem('token')).token
+			const newDrug = await props.createNewDrugFromUser(drugData, token)
+
+			const newDrugs = [...activeDrugs, newDrug]
+			setActiveDrugs(newDrugs)
+
+			props.navigation.pop()			
+		} catch (error) {
+			console.log(error)
+		}
 
 	}
 
-	
+	// console.log(filteredDrugs.length, 'length')
+
   	return (
 		<View style={styles.container}>
 			<GreyHeader
@@ -172,30 +233,60 @@ function AddReminderForm(props) {
 			<View style={styles.content}>
 				<View style={styles.inputFormContainer}>
 					{/* Drug Name */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-								style={styles.inputText}
-								autoCapitalize={'none'}
-								autoFocus={false}
-								placeholder={'Nama Obat'}
-								keyboardType={'default'}
-								placeholderTextColor="#8b8b8b" 
-								onChangeText={text => 
-									getDrugsByName(text)
-								}
-								value={drugData.drugName}
-							/>
-						</View>
-					</View>
+					<SearchableDropdown
+						onItemSelect={(item) => {
+							setSelectedItem(item)
+							setDrugData({
+								...drugData,
+								...item,
+							})
+						}}
+						itemStyle={{
+							padding: 10,
+							marginTop: 2,
+							backgroundColor: '#ddd',
+							borderColor: '#bbb',
+							borderWidth: 1,
+							borderRadius: 5,
+						}}
+						itemTextStyle={{ color: '#222' }}
+						itemsContainerStyle={{ maxHeight: 150 }}
+						items={allDrugs}
+						resetValue={true}
+						textInputProps={
+						{
+							placeholder: "Nama obat",
+							placeholderTextColor: '#8b8b8b',
+							underlineColorAndroid: "transparent",
+							value: selectedItem.name,
+							style: {
+								...styles.input,
+								color: 'white'
+							},
+							onTextChange: text => getDrugsByName(text)
+						}
+						}
+						listProps={{
+							nestedScrollEnabled: true,
+						}}
+					/>
 
 					{/* Frequency */}
 					<FlatList
 						data={ettiqueteList}
-						renderItem={renderItem}
+						renderItem={renderEttiqueteItem}
 						keyExtractor={item => item.id}
 						horizontal={false}
 						numColumns={3}
+					/>
+
+					{/* Information */}
+					<FlatList
+						data={informationList}
+						renderItem={renderInformationItem}
+						keyExtractor={item => item.id}
+						horizontal={false}
+						numColumns={2}
 					/>
 
 					<View style={styles.inputContainer}>
@@ -236,7 +327,7 @@ function AddReminderForm(props) {
 								onChangeText={number =>
 									setDrugData({...drugData, dose: number})
 								}
-								value={drugData.dose}
+								value={(drugData.dose).toString()}
 							/>
 						</View>
 					</View>
@@ -255,7 +346,7 @@ function AddReminderForm(props) {
 									onChangeText={number =>
 										setDrugData({...drugData, quantityTotal: number, drugQuantity: number})
 									}
-									value={drugData.drugQuantity}
+									value={(drugData.drugQuantity).toString()}
 								/>
 						</View>
 					</View>
@@ -357,7 +448,31 @@ const styles = StyleSheet.create({
         backgroundColor: 'blue',
         justifyContent: 'center',
 		alignItems: "center",
-		width: (dimWidth * 0.9) * 0.333,
+		width: (dimWidth * 0.9) * (1/3),
+    },
+
+	unselectedFlatListInformationInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * 0.5,
+    },
+	
+	selectedFlatListInformationInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: 'blue',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * 0.5,
     },
 
 	inputText: {
@@ -440,7 +555,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
 	searchDrugByName,
-	createNewDrugFromUser
+	searchAllDrugs,
+	createNewDrugFromUser,
+	getDrugs
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddReminderForm)
