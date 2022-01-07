@@ -988,6 +988,29 @@ export function setAlergie(patientId, alergie, token) {
   };
 }
 
+export function editAlergi(id, alergie, alergieType, token) {
+  return (dispatch) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let data = await instance({
+          url: `/v1/members/editAlergi/${id}`,
+          method: 'PUT',
+          data: {
+            alergie,
+            alergieType
+          },
+          headers: { Authorization: token },
+        });
+        resolve(data.data);
+      } catch (error) {
+        console.log(error, 'ini kembalian data alergie');
+        ToastAndroid.show('Gagal menambahkan alergi', ToastAndroid.SHORT);
+        reject(error.message);
+      }
+    });
+  };
+}
+
 export function getAlergie(patientId, token) {
   console.log(patientId, 'ini id di action');
   return (dispatch) => {
