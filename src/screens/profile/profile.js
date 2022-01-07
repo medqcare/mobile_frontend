@@ -1,79 +1,76 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    ScrollView,
-    BackHandler,
-    Image
-} from 'react-native'
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  BackHandler,
+  Image,
+} from 'react-native';
 import {
-    widthPercentageToDP as wp,
-    heightPercentageToDP as hp
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { connect } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import ArrowBack from '../../assets/svg/ArrowBack'
+import { connect } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ArrowBack from '../../assets/svg/ArrowBack';
 
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import Icon5 from 'react-native-vector-icons/FontAwesome5'
+import Icon5 from 'react-native-vector-icons/FontAwesome5';
 
-import ProfileInfo from '../../components/profile/dashboard/profile-info'
+import ProfileInfo from '../../components/profile/dashboard/profile-info';
 
-import { changeLogin, logout } from '../../stores/action'
+import { changeLogin, logout } from '../../stores/action';
 import { SafeAreaView } from 'react-navigation';
 import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapDispatchToProps = {
-    changeLogin, logout
-}
+  changeLogin,
+  logout,
+};
 
-const mapStateToProps = state => {
-    return state
-}
+const mapStateToProps = (state) => {
+  return state;
+};
 
 const profile = (props) => {
-    const { email } = props.userData.userID
-    BackHandler.addEventListener("hardwareBackPress", () => {
-        props.navigation.navigate('Home')
-        return true
-    })
+  const { email } = props.userData.userID;
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    props.navigation.navigate('Home');
+    return true;
+  });
 
-    const logoutButton = async () => {
-        props.logout(props.navigation)
-    }
+  const logoutButton = async () => {
+    props.logout(props.navigation);
+  };
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <GreyHeader
-                navigate={props.navigation.navigate}
-                navigateTo={'Home'}
-                title='Profil Saya'
-            />
-            <ProfileInfo navigation={props.navigation} destination='ProfileStack'/>
-            <View style={{flex: 1, backgroundColor: '#1F1F1F', width: '100%'}}>
-                <View style={styles.menu}>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('ProfileDetail')}
-                        style={styles.upperMenu}
-                    >
-                        <Text style={styles.menuText}>Profil Saya</Text>
-                        <Image
-                            source={require('../../assets/png/ArrowMenu.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => props.navigation.navigate('AddFamily')}
-                        style={styles.upperMenu}
-                    >
-                        <Text style={styles.menuText}>Daftar Keluarga</Text>
-                        <Image
-                            source={require('../../assets/png/ArrowMenu.png')}
-                        />
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity
+  return (
+    <SafeAreaView style={styles.container}>
+      <GreyHeader
+        navigate={props.navigation.navigate}
+        navigateTo={'Home'}
+        title="Profil Saya"
+      />
+      <ProfileInfo navigation={props.navigation} destination="ProfileStack" />
+      <View style={{ flex: 1, backgroundColor: '#1F1F1F', width: '100%' }}>
+        <View style={styles.menu}>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('ProfileDetail')}
+            style={styles.upperMenu}
+          >
+            <Text style={styles.menuText}>Profil Saya</Text>
+            <Image source={require('../../assets/png/ArrowMenu.png')} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('AddFamily')}
+            style={styles.upperMenu}
+          >
+            <Text style={styles.menuText}>Daftar Keluarga</Text>
+            <Image source={require('../../assets/png/ArrowMenu.png')} />
+          </TouchableOpacity>
+          {/* <TouchableOpacity
                         style={styles.upperMenu}
                     >
                         <Text style={styles.menuText}>Aktifitas</Text>
@@ -89,17 +86,19 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity> */}
-                    <TouchableOpacity
-                        
-                        style={styles.bottomMenu}
-                        onPress={() => props.navigation.navigate('ChangePasswordForm', { email, destination: 'ProfileStack' })}
-                    >
-                        <Text style={styles.menuText}>Ubah Kata Sandi </Text>
-                        <Image
-                            source={require('../../assets/png/ArrowMenu.png')}
-                        />
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity
+          <TouchableOpacity
+            style={styles.bottomMenu}
+            onPress={() =>
+              props.navigation.navigate('ChangePasswordForm', {
+                email,
+                destination: 'ProfileStack',
+              })
+            }
+          >
+            <Text style={styles.menuText}>Ubah Kata Sandi </Text>
+            <Image source={require('../../assets/png/ArrowMenu.png')} />
+          </TouchableOpacity>
+          {/* <TouchableOpacity
                         style={styles.bottomMenu}
                     >
                         <Text style={styles.menuText}>Metode Pembayaran</Text>
@@ -107,120 +106,121 @@ const profile = (props) => {
                             source={require('../../assets/png/ArrowMenu.png')}
                         />
                     </TouchableOpacity> */}
-                </View>
-                <View style={styles.separator}/>
-                <View style={styles.logoutMenu}>
-                    <TouchableOpacity
-                        onPress={() => logoutButton()}
-                        style={styles.logout}
-                    >
-                        <Text style={styles.logoutText}>Keluar</Text>
-                        <Image
-                            source={require('../../assets/png/LogoutLogo.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.bottomInfo}>
-                        <Image
-                            // style={styles.bottomLogoMedQCare}
-                            source={require('../../assets/png/MedQCareLogo.png')}
-                        />
-                        <Text style={styles.bottomVersionText}>Version 1.0.0</Text>
-                </View>
-            </View>
-        </SafeAreaView>
-    )
-}
+        </View>
+        <View style={styles.separator} />
+        <View style={styles.logoutMenu}>
+          <TouchableOpacity
+            onPress={() => logoutButton()}
+            style={styles.logout}
+          >
+            <Text style={styles.logoutText}>Keluar</Text>
+            <Image source={require('../../assets/png/LogoutLogo.png')} />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bottomInfo}>
+          <Image
+            // style={styles.bottomLogoMedQCare}
+            style={{ width: 120, height: 30, resizeMode: 'center' }}
+            source={require('../../assets/png/MedQCareLogo.png')}
+          />
+          <Text style={styles.bottomVersionText}>Version 1.0.0</Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 
-    header: {
-        flexDirection: 'row',
-        height: 60,
-        width: '100%',
-        backgroundColor: '#2F2F2F',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-        paddingTop: 20
-    },
+  header: {
+    flexDirection: 'row',
+    height: 60,
+    width: '100%',
+    backgroundColor: '#2F2F2F',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingTop: 20,
+  },
 
-    headerLeft: {
-        flexDirection: 'row'
-    },
+  headerLeft: {
+    flexDirection: 'row',
+    width: '40%',
+    height: '50%',
+  },
 
-    headerText: {
-        color: '#DDDDDD',
-        fontSize: 18
-    },
+  headerText: {
+    color: '#DDDDDD',
+    fontSize: 18,
+  },
 
-    menu: {
-        width: '100%',
-        paddingHorizontal: 25
-    },
+  menu: {
+    width: '100%',
+    paddingHorizontal: 25,
+  },
 
-    upperMenu: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingTop: 30
-    },
+  upperMenu: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 30,
+  },
 
-    bottomMenu: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 30
-    },
+  bottomMenu: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 30,
+  },
 
-    menuText: {
-        fontSize: 16,
-        color: '#DDDDDD'
-    },
+  menuText: {
+    fontSize: 14,
+    color: '#DDDDDD',
+  },
 
-    separator: {
-        width: '100%',
-        height: 16,
-        backgroundColor: '#2F2F2F'
-    },
+  separator: {
+    width: '100%',
+    height: 16,
+    backgroundColor: '#2F2F2F',
+  },
 
-    logoutMenu: {
-        width: '100%',
-        paddingHorizontal: 25
-    },
+  logoutMenu: {
+    width: '100%',
+    paddingHorizontal: 25,
+  },
 
-    logout: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 30
-    },
+  logout: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 30,
+  },
 
-    logoutText: {
-        fontSize: 16,
-        color: '#FD6B6B'
-    },
+  logoutText: {
+    fontSize: 16,
+    color: '#FD6B6B',
+  },
 
-    bottomInfo: {
-        width: '100%',
-        paddingBottom: 15,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        position: 'absolute',
-        bottom: 0,
-    },
+  bottomInfo: {
+    width: '100%',
+    paddingBottom: 15,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    position: 'absolute',
+    bottom: 0,
+  },
 
-    bottomLogoMedQCare: {
-        height: 20,
-        width: 66,
-    },
+  bottomLogoMedQCare: {
+    height: 20,
+    width: 66,
+  },
 
-    bottomVersionText: {
-        color: '#B5B5B5',
-        fontSize: 12
-    }
-})
+  bottomVersionText: {
+    color: '#B5B5B5',
+    fontSize: 12,
+  },
+});
 
 // const viewStyles = StyleSheet.create({
 //     outer: {
@@ -306,9 +306,10 @@ const styles = StyleSheet.create({
 //     }
 // })
 
-export default connect(mapStateToProps, mapDispatchToProps)(profile)
+export default connect(mapStateToProps, mapDispatchToProps)(profile);
 
-{/*<ScrollView style={{ flex: 1, }}>
+{
+  /*<ScrollView style={{ flex: 1, }}>
                 <View style={viewStyles.list}>
                     <TouchableOpacity
                         style={[viewStyles.bottom,]}
@@ -399,4 +400,5 @@ export default connect(mapStateToProps, mapDispatchToProps)(profile)
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-            */}
+            */
+}

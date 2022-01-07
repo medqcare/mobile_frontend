@@ -50,7 +50,6 @@ function dateWithDDMMMYYYYFormat(date) {
     'November',
     'Desember',
   ];
-  console.log(date.getMonth(), 'this is month');
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const monthName = months[date.getMonth()];
   const dateNumber =
