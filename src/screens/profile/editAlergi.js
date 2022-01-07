@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setAlergie, getAlergie, deleteAlergie } from "../../stores/action";
+import { setAlergie, getAlergie, deleteAlergie, editAlergi } from "../../stores/action";
 import { connect } from "react-redux";
 import LottieLoader from "lottie-react-native";
 import SelectPatient from "../../components/modals/selectPatient";
@@ -20,10 +20,13 @@ import SelectModalAllergies from "../../components/modals/modalPickerAllergies";
 import ConfirmationModal from "../../components/modals/ConfirmationModal";
 import GradientHeader from "../../components/headers/GradientHeader";
 
+import IcEdit from "../../assets/svg/ic_edit"
+import IcTrash from "../../assets/svg/ic_trash"
+
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-const Allergies = (props) => {
+const EditAllergies = (props) => {
   const [accountOwner, setAccountOwner] = useState(props.userData);
   const [displayName, setDisplayName] = useState(
     props.userData.lastName
@@ -41,30 +44,10 @@ const Allergies = (props) => {
   const [family, setFamily] = useState([]);
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
+  const [dataAlergi, setDataAlergi] = useState(null)
 
-  const [selectionType, setSelectionType] = useState([])
+  const [selectionType, setSelectionType] = useState([]);
 
-  async function addAlergies(type) {
-    let token = await AsyncStorage.getItem("token");
-    if (inputAlergies && type) {
-      setModalAllergyTypes(false);
-      props
-        .setAlergie(
-          idUser._id,
-          { alergie: inputAlergies, alergieType: type },
-          JSON.parse(token).token
-        )
-        .then((backData) => {
-          _fetchDataAlergi();
-          setInputAlergies("");
-        });
-    } else {
-      ToastAndroid.show(
-        "please fill in allergy and type of allergy",
-        ToastAndroid.LONG
-      );
-    }
-  }
 
   function getFamily() {
     let dataUser = {
@@ -97,7 +80,7 @@ const Allergies = (props) => {
     let temp = {
       OBAT: [],
       MAKANAN: [],
-      CUACA: []
+      CUACA: [],
     };
     props
       .getAlergie(idUser._id, JSON.parse(token).token)
@@ -109,21 +92,22 @@ const Allergies = (props) => {
               temp[item.alergieType.toUpperCase()] = [];
             }
             temp[item.alergieType.toUpperCase()].push({
+              id: item._id,
               alergi: item.alergie,
               createBy: item.createBy,
             });
           }
         }
-          
-        const keySelection = Object.keys(temp)
-        const index = keySelection.indexOf('')
-        if ( index !== -1 ) keySelection.splice(index, 1)
-        setSelectionType(keySelection)
 
-        if(temp.OBAT.length === 0) delete temp.OBAT
-        if(temp.MAKANAN.length === 0) delete temp.MAKANAN
-        if(temp.CUACA.length === 0) delete temp.CUACA
-          
+        const keySelection = Object.keys(temp);
+        const index = keySelection.indexOf("");
+        if (index !== -1) keySelection.splice(index, 1);
+        setSelectionType(keySelection);
+
+        if (temp.OBAT.length === 0) delete temp.OBAT;
+        if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
+        if (temp.CUACA.length === 0) delete temp.CUACA;
+
         setAlergies(temp);
         setLoad(false);
       })
@@ -138,9 +122,32 @@ const Allergies = (props) => {
     props
       .deleteAlergie(_idAlergie, JSON.parse(token).token)
       .then((backData) => {
-        // console.log('delete', backData);
+        console.log('delete', backData);
         _fetchDataAlergi();
       });
+  }
+
+  async function editAlergi(type) {
+    let token = await AsyncStorage.getItem("token");
+    if (dataAlergi.alergi && type) {
+      setModalAllergyTypes(false);
+      props
+        .editAlergi(
+          dataAlergi.id,
+          dataAlergi.alergi,
+          type,
+          JSON.parse(token).token
+        )
+        .then((backData) => {
+          _fetchDataAlergi();
+          setInputAlergies("");
+        });
+    } else {
+      ToastAndroid.show(
+        "please fill in allergy and type of allergy",
+        ToastAndroid.LONG
+      );
+    }
   }
 
   useEffect(() => {
@@ -151,7 +158,7 @@ const Allergies = (props) => {
     if (idUser._id) {
       _fetchDataAlergi();
     }
-  }, [idUser, props.navigation.state.params]);
+  }, [idUser]);
 
   function setSelectedValue(data) {
     const fullName = data.lastName
@@ -167,30 +174,11 @@ const Allergies = (props) => {
       {/* Back Button */}
       <GradientHeader
         navigate={props.navigation.navigate}
-        navigateBack={"Home"}
-        title="Alergi Pasien"
+        navigateBack={"MainAllergy"}
+        title="Edit Alergi"
+        params={{refresh: true}}
       />
 
-      {/* Name box */}
-      <View style={styles.boxContainer}>
-        <TouchableOpacity
-          onPress={() => setModalPatient(true)}
-          style={{ ...styles.box, height: 50 }}
-        >
-          <Text style={styles.inputText}>{displayName}</Text>
-          <Image source={require("../../assets/png/ArrowDown.png")} />
-        </TouchableOpacity>
-
-        <SelectPatient
-          modal={modalPatient}
-          setModal={setModalPatient}
-          accountOwner={accountOwner}
-          family={family}
-          title="Siapa yang ingin anda check?"
-          setSelectedValue={setSelectedValue}
-          navigateTo={props.navigation.navigate}
-        />
-      </View>
       {Load ? (
         <View style={{ flex: 1, width: "100%", backgroundColor: "#1F1F1F" }}>
           <LottieLoader
@@ -201,93 +189,55 @@ const Allergies = (props) => {
         </View>
       ) : (
         <>
-          {/* Lower View */}
-          {Object.keys(allergies).length ? (
-            // Allergy Box
-            <View>
-              <View style={styles.boxDetail}>
-                <View style={styles.itemBoxDetail}>
-                  <View style={styles.boxDokter} />
-                  <Text style={styles.textBoxDetail}>Dibuat oleh Dokter</Text>
-                </View>
-                <View style={styles.itemBoxDetail}>
-                  <View style={styles.boxPatient} />
-                  <Text style={styles.textBoxDetail}>Dibuat oleh Pasien</Text>
-                </View>
-              </View>
-              <ScrollView style={{ height: dimHeight * 0.6 }}>
-                {Object.keys(allergies).map((el, index) => {
-                  return (
-                    <View style={styles.allergieBoxContainer} key={index}>
-                      <View style={styles.allergiesTextContainerTop}>
-                        <Text style={styles.allergiesTextTop}>{el || 'Lainnya'}</Text>
-                      </View>
-                      <TouchableOpacity style={styles.lowerBox} onPress={() => props.navigation.navigate('EditAllergy')}>
-                        <View style={styles.allergiesTextContainer}>
-                          <Text>
-                            {allergies[el].map((item, idx) => {
-                              return (
-                                <Text
-                                  key={idx}
-                                  style={
-                                    item.createBy == "Patient"
-                                      ? styles.allergiesPatientText
-                                      : styles.allergiesDokterText
-                                  }
-                                >
-                                  {item.alergi}
-                                  {allergies[el].length - 1 !== idx
-                                    ? ", "
-                                    : null}
-                                </Text>
-                              );
-                            })}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
+          <View>
+            <ScrollView style={{ height: dimHeight * 0.9 }}>
+              {Object.keys(allergies).map((el, index) => {
+                return (
+                  <View style={styles.allergieBoxContainer} key={index}>
+                    <View style={styles.allergiesTextContainerTop}></View>
+                    <View style={styles.lowerBox} key={el.id}>
+                      <Text style={styles.allergiesTextTop}>
+                        {el || "Lainnya"}
+                      </Text>
+                      {allergies[el].map((item, idx) => {
+                        return (
+                          <View key={idx}>
+                            <View style={styles.allergiesTextContainer}>
+                              <Text style={item.createBy == "Patient" ? styles.allergiesPatientText : styles.allergiesDokterText}>
+                                {item.alergi.length > 30
+                                  ? item.alergi.slice(0, 30) + " ..."
+                                  : item.alergi}
+                              </Text>
+                              <View style={{flexDirection: 'row', width: dimWidth * 0.13, justifyContent: 'space-between'}}>
+                                <TouchableOpacity onPress={() => {
+                                  setDataAlergi({
+                                    ...item,
+                                    type: el
+                                  })
+                                  setModalAllergyTypes(true)
+                                }
+                                  }>
+                                  <IcEdit />
+                                </TouchableOpacity>
+                                {
+                                  item.createBy !== "Dokter" && 
+                                  <TouchableOpacity onPress={() => {
+                                    setModalW(true);
+                                    setId(item.id);
+                                  }}>
+                                    <IcTrash />
+                                  </TouchableOpacity>
+                                }
+                              </View>
+                            </View>
+                          </View>
+                        );
+                      })}
                     </View>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          ) : (
-            <View style={{ alignItems: "center" }}>
-              <Text style={{ padding: 10, color: "#fff" }}>
-                Tidak ada alergi
-              </Text>
-            </View>
-          )}
-          {/* Add Allergy Button */}
-          <View style={styles.addAlergiesContainer}>
-            <TouchableOpacity
-              onPress={() => {
-                setModalAllergyTypes(true);
-              }}
-              style={styles.button}
-            >
-              {Load ? (
-                <ActivityIndicator size={"small"} color="#FFF" />
-              ) : (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      color: "#FFF",
-                      paddingLeft: 15,
-                      color: "#4398D1",
-                    }}
-                  >
-                    Ketuk untuk menambah alergi
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </ScrollView>
           </View>
         </>
       )}
@@ -297,8 +247,11 @@ const Allergies = (props) => {
         inputAlergies={inputAlergies}
         setInputAlergies={setInputAlergies}
         load={Load}
-        addAlergies={addAlergies}
+        editAlergi={editAlergi}
         selectionType={selectionType}
+        title={'Edit Alergi'}
+        dataAlergi={dataAlergi}
+        setDataAlergi={setDataAlergi}
       />
       <ConfirmationModal
         modal={modalW}
@@ -411,18 +364,20 @@ const styles = StyleSheet.create({
   },
   allergiesTextContainer: {
     flexDirection: "row",
+    justifyContent: "space-between",
     width: "100%",
-    paddingVertical: dimHeight * 0.02,
+    paddingBottom: dimHeight * 0.015,
   },
   allergiesTextTop: {
-    color: "#A0A0A0",
+    color: "#A87F0B",
     textTransform: "uppercase",
+    paddingVertical: dimHeight * 0.02,
   },
   allergiesDokterText: {
     color: "#4BE395",
   },
   allergiesPatientText: {
-    color: "#A87F0B",
+    color: "#DDDDDD",
   },
   addAlergiesContainer: {
     justifyContent: "center",
@@ -480,10 +435,11 @@ const mapDispatchToProps = {
   setAlergie,
   getAlergie,
   deleteAlergie,
+  editAlergi
 };
 
 const mapStateToProps = (state) => {
   return state;
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Allergies);
+export default connect(mapStateToProps, mapDispatchToProps)(EditAllergies);
