@@ -8,15 +8,19 @@ import {
   FlatList,
   SafeAreaView,
   ToastAndroid,
-  ActivityIndicator,
+  StatusBar,
   PermissionsAndroid,
   Image,
+  TextInput,
 } from 'react-native';
 
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
+import { Ionicons } from '@expo/vector-icons';
+import SearchIcon from '../../../assets/svg/Search';
+import SelectPatient from '../../../components/modals/selectPatient';
 import { connect } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -37,37 +41,75 @@ import Ic_Sort from '../../../assets/svg/ic_sort';
 import Ic_Dokumen from '../../../assets/svg/ic_documen';
 import Ic_Option from '../../../assets/svg/ic_option';
 import * as DocumentPicker from 'expo-document-picker';
+import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
   const [modalRename, setModalRename] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [selectedKey, setSelectedKey] = useState(null);
   const [selectedUrl, setfileUrl] = useState(null);
   const [modalLoad, setModalLoad] = useState(false);
-  const patientID = props.patientID;
+  const [searchIsFocus, setIsFocusSearch] = useState(false);
+
+  const [types, setTypes] = useState([
+    'semua',
+    'resep',
+    'radiologi',
+    'laboratorium',
+  ]);
+  const [typeSelected, setTypeSelected] = useState('semua');
+
+  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [modalPatient, setModalPatient] = useState(false);
+  const [family, setFamily] = useState([]);
+  const [patient, setPatient] = useState({
+    patientID: props.userData._id,
+    imageUrl: props.userData.imageUrl,
+  });
+
+  useEffect(() => {
+    let _family = {
+      ...props.userData,
+    };
+    delete _family.family;
+    const temp = [_family];
+    props.userData.family.forEach((el) => {
+      temp.push(el);
+    });
+    setFamily(family.concat(temp));
+  }, []);
 
   useEffect(() => {
     _fetchData();
-  }, [patientID]);
+  }, [patient]);
 
-  useEffect(() => {}, [setSelectedName, setSelectedId, setSelectedKey]);
+  useEffect(() => {
+    if (typeSelected !== 'semua') {
+      const filteredData = data.filter((doc) => doc.type === typeSelected);
+      setFilteredData(filteredData);
+    } else {
+      setFilteredData(data);
+    }
+  }, [typeSelected]);
 
   const _fetchData = async () => {
     setLoading(true);
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    getDocumentByPatient(token, patientID)
+    getDocumentByPatient(token, patient.patientID)
       .then(({ data }) => {
+        setFilteredData(data.data);
         setData(data.data);
       })
       .catch((err) => {
@@ -84,7 +126,7 @@ function DokumenList(props) {
 
   const upload = async (data) => {
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    uploadDocument(token, patientID, data)
+    uploadDocument(token, patient.patientID, data)
       .then(({ data }) => {
         console.log(data);
         _fetchData();
@@ -103,7 +145,7 @@ function DokumenList(props) {
       documentid: selectedId,
       name: newName,
     };
-    renameDocument(token, patientID, payload)
+    renameDocument(token, patient.patientID, payload)
       .then(({ data }) => {
         _fetchData();
       })
@@ -122,7 +164,7 @@ function DokumenList(props) {
       documentid: selectedId,
       key: selectedKey,
     };
-    deleteDocument(token, patientID, payload)
+    deleteDocument(token, patient.patientID, payload)
       .then(({ data }) => {
         console.log(data);
         _fetchData();
@@ -170,7 +212,7 @@ function DokumenList(props) {
     },
   ];
 
-  async function setSelectedValue(label) {
+  async function setSelectedValue(label, typeDoc) {
     switch (label) {
       case 'Kamera':
         // await props.navigation.navigate("ProfilePictureCamera", {
@@ -180,8 +222,6 @@ function DokumenList(props) {
 
       case 'Galeri':
         let result = await DocumentPicker.getDocumentAsync({});
-        console.log(result.uri);
-        console.log(result);
         if (result.uri) {
           setUploadLoading(true);
           let uri = result.uri;
@@ -192,7 +232,8 @@ function DokumenList(props) {
           let type = result.mimeType;
           const data = new FormData();
           data.append('avatar', { uri, name, type });
-          console.log(data);
+          // DEFAULT
+          data.append('type', typeDoc);
           upload(data);
         }
         break;
@@ -271,7 +312,6 @@ function DokumenList(props) {
   const saveFile = async (uri) => {
     const asset = await MediaLibrary.createAssetAsync(uri);
     const album = await MediaLibrary.getAlbumAsync('Download');
-    console.log(album);
     if (album == null) {
       await MediaLibrary.createAlbumAsync('Download', asset, false);
       ToastAndroid.show(
@@ -286,166 +326,371 @@ function DokumenList(props) {
       );
     }
   };
-  console.log(data);
 
-  // const pdfBuffer = FileSystem.downloadAsync(selectedUrl)
+  const typeStyleBehavior = (type) => ({
+    container: {
+      backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
+      borderWidth: 1,
+      borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 99,
+      alignSelf: 'flex-start',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 8,
+    },
+    text: {
+      color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
+      fontSize: 12,
+      textTransform: 'capitalize',
+    },
+  });
+
+  const renderType = ({ item }) => {
+    const { container, text } = typeStyleBehavior(item);
+    return (
+      <TouchableOpacity style={container} onPress={() => setTypeSelected(item)}>
+        <Text style={text}>{item}</Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      {data.length && !loading ? (
-        <View style={styles.document}>
-          <TouchableOpacity style={styles.textHeader}>
-            <Text style={styles.textItem}>Terakhir diunggah </Text>
-            <View style={{ marginTop: dimHeight * 0.005, paddingLeft: 10 }}>
-              <Ic_Sort />
-            </View>
-          </TouchableOpacity>
-          <SafeAreaView>
-            <FlatList
-              data={data}
-              numColumns={2}
-              keyExtractor={(item) => String(item._id)}
-              renderItem={({ item }) => {
-                return (
-                  <View style={styles.cardDokumen}>
-                    <TouchableOpacity
-                      onPress={() =>
-                        props.navigation.navigate('ShowDokumen', {
-                          uri: item.fileUrl,
-                          name: item.name,
-                          backTo: 'ListDokumenMedis',
-                        })
-                      }
-                      style={styles.imageDokumen}
-                    >
-                      <View style={{ alignItems: 'center' }}>
-                        <Image
-                          style={{ height: 50, width: 50 }}
-                          source={require('../../../assets/png/pdf.png')}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setSelectedId(item._id);
-                        setSelectedName(item.name);
-                        setSelectedKey(item.key);
-                        setfileUrl(item.fileUrl);
-                        setModalOption(true);
-                      }}
-                      style={styles.detailCard}
-                    >
-                      <View style={styles.iconDoc}>
-                        <Ic_Dokumen />
-                      </View>
-                      <View
-                        style={{
-                          maxWidth: dimWidth * 0.25,
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <Text style={styles.dokumentName}>{item.name}</Text>
-                      </View>
-                      <View style={styles.iconOption}>
-                        <Ic_Option />
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
+      <StatusBar
+        barStyle="light-content"
+        translucent={true}
+        backgroundColor={'transparent'}
+      />
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => props.navigation.pop()}
+          style={styles.arrow}
+        >
+          <Ionicons
+            name="arrow-back"
+            color="#fff"
+            size={25}
+            style={styles.backArrow}
+          />
+        </TouchableOpacity>
+        <View style={styles.searchArea}>
+          <View>
+            <SearchIcon />
+          </View>
+          <TextInput
+            style={styles.textinput}
+            placeholder="Cari Dokumen"
+            placeholderTextColor="#A2A2A2"
+            onFocus={() => {
+              setFilteredData([]);
+              setIsFocusSearch(true);
+            }}
+            onChangeText={(text) => {
+              if (text === '') {
+                setFilteredData(data);
+                setIsFocusSearch(false);
+                return;
+              }
+              setIsFocusSearch(true);
+              const filteredBySearch = data.filter((doc) =>
+                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
+              );
+              setFilteredData(filteredBySearch);
+            }}
+          />
+          <TouchableOpacity onPress={() => setModalPatient(true)}>
+            <Image
+              style={{
+                height: dimHeight * 0.04,
+                width: dimHeight * 0.04,
+                borderRadius: dimHeight * 0.04,
+              }}
+              source={{
+                uri: patient.imageUrl
+                  ? `${patient?.imageUrl}?time=${new Date()}`
+                  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
               }}
             />
-          </SafeAreaView>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <>
-          {loading ? (
-            <LottieLoader
-              source={require('../../animation/loading.json')}
-              autoPlay
-              loop
-            />
-          ) : (
-            <View style={{ ...styles.document, alignItems: 'center' }}>
-              <Text style={styles.textItem}>Tidak ada dokumen</Text>
-            </View>
-          )}
-        </>
-      )}
+      </View>
 
-      {!loading ? (
-        <TouchableOpacity
-          onPress={() => setModalAdd(true)}
-          style={styles.buttonAdd}
-          disabled={uploadLoading}
-        >
-          {uploadLoading ? (
-            <LottieLoader
-              source={require('../../../screens/animation/orange-pulse.json')}
-              autoPlay
-              loop
-            />
+      <>
+        {data.length !== 0 && !searchIsFocus ? (
+          <View
+            style={{
+              marginVertical: 12,
+              width: '100%',
+              paddingLeft: 12,
+            }}
+          >
+            <View style={{ flexDirection: 'row' }}>
+              <FlatList
+                data={types}
+                renderItem={renderType}
+                keyExtractor={(_, index) => `${index}-type`}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+          </View>
+        ) : null}
+        <View style={styles.docsContainer}>
+          {filteredData.length && !loading ? (
+            <View style={styles.document}>
+              <TouchableOpacity style={styles.textHeader}>
+                <Text style={styles.textItem}>Terakhir diunggah </Text>
+                <View style={{ marginTop: dimHeight * 0.005, paddingLeft: 10 }}>
+                  <Ic_Sort />
+                </View>
+              </TouchableOpacity>
+              <View>
+                <FlatList
+                  data={filteredData}
+                  keyExtractor={(item) => String(item._id)}
+                  renderItem={({ item }) => {
+                    return (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          width: '100%',
+                          marginBottom: 12,
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate('ShowDokumen', {
+                              uri: item.fileUrl,
+                              name: item.name,
+                              backTo: 'ListDokumenMedis',
+                            })
+                          }
+                          style={styles.imageDokumen}
+                        >
+                          <Image
+                            style={{ height: 50, width: 50 }}
+                            source={require('../../../assets/png/pdf.png')}
+                          />
+                        </TouchableOpacity>
+                        <View
+                          style={{
+                            justifyContent: 'space-between',
+                            width: '50%',
+                          }}
+                        >
+                          <TouchableOpacity
+                            onPress={() =>
+                              props.navigation.navigate('ShowDokumen', {
+                                uri: item.fileUrl,
+                                name: item.name,
+                                backTo: 'ListDokumenMedis',
+                              })
+                            }
+                          >
+                            <Text style={styles.dokumentName} numberOfLines={4}>
+                              {item.name}
+                            </Text>
+                            <Text
+                              style={{
+                                color: '#b5b5b5',
+                                fontSize: 12,
+                                marginTop: 4,
+                              }}
+                            >
+                              dr. Corrie James Sp.JP, FIHA
+                            </Text>
+                          </TouchableOpacity>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                            }}
+                          >
+                            <Text style={{ color: '#b5b5b5', fontSize: 10 }}>
+                              {item.createdAt
+                                ? `Diterima ${dateWithDDMMMYYYYFormat(
+                                    new Date(item.createdAt)
+                                  )}`
+                                : null}
+                            </Text>
+                            <TouchableOpacity
+                              style={{
+                                flexDirection: 'row',
+                                justifyContent: 'flex-end',
+                                width: 20,
+                                height: 15,
+                              }}
+                              onPress={() => {
+                                setSelectedId(item._id);
+                                setSelectedName(item.name);
+                                setSelectedKey(item.key);
+                                setfileUrl(item.fileUrl);
+                                setModalOption(true);
+                              }}
+                            >
+                              <Ic_Option />
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            </View>
           ) : (
-            <Text style={{ ...styles.textItem, fontSize: 12 }}>
-              Tambah Dokumen
-            </Text>
+            <>
+              {loading ? (
+                <LottieLoader
+                  source={require('../../animation/loading.json')}
+                  autoPlay
+                  loop
+                />
+              ) : (
+                <View
+                  style={{
+                    ...styles.document,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={styles.textItem}>Tidak ada dokumen</Text>
+                </View>
+              )}
+            </>
           )}
-        </TouchableOpacity>
-      ) : null}
-      <PictureModal
-        modal={modalAdd}
-        setModal={setModalAdd}
-        selection={addDocumentOptions}
+
+          {!loading ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '10%',
+                width: '100%',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => setModalAdd(true)}
+                style={styles.buttonAdd}
+                disabled={uploadLoading}
+              >
+                {uploadLoading ? (
+                  <LottieLoader
+                    source={require('../../../screens/animation/orange-pulse.json')}
+                    autoPlay
+                    loop
+                  />
+                ) : (
+                  <Text style={{ ...styles.textItem, fontSize: 12 }}>
+                    Tambah Dokumen
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          ) : null}
+          <ModalUploadDocument
+            modal={modalAdd}
+            setModal={setModalAdd}
+            selection={addDocumentOptions}
+            setSelectedValue={setSelectedValue}
+          />
+          <DocumentOptionModal
+            modal={modalOption}
+            setModal={setModalOption}
+            selection={documentAction}
+            setSelectedValue={setSelectedAction}
+          />
+          <RenameModal
+            modal={modalRename}
+            optionLeftFunction={() => setModalRename(false)}
+            optionLeftText={'Batal'}
+            optionRightFunction={(newName) => {
+              setModalLoad(true);
+              renameAction(newName);
+            }}
+            nameBefore={selectedName}
+            optionRightText={'Rename'}
+            warning={'Masukkan Nama Baru'}
+            load={modalLoad}
+          />
+          <ConfirmationModal
+            modal={modalDelete}
+            optionLeftFunction={() => setModalDelete(false)}
+            optionLeftText={'Batal'}
+            optionRightFunction={() => {
+              setModalLoad(true);
+              deleteAction();
+            }}
+            optionRightText={'Hapus'}
+            warning={'Yakin ingin menghapus dokumen ini'}
+            load={modalLoad}
+          />
+        </View>
+      </>
+
+      <SelectPatient
+        modal={modalPatient}
+        setModal={setModalPatient}
+        accountOwner={accountOwner}
+        family={family}
+        title="Pilih Patient"
         setSelectedValue={setSelectedValue}
-      />
-      <DocumentOptionModal
-        modal={modalOption}
-        setModal={setModalOption}
-        selection={documentAction}
-        setSelectedValue={setSelectedAction}
-      />
-      <RenameModal
-        modal={modalRename}
-        optionLeftFunction={() => setModalRename(false)}
-        optionLeftText={'Batal'}
-        optionRightFunction={(newName) => {
-          setModalLoad(true);
-          renameAction(newName);
-        }}
-        nameBefore={selectedName}
-        optionRightText={'Rename'}
-        warning={'Masukkan Nama Baru'}
-        load={modalLoad}
-      />
-      <ConfirmationModal
-        modal={modalDelete}
-        optionLeftFunction={() => setModalDelete(false)}
-        optionLeftText={'Batal'}
-        optionRightFunction={() => {
-          setModalLoad(true);
-          deleteAction();
-        }}
-        optionRightText={'Hapus'}
-        warning={'Yakin ingin menghapus dokumen ini'}
-        load={modalLoad}
+        navigateTo={(screen) => props.navigation.navigate(screen)}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: dimHeight * 0.02,
-    height: dimHeight * 0.84,
+  docsContainer: {
+    // padding: dimHeight * 0.02,
+    // height: dimHeight * 0.84,
     justifyContent: 'space-between',
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#181818',
+  },
+  header: {
+    flexDirection: 'row',
+    height: dimHeight * 0.12,
+    paddingTop: dimHeight * 0.045,
+    backgroundColor: '#2F2F2F',
+  },
+  arrow: {
+    flex: 0.12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchArea: {
+    flex: 0.88,
+    borderColor: '#DDDDDD',
+    borderWidth: 1,
+    height: dimHeight * 0.05,
+    padding: dimHeight * 0.01,
+    margin: dimHeight * 0.01,
+    borderRadius: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textinput: {
+    marginStart: 10,
+    fontSize: 14,
+    flex: 1,
+    color: '#A2A2A2',
   },
   textHeader: {
     flexDirection: 'row',
     marginBottom: dimHeight * 0.02,
   },
   document: {
-    width: '100%',
-    height: '100%',
-    paddingBottom: dimHeight * 0.04,
+    // paddingBottom: dimHeight * 0.04,
+    paddingHorizontal: 12,
+    height: '85%',
   },
   cardDokumen: {
     height: dimHeight * 0.2,
@@ -455,18 +700,17 @@ const styles = StyleSheet.create({
     color: '#B5B5B5',
   },
   dokumentName: {
-    color: '#B5B5B5',
-    fontSize: 11,
-    textAlign: 'center',
+    color: '#DDDDDD',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   buttonAdd: {
     alignItems: 'center',
     alignSelf: 'center',
-    width: dimWidth * 0.4,
-    minHeight: dimHeight * 0.04,
     backgroundColor: '#005EA2',
     borderRadius: 25,
     padding: 10,
+    minWidth: '20%',
   },
   detailCard: {
     flexDirection: 'row',
@@ -481,6 +725,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
   },
   iconDoc: {
     paddingTop: dimHeight * 0.005,

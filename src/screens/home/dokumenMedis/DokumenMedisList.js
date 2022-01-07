@@ -8,6 +8,7 @@ import {
   StatusBar,
   Image,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
@@ -45,65 +46,7 @@ function DokumenMedisList(props) {
     });
   }
 
-  return (
-    <View style={styles.container}>
-      <StatusBar
-        barStyle="light-content"
-        translucent={true}
-        backgroundColor={'transparent'}
-      />
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => props.navigation.pop()}
-          style={styles.arrow}
-        >
-          <Ionicons
-            name="arrow-back"
-            color="#fff"
-            size={25}
-            style={styles.backArrow}
-          />
-        </TouchableOpacity>
-        <View style={styles.searchArea}>
-          <View>
-            <SearchIcon />
-          </View>
-          <TextInput
-            style={styles.textinput}
-            placeholder="Cari Dokumen"
-            placeholderTextColor="#A2A2A2"
-          />
-          <TouchableOpacity onPress={() => setModalPatient(true)}>
-            <Image
-              style={{
-                height: dimHeight * 0.04,
-                width: dimHeight * 0.04,
-                borderRadius: dimHeight * 0.04,
-              }}
-              source={{
-                uri: patient.imageUrl
-                  ? `${patient?.imageUrl}?time=${new Date()}`
-                  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
-              }}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-      <DokumenList
-        navigation={props.navigation}
-        patientID={patient.patientID}
-      />
-      <SelectPatient
-        modal={modalPatient}
-        setModal={setModalPatient}
-        accountOwner={accountOwner}
-        family={family}
-        title="Pilih Patient"
-        setSelectedValue={setSelectedValue}
-        navigateTo={(screen) => props.navigation.navigate(screen)}
-      />
-    </View>
-  );
+  return <View style={styles.container}></View>;
 }
 
 const styles = StyleSheet.create({

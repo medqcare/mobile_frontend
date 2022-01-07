@@ -1,20 +1,22 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, StatusBar} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import io from 'socket.io-client';
-import getAge from '../../helpers/getAge'
-import IcPatient from '../../assets/svg/ic_pasien'
-import {baseURL} from '../../config';
+import getAge from '../../helpers/getAge';
+import IcPatient from '../../assets/svg/ic_pasien';
+import { baseURL } from '../../config';
 
-const activeActivity = props => {
+const activeActivity = (props) => {
   // console.log(Object.keys(props.data.registration))
   let queuingNumber = props.data.queuingNumber;
   const [quesekarang, setquesekarang] = useState(props.currentQueue);
 
   useEffect(() => {
     let socketer = socketers();
-    console.log('socket nyala')
+    console.log('socket nyala');
     return () => {
-      console.log('ini pas mau cabut dari component jadi manggil socket supaya mati')
+      console.log(
+        'ini pas mau cabut dari component jadi manggil socket supaya mati'
+      );
       socketer.close();
     };
   }, []);
@@ -22,7 +24,7 @@ const activeActivity = props => {
     let socketIO = `${baseURL}`;
     // let socketIO = `http://192.168.43.100:3004` // only development
     let socket = io(socketIO);
-    socket.on(`que-${JSON.parse(props.queueId)}`, data => {
+    socket.on(`que-${JSON.parse(props.queueId)}`, (data) => {
       console.log('ini console.log dari socket ', `que-${props.queueId}`);
       console.log(data);
       setquesekarang(data);
@@ -31,42 +33,35 @@ const activeActivity = props => {
   }
   return (
     <View style={Styles.containerComponent}>
-      <View style={{marginBottom: 20, paddingHorizontal: 20}}>
-        <Text style={{color: '#B5B5B5'}}>Pasien </Text>
-        <View style={{flexDirection: 'row',marginTop: 10}}>
-          <View style={{marginTop: 2}}>
+      <View style={{ marginBottom: 20, paddingHorizontal: 20 }}>
+        <Text style={{ color: '#B5B5B5' }}>Pasien </Text>
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
+          <View style={{ marginTop: 2 }}>
             <IcPatient />
           </View>
-          <Text style={{color:'#FFF', fontSize: 14, marginLeft: 10}}>{props.data.patient.patientName}</Text>
+          <Text style={{ color: '#FFF', fontSize: 14, marginLeft: 10 }}>
+            {props.data.patient.patientName}
+          </Text>
         </View>
       </View>
 
-
-    
-          
-            
-    
-
-          
-    
-    
-  
-          
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-        }}>
+        }}
+      >
         <View
           style={{
             minWidth: '42%',
             margin: '2%',
             marginLeft: '4%',
             alignItems: 'center',
-          }}>
-          <Text style={{color: '#B5B5B5'}}>Antrian Saat Ini</Text>
-          <Text style={{fontSize: 55, color: '#B5B5B5', fontWeight: 'bold'}}>
+          }}
+        >
+          <Text style={{ color: '#B5B5B5' }}>Antrian Saat Ini</Text>
+          <Text style={{ fontSize: 55, color: '#B5B5B5', fontWeight: 'bold' }}>
             {' '}
             {quesekarang}{' '}
           </Text>
@@ -75,7 +70,7 @@ const activeActivity = props => {
           style={{
             width: 1,
             height: '80%',
-            backgroundColor: '#757575'
+            backgroundColor: '#757575',
           }}
         />
         <View
@@ -84,9 +79,10 @@ const activeActivity = props => {
             margin: '2%',
             marginRight: '4%',
             alignItems: 'center',
-          }}>
-          <Text style={{color: '#FFBD00'}}>Antrian Saya</Text>
-          <Text style={{fontSize: 55, color: '#FFBD00', fontWeight: 'bold'}}>
+          }}
+        >
+          <Text style={{ color: '#FFBD00' }}>Antrian Saya</Text>
+          <Text style={{ fontSize: 55, color: '#FFBD00', fontWeight: 'bold' }}>
             {' '}
             {queuingNumber}{' '}
           </Text>

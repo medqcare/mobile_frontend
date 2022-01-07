@@ -60,6 +60,7 @@ export default function SelectPatient({
         <View style={styles.patient}>
           <FlatList
             horizontal={true}
+            showsHorizontalScrollIndicator={false}
             data={family}
             renderItem={({ item: lang }) => {
               return (
@@ -166,12 +167,13 @@ const styles = StyleSheet.create({
   },
   patient: {
     flexDirection: 'row',
-    marginHorizontal: 20,
     marginVertical: 20,
+    paddingHorizontal: 20,
   },
 
   touchable: {
-    marginLeft: 35,
+    // marginLeft: 35,
+    marginRight: 30,
   },
 
   photo: {
