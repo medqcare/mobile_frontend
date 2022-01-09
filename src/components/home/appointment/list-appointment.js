@@ -222,7 +222,7 @@ const ListApointment = (props) => {
                       <Text style={styles.date}>
                         {dataPatient.bookingSchedule}
                       </Text>
-                      <Text> - </Text>
+                      <Text style={styles.date}> - </Text>
                       <Text style={styles.clock}>
                         {dataPatient.bookingTime}
                       </Text>

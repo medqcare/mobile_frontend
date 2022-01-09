@@ -26,18 +26,6 @@ const Appointment = (props) => {
   const [Load, setLoad] = useState(true);
   const [modalDelete, setModalDelete] = useState(false);
 
-  // const _getData = () => {
-  //   return new Promise(async (resolve, reject) => {
-  //     let token = await AsyncStorage.getItem('token');
-  //     let { data } = await axios({
-  //       url: `${baseURL}/api/v1/members/getReservation`,
-  //       method: 'POST',
-  //       headers: { Authorization: JSON.parse(token).token },
-  //     });
-  //     resolve(data);
-  //   });
-  // };
-
   const _fetchDataAppoinment = async () => {
     setLoad(true);
     try {
@@ -50,7 +38,7 @@ const Appointment = (props) => {
       let datakebalik = data.data.reverse();
       let newAppoinment = [];
       datakebalik.map((item, index) => {
-        if (item.status !== 'canceled' && item.status !== 'registered') {
+        if (item.status === 'booked') {
           newAppoinment.push(item);
         }
       });

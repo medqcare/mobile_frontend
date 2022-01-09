@@ -132,7 +132,7 @@ export default function DetailResumeMedis(props) {
                             })}
                           </>
                         ) : (
-                          <Text style={styles.textItem}>Belum ada history</Text>
+                          <Text style={styles.textTitle}>Belum ada history</Text>
                         )}
                       </View>
                     </View>
@@ -278,7 +278,7 @@ export default function DetailResumeMedis(props) {
                       ) : (
                         <View style={styles.card}>
                           <View style={{}}>
-                            <Text style={styles.textItem}>Tidak ada Notes</Text>
+                            <Text style={styles.textTitle}>Tidak ada Notes</Text>
                           </View>
                         </View>
                       )}
