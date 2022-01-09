@@ -210,9 +210,10 @@ const editFamilyData = (props) => {
         data,
         dataFamily._id,
         JSON.parse(token).token,
-        props.navigation.navigate
-      )
+        )
       .then((backData) => {
+        const newData = backData.data.data.family.filter(el => el._id === dataFamily._id)
+        props.navigation.navigate('FamilyDetail', {data: newData[0]})
         setLoad(false);
       })
       .catch((err) => {
@@ -329,7 +330,7 @@ const editFamilyData = (props) => {
           >
             <RadioForm
               radio_props={radio_props}
-              initial={0}
+              initial={changeData.gender === 'Male' ? 0 : 1}
               onPress={(value) => {
                 setChangeData({ ...changeData, gender: value });
               }}

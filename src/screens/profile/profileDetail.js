@@ -16,6 +16,7 @@ import ProfileInfo from '../../components/profile/dashboard/profile-info'
 import secureEmail from '../../helpers/secureEmail';
 import GreyHeader from '../../components/headers/GreyHeader';
 import capitalFirst from '../../helpers/capitalFirst';
+import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 
 const mapStateToProps = state => {
     return state
@@ -32,6 +33,7 @@ function ProfileDetail({ navigation, userData }){
         }
     }
     const gender = genderIndonesian(userData.gender)
+    const tglLahir = dateWithDDMMMYYYYFormat(new Date(userData.dob))
     const payment = userData.payment || 'Umum'
     const address = `${capitalFirst(userData.location.city)}, ${capitalFirst(userData.location.province)}` 
 
@@ -49,7 +51,7 @@ function ProfileDetail({ navigation, userData }){
                 title='Profil Saya'
                 edit={true}
             />
-            <ProfileInfo navigation={navigation} destination='ProfileDetail'/>
+            <ProfileInfo navigation={navigation} destination='ProfileDetail' data={userData}/>
             <View style={{paddingVertical: 15}}>
                 <View style={styles.profileDetail}>
                     <View style={styles.upperDetail}>
@@ -59,6 +61,10 @@ function ProfileDetail({ navigation, userData }){
                     <View style={styles.upperDetail}>
                         <Text style={styles.profileDetailLabel}>Email</Text>
                         <Text style={styles.profileDetailValue}>{email}</Text>
+                    </View>
+                    <View style={styles.upperDetail}>
+                        <Text style={styles.profileDetailLabel}>Tanggal Lahir</Text>
+                        <Text style={styles.profileDetailValue}>{tglLahir}</Text>
                     </View>
                     <View style={styles.upperDetail}>
                         <Text style={styles.profileDetailLabel}>Jenis Kelamin</Text>
@@ -72,10 +78,10 @@ function ProfileDetail({ navigation, userData }){
                         <Text style={styles.profileDetailLabel}>Golongan Darah</Text>
                         <Text style={styles.profileDetailValue}>{bloodType}</Text>
                     </View>
-                    <View style={styles.upperDetail}>
+                    {/* <View style={styles.upperDetail}>
                         <Text style={styles.profileDetailLabel}>Pembayaran</Text>
                         <Text style={styles.profileDetailValue}>{payment}</Text>
-                    </View>
+                    </View> */}
                     <View style={styles.bottomDetail}>
                         <Text style={styles.profileDetailLabel}>Alamat Sesuai KTP</Text>
                         <Text style={styles.profileDetailValue}>{address}</Text>

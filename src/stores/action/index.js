@@ -774,10 +774,6 @@ export function edit_profile(userData, userID, token, navigateTo) {
           data: userData,
           headers: { Authorization: token },
         });
-        console.log('Profile succesfully updated');
-        console.log(
-          'Application is trying to GET data logged after successfully updating a profile'
-        );
         let dataUpdate = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
@@ -788,11 +784,10 @@ export function edit_profile(userData, userID, token, navigateTo) {
           type: 'GET_USER_DATA',
           payload: dataUpdate.data.data,
         });
-        console.log('Data logged successfully updated');
         ToastAndroid.show(data.data.message, ToastAndroid.SHORT);
-        navigateTo('FamilyList');
+        return data.data
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         reject(error);
       }
     });

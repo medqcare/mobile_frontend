@@ -62,7 +62,8 @@ const familyList = (props) => {
     return (
       // Family box
       <TouchableOpacity
-        onPress={() => props.navigateTo('EditFamilyForm', { data: family })}
+        // onPress={() => props.navigateTo('EditFamilyForm', { data: family })}
+        onPress={() => props.navigateTo('FamilyDetail', { data: family })}
         key={index}
         onLongPress={async () => {
           setTimeout(() => {

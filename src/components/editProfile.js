@@ -348,7 +348,7 @@ const editProfile = (props) => {
           >
             <RadioForm
               radio_props={radio_props}
-              initial={0}
+              initial={userData.gender === 'Male' ? 0 : 1}
               onPress={(value) => {
                 setUserData({ ...userData, gender: value });
               }}

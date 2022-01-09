@@ -22,7 +22,8 @@ export default function GreyHeader({
     title = 'Enter Title Here', 
     edit = false,
     hidden = true,
-    additionalFunction
+    additionalFunction,
+    params
 }){
     async function callAllFunction(){
         await additionalFunction()
@@ -53,7 +54,7 @@ export default function GreyHeader({
             </View>
             {edit ? 
                 <TouchableOpacity
-                    onPress={() => navigate(navigateTo)}>
+                    onPress={() => navigate(navigateTo, params)}>
                     <Feather 
                         name="edit" 
                         color="#DDDDDD" 

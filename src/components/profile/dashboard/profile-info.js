@@ -34,7 +34,7 @@ const profileInfo = (props) => {
 
     // Load
     const [load, setLoad] = useState(false)
-    const userData = props.userData
+    const userData = props.data
 
     // Profile Picture
     const [profilePictureModal, setProfilePictureModal] = useState(false)
@@ -76,11 +76,11 @@ const profileInfo = (props) => {
     async function setSelectedValue(label){
         switch (label) {
             case 'Kamera':
-                await props.navigation.navigate('ProfilePictureCamera', { destination: props.destination })
+                await props.navigation.navigate('ProfilePictureCamera', { destination: props.destination, userData })
                 break;
 
             case 'Galeri':
-                await props.navigation.navigate('ProfilePictureGallery', { destination: props.destination })
+                await props.navigation.navigate('ProfilePictureGallery', { destination: props.destination, userData })
                 break;
 
             case 'Hapus':
