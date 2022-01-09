@@ -121,7 +121,7 @@ export default function DetailResumeMedis(props) {
                             {resumeMedis.diagnoseHistory.map((el) => {
                               return (
                                 <View style={styles.item}>
-                                    <Text style={styles.textItem}>
+                                    <Text style={styles.textTitle}>
                                       {new Date(el.date).toLocaleDateString()}
                                     </Text>
                                     <Text style={styles.textItem}>
@@ -141,49 +141,49 @@ export default function DetailResumeMedis(props) {
                       <View style={styles.line} />
                       <View style={styles.card}>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Tinggi</Text>
+                          <Text style={styles.textTitle}>Tinggi</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.height || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Berat</Text>
+                          <Text style={styles.textTitle}>Berat</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.weight || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Systole</Text>
+                          <Text style={styles.textTitle}>Systole</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.systole || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Dyastole</Text>
+                          <Text style={styles.textTitle}>Dyastole</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.dyastole || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Suhu Tubuh</Text>
+                          <Text style={styles.textTitle}>Suhu Tubuh</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.temperature || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Detak Jantung</Text>
+                          <Text style={styles.textTitle}>Detak Jantung</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.heartRate || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Nutrisi</Text>
+                          <Text style={styles.textTitle}>Nutrisi</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.nutrition || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>BMI</Text>
+                          <Text style={styles.textTitle}>BMI</Text>
                           <Text style={styles.textItem}>
                             {resumeMedis.vitalSign?.bmi || '-'}
                           </Text>
@@ -200,7 +200,7 @@ export default function DetailResumeMedis(props) {
                               <View style={styles.item}>
                                 <Text
                                   style={{
-                                    ...styles.textItem,
+                                    ...styles.textTitle,
                                     fontSize: 15,
                                     color: "#DDDDDD",
                                   }}
@@ -212,7 +212,7 @@ export default function DetailResumeMedis(props) {
                                 return (
                                   <View key={idx}>
                                     <View style={styles.item}>
-                                      <Text style={styles.textItem}>
+                                      <Text style={styles.textTitle}>
                                         {action.name || action.NameTest}
                                       </Text>
                                     </View>
@@ -238,7 +238,7 @@ export default function DetailResumeMedis(props) {
                       <View style={styles.card}>
                         {resumeMedis.examination?.diagnose !== "" && (
                           <View style={styles.item}>
-                            <Text style={styles.textItem}>Diagnosa</Text>
+                            <Text style={styles.textTitle}>Diagnosa</Text>
                             <Text style={styles.textItem}>
                               {resumeMedis.examination?.diagnose || '-'}
                             </Text>
@@ -246,7 +246,7 @@ export default function DetailResumeMedis(props) {
                         )}
                         {resumeMedis.examination?.ICD !== "" && (
                           <View style={styles.item}>
-                            <Text style={styles.textItem}>ICD Kode</Text>
+                            <Text style={styles.textTitle}>ICD Kode</Text>
                             <Text style={styles.textItem}>
                               {resumeMedis.examination?.ICD || '-'}
                             </Text>
@@ -254,7 +254,7 @@ export default function DetailResumeMedis(props) {
                         )}
                         {resumeMedis.examination?.icdInfo !== "" && (
                           <View style={styles.item}>
-                            <Text style={styles.textItem}>ICD Info</Text>
+                            <Text style={styles.textTitle}>ICD Info</Text>
                             <Text style={styles.textItem}>
                               {resumeMedis.examination?.icdInfo || '-'}
                             </Text>
@@ -270,7 +270,7 @@ export default function DetailResumeMedis(props) {
                       {resumeMedis.soap && resumeMedis.soap.doctorNotes !== '' ? (
                         <View style={styles.card}>
                           <View style={{}}>
-                            <Text style={styles.textItem}>
+                            <Text style={styles.textTitle}>
                               {resumeMedis.soap?.doctorNotes}
                             </Text>
                           </View>
@@ -352,8 +352,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
   },
+  textTitle: {
+    color: "#B5B5B5",
+    fontSize: 12,
+    width: "50%",
+    justifyContent: "flex-end",
+    textAlign: "left"
+  },
   textItem: {
     color: "#B5B5B5",
     fontSize: 12,
+    width: "50%",
+    justifyContent: "flex-end",
+    textAlign: "right"
   },
 });
