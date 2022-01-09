@@ -35,8 +35,6 @@ const Allergies = (props) => {
   const [inputAlergies, setInputAlergies] = useState("");
 
   const [allergies, setAlergies] = useState([]);
-  const [modalW, setModalW] = useState(false);
-  const [idAlergie, setId] = useState(null);
   const [idUser, setIduser] = useState({ firstName: null, _id: null });
   const [family, setFamily] = useState([]);
   const [modalPatient, setModalPatient] = useState(false);
@@ -97,7 +95,7 @@ const Allergies = (props) => {
     let temp = {
       OBAT: [],
       MAKANAN: [],
-      CUACA: []
+      CUACA: [],
     };
     props
       .getAlergie(idUser._id, JSON.parse(token).token)
@@ -109,37 +107,28 @@ const Allergies = (props) => {
               temp[item.alergieType.toUpperCase()] = [];
             }
             temp[item.alergieType.toUpperCase()].push({
+              id: item._id,
               alergi: item.alergie,
               createBy: item.createBy,
             });
           }
         }
-          
-        const keySelection = Object.keys(temp)
-        const index = keySelection.indexOf('')
-        if ( index !== -1 ) keySelection.splice(index, 1)
-        setSelectionType(keySelection)
 
-        if(temp.OBAT.length === 0) delete temp.OBAT
-        if(temp.MAKANAN.length === 0) delete temp.MAKANAN
-        if(temp.CUACA.length === 0) delete temp.CUACA
-          
+        const keySelection = Object.keys(temp);
+        const index = keySelection.indexOf("");
+        if (index !== -1) keySelection.splice(index, 1);
+        setSelectionType(keySelection);
+
+        if (temp.OBAT.length === 0) delete temp.OBAT;
+        if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
+        if (temp.CUACA.length === 0) delete temp.CUACA;
+
         setAlergies(temp);
         setLoad(false);
       })
       .catch((error) => {
         console.log(error);
         setLoad(false);
-      });
-  }
-
-  async function _DeleteAlergi(_idAlergie) {
-    let token = await AsyncStorage.getItem("token");
-    props
-      .deleteAlergie(_idAlergie, JSON.parse(token).token)
-      .then((backData) => {
-        // console.log('delete', backData);
-        _fetchDataAlergi();
       });
   }
 
@@ -222,7 +211,7 @@ const Allergies = (props) => {
                       <View style={styles.allergiesTextContainerTop}>
                         <Text style={styles.allergiesTextTop}>{el || 'Lainnya'}</Text>
                       </View>
-                      <TouchableOpacity style={styles.lowerBox} onPress={() => props.navigation.navigate('EditAllergy')}>
+                      <TouchableOpacity style={styles.lowerBox} onPress={() => props.navigation.navigate('EditAllergy', {data: allergies, selected: el, selectionType})}>
                         <View style={styles.allergiesTextContainer}>
                           <Text>
                             {allergies[el].map((item, idx) => {
@@ -299,19 +288,6 @@ const Allergies = (props) => {
         load={Load}
         addAlergies={addAlergies}
         selectionType={selectionType}
-      />
-      <ConfirmationModal
-        modal={modalW}
-        optionLeftFunction={() => {
-          setModalW(false);
-        }}
-        optionLeftText={"BATAL"}
-        optionRightFunction={() => {
-          _DeleteAlergi(idAlergie);
-          setModalW(false);
-        }}
-        optionRightText={"HAPUS"}
-        warning={"Yakin ingin menghapus alergi?"}
       />
     </View>
   );

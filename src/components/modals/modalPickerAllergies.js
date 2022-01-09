@@ -77,6 +77,7 @@ export default function SelectModalAllergies({
                   ? setDataAlergi({
                       ...dataAlergi,
                       alergi: text,
+                      type : type === "Kustom" ? kustomType : type
                     })
                   : setInputAlergies(text);
               }}
@@ -85,7 +86,7 @@ export default function SelectModalAllergies({
           </View>
           <View>
             <Text style={styles.subtitle}>
-              {subtitle || "Tipe alergi (opsional)"}
+              {subtitle || "Tipe alergi ?"}
             </Text>
           </View>
           <ScrollView
