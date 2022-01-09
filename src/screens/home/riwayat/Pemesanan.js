@@ -151,7 +151,7 @@ export default function Pemesanan(props) {
                       </Text>
                       <View style={styles.time}>
                         <Text style={styles.date}>{item.bookingSchedule}</Text>
-                        <Text> - </Text>
+                        <Text style={styles.date}> - </Text>
                         <Text style={styles.clock}>{item.bookingTime}</Text>
                       </View>
                       <View style={styles.time}>
