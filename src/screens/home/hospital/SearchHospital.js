@@ -66,7 +66,7 @@ function SearchDoctorPage(props) {
           data: {
             lat: location ? location.lat : -6.268809,
             lon: location ? location.lng : 106.974705,
-            maxDistance: 100000,
+            maxDistance: 1000000000,
           },
         },
         { timeout: 4000 }
@@ -86,7 +86,7 @@ function SearchDoctorPage(props) {
     setShow([]);
     try {
       let { data, status } = await axios.get(
-        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=${mainFac}`,
+        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Hospital`,
         { timeout: 4000 }
       );
       if (status == 204) {
