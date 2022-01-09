@@ -5,6 +5,7 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  Text,
 } from "react-native";
 
 import {
@@ -12,10 +13,11 @@ import {
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
 import Search from "../../assets/svg/Search";
-import IcFilter from "../../assets/svg/Filter";
 import { Ionicons } from "@expo/vector-icons";
+import IcFilter from "../../assets/svg/Filter";
 
 export default function ClearableSearchBar({
+  navigate,
   onChangeText,
   onFocus,
   placeholder,
@@ -31,6 +33,14 @@ export default function ClearableSearchBar({
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.content} onPress={() => navigate('Home')}>
+        <Ionicons
+          name="arrow-back"
+          color="#fff"
+          size={25}
+          style={styles.backArrow}
+        />
+      </TouchableOpacity>
       <View style={styles.searcharea}>
         <Search />
         <TextInput
@@ -45,9 +55,9 @@ export default function ClearableSearchBar({
           <Ionicons name="close" size={24} color="#888888" />
         </TouchableOpacity>
       </View>
-      <View style={{ marginTop: 28 }}>
+      {/* <View style={{ marginTop: 28 }}>
         <IcFilter />
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -58,6 +68,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 20,
   },
+  content: {
+    height: 40,
+    marginTop: 20,
+    borderRadius: 40,
+    flexDirection: "row",
+    width: '10%',
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
 
   searcharea: {
     borderColor: "#DDDDDD",
@@ -66,8 +85,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 25,
     flexDirection: "row",
-    width: "90%",
-    // backgroundColor: "blue",
+    width: "88%",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 12,
@@ -78,8 +96,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     color: "#A2A2A2",
-    // borderColor: "red",
-    // borderWidth: 1,
     width: "100%",
   },
 });

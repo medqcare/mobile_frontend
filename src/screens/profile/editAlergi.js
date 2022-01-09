@@ -188,6 +188,7 @@ const EditAllergies = (props) => {
                           if (item.id === edit.id) {
                             return (
                               <Text
+                                key={edit.id}
                                 style={{
                                   width: dimWidth * 0.3,
                                   color: "#A87F0B",

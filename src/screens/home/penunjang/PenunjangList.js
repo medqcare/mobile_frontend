@@ -2451,6 +2451,7 @@ function PenunjangList(props) {
               onChangeText={searchHandler}
               setSearch={setSearch}
               onFocus={() => setIsSearchActive(true)}
+              navigate={props.navigation.navigate}
             />
 
             {/* speciment */}
