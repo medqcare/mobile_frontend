@@ -126,7 +126,7 @@ function DokumenList(props) {
 
   const upload = async (data) => {
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    uploadDocument(token, patient.patientID, data)
+    uploadDocument(token, patient._id, data)
       .then(({ data }) => {
         console.log(data);
         _fetchData();
@@ -145,7 +145,7 @@ function DokumenList(props) {
       documentid: selectedId,
       name: newName,
     };
-    renameDocument(token, patient.patientID, payload)
+    renameDocument(token, patient._id, payload)
       .then(({ data }) => {
         _fetchData();
       })
@@ -164,7 +164,7 @@ function DokumenList(props) {
       documentid: selectedId,
       key: selectedKey,
     };
-    deleteDocument(token, patient.patientID, payload)
+    deleteDocument(token, patient._id, payload)
       .then(({ data }) => {
         console.log(data);
         _fetchData();
