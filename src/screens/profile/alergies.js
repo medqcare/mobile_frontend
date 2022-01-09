@@ -65,20 +65,9 @@ const Allergies = (props) => {
   }
 
   function getFamily() {
-    let dataUser = {
-      _id: props.userData._id,
-      firstName: props.userData.lastName
-        ? props.userData.firstName + " " + props.userData.lastName
-        : props.userData.firstName,
-    };
-    const temp = [dataUser];
+    const temp = [props.userData];
     props.userData.family.forEach((el) => {
-      temp.push({
-        _id: el._id,
-        firstName: el.lastName
-          ? el.firstName + " " + el.lastName
-          : el.firstName,
-      });
+      temp.push(el);
     });
     setIduser(temp[0]);
     setFamily(temp);
@@ -175,7 +164,7 @@ const Allergies = (props) => {
           setModal={setModalPatient}
           accountOwner={accountOwner}
           family={family}
-          title="Siapa yang ingin anda check?"
+          title="Alergi siapa yang ingin anda lihat?"
           setSelectedValue={setSelectedValue}
           navigateTo={props.navigation.navigate}
         />
