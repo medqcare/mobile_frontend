@@ -139,12 +139,10 @@ function MedicalResume(props) {
         </TouchableOpacity>
       </View>
       <View style={Styles.container}>
-        <View style={Styles.cardName}>
+        <TouchableOpacity style={Styles.cardName} onPress={() => setModalPatient(true)}>
           <Text style={Styles.textName}>{displayName}</Text>
-          <TouchableOpacity onPress={() => setModalPatient(true)}>
-            <Text style={Styles.button}>UBAH</Text>
-          </TouchableOpacity>
-        </View>
+          <Text style={Styles.button}>UBAH</Text>
+        </TouchableOpacity>
 
         {loading ? (
           <View
