@@ -75,7 +75,7 @@ function DokumenList(props) {
   const [modalPatient, setModalPatient] = useState(false);
   const [family, setFamily] = useState([]);
   const [patient, setPatient] = useState({
-    patientID: props.userData._id,
+    _id: props.userData._id,
     imageUrl: props.userData.imageUrl,
   });
 
@@ -107,7 +107,7 @@ function DokumenList(props) {
   const _fetchData = async () => {
     setLoading(true);
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    getDocumentByPatient(token, patient.patientID)
+    getDocumentByPatient(token, patient._id)
       .then(({ data }) => {
         setFilteredData(data.data);
         setData(data.data);
@@ -636,7 +636,7 @@ function DokumenList(props) {
         accountOwner={accountOwner}
         family={family}
         title="Pilih Patient"
-        setSelectedValue={setSelectedValue}
+        setSelectedValue={setPatient}
         navigateTo={(screen) => props.navigation.navigate(screen)}
       />
     </View>
