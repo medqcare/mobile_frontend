@@ -51,7 +51,7 @@ function AddReminderForm(props) {
 		duration: '',
 		notes: '',
 		etiquette: [],
-		information: '',
+		information: 'Sebelum Makan',
 		drugQuantity: 1,
 		quantityTotal: 1,
 		expiredDate: '',
@@ -123,6 +123,13 @@ function AddReminderForm(props) {
 
 	async function getDrugsByName(text){
 		try {
+			setSelectedItem({
+				name: text
+			})
+			setDrugData({
+				...drugData,
+				itemName: text
+			})
 		} catch (error) {
 			console.log(error.message)			
 		}
@@ -178,7 +185,6 @@ function AddReminderForm(props) {
 		try {
 			const token = JSON.parse(await AsyncStorage.getItem('token')).token
 			const newDrug = await props.createNewDrugFromUser(drugData, token)
-
 			const newDrugs = [...activeDrugs, newDrug]
 			setActiveDrugs(newDrugs)
 
@@ -189,7 +195,6 @@ function AddReminderForm(props) {
 
 	}
 
-	// console.log(filteredDrugs.length, 'length')
 
   	return (
 		<ScrollView style={styles.container}>
@@ -208,6 +213,7 @@ function AddReminderForm(props) {
 					<SearchableDropdown
 						onItemSelect={(item) => {
 							setSelectedItem(item)
+							console.log(item)
 							setDrugData({
 								...drugData,
 								...item,
