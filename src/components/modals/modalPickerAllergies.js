@@ -29,12 +29,20 @@ export default function SelectModalAllergies({
   setDataAlergi,
   editAlergi
 }) {
-  const [type, setType] = useState("Cuaca");
+  const [type, setType] = useState("");
   const [kustomType, setKustomType] = useState("");
-
+  
+  useEffect(() => {
+    if(setInputAlergies){
+      setType("")
+      setInputAlergies('')
+    }
+  },[modal])
+  
   useEffect(() => {
     dataAlergi && setType(dataAlergi.type)
   },[dataAlergi])
+
 
   return (
     <Modal
