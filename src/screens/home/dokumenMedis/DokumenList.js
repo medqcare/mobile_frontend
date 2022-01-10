@@ -44,6 +44,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
 import { CardDocument } from '../../../components/document/CardDocument';
+import getFullName from '../../../helpers/getFullName';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -76,8 +77,7 @@ function DokumenList(props) {
   const [modalPatient, setModalPatient] = useState(false);
   const [family, setFamily] = useState([]);
   const [patient, setPatient] = useState({
-    _id: props.userData._id,
-    imageUrl: props.userData.imageUrl,
+    ...props.userData,
   });
 
   useEffect(() => {
@@ -235,6 +235,13 @@ function DokumenList(props) {
           data.append('avatar', { uri, name, type });
           // DEFAULT
           data.append('type', typeDoc);
+          data.append(
+            'createdBy',
+            JSON.stringify({
+              type: 'patient',
+              name: getFullName(patient),
+            })
+          );
           upload(data);
         }
         break;
