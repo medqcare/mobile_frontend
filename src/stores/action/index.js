@@ -15,7 +15,8 @@ import {
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
-  changeAlarmBoolean
+  changeAlarmBoolean,
+  updateFinishStatus,
 } from './drugs';
 import { 
   getReminders, 
@@ -1161,7 +1162,8 @@ export {
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
-  changeAlarmBoolean
+  changeAlarmBoolean,
+  updateFinishStatus,
 };
 
 export { 

@@ -31,7 +31,7 @@ import * as Calendar from 'expo-calendar';
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, drugs }) {
+function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, setFinishedDrugs, selectedPatient, updateFinishStatusFunction, }) {
     const [load, setLoad] = useState(true)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
@@ -90,7 +90,6 @@ function ReminderActiveList({props, drugs }) {
             ownerAccount: 'personal',
             accessLevel: Calendar.CalendarAccessLevel.OWNER,
         }
-
 		const newCalendarID = await Calendar.createCalendarAsync(options);
 	}
 
@@ -255,14 +254,14 @@ function ReminderActiveList({props, drugs }) {
     };
 
     useEffect(() => {
-        if(drugs.length > 0){
-            setContent(drugs)
+        if(activeDrugs.length > 0){
+            setContent(activeDrugs)
             setLoad(false)
         } else {
             setContent([])
             setLoad(false)
         }
-    }, [drugs])
+    }, [activeDrugs])
 
     const toggleSwitch = async (index, section) => {
         try {
@@ -409,6 +408,27 @@ function ReminderActiveList({props, drugs }) {
         }
     }
 
+    async function updateFinishStatus(section){
+        try {
+            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            const drugID = section._id
+            const updated = await updateFinishStatusFunction(drugID, token)
+            ToastAndroid.show(updated, ToastAndroid.SHORT)
+            
+            const newActiveList = activeDrugs.filter(el => el._id !== drugID)
+            const finishedDrug = {
+                ...section,
+                finishedAt : new Date(),
+                isFinished : true
+            }
+            const newFinishedList = [...finishedDrugs, finishedDrug]
+            setActiveDrugs(newActiveList)
+            setFinishedDrugs(newFinishedList)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const renderHeader = (section, _, isActive,) => {
         const { drugName, drugQuantity, type, information, ettiquete, reminder } = section
         return (
@@ -490,7 +510,6 @@ function ReminderActiveList({props, drugs }) {
     const renderContent = (section, _, isActive) => {
         const { reminders, _id } = section
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(new Date())
-        // console.log(todaysDate, 'todays date')
         const todaysReminder = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
@@ -562,14 +581,25 @@ function ReminderActiveList({props, drugs }) {
                             </View>
                         )
                     })}
-                        <TouchableWithoutFeedback 
-                            onPress={() => setSections(activeSections, true, _)}    
-                        >
-                            <View style={styles.closeButton}>
-                                <Text style={styles.closeText}>Tutup</Text>
-                                <MaterialIcons name="keyboard-arrow-up" size={30} color="rgba(243, 115, 53, 1)"/>
-                            </View>
-                        </TouchableWithoutFeedback>
+                        <View style={styles.bottomContentContainer}>
+                            <TouchableWithoutFeedback 
+                                onPress={() => setSections(activeSections, true, _)}    
+                            >
+                                <View style={{flexDirection: "row", alignItems: "center"}}>
+                                    <Text style={styles.closeText}>Tutup</Text>
+                                    <MaterialIcons name="keyboard-arrow-up" size={30} color="rgba(243, 115, 53, 1)"/>
+                                </View>
+                            </TouchableWithoutFeedback>
+
+                            <TouchableWithoutFeedback 
+                                onPress={() => updateFinishStatus(section)}    
+                            >
+                                <View style={{flexDirection: "row", alignItems: "center"}}>
+                                    <Text style={styles.finishText}>Selesaikan obat</Text>
+                                    <MaterialIcons name="done" size={24} color="green" />
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
             </Animatable.View>
         );
     };
@@ -622,6 +652,10 @@ const textStyles = {
 
     redText: {
         color: 'rgba(243, 115, 53, 1)'
+    }, 
+
+    greenText: {
+        color: 'green'
     }
 }
 
@@ -758,13 +792,14 @@ const styles = StyleSheet.create({
         paddingLeft: dimWidth * 0.01216,
     },
 	
-    closeButton: {
+    bottomContentContainer: {
         flexDirection: "row",
-		width: '90%',
         alignSelf: "center",
         alignItems: "center",
+        justifyContent: "space-between",
         paddingBottom: dimHeight * 0.01829,
-        paddingTop: dimHeight * 0.01219
+        paddingTop: dimHeight * 0.01219,
+        width: "90%",
     },
 
     noDataContainer: {
@@ -780,6 +815,11 @@ const styles = StyleSheet.create({
     closeText: {
         paddingRight: dimWidth * 0.02431,
         ...textStyles.redText
+    },
+
+    finishText: {
+        paddingRight: dimWidth * 0.02431,
+        ...textStyles.greenText
     }
 });
 
