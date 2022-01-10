@@ -10,7 +10,8 @@ import {
   NativeModules,
   ActivityIndicator,
   Button,
-  FlatList
+  FlatList,
+  LogBox
 } from "react-native";
 import { connect } from "react-redux";
 import GreyHeader from '../../../components/headers/GreyHeader'
@@ -23,12 +24,18 @@ import { searchDrugByName, searchAllDrugs, createNewDrugFromUser, getDrugs } fro
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import RadioForm from 'react-native-simple-radio-button';
+import QuantitySelector from '../../../components/reminder/QuantitySelector'
 
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
+const fontScale = Dimensions.get('window').fontScale
 
 function AddReminderForm(props) {
+
+	useEffect(() => {
+		LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+	  }, [])
 
 	const items = [
 		 {
@@ -43,18 +50,15 @@ function AddReminderForm(props) {
 		dose: '',
 		duration: '',
 		notes: '',
-		ettiquete: [],
+		etiquette: [],
 		information: '',
-		drugQuantity: '',
-		quantityTotal: '',
+		drugQuantity: 1,
+		quantityTotal: 1,
 		expiredDate: '',
 		patientID: props.userData._id
 	})
 
-	const [selectedItem, setSelectedItem] = useState({
-		id: 1,
-		name: 'loading...'
-	})
+	const [selectedItem, setSelectedItem] = useState(null)
 
 	const newDate = new Date()
 	const formattedDate = getFormattedDate(newDate)
@@ -65,7 +69,7 @@ function AddReminderForm(props) {
 	const [mode, setMode] = useState('time');
 	const [show, setShow] = useState(false);
 
-	const [ettiqueteList, setEttiqueteList] = useState([
+	const [etiquetteList, setEtiquetteList] = useState([
 		{
 			id: 1,
 			value: 'Pagi',
@@ -127,8 +131,8 @@ function AddReminderForm(props) {
 	function addEttiquete(value, index, list){
 		const newArray = []
 
-		if(list === 'ettiquete'){
-			const arrayOfEttiquetesList = ettiqueteList.map((el, idx) => {
+		if(list === 'etiquette'){
+			const arrayOfEttiquetesList = etiquetteList.map((el, idx) => {
 				if(el.selected === true && idx !== index){
 					newArray.push(el.value)
 				}
@@ -141,18 +145,24 @@ function AddReminderForm(props) {
 				return el
 			})
 	
-			setEttiqueteList(arrayOfEttiquetesList)
+			setEtiquetteList(arrayOfEttiquetesList)
 			setDrugData({
 				...drugData,
-				ettiquete: newArray
+				etiquette: newArray
 			})
 		} 
 	}
 
+	const Label = ({text}) => (
+		<View style={styles.labelContainer}>
+			<Text style={styles.labelText}>{text}</Text>
+		</View>
+	)
+
 	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
-			style={[styles.inputContainer, {paddingLeft: index === 0 ? 0 : 5, justifyContent: "space-between"}]}
-			onPress={() => addEttiquete(value, index, 'ettiquete')}
+			style={[{paddingLeft: index === 0 ? 0 : 5, justifyContent: "space-between"}]}
+			onPress={() => addEttiquete(value, index, 'etiquette')}
 		>
 			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
 				<Text style={styles.inputText}>{value}</Text>
@@ -182,7 +192,7 @@ function AddReminderForm(props) {
 	// console.log(filteredDrugs.length, 'length')
 
   	return (
-		<View style={styles.container}>
+		<ScrollView style={styles.container}>
 			<GreyHeader
 				navigate={props.navigation.navigate}
 				navigateBack="Reminder"
@@ -191,6 +201,9 @@ function AddReminderForm(props) {
 			/>
 			<View style={styles.content}>
 				<View style={styles.inputFormContainer}>
+					<View style={[styles.topLabelContainer]}>
+						<Text style={styles.labelText}>Nama Obat</Text>
+					</View>
 					{/* Drug Name */}
 					<SearchableDropdown
 						onItemSelect={(item) => {
@@ -200,14 +213,7 @@ function AddReminderForm(props) {
 								...item,
 							})
 						}}
-						itemStyle={{
-							padding: 10,
-							marginTop: 2,
-							backgroundColor: '#ddd',
-							borderColor: '#bbb',
-							borderWidth: 1,
-							borderRadius: 5,
-						}}
+						itemStyle={styles.itemStyle}
 						itemTextStyle={{ color: '#222' }}
 						itemsContainerStyle={{ maxHeight: 150 }}
 						items={allDrugs}
@@ -217,7 +223,7 @@ function AddReminderForm(props) {
 							placeholder: "Nama obat",
 							placeholderTextColor: '#8b8b8b',
 							underlineColorAndroid: "transparent",
-							value: selectedItem.name,
+							value: selectedItem ? selectedItem.name : '',
 							style: {
 								...styles.input,
 								color: 'white'
@@ -230,9 +236,10 @@ function AddReminderForm(props) {
 						}}
 					/>
 
-					{/* Frequency */}
+					{/* Ettiquete */}
+					<Label text={'Etiket Minum'}/>
 					<FlatList
-						data={ettiqueteList}
+						data={etiquetteList}
 						renderItem={renderEttiqueteItem}
 						keyExtractor={item => item.id}
 						horizontal={false}
@@ -249,58 +256,42 @@ function AddReminderForm(props) {
 						formHorizontal={true}
 						labelHorizontal={true}
 						animation={false}
-						labelStyle={{ paddingRight: 10, fontSize: 14, color: '#DDDDDD' }}
+						labelStyle={{ paddingRight: 10, fontSize: fontScale * 16, color: '#DDDDDD' }}
 						style={styles.inputContainer}
 						buttonOuterSize={20}
 					/>
 
-					{/* Dose */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-								style={styles.inputText}
-								autoCapitalize={'none'}
-								autoFocus={false}
-								placeholder={'Dosis'}
-								keyboardType={'numeric'}
-								placeholderTextColor="#8b8b8b" 
-								onChangeText={number =>
-									setDrugData({...drugData, dose: number})
-								}
-								value={(drugData.dose).toString()}
-							/>
-						</View>
-					</View>
-
-
 					{/* Quantity */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Jumlah obat'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={number =>
-										setDrugData({...drugData, quantityTotal: number, drugQuantity: number})
-									}
-									value={(drugData.drugQuantity).toString()}
-								/>
-						</View>
-					</View>
+					<Label text={'Jumlah Obat'}/>
+					<QuantitySelector drugData={drugData} setDrugData={setDrugData}/>
 
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
+					{/* Dose */}
+					<Label text={'Dosis'}/>
+					<View style={styles.input}>
+						<TextInput
+							style={styles.inputText}
+							autoCapitalize={'none'}
+							autoFocus={false}
+							placeholder={'Dosis'}
+							keyboardType={'numeric'}
+							placeholderTextColor="#8b8b8b" 
+							onChangeText={number =>
+								setDrugData({...drugData, dose: number})
+							}
+							value={(drugData.dose).toString()}
+						/>
+					</View>				
+	
+					{/* Expired Date */}
+					<Label text={'Kadaluwarsa'}/>
+					<View style={styles.input}>
 						<TouchableOpacity 
 							style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
 							onPress={() => showDatepicker()}
 						>
 							<Text style={styles.reminderTimeText}>{displayDate}</Text>
-							<FontAwesome name="calendar" size={24} color="white" />
+							<FontAwesome name="calendar" size={dimHeight * 0.02405} color="white" />
 						</TouchableOpacity>
-						</View>
 					</View>
 
 					{show && (
@@ -317,21 +308,20 @@ function AddReminderForm(props) {
             		)}
 
 					{/* Optional Notes */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Contoh: Minum dengan air putih setelah makan'}
-									keyboardType={'default'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, notes: text})
-									}
-									value={drugData.notes}
-								/>
-						</View>
+					<Label text={'Catatan (Opsional)'}/>
+					<View style={styles.input}>
+						<TextInput
+							style={styles.inputText}
+							autoCapitalize={'none'}
+							autoFocus={false}
+							placeholder={'Contoh: Minum dengan air putih setelah makan'}
+							keyboardType={'default'}
+							placeholderTextColor="#8b8b8b" 
+							onChangeText={text =>
+								setDrugData({...drugData, notes: text})
+							}
+							value={drugData.notes}
+						/>
 					</View>
 				</View>
 				
@@ -348,17 +338,17 @@ function AddReminderForm(props) {
 					</TouchableOpacity>
 				</View>
 			</View>
-		</View>
+		</ScrollView>
   	);
 }
 
 const styles = StyleSheet.create({
 	button: {
 		backgroundColor: "#4EB151",
-		paddingVertical: 11,
-		paddingHorizontal: 17,
+		paddingVertical: dimHeight * 0.011025,
+		paddingHorizontal: dimWidth * 0.033449,
 		borderRadius: 3,
-		marginVertical: 50
+		marginVertical: 0.050117
 	},
 
 	container: {
@@ -370,7 +360,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		// height: 
 	},
 
 	inputFormContainer: {
@@ -378,8 +367,17 @@ const styles = StyleSheet.create({
 		width: dimWidth * 0.9,
 	},
 
+	topLabelContainer: {
+		marginBottom: dimHeight * 0.006
+	},
+
+	labelContainer: {
+		marginTop: dimHeight * 0.02,
+		marginBottom: dimHeight * 0.006
+	},
+
 	inputContainer: {
-		paddingTop: 10
+		paddingTop: dimHeight * 0.03
 	},
 
 	input: {
@@ -391,6 +389,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#1F1F1F',
         justifyContent: 'center'
     },
+
+	itemStyle: {
+		padding: 10,
+		marginTop: 2,
+		backgroundColor: '#ddd',
+		borderColor: '#bbb',
+		borderWidth: 1,
+		borderRadius: 5,
+	},
 
 	unselectedFlatListInput: {
         height: dimHeight * 0.06128,
@@ -444,9 +451,8 @@ const styles = StyleSheet.create({
 		color: '#DDDDDD'
 	},
 
-	// SET ALL NUMBER TO DIMWIDTH OR DIMHEIGHT
 	reminderFormContainer: {
-		paddingTop: 16,
+		paddingTop: dimHeight * 0.0160377,
 		width: dimWidth * 0.9
 	},
 
@@ -457,37 +463,34 @@ const styles = StyleSheet.create({
 	reminderTimeContainer: {
 		borderBottomWidth: 2,
 		borderBottomColor: 'rgba(71, 71, 71, 1)',
-		paddingBottom: 10
-		// backgroundColor: 'red'
+		paddingBottom: dimHeight * 0.0100235
 	},
 
 	reminderTopContainer: {
 		alignSelf: "flex-start",
 		backgroundColor: 'rgba(47, 47, 47, 1)',
-		paddingVertical: 4,
-		paddingHorizontal: 6
+		paddingVertical: dimHeight * 0.004009,
+		paddingHorizontal: dimWidth * 0.0118
 	},
 
 	reminderLowerContainer: {
 		flexDirection: "row",
 		width: '100%',
 		justifyContent: "space-between",
-		paddingTop: 10
+		paddingTop: dimHeight * 0.0100235
 	},
 
 	reminderTimeText: {
-		color: 'rgba(181, 181, 181, 1)',
+		color: '#DDDDDD',
 		fontWeight: '500',
 	},
 	
 	
-	// SET ALL NUMBER TO DIMWIDTH OR DIMHEIGHT
-
 	buttonContainer: {
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-		marginBottom: 15
+		marginBottom: dimHeight * 0.0150353
 	},
 
 	button: {
@@ -497,18 +500,21 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		alignItems: "center",
 		justifyContent: "center",
-		// marginVertical: dimHeight * 0.012256,
 	},
 
 	buttonText: {
 		color: 'rgba(221, 221, 221, 1)',
 		fontWeight: '500',
-		fontSize: 18
+		fontSize: fontScale * 23
 	},
 	
 	lightText: {
 		color: 'rgba(181, 181, 181, 1)'	
 	},
+
+	labelText: {
+		color: '#B5B5B5'
+	}
 });
 
 
