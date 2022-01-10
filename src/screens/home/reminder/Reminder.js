@@ -25,6 +25,7 @@ function Reminder(props) {
 
 	
 	const [userData, setUserData] = useState(props.userData)
+	const [selectedPatient, setSelectedPatient] = useState(props.userData)
 	const [drugs, setDrugs] = useState([])
 
 	const [load, setLoad] = useState(true)
@@ -47,16 +48,18 @@ function Reminder(props) {
 
 	useEffect( async () => {
 		try {
+			setLoad(true)
+			setLoadGetDrugs(true)
 			let token = await AsyncStorage.getItem("token");
 			token = JSON.parse(token).token
-			const patientID = props.userData._id
+			const patientID = selectedPatient._id
 			const allDrugs = await props.getDrugs(patientID, token)
 			setDrugs(allDrugs)
 			setLoadGetDrugs(false)
 		} catch (error){
 			console.log(error, 'error di Reminder Page')
 		}
-	}, [])
+	}, [selectedPatient])
 
 	useEffect(async () => {
 		if(!loadGetDrugs){
@@ -82,13 +85,15 @@ function Reminder(props) {
 
 	const widthAdd = (dimWidth * 0.06945)
     const heightAdd = (dimHeight * 0.03677)
-
 	const [index, setIndex] = useState(0)
   	return (
 		<View style={styles.container}>
 			<Header
 				navigate={props.navigation.navigate}
 				name={firstName()}
+				imageURL={selectedPatient.imageUrl}
+				family={[userData, ...userData.family]}
+				setPatientID={setSelectedPatient}
 			/>
 			<View style={styles.options}>
 				<View style={styles.statusContainer}>
