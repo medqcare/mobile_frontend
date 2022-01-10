@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, searchAllDrugs, changeAlarmBoolean, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
+import { getDrugs, searchAllDrugs, changeAlarmBoolean, updateFinishStatus, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -137,7 +137,7 @@ function Reminder(props) {
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<ReminderActiveList props={props} drugs={activeDrugs}/>
+						<ReminderActiveList props={props} activeDrugs={activeDrugs} finishedDrugs={finishedDrugs} setActiveDrugs={setActiveDrugs} setFinishedDrugs={setFinishedDrugs} selectedPatient={selectedPatient} updateFinishStatusFunction={props.updateFinishStatus}/>
 					</ScrollView>
 					<ScrollView>
 						<ReminderFinishedList props={props} drugs={finishedDrugs}/>
@@ -209,6 +209,7 @@ const mapDispatchToProps = {
 	getDrugs,
 	searchAllDrugs,
 	changeAlarmBoolean,
+	updateFinishStatus,
 	getReminders,
 	changeReminderAlarmTime,
 	changeReminderStatus
