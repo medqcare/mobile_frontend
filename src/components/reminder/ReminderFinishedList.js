@@ -41,13 +41,13 @@ function ReminderFinishedList({props, drugs}) {
                             <View style={styles.drugSeparatorContainer}/>
                             <View style={styles.drugBottomContainer}>
                                 <Text style={styles.drugNameText}>{el.drugName} {el.drugQuantity} {el.type}</Text>
-                                <View style={styles.ettiqueteContainter}>
+                                <View style={styles.etiquetteContainter}>
                                     <AntDesign 
                                         name="clockcircleo" 
                                         size={dimWidth * 0.035} 
                                         color="rgba(128, 128, 128, 1)" 
                                     />
-                                    <Text style={styles.ettiqueteText}>{el.ettiquete.length}x sehari</Text>
+                                    <Text style={styles.etiquetteText}>{el.etiquette.length}x sehari</Text>
                                 </View>
                                 <Text style={{...styles.italicDarkerText, paddingTop: dimHeight * 0.01471}}>{el.information}</Text>
                             </View>
@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
 		fontSize: 16
 	},
 
-    ettiqueteContainter: {
+    etiquetteContainter: {
         flexDirection: "row",
 		paddingTop: dimHeight * 0.01471,
     },
 
-	ettiqueteText: {
+	etiquetteText: {
 		...textStyles.darkerText,
         paddingLeft: dimWidth * 0.02315
 	},
