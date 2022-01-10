@@ -33,6 +33,7 @@ const Allergies = (props) => {
 
   const [Load, setLoad] = useState(false);
   const [inputAlergies, setInputAlergies] = useState("");
+  const [needInfo, setNeedInfo] = useState(false)
 
   const [allergies, setAlergies] = useState([]);
   const [idUser, setIduser] = useState({ firstName: null, _id: null });
@@ -78,6 +79,7 @@ const Allergies = (props) => {
   });
 
   async function _fetchDataAlergi() {
+    setNeedInfo(false)
     setAlergies([]);
     setLoad(true);
     let token = await AsyncStorage.getItem("token");
@@ -102,6 +104,17 @@ const Allergies = (props) => {
             });
           }
         }
+
+        let fromPatient = false
+        let fromDokter = false
+        allAlergi.data.map(el => {
+          if(el.status === 'Active'){
+            if(el.createBy === 'Patient'){ fromPatient = true}
+            if(el.createBy === 'Dokter'){ fromDokter = true}
+          }
+        })
+
+        if(fromDokter && fromPatient){setNeedInfo(true)}
 
         const keySelection = Object.keys(temp);
         const index = keySelection.indexOf("");
@@ -183,6 +196,8 @@ const Allergies = (props) => {
           {Object.keys(allergies).length ? (
             // Allergy Box
             <View>
+              {
+                needInfo && 
               <View style={styles.boxDetail}>
                 <View style={styles.itemBoxDetail}>
                   <View style={styles.boxDokter} />
@@ -193,7 +208,8 @@ const Allergies = (props) => {
                   <Text style={styles.textBoxDetail}>Dibuat oleh Pasien</Text>
                 </View>
               </View>
-              <ScrollView style={{ height: dimHeight * 0.6 }}>
+              }
+              <ScrollView style={{ height: dimHeight * 0.7 }}>
                 {Object.keys(allergies).map((el, index) => {
                   return (
                     <View style={styles.allergieBoxContainer} key={index}>
