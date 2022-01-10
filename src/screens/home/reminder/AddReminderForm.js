@@ -161,7 +161,7 @@ function AddReminderForm(props) {
 
 	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
-			style={[{paddingLeft: index === 0 ? 0 : 5, justifyContent: "space-between"}]}
+			style={[{paddingLeft: index === 0 ? 0 : dimWidth * 0.009838, justifyContent: "space-between"}]}
 			onPress={() => addEttiquete(value, index, 'etiquette')}
 		>
 			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
@@ -170,8 +170,8 @@ function AddReminderForm(props) {
 		</TouchableOpacity>
 	);
 	
-	const renderEttiqueteItem = ({ item , index, id}) => (
-		<EttiqueteItem value={item.value} selected={item.selected} index={index} id={id} />
+	const RenderEttiqueteItem = ({ item , index, id}) => (
+		<EttiqueteItem key={index} value={item.value} selected={item.selected} index={index} id={id} />
 	)
 		
 	async function createDrug(){
@@ -238,13 +238,13 @@ function AddReminderForm(props) {
 
 					{/* Ettiquete */}
 					<Label text={'Etiket Minum'}/>
-					<FlatList
-						data={etiquetteList}
-						renderItem={renderEttiqueteItem}
-						keyExtractor={item => item.id}
-						horizontal={false}
-						numColumns={4}
-					/>
+					<View style={{flexDirection: "row"}}>
+						{etiquetteList.map((el, index) => {
+							return (
+								<RenderEttiqueteItem item={el} index={index}/>
+								)
+							})}
+					</View>
 
 					{/* Information */}
 					<RadioForm
@@ -401,26 +401,24 @@ const styles = StyleSheet.create({
 
 	unselectedFlatListInput: {
         height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
         borderWidth: 2,
 		borderColor: 'rgba(84, 84, 84, 1)',
-        paddingHorizontal: dimWidth * 0.04,
         borderRadius: 3,
         backgroundColor: '#1F1F1F',
         justifyContent: 'center',
 		alignItems: "center",
-		width: (dimWidth * 0.9) * 0.24,
     },
 	
 	selectedFlatListInput: {
         height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
         borderWidth: 2,
 		borderColor: '#77BFF4',
-        paddingHorizontal: dimWidth * 0.04,
         borderRadius: 3,
         backgroundColor: '#212D3D',
         justifyContent: 'center',
 		alignItems: "center",
-		width: (dimWidth * 0.9) * 0.24,
     },
 
 	unselectedFlatListInformationInput: {
