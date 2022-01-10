@@ -3,5 +3,5 @@ let webBaseURL = 'https://api-qcareweb.applimetis.id' // URL for postgres drug d
 
 module.exports = {
   baseURL,
-  webBaseURL
+  webBaseURL,
 };

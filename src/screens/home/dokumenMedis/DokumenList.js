@@ -43,6 +43,7 @@ import Ic_Option from '../../../assets/svg/ic_option';
 import * as DocumentPicker from 'expo-document-picker';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
+import { CardDocument } from '../../../components/document/CardDocument';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -327,6 +328,14 @@ function DokumenList(props) {
     }
   };
 
+  const onOptionPressedHandler = (item) => {
+    setSelectedId(item._id);
+    setSelectedName(item.name);
+    setSelectedKey(item.key);
+    setfileUrl(item.fileUrl);
+    setModalOption(true);
+  };
+
   const typeStyleBehavior = (type) => ({
     container: {
       backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
@@ -409,7 +418,7 @@ function DokumenList(props) {
               }}
               source={{
                 uri: patient.imageUrl
-                  ? `${patient?.imageUrl}?time=${new Date()}`
+                  ? `${patient?.imageUrl}`
                   : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
               }}
             />
@@ -452,89 +461,12 @@ function DokumenList(props) {
                   keyExtractor={(item) => String(item._id)}
                   renderItem={({ item }) => {
                     return (
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          width: '100%',
-                          marginBottom: 12,
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() =>
-                            props.navigation.navigate('ShowDokumen', {
-                              uri: item.fileUrl,
-                              name: item.name,
-                              backTo: 'ListDokumenMedis',
-                            })
-                          }
-                          style={styles.imageDokumen}
-                        >
-                          <Image
-                            style={{ height: 50, width: 50 }}
-                            source={require('../../../assets/png/pdf.png')}
-                          />
-                        </TouchableOpacity>
-                        <View
-                          style={{
-                            justifyContent: 'space-between',
-                            width: '50%',
-                          }}
-                        >
-                          <TouchableOpacity
-                            onPress={() =>
-                              props.navigation.navigate('ShowDokumen', {
-                                uri: item.fileUrl,
-                                name: item.name,
-                                backTo: 'ListDokumenMedis',
-                              })
-                            }
-                          >
-                            <Text style={styles.dokumentName} numberOfLines={4}>
-                              {item.name}
-                            </Text>
-                            <Text
-                              style={{
-                                color: '#b5b5b5',
-                                fontSize: 12,
-                                marginTop: 4,
-                              }}
-                            >
-                              dr. Corrie James Sp.JP, FIHA
-                            </Text>
-                          </TouchableOpacity>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-between',
-                            }}
-                          >
-                            <Text style={{ color: '#b5b5b5', fontSize: 10 }}>
-                              {item.createdAt
-                                ? `Diterima ${dateWithDDMMMYYYYFormat(
-                                    new Date(item.createdAt)
-                                  )}`
-                                : null}
-                            </Text>
-                            <TouchableOpacity
-                              style={{
-                                flexDirection: 'row',
-                                justifyContent: 'flex-end',
-                                width: 20,
-                                height: 15,
-                              }}
-                              onPress={() => {
-                                setSelectedId(item._id);
-                                setSelectedName(item.name);
-                                setSelectedKey(item.key);
-                                setfileUrl(item.fileUrl);
-                                setModalOption(true);
-                              }}
-                            >
-                              <Ic_Option />
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
+                      <CardDocument
+                        item={item}
+                        onOptionPressedHandler={onOptionPressedHandler}
+                        {...props}
+                        backTo={'ListDokumenMedis'}
+                      />
                     );
                   }}
                 />
@@ -689,7 +621,7 @@ const styles = StyleSheet.create({
   },
   document: {
     // paddingBottom: dimHeight * 0.04,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
     height: '85%',
   },
   cardDokumen: {

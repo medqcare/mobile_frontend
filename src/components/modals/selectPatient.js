@@ -77,7 +77,7 @@ export default function SelectPatient({
                         style={styles.photo}
                         source={{
                           uri: lang.imageUrl
-                            ? `${lang.imageUrl}?time=${new Date()}`
+                            ? lang.imageUrl
                             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                         }}
                       />
