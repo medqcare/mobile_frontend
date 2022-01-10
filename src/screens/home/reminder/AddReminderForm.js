@@ -249,7 +249,7 @@ function AddReminderForm(props) {
 					<View style={{flexDirection: "row"}}>
 						{etiquetteList.map((el, index) => {
 							return (
-								<RenderEttiqueteItem item={el} index={index}/>
+								<RenderEttiqueteItem key={index} item={el} index={index}/>
 								)
 							})}
 					</View>
