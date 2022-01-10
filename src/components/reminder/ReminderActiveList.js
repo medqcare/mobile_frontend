@@ -695,6 +695,7 @@ const styles = StyleSheet.create({
 	drugNameText: {
 		...textStyles.lighterText,
 		fontWeight: '500',
+        maxWidth: dimWidth * 0.6886574,
 	},
 
     detailContainer: {
