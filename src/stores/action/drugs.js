@@ -64,11 +64,7 @@ export function searchAllDrugs(){
             })
             return data.data
         } catch (error) {
-            if(error.message === 'Request failed with status code 404'){
-                console.log("Web server is not connected, check your webBaseURL in config/index.js")
-            } else {
-                console.log(error.message)
-            }
+            console.log(error.message)
         }
     }
 }
