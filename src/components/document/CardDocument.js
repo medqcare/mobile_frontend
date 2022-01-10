@@ -14,13 +14,21 @@ import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-export function CardDocument({ item, onOptionPressedHandler, ...props }) {
+export function CardDocument({
+  item,
+  onOptionPressedHandler,
+  backTo,
+  ...props
+}) {
   return (
     <View
       style={{
         flexDirection: 'row',
         width: '100%',
         marginBottom: 12,
+        paddingBottom: 24,
+        borderBottomWidth: 1,
+        borderBottomColor: '#545454',
       }}
     >
       <TouchableOpacity
@@ -28,7 +36,7 @@ export function CardDocument({ item, onOptionPressedHandler, ...props }) {
           props.navigation.navigate('ShowDokumen', {
             uri: item.fileUrl,
             name: item.name,
-            backTo: 'ListDokumenMedis',
+            backTo: backTo,
           })
         }
         style={styles.imageDokumen}

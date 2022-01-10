@@ -418,7 +418,7 @@ function DokumenList(props) {
               }}
               source={{
                 uri: patient.imageUrl
-                  ? `${patient?.imageUrl}?time=${new Date()}`
+                  ? `${patient?.imageUrl}`
                   : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
               }}
             />
@@ -465,6 +465,7 @@ function DokumenList(props) {
                         item={item}
                         onOptionPressedHandler={onOptionPressedHandler}
                         {...props}
+                        backTo={'ListDokumenMedis'}
                       />
                     );
                   }}
@@ -620,7 +621,7 @@ const styles = StyleSheet.create({
   },
   document: {
     // paddingBottom: dimHeight * 0.04,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
     height: '85%',
   },
   cardDokumen: {
