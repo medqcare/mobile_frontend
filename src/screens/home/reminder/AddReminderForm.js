@@ -54,17 +54,17 @@ function AddReminderForm(props) {
 		information: 'Sebelum Makan',
 		drugQuantity: 1,
 		quantityTotal: 1,
-		expiredDate: '',
+		expiredDate: new Date(),
 		patientID: props.userData._id
 	})
 
 	const [selectedItem, setSelectedItem] = useState(null)
 
 	const newDate = new Date()
-	const formattedDate = getFormattedDate(newDate)
+	const formattedDate = getFormattedDate(newDate, true)
 	const fullDateFormat = fullMonthFormat(formattedDate)
 	const [displayDate, setDisplayDate] = useState(fullDateFormat)
-	
+
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('time');
 	const [show, setShow] = useState(false);
@@ -106,6 +106,10 @@ function AddReminderForm(props) {
 		setShow(Platform.OS === 'ios');
 		setDate(currentDate);
 		setDisplayDate(fullDateFormat);
+		setDrugData({
+			...drugData,
+			expiredDate: currentDate
+		})
 	};
 
 	const showMode = (currentMode) => {
@@ -195,9 +199,8 @@ function AddReminderForm(props) {
 
 	}
 
-
   	return (
-		<ScrollView style={styles.container}>
+		<View style={styles.container}>
 			<GreyHeader
 				navigate={props.navigation.navigate}
 				navigateBack="Reminder"
@@ -213,7 +216,6 @@ function AddReminderForm(props) {
 					<SearchableDropdown
 						onItemSelect={(item) => {
 							setSelectedItem(item)
-							console.log(item)
 							setDrugData({
 								...drugData,
 								...item,
@@ -344,7 +346,7 @@ function AddReminderForm(props) {
 					</TouchableOpacity>
 				</View>
 			</View>
-		</ScrollView>
+		</View>
   	);
 }
 
