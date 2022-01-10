@@ -52,7 +52,7 @@ export default function QuantitySelector({drugData, setDrugData}){
                 onPress={() => decrement()}
                 disabled={drugData.quantityTotal ? false : true}
             >
-                <MinusSign propSize={24}/>
+                <MinusSign propSize={dimHeight * 0.02405}/>
             </TouchableOpacity>
 
             <View style={styles.numberContainer}>
@@ -70,7 +70,7 @@ export default function QuantitySelector({drugData, setDrugData}){
             </View>
 
             <TouchableOpacity onPress={() => increment()}>
-                <PlusSign propSize={24}/>
+                <PlusSign propSize={dimHeight * 0.02405}/>
             </TouchableOpacity>
         </View>
     )
