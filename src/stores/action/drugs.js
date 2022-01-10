@@ -107,3 +107,20 @@ export function changeAlarmBoolean(drugID, token){
         }
     }
 }
+
+export function updateFinishStatus(drugID, token){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/updateFinishStatus/${drugID}`,
+                headers: {
+                    authorization: token
+                },
+            })
+            return data.message
+        } catch (error) {
+            console.log(error.message, 'error at update finish status')
+        }
+    }
+}

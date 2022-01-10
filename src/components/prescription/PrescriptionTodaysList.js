@@ -130,10 +130,12 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                     }
                                 </View>
 
-                                <View style={{paddingTop: dimHeight * 0.01219}}>
-                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>Catatan: </Text>
-                                    <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>{el.notes}</Text>
-                                </View>
+                                {el.notes && (
+                                    <View style={{paddingTop: dimHeight * 0.01219}}>
+                                        <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>Catatan: </Text>
+                                        <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>{el.notes}</Text>
+                                    </View>
+                                )}
 
                                 <View style={styles.separator}/>
                             </View>
