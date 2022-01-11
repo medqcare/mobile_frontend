@@ -181,11 +181,13 @@ function SearchDoctorPage(props) {
                 onPress={() =>
                   props.navigation.navigate('DetailHospital', { data: item })
                 }
+                style={{
+                  paddingLeft: 18,
+                  marginBottom: 8,
+                }}
               >
-                <View>
-                  <CardHospital data={item} />
-                  {/* <Text style={{backgroundColor:'#F1D5CC', marginVertical:10}}>{JSON.stringify(item, null, 2)}</Text> */}
-                </View>
+                <CardHospital data={item} />
+                {/* <Text style={{backgroundColor:'#F1D5CC', marginVertical:10}}>{JSON.stringify(item, null, 2)}</Text> */}
               </TouchableOpacity>
             )}
             // onEndReached={() => fetchHospitalPagination()}

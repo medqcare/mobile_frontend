@@ -52,15 +52,7 @@ export function CardDocument({
           width: '50%',
         }}
       >
-        <TouchableOpacity
-          onPress={() =>
-            props.navigation.navigate('ShowDokumen', {
-              uri: item.fileUrl,
-              name: item.name,
-              backTo: 'ListDokumenMedis',
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => onOptionPressedHandler(item)}>
           <Text style={styles.dokumentName} numberOfLines={4}>
             {item.name}
           </Text>
