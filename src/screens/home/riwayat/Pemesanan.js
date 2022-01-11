@@ -31,7 +31,7 @@ export default function Pemesanan(props) {
   const _fetchDataAppoinment = async () => {
     _getData().then(({ data }) => {
       try {
-        // console.log(appoinment, 'sebelum di set ==============<<<<')
+        console.log(data, 'sebelum di set ==============<<<<')
         let datakebalik = data.data.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
@@ -100,16 +100,15 @@ export default function Pemesanan(props) {
                   >
                     <Text
                       style={{
-                        color:
-                          item.status === 'canceled' ? '#EB5959' : '#DDDDDD',
+                        color: item.status === 'canceled' ? '#EB5959' : item.status === 'Queueing' ? '#4BE395' : '#DDDDDD',
                         fontStyle: 'italic',
                         marginTop: 7,
                         fontSize: 12,
                       }}
                     >
-                      {item.status === 'registered'
-                        ? 'Telah Selesai'
-                        : 'Dibatalkan'}
+                      {item.status === 'Report Done' ? 'Telah Selesai' : ''}
+                      {item.status === 'Queueing' ? 'Dalam Pemeriksaan' : ''}
+                      {item.status === 'canceled' ? 'Dibatalkan' : ''}
                     </Text>
                   </View>
                   <View
@@ -152,7 +151,7 @@ export default function Pemesanan(props) {
                       </Text>
                       <View style={styles.time}>
                         <Text style={styles.date}>{item.bookingSchedule}</Text>
-                        <Text> - </Text>
+                        <Text style={styles.date}> - </Text>
                         <Text style={styles.clock}>{item.bookingTime}</Text>
                       </View>
                       <View style={styles.time}>

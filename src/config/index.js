@@ -1,6 +1,7 @@
-// let baseURL = 'https://api-medqcare.applimetis.id';
-let baseURL = 'https://0c3a-180-252-116-106.ngrok.io';
+let baseURL = 'https://api-medqcare.applimetis.id';
+let webBaseURL = 'https://api-qcareweb.applimetis.id'; // URL for postgres drug database
 
 module.exports = {
   baseURL,
+  webBaseURL,
 };

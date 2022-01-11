@@ -13,12 +13,17 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import DatePicker from 'react-native-datepicker';
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { connect } from 'react-redux';
 import { edit_profile, setLoading } from '../../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker';
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 import Header from '../../../components/headers/GradientHeader';
 import {
   widthPercentageToDP as wp,
@@ -28,15 +33,35 @@ import {
 import withZero from '../../../helpers/withZero';
 //Modal
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
+import nikValidation from '../../../helpers/validationNIK';
 
 const editFamilyData = (props) => {
   let dataFamily = props.navigation.state.params.data;
-  var moment = require('moment');
+  const dateOfBirthDay = new Date(dataFamily.dob);
   const [load, setLoad] = useState(false);
   const [bloodTypeModal, setBloodTypeModal] = useState(false);
   const [rhesusTypeModal, setRhesusModal] = useState(false);
   const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
   const [statusfamilyModal, setStatusFamilyModal] = useState(false);
+
+  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(dateOfBirthDay)
+  );
+
+  const [changeData, setChangeData] = useState({
+    nik: dataFamily.nik.toString(),
+    firstName: dataFamily.firstName,
+    lastName: dataFamily.lastName,
+    gender: dataFamily.gender,
+    dob: chosenDate,
+    bloodType: dataFamily.bloodType,
+    resus: dataFamily.resus,
+    phoneNumber: dataFamily.phoneNumber,
+    insuranceStatus: dataFamily.insuranceStatus,
+    location: dataFamily.location,
+  });
+
   const bloodType = ['A', 'AB', 'B', 'O'];
   const resus = ['+', '-'];
 
@@ -70,19 +95,6 @@ const editFamilyData = (props) => {
     },
   ];
 
-  const [changeData, setChangeData] = useState({
-    nik: dataFamily.nik.toString(),
-    firstName: dataFamily.firstName,
-    lastName: dataFamily.lastName,
-    gender: dataFamily.gender,
-    dob: moment(dataFamily.dob).format('DD/MM/YYYY'),
-    bloodType: dataFamily.bloodType,
-    resus: dataFamily.resus,
-    phoneNumber: dataFamily.phoneNumber,
-    insuranceStatus: dataFamily.insuranceStatus,
-    location: dataFamily.location,
-  });
-
   // Region
   const region = require('../../../assets/Region/province');
 
@@ -92,6 +104,9 @@ const editFamilyData = (props) => {
   const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
     changeData.location.province
   );
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const provinceSelection = province;
 
   // District
@@ -154,14 +169,17 @@ const editFamilyData = (props) => {
   ];
 
   async function validation() {
-    console.log('Validating data...');
+    if (!nikValidation(changeData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.show);
+      return;
+    }
+
     if (
-      (changeData.nik !== null &&
-        changeData.nik.length > 1 &&
-        changeData.nik.length !== 16) ||
+      !nikValidation(changeData.nik) ||
       changeData.firstName == '' ||
       changeData.firstName == null ||
-      changeData.dob == null
+      changeData.dob == null ||
+      isErrorPhoneNumber
     ) {
       ToastAndroid.show('Please check the data', ToastAndroid.LONG);
     } else {
@@ -192,9 +210,10 @@ const editFamilyData = (props) => {
         data,
         dataFamily._id,
         JSON.parse(token).token,
-        props.navigation.navigate
-      )
+        )
       .then((backData) => {
+        const newData = backData.data.data.family.filter(el => el._id === dataFamily._id)
+        props.navigation.navigate('FamilyDetail', {data: newData[0]})
         setLoad(false);
       })
       .catch((err) => {
@@ -219,7 +238,15 @@ const editFamilyData = (props) => {
   const sendDate = `${withZero(newDate.getDate())}/${withZero(
     newDate.getMonth() + 1
   )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
+    setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+    setChangeData({ ...changeData, dob: selectedDate });
+  };
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Header
@@ -303,7 +330,7 @@ const editFamilyData = (props) => {
           >
             <RadioForm
               radio_props={radio_props}
-              initial={0}
+              initial={changeData.gender === 'Male' ? 0 : 1}
               onPress={(value) => {
                 setChangeData({ ...changeData, gender: value });
               }}
@@ -331,8 +358,21 @@ const editFamilyData = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>{dateForShowingToUser}</Text>
+            {showDatePicker && (
+              <DateTimePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -361,7 +401,7 @@ const editFamilyData = (props) => {
                 setChangeData({ ...changeData, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -379,12 +419,18 @@ const editFamilyData = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setChangeData({ ...changeData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setChangeData({ ...changeData, phoneNumber: text });
+              }}
               value={changeData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}

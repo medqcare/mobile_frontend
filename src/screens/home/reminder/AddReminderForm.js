@@ -1,262 +1,3 @@
-// import React, { useState } from 'react';
-
-// // import all the components we are going to use
-// import {
-//   SafeAreaView,
-//   Switch,
-//   ScrollView,
-//   StyleSheet,
-//   Text,
-//   View,
-//   TouchableOpacity,
-// } from 'react-native';
-
-// //import for the animation of Collapse and Expand
-// import * as Animatable from 'react-native-animatable';
-
-// //import for the collapsible/Expandable view
-// import Collapsible from 'react-native-collapsible';
-
-// //import for the Accordion view
-// import Accordion from 'react-native-collapsible/Accordion';
-
-// //Dummy content to show
-// //You can also use dynamic data by calling web service
-// const CONTENT = [
-//   {
-//     title: 'Terms and Conditions',
-//     content:
-//       'The following terms and conditions, together with any referenced documents (collectively, "Terms of Use") form a legal agreement between you and your employer, employees, agents, contractors and any other entity on whose behalf you accept these terms (collectively, “you” and “your”), and ServiceNow, Inc. (“ServiceNow,” “we,” “us” and “our”).',
-//   },
-//   {
-//     title: 'Privacy Policy',
-//     content:
-//       'A Privacy Policy agreement is the agreement where you specify if you collect personal data from your users, what kind of personal data you collect and what you do with that data.',
-//   },
-//   {
-//     title: 'Return Policy',
-//     content:
-//       'Our Return & Refund Policy template lets you get started with a Return and Refund Policy agreement. This template is free to download and use.According to TrueShip study, over 60% of customers review a Return/Refund Policy before they make a purchasing decision.',
-//   },
-// ];
-
-// //To make the selector (Something like tabs)
-// const SELECTORS = [
-//   { title: 'T&C', value: 0 },
-//   { title: 'Privacy Policy', value: 1 },
-//   { title: 'Return Policy', value: 2 },
-//   { title: 'Reset all' },
-// ];
-
-// const App = () => {
-//   // Ddefault active selector
-//   const [activeSections, setActiveSections] = useState([]);
-//   // Collapsed condition for the single collapsible
-//   const [collapsed, setCollapsed] = useState(true);
-//   // MultipleSelect is for the Multiple Expand allowed
-//   // True: Expand multiple at a time
-//   // False: One can be expand at a time
-//   const [multipleSelect, setMultipleSelect] = useState(false);
-
-//   const toggleExpanded = () => {
-//     //Toggling the state of single Collapsible
-//     setCollapsed(!collapsed);
-//   };
-
-//   const setSections = (sections) => {
-//     //setting up a active section state
-//     setActiveSections(sections.includes(undefined) ? [] : sections);
-//   };
-
-//   const renderHeader = (section, _, isActive) => {
-//     //Accordion Header view
-//     return (
-//       <Animatable.View
-//         duration={400}
-//         style={[styles.header, isActive ? styles.active : styles.inactive]}
-//         transition="backgroundColor">
-//         <Text style={styles.headerText}>{section.title}</Text>
-//       </Animatable.View>
-//     );
-//   };
-
-//   const renderContent = (section, _, isActive) => {
-//     //Accordion Content view
-//     return (
-//       <Animatable.View
-//         duration={400}
-//         style={[styles.content, isActive ? styles.active : styles.inactive]}
-//         transition="backgroundColor">
-//         <Animatable.Text
-//           animation={isActive ? 'bounceIn' : undefined}
-//           style={{ textAlign: 'center' }}>
-//           {section.content}
-//         </Animatable.Text>
-//       </Animatable.View>
-//     );
-//   };
-
-//   return (
-//     <SafeAreaView style={{ flex: 1 }}>
-//       <View style={styles.container}>
-//         <ScrollView>
-//           <Text style={styles.title}>
-//             Example of Collapsible/Accordion/Expandable List View in React
-//             Native
-//           </Text>
-
-//           {/*Code for Single Collapsible Start*/}
-//           <TouchableOpacity onPress={toggleExpanded}>
-//             <View style={styles.header}>
-//               <Text style={styles.headerText}>Single Collapsible</Text>
-//               {/*Heading of Single Collapsible*/}
-//             </View>
-//           </TouchableOpacity>
-//           {/*Content of Single Collapsible*/}
-//           <Collapsible collapsed={collapsed} align="center">
-//             <View style={styles.content}>
-//               <Text style={{ textAlign: 'center' }}>
-//                 This is a dummy text of Single Collapsible View
-//               </Text>
-//             </View>
-//           </Collapsible>
-//           {/*Code for Single Collapsible Ends*/}
-
-//           <View style={{ backgroundColor: '#000', height: 1, marginTop: 10 }} />
-//           <View style={styles.multipleToggle}>
-//             <Text style={styles.multipleToggle__title}>
-//               Multiple Expand Allowed?
-//             </Text>
-//             <Switch
-//               value={multipleSelect}
-//               onValueChange={(multipleSelect) =>
-//                 setMultipleSelect(multipleSelect)
-//               }
-//             />
-//           </View>
-//           <Text style={styles.selectTitle}>
-//             Please select below option to expand
-//           </Text>
-
-//           {/*Code for Selector starts here*/}
-//           <View style={styles.selectors}>
-//             {SELECTORS.map((selector) => (
-//               <TouchableOpacity
-//                 key={selector.title}
-//                 onPress={() => setSections([selector.value])}
-//                 //on Press of any selector sending the selector value to
-//                 // setSections function which will expand the Accordion accordingly
-//               >
-//                 <View style={styles.selector}>
-//                   <Text
-//                     style={
-//                       activeSections.includes(selector.value) &&
-//                       styles.activeSelector
-//                     }>
-//                     {selector.title}
-//                   </Text>
-//                 </View>
-//               </TouchableOpacity>
-//             ))}
-//           </View>
-//           {/*Code for Selector ends here*/}
-
-//           {/*Code for Accordion/Expandable List starts here*/}
-//           <Accordion
-//             activeSections={activeSections}
-//             //for any default active section
-//             sections={CONTENT}
-//             //title and content of accordion
-//             touchableComponent={TouchableOpacity}
-//             //which type of touchable component you want
-//             //It can be the following Touchables
-//             //TouchableHighlight, TouchableNativeFeedback
-//             //TouchableOpacity , TouchableWithoutFeedback
-//             expandMultiple={multipleSelect}
-//             //Do you want to expand mutiple at a time or single at a time
-//             renderHeader={renderHeader}
-//             //Header Component(View) to render
-//             renderContent={renderContent}
-//             //Content Component(View) to render
-//             duration={400}
-//             //Duration for Collapse and expand
-//             onChange={setSections}
-//             //setting the state of active sections
-//           />
-//           {/*Code for Accordion/Expandable List ends here*/}
-//         </ScrollView>
-//       </View>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default App;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#F5FCFF',
-//     paddingTop: 30,
-//   },
-//   title: {
-//     textAlign: 'center',
-//     fontSize: 18,
-//     fontWeight: '300',
-//     marginBottom: 20,
-//   },
-//   header: {
-//     backgroundColor: '#F5FCFF',
-//     padding: 10,
-//   },
-//   headerText: {
-//     textAlign: 'center',
-//     fontSize: 16,
-//     fontWeight: '500',
-//   },
-//   content: {
-//     padding: 20,
-//     backgroundColor: '#fff',
-//   },
-//   active: {
-//     backgroundColor: 'rgba(255,255,255,1)',
-//   },
-//   inactive: {
-//     backgroundColor: 'rgba(245,252,255,1)',
-//   },
-//   selectors: {
-//     marginBottom: 10,
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//   },
-//   selector: {
-//     backgroundColor: '#F5FCFF',
-//     padding: 10,
-//   },
-//   activeSelector: {
-//     fontWeight: 'bold',
-//   },
-//   selectTitle: {
-//     fontSize: 14,
-//     fontWeight: '500',
-//     padding: 10,
-//     textAlign: 'center',
-//   },
-//   multipleToggle: {
-//     flexDirection: 'row',
-//     justifyContent: 'center',
-//     marginVertical: 30,
-//     alignItems: 'center',
-//   },
-//   multipleToggle__title: {
-//     fontSize: 16,
-//     marginRight: 8,
-//   },
-// });
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -268,45 +9,106 @@ import {
   TextInput,
   NativeModules,
   ActivityIndicator,
-  Button
+  Button,
+  FlatList,
+  LogBox
 } from "react-native";
 import { connect } from "react-redux";
 import GreyHeader from '../../../components/headers/GreyHeader'
-import { MaterialCommunityIcons, MaterialIcons  } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, MaterialIcons, FontAwesome  } from '@expo/vector-icons'; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import withZero from '../../../helpers/withZero'
+import { ScrollView } from "react-native-gesture-handler";
+import { getFormattedDate, fullMonthFormat} from '../../../helpers/dateFormat'
+import { searchDrugByName, searchAllDrugs, createNewDrugFromUser, getDrugs } from '../../../stores/action'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import SearchableDropdown from 'react-native-searchable-dropdown';
+import RadioForm from 'react-native-simple-radio-button';
+import QuantitySelector from '../../../components/reminder/QuantitySelector'
+
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function AddReminderForm(props) {
 
+	useEffect(() => {
+		LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
+	  }, [])
+
+	const items = [
+		 {
+		  "id": 1,
+		  "name": "Drug Name",
+		},
+	]
+
+	const { activeDrugs, setActiveDrugs, allDrugs } = props.navigation.state.params
+
 	const [drugData, setDrugData] = useState({
-		drugName: '',
-		frequency: '',
 		dose: '',
 		duration: '',
 		notes: '',
+		etiquette: [],
+		information: 'Sebelum Makan',
+		drugQuantity: 1,
+		quantityTotal: 1,
+		expiredDate: new Date(),
+		patientID: props.userData._id
 	})
 
-	
+	const [selectedItem, setSelectedItem] = useState(null)
 
 	const newDate = new Date()
-	const hours = newDate.getHours()
-	const minutes = newDate.getMinutes()
-	const [displayDate, setDisplayDate] = useState(`${withZero(hours)}:${withZero(minutes)}`)
-	
+	const formattedDate = getFormattedDate(newDate, true)
+	const fullDateFormat = fullMonthFormat(formattedDate)
+	const [displayDate, setDisplayDate] = useState(fullDateFormat)
+
 	const [date, setDate] = useState(new Date());
 	const [mode, setMode] = useState('time');
 	const [show, setShow] = useState(false);
+
+	const [etiquetteList, setEtiquetteList] = useState([
+		{
+			id: 1,
+			value: 'Pagi',
+			selected: false
+		},
+		{
+			id: 2,
+			value: 'Siang',
+			selected: false,
+		},
+		{
+			id: 3,
+			value: 'Sore',
+			selected: false
+		},
+		{
+			id: 4,
+			value: 'Malam',
+			selected: false
+		},
+	])
+
+	const infromationList = [
+		{ label: 'Sebelum Makan', value: 'Sebelum Makan' },
+		{ label: 'Sesudah Makan', value: 'Sesudah Makan' },
+	];
 
 	const onChange = (event, selectedDate) => {
 		const currentDate = selectedDate || date;
 		const hours = currentDate.getHours()
 		const minutes = currentDate.getMinutes()
+		const formattedDate = getFormattedDate(currentDate)
+		const fullDateFormat = fullMonthFormat(formattedDate)
 		setShow(Platform.OS === 'ios');
 		setDate(currentDate);
-		setDisplayDate(`${withZero(hours)}:${withZero(minutes)}`);
+		setDisplayDate(fullDateFormat);
+		setDrugData({
+			...drugData,
+			expiredDate: currentDate
+		})
 	};
 
 	const showMode = (currentMode) => {
@@ -318,15 +120,84 @@ function AddReminderForm(props) {
 		showMode('date');
 	};
 
-	const showTimepicker = () => {
-		showMode('time');
-	};
-
 	const [load, setLoad] = useState(false)
 
-	const [time, setTime] = useState({time: ''})
-
 	
+
+	async function getDrugsByName(text){
+		try {
+			setSelectedItem({
+				name: text
+			})
+			setDrugData({
+				...drugData,
+				itemName: text
+			})
+		} catch (error) {
+			console.log(error.message)			
+		}
+	}
+
+	function addEttiquete(value, index, list){
+		const newArray = []
+
+		if(list === 'etiquette'){
+			const arrayOfEttiquetesList = etiquetteList.map((el, idx) => {
+				if(el.selected === true && idx !== index){
+					newArray.push(el.value)
+				}
+				if(idx == index){
+					if(!el.selected){
+						newArray.push(value)
+					} 
+					el.selected = !el.selected
+				}
+				return el
+			})
+	
+			setEtiquetteList(arrayOfEttiquetesList)
+			setDrugData({
+				...drugData,
+				etiquette: newArray
+			})
+		} 
+	}
+
+	const Label = ({text}) => (
+		<View style={styles.labelContainer}>
+			<Text style={styles.labelText}>{text}</Text>
+		</View>
+	)
+
+	const EttiqueteItem = ({ value, selected, index, id}) => (
+		<TouchableOpacity 
+			style={[{paddingLeft: index === 0 ? 0 : dimWidth * 0.009838, justifyContent: "space-between"}]}
+			onPress={() => addEttiquete(value, index, 'etiquette')}
+		>
+			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
+				<Text style={styles.inputText}>{value}</Text>
+			</View>
+		</TouchableOpacity>
+	);
+	
+	const RenderEttiqueteItem = ({ item , index, id}) => (
+		<EttiqueteItem key={index} value={item.value} selected={item.selected} index={index} id={id} />
+	)
+		
+	async function createDrug(){
+		try {
+			const token = JSON.parse(await AsyncStorage.getItem('token')).token
+			const newDrug = await props.createNewDrugFromUser(drugData, token)
+			const newDrugs = [...activeDrugs, newDrug]
+			setActiveDrugs(newDrugs)
+
+			props.navigation.pop()			
+		} catch (error) {
+			console.log(error)
+		}
+
+	}
+
   	return (
 		<View style={styles.container}>
 			<GreyHeader
@@ -336,131 +207,136 @@ function AddReminderForm(props) {
 				// hidden={false}
 			/>
 			<View style={styles.content}>
-				<View style={styles.inputFormContainer}>
-					{/* Drug Name */}
-					<View style={styles.inputContainer}>
+				<ScrollView>
+					<View style={styles.inputFormContainer}>
+						<View style={[styles.topLabelContainer]}>
+							<Text style={styles.labelText}>Nama Obat</Text>
+						</View>
+						{/* Drug Name */}
+						<SearchableDropdown
+							onItemSelect={(item) => {
+								setSelectedItem(item)
+								setDrugData({
+									...drugData,
+									...item,
+								})
+							}}
+							itemStyle={styles.itemStyle}
+							itemTextStyle={{ color: '#222' }}
+							itemsContainerStyle={{ maxHeight: 150 }}
+							items={allDrugs}
+							resetValue={true}
+							textInputProps={
+							{
+								placeholder: "Nama obat",
+								placeholderTextColor: '#8b8b8b',
+								underlineColorAndroid: "transparent",
+								value: selectedItem ? selectedItem.name : '',
+								style: {
+									...styles.input,
+									color: 'white'
+								},
+								onTextChange: text => getDrugsByName(text)
+							}
+							}
+							listProps={{
+								nestedScrollEnabled: true,
+							}}
+						/>
+
+						{/* Ettiquete */}
+						<Label text={'Etiket Minum'}/>
+						<View style={{flexDirection: "row"}}>
+							{etiquetteList.map((el, index) => {
+								return (
+									<RenderEttiqueteItem key={index} item={el} index={index}/>
+									)
+								})}
+						</View>
+
+						{/* Information */}
+						<RadioForm
+							radio_props={infromationList}
+							initial={0}
+							onPress={(value) => {
+								setDrugData({ ...drugData, information: value });
+							}}
+							formHorizontal={true}
+							labelHorizontal={true}
+							animation={false}
+							labelStyle={{ paddingRight: 10, color: '#DDDDDD' }}
+							style={styles.inputContainer}
+							buttonOuterSize={20}
+						/>
+
+						{/* Quantity */}
+						<Label text={'Jumlah Obat'}/>
+						<QuantitySelector drugData={drugData} setDrugData={setDrugData}/>
+
+						{/* Dose */}
+						<Label text={'Dosis'}/>
 						<View style={styles.input}>
 							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Nama Obat'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.drugName}
-								/>
-						</View>
-					</View>
-
-					{/* Frequency */}
-					<View style={styles.inputContainer}>
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Dosis'}
+								keyboardType={'numeric'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={number =>
+									setDrugData({...drugData, dose: number})
+								}
+								value={(drugData.dose).toString()}
+							/>
+						</View>				
+		
+						{/* Expired Date */}
+						<Label text={'Kadaluwarsa'}/>
 						<View style={styles.input}>
-							<Text style={styles.inputText}>Seharusnya ini modal picker</Text>
+							<TouchableOpacity 
+								style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+								onPress={() => showDatepicker()}
+							>
+								<Text style={styles.reminderTimeText}>{displayDate}</Text>
+								<FontAwesome name="calendar" size={dimHeight * 0.02405} color="white" />
+							</TouchableOpacity>
 						</View>
-					</View>
 
-					{/* Dose */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Dosis'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.dose}
-								/>
-						</View>
-					</View>
+						{show && (
+							<DateTimePicker
+								testID="dateTimePicker"
+								value={date}
+								mode={mode}
+								is24Hour={true}
+								display="default"
+								onChange={onChange}
+								minimumDate={new Date()}
 
-					{/* Duration */}
-					<View style={styles.inputContainer}>
-						<View style={styles.input}>
-							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Berapa lama dikonsumsi'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.duration}
-								/>
-						</View>
-					</View>
+							/>
+						)}
 
-					{/* Optional Notes */}
-					<View style={styles.inputContainer}>
+						{/* Optional Notes */}
+						<Label text={'Catatan (Opsional)'}/>
 						<View style={styles.input}>
 							<TextInput
-									style={styles.inputText}
-									autoCapitalize={'none'}
-									autoFocus={false}
-									placeholder={'Contoh: Minum dengan air putih setelah makan'}
-									keyboardType={'numeric'}
-									placeholderTextColor="#8b8b8b" 
-									onChangeText={text =>
-										setDrugData({...drugData, drugName: text})
-									}
-									value={drugData.notes}
-								/>
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Contoh: Minum dengan air putih setelah makan'}
+								keyboardType={'default'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={text =>
+									setDrugData({...drugData, notes: text})
+								}
+								value={drugData.notes}
+							/>
 						</View>
 					</View>
-				</View>
-				{/* <View style={styles.reminderFormContainer}> */}
-					{/* Title */}
-					{/* <View style={styles.reminderTitle}>
-						<Text style={styles.lightText}>Atur waktu pengingat</Text>
-					</View> */}
-
-					{/* Reminder time */}
-					{/* <View style={{paddingTop: 14,}}>
-						<View style={styles.reminderTimeContainer}>
-							<View style={{paddingHorizontal: 10}}>
-								<View style={styles.reminderTopContainer}>
-									<Text style={styles.lightText}>Jam pertama</Text>
-								</View>
-								<View style={styles.reminderLowerContainer}>
-									<View style={{flexDirection: "row"}}>
-										<MaterialIcons name="access-alarm" size={24} color="rgba(128, 128, 128, 1)" />
-										<Text style={styles.reminderTimeText}>{displayDate}</Text>
-									</View>
-									<TouchableOpacity 
-											onPress={showTimepicker} 
-											// onPress={() => createCalendar()} 
-											title="Show time picker!" 
-										>
-										<MaterialCommunityIcons name="pencil" size={24} color="rgba(128, 128, 128, 1)" />
-									</TouchableOpacity>
-									{show && (
-										<DateTimePicker
-											testID="dateTimePicker"
-											value={date}
-											mode={mode}
-											is24Hour={true}
-											display="default"
-											onChange={onChange}
-										/>
-									)}
-								</View>
-							</View>
-						</View>
-					</View> */}
-				{/* </View> */}
+				</ScrollView>
 				
-				<View style={styles.buttonContainer}>
-					
+				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
-						onPress={() => console.log('add reminder')}
+						onPress={() => createDrug()}
 						style={styles.button}
 					>
 						{load ? (
@@ -478,10 +354,10 @@ function AddReminderForm(props) {
 const styles = StyleSheet.create({
 	button: {
 		backgroundColor: "#4EB151",
-		paddingVertical: 11,
-		paddingHorizontal: 17,
+		paddingVertical: dimHeight * 0.011025,
+		paddingHorizontal: dimWidth * 0.033449,
 		borderRadius: 3,
-		marginVertical: 50
+		marginVertical: 0.050117
 	},
 
 	container: {
@@ -490,18 +366,27 @@ const styles = StyleSheet.create({
 	},
 	
 	content: {
-		height: dimHeight * 0.88,
-		justifyContent: "flex-start",
+		flex: 1,
+		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
 
 	inputFormContainer: {
 		paddingVertical: dimHeight * 0.02452,
-		width: dimWidth * 0.9
+		width: dimWidth * 0.9,
+	},
+
+	topLabelContainer: {
+		marginBottom: dimHeight * 0.006
+	},
+
+	labelContainer: {
+		marginTop: dimHeight * 0.02,
+		marginBottom: dimHeight * 0.006
 	},
 
 	inputContainer: {
-		paddingTop: 10
+		paddingTop: dimHeight * 0.03
 	},
 
 	input: {
@@ -514,13 +399,67 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
 
+	itemStyle: {
+		padding: 10,
+		marginTop: 2,
+		backgroundColor: '#ddd',
+		borderColor: '#bbb',
+		borderWidth: 1,
+		borderRadius: 5,
+	},
+
+	unselectedFlatListInput: {
+        height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+    },
+	
+	selectedFlatListInput: {
+        height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
+        borderWidth: 2,
+		borderColor: '#77BFF4',
+        borderRadius: 3,
+        backgroundColor: '#212D3D',
+        justifyContent: 'center',
+		alignItems: "center",
+    },
+
+	unselectedFlatListInformationInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * 0.5,
+    },
+	
+	selectedFlatListInformationInput: {
+        height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(84, 84, 84, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: 'blue',
+        justifyContent: 'center',
+		alignItems: "center",
+		width: (dimWidth * 0.9) * 0.5,
+    },
+
 	inputText: {
 		color: '#DDDDDD'
 	},
 
-	// SET ALL NUMBER TO DIMWIDTH OR DIMHEIGHT
 	reminderFormContainer: {
-		paddingTop: 16,
+		paddingTop: dimHeight * 0.0160377,
 		width: dimWidth * 0.9
 	},
 
@@ -531,40 +470,34 @@ const styles = StyleSheet.create({
 	reminderTimeContainer: {
 		borderBottomWidth: 2,
 		borderBottomColor: 'rgba(71, 71, 71, 1)',
-		paddingBottom: 10
-		// backgroundColor: 'red'
+		paddingBottom: dimHeight * 0.0100235
 	},
 
 	reminderTopContainer: {
 		alignSelf: "flex-start",
 		backgroundColor: 'rgba(47, 47, 47, 1)',
-		paddingVertical: 4,
-		paddingHorizontal: 6
+		paddingVertical: dimHeight * 0.004009,
+		paddingHorizontal: dimWidth * 0.0118
 	},
 
 	reminderLowerContainer: {
 		flexDirection: "row",
 		width: '100%',
 		justifyContent: "space-between",
-		paddingTop: 10
+		paddingTop: dimHeight * 0.0100235
 	},
 
 	reminderTimeText: {
-		color: 'rgba(181, 181, 181, 1)',
-		fontSize: 20,
+		color: '#DDDDDD',
 		fontWeight: '500',
-		paddingLeft: 5
 	},
 	
 	
-	// SET ALL NUMBER TO DIMWIDTH OR DIMHEIGHT
-
 	buttonContainer: {
-		flex: 1,
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
-		marginBottom: dimHeight * 0.07353,
+		marginBottom: dimHeight * 0.0150353
 	},
 
 	button: {
@@ -574,18 +507,20 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		alignItems: "center",
 		justifyContent: "center",
-		marginVertical: dimHeight * 0.012256,
 	},
 
 	buttonText: {
 		color: 'rgba(221, 221, 221, 1)',
 		fontWeight: '500',
-		fontSize: 18
 	},
 	
 	lightText: {
 		color: 'rgba(181, 181, 181, 1)'	
 	},
+
+	labelText: {
+		color: '#B5B5B5'
+	}
 });
 
 
@@ -595,4 +530,11 @@ const mapStateToProps = state => {
     return state
 }
 
-export default connect(mapStateToProps)(AddReminderForm)
+const mapDispatchToProps = {
+	searchDrugByName,
+	searchAllDrugs,
+	createNewDrugFromUser,
+	getDrugs
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddReminderForm)

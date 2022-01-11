@@ -10,7 +10,14 @@ import {
   getTodaysPrescriptions,
   getPrescriptionHistory
 } from './prescription'
-import { getDrugs } from './drugs';
+import {
+  getDrugs,
+  searchAllDrugs,
+  searchDrugByName,
+  createNewDrugFromUser,
+  changeAlarmBoolean,
+  updateFinishStatus,
+} from './drugs';
 import { 
   getReminders, 
   changeReminderAlarmTime,
@@ -768,10 +775,6 @@ export function edit_profile(userData, userID, token, navigateTo) {
           data: userData,
           headers: { Authorization: token },
         });
-        console.log('Profile succesfully updated');
-        console.log(
-          'Application is trying to GET data logged after successfully updating a profile'
-        );
         let dataUpdate = await instance({
           url: '/v1/members/dataLogged',
           method: 'GET',
@@ -782,11 +785,10 @@ export function edit_profile(userData, userID, token, navigateTo) {
           type: 'GET_USER_DATA',
           payload: dataUpdate.data.data,
         });
-        console.log('Data logged successfully updated');
         ToastAndroid.show(data.data.message, ToastAndroid.SHORT);
-        navigateTo('FamilyList');
+        return data.data
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         reject(error);
       }
     });
@@ -982,6 +984,29 @@ export function setAlergie(patientId, alergie, token) {
   };
 }
 
+export function editAlergi(id, alergie, alergieType, token) {
+  return (dispatch) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let data = await instance({
+          url: `/v1/members/editAlergi/${id}`,
+          method: 'PUT',
+          data: {
+            alergie,
+            alergieType
+          },
+          headers: { Authorization: token },
+        });
+        resolve(data.data);
+      } catch (error) {
+        console.log(error, 'ini kembalian data alergie');
+        ToastAndroid.show('Gagal menambahkan alergi', ToastAndroid.SHORT);
+        reject(error.message);
+      }
+    });
+  };
+}
+
 export function getAlergie(patientId, token) {
   console.log(patientId, 'ini id di action');
   return (dispatch) => {
@@ -1132,7 +1157,14 @@ export {
   getPrescriptionHistory 
 };
 
-export { getDrugs };
+export { 
+  getDrugs,
+  searchAllDrugs,
+  searchDrugByName,
+  createNewDrugFromUser,
+  changeAlarmBoolean,
+  updateFinishStatus,
+};
 
 export { 
   getReminders, 

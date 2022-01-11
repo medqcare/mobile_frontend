@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   TouchableHighlight,
   TouchableWithoutFeedback,
+  FlatList,
 } from 'react-native';
 import VectorPlus from '../../assets/svg/VectorPlus';
 
@@ -36,7 +37,6 @@ export default function SelectPatient({
   }
 
   function fullName(object) {
-    console.log(object);
     return object.lastName
       ? object.firstName + ' ' + object.lastName
       : object.firstName;
@@ -58,7 +58,41 @@ export default function SelectPatient({
           <Text style={styles.title}>{title}</Text>
         </View>
         <View style={styles.patient}>
-          {family.map((lang, itemIndex) => {
+          <FlatList
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={family}
+            renderItem={({ item: lang }) => {
+              return (
+                <View>
+                  <TouchableOpacity
+                    style={styles.touchable}
+                    onPress={() => {
+                      setSelectedValue(lang);
+                      setModal(false);
+                    }}
+                  >
+                    <View>
+                      <Image
+                        style={styles.photo}
+                        source={{
+                          uri: lang.imageUrl
+                            ? lang.imageUrl
+                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                        }}
+                      />
+                      <Text style={styles.name}>
+                        {smallLengthText(fullName(lang))}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+            keyExtractor={(item) => item._id}
+          />
+          {/* {family.map((lang, itemIndex) => {
+            console.log(lang.imageUrl, 'this is image url');
             return (
               <View key={itemIndex}>
                 <TouchableOpacity
@@ -71,13 +105,11 @@ export default function SelectPatient({
                   <View>
                     <Image
                       style={styles.photo}
-                      source={
-                        lang.imgageUrl
-                          ? { uri: lang.imageUrl }
-                          : {
-                              uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
-                            }
-                      }
+                      source={{
+                        uri: lang.imageUrl
+                          ? `${lang.imageUrl}?time=${new Date()}`
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                      }}
                     />
                     <Text style={styles.name}>
                       {smallLengthText(fullName(lang))}
@@ -86,7 +118,7 @@ export default function SelectPatient({
                 </TouchableOpacity>
               </View>
             );
-          })}
+          })} */}
         </View>
         <TouchableOpacity
           style={styles.buttonAdd}
@@ -135,12 +167,13 @@ const styles = StyleSheet.create({
   },
   patient: {
     flexDirection: 'row',
-    marginHorizontal: 20,
     marginVertical: 20,
+    paddingHorizontal: 20,
   },
 
   touchable: {
-    marginLeft: 35,
+    // marginLeft: 35,
+    marginRight: 30,
   },
 
   photo: {

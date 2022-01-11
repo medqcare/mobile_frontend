@@ -17,7 +17,8 @@ import {
 export default function GradientHeader({
     navigate, 
     navigateBack = 'Home', 
-    title = 'Enter Title Here'
+    title = 'Enter Title Here',
+    params
 }){
     const start = {
         x: 0, 
@@ -46,7 +47,7 @@ export default function GradientHeader({
                 />
             <View style={styles.innerContainer}>
                 <TouchableOpacity
-                    onPress={() => navigate(navigateBack)}
+                    onPress={() => navigate(navigateBack, params)}
                 >
                     <View style={styles.content} >
                         <Ionicons 

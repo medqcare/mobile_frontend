@@ -40,16 +40,10 @@ function MedicalResume(props) {
   );
   const [family, setFamily] = useState([]);
   const [accountOwner, setAccountOwner] = useState(props.userData);
-  const [modalPatient, setModalPatient] = useState(true);
+  const [modalPatient, setModalPatient] = useState(false);
   const [patient, setPatient] = useState({
     patient: {
-      patientID: null,
-      patientName: null,
-      gender: null,
-      nik: null,
-      photo: null,
-      dob: null,
-      insuranceStatus: null,
+      patientID: props.userData._id,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -145,12 +139,10 @@ function MedicalResume(props) {
         </TouchableOpacity>
       </View>
       <View style={Styles.container}>
-        <View style={Styles.cardName}>
+        <TouchableOpacity style={Styles.cardName} onPress={() => setModalPatient(true)}>
           <Text style={Styles.textName}>{displayName}</Text>
-          <TouchableOpacity onPress={() => setModalPatient(true)}>
-            <Text style={Styles.button}>UBAH</Text>
-          </TouchableOpacity>
-        </View>
+          <Text style={Styles.button}>UBAH</Text>
+        </TouchableOpacity>
 
         {loading ? (
           <View

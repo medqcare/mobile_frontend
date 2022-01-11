@@ -7,53 +7,81 @@ import {
   TouchableOpacity,
   SafeAreaView,
   FlatList,
-  Alert,
   ToastAndroid,
+  StatusBar,
+  TextInput,
+  Image,
 } from 'react-native';
-import Header from '../../../components/headers/GradientHeader';
+import { getDocumentByPatient, setLoading } from '../../../stores/action';
 import PictureModal from '../../../components/modals/profilePictureModal';
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
-import Ic_Dokumen from '../../../assets/svg/ic_documen';
-import Ic_Option from '../../../assets/svg/ic_option';
-import axios from 'axios';
 import { connect } from 'react-redux';
-import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieLoader from 'lottie-react-native';
-
+import { Ionicons } from '@expo/vector-icons';
+import SearchIcon from '../../../assets/svg/Search';
+import SelectPatient from '../../../components/modals/selectPatient';
+import { CardDocument } from '../../../components/document/CardDocument';
+import FilterList from '../../../components/FilterList';
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function RujukanList(props) {
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
-  const [referenceFiles, setRefencesFiles] = useState([]);
-  const [selectedReferenceFile, setSelectedReferenceFile] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [modalSelectPatient, setModalSelectPatient] = useState(false);
+  const [docs, setDocs] = useState([]);
+  const [docsFiltered, setDocsFiltered] = useState([]);
+  const [selectedDoc, setSelectedDoc] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [family, setFamily] = useState([]);
+  const [patient, setPatient] = useState({
+    _id: props.userData._id,
+    imageUrl: props.userData.imageUrl,
+  });
+  const [types, setTypes] = useState(['rujukan', 'surat sakit']);
+  const [typeSelected, setTypeSelected] = useState('rujukan');
+  const [searchIsFocus, setIsFocusSearch] = useState(false);
+
+  useEffect(() => {
+    let _family = {
+      ...props.userData,
+    };
+    delete _family.family;
+    const temp = [_family];
+    props.userData.family.forEach((el) => {
+      temp.push(el);
+    });
+    setFamily(family.concat(temp));
+  }, []);
 
   useEffect(() => {
     (async () => {
-      const token = await AsyncStorage.getItem('token');
-      const { data } = await axios({
-        method: 'POST',
-        url: `${baseURL}/api/v1/members/getMedicalResume`,
-        headers: {
-          Authorization: JSON.parse(token).token,
-        },
-        data: {
-          patientID: props.userData._id,
-        },
-      });
-      const { data: medicalResumes } = data;
-      const newReferenceFiles = medicalResumes.filter((element) => {
-        return !!element.referral;
-      });
-      setRefencesFiles(newReferenceFiles);
-      setIsLoading(false);
+      setIsLoading(true);
+      try {
+        const tokenString = await AsyncStorage.getItem('token');
+        const { token } = JSON.parse(tokenString);
+        let type = 'rujukan,surat sakit';
+        const { data: response } = await getDocumentByPatient(
+          token,
+          patient._id,
+          type
+        );
+        const { data: docs } = response;
+        const defaultDocs = docs.filter(
+          (element) => element.type === 'rujukan'
+        );
+        setDocs(docs);
+        setDocsFiltered(defaultDocs);
+      } catch (error) {
+        console.log(error.message, 'this is error from rujukan');
+      } finally {
+        setIsLoading(false);
+      }
     })();
-  }, []);
+  }, [patient]);
 
   const addDocumentOptions = [
     {
@@ -78,22 +106,27 @@ function RujukanList(props) {
   ];
 
   const shareFileHandler = async () => {
-    const { title, base64 } = selectedReferenceFile.referral;
-    const fileUri = FileSystem.documentDirectory + title + '.pdf';
-    await FileSystem.writeAsStringAsync(fileUri, base64, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    const isAvailable = await Sharing.isAvailableAsync();
-
-    if (!isAvailable) {
-      ToastAndroid.show(
-        "Uh oh, sharing isn't available on your platform",
-        ToastAndroid.LONG
+    try {
+      let fileUri = FileSystem.documentDirectory + selectedDoc.name;
+      const { uri } = await FileSystem.downloadAsync(
+        selectedDoc.fileUrl,
+        fileUri
       );
-      return;
-    }
+      const isAvailable = await Sharing.isAvailableAsync();
 
-    await Sharing.shareAsync(fileUri);
+      if (!isAvailable) {
+        ToastAndroid.show(
+          "Uh oh, sharing isn't available on your platform",
+          ToastAndroid.LONG
+        );
+        return;
+      }
+      ToastAndroid.show('Process...', ToastAndroid.SHORT);
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.log(error);
+      ToastAndroid.show('Cancel...', ToastAndroid.SHORT);
+    }
   };
 
   async function setSelectedValue(label) {
@@ -121,16 +154,18 @@ function RujukanList(props) {
         (async () => {
           await shareFileHandler();
         })();
+        break;
       }
 
       case 'Detail': {
-        props.navigation.navigate('ShowDokumen', {
-          name: selectedReferenceFile.referral.title,
-          base64:
-            'data:application/pdf;base64,' +
-            selectedReferenceFile.referral.base64,
-          backTo: 'ListRujukan',
-        });
+        // props.navigation.navigate('ShowDokumen', {
+        //   name: selectedReferenceFile.referral.title,
+        //   base64:
+        //     'data:application/pdf;base64,' +
+        //     selectedReferenceFile.referral.base64,
+        //   backTo: 'ListRujukan',
+        // });
+        break;
       }
 
       default: {
@@ -141,7 +176,81 @@ function RujukanList(props) {
 
   return (
     <View style={styles.container}>
-      <Header title="Rujukan" navigate={props.navigation.navigate} />
+      <StatusBar
+        barStyle="light-content"
+        translucent={true}
+        backgroundColor={'transparent'}
+      />
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => props.navigation.pop()}
+          style={styles.arrow}
+        >
+          <Ionicons name="arrow-back" color="#fff" size={25} />
+        </TouchableOpacity>
+        <View style={styles.searchArea}>
+          <View>
+            <SearchIcon />
+          </View>
+          <TextInput
+            style={styles.textinput}
+            placeholder="Cari Dokumen"
+            placeholderTextColor="#A2A2A2"
+            onFocus={() => {
+              setDocsFiltered([]);
+              setIsFocusSearch(true);
+            }}
+            onChangeText={(text) => {
+              if (text === '') {
+                setDocsFiltered(docs.filter((el) => el.type === typeSelected));
+                setIsFocusSearch(false);
+                return;
+              }
+              setIsFocusSearch(true);
+              const filteredBySearch = docs.filter((doc) =>
+                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
+              );
+              setDocsFiltered(filteredBySearch);
+            }}
+          />
+          <TouchableOpacity onPress={() => setModalSelectPatient(true)}>
+            <Image
+              style={{
+                height: dimHeight * 0.04,
+                width: dimHeight * 0.04,
+                borderRadius: dimHeight * 0.04,
+              }}
+              source={{
+                uri: patient.imageUrl
+                  ? `${patient.imageUrl}`
+                  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+      {searchIsFocus === false && (
+        <View
+          style={{
+            flexDirection: 'row',
+            marginBottom: 12,
+            paddingLeft: 12,
+          }}
+        >
+          <FilterList
+            items={types}
+            itemSelected={typeSelected}
+            setItemSelected={setTypeSelected}
+            onItemSelected={(item) => {
+              setTypeSelected(item);
+              const newFilteredDocs = docs.filter(
+                (element) => element.type === item
+              );
+              setDocsFiltered(newFilteredDocs);
+            }}
+          />
+        </View>
+      )}
       {isLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
@@ -150,59 +259,71 @@ function RujukanList(props) {
         />
       ) : (
         <View style={styles.content}>
-          {referenceFiles.length > 0 ? (
-            <SafeAreaView style={styles.document}>
-              <FlatList
-                data={referenceFiles}
-                numColumns={2}
-                keyExtractor={(item, idx) => String(idx)}
-                renderItem={({ item, index }) => {
-                  return (
-                    <View style={styles.cardDokumen}>
-                      <TouchableOpacity
-                        style={styles.imageDokumen}
-                        onPress={() =>
-                          props.navigation.navigate('ShowDokumen', {
-                            name: item.referral.title,
-                            base64:
-                              'data:application/pdf;base64,' +
-                              item.referral.base64,
-                            backTo: 'ListRujukan',
-                          })
-                        }
-                      />
-                      <TouchableOpacity
-                        style={styles.detailCard}
-                        onPress={() => {
+          {docsFiltered.length > 0 ? (
+            <>
+              <View style={styles.document}>
+                <FlatList
+                  data={docsFiltered}
+                  keyExtractor={(_, idx) => String(idx)}
+                  renderItem={({ item, index }) => {
+                    return (
+                      <CardDocument
+                        item={item}
+                        {...props}
+                        backTo={'ListRujukan'}
+                        onOptionPressedHandler={() => {
+                          setSelectedDoc(item);
                           setModalOption(true);
-                          setSelectedReferenceFile(item);
                         }}
-                      >
-                        <View style={styles.iconDoc}>
-                          <Ic_Dokumen />
-                        </View>
-                        <View
-                          style={{
-                            maxWidth: dimWidth * 0.25,
-                            justifyContent: 'center',
-                          }}
-                        >
-                          <Text style={styles.dokumentName}>
-                            {item.referral.title}
-                          </Text>
-                        </View>
-                        <View style={styles.iconOption}>
-                          <Ic_Option />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                }}
-              />
-            </SafeAreaView>
+                      />
+                      // <View style={styles.cardDokumen}>
+                      //   <TouchableOpacity
+                      //     style={styles.imageDokumen}
+                      //     onPress={() =>
+                      //       props.navigation.navigate('ShowDokumen', {
+                      //         name: item.referral.title,
+                      //         base64:
+                      //           'data:application/pdf;base64,' +
+                      //           item.referral.base64,
+                      //         backTo: 'ListRujukan',
+                      //       })
+                      //     }
+                      //   />
+                      //   <TouchableOpacity
+                      //     style={styles.detailCard}
+                      //     onPress={() => {
+                      //       setModalOption(true);
+                      //       setSelectedReferenceFile(item);
+                      //     }}
+                      //   >
+                      //     <View style={styles.iconDoc}>
+                      //       <Ic_Dokumen />
+                      //     </View>
+                      //     <View
+                      //       style={{
+                      //         maxWidth: dimWidth * 0.25,
+                      //         justifyContent: 'center',
+                      //       }}
+                      //     >
+                      //       <Text style={styles.dokumentName}>
+                      //         {item.referral.title}
+                      //       </Text>
+                      //     </View>
+                      //     <View style={styles.iconOption}>
+                      //       <Ic_Option />
+                      //     </View>
+                      //   </TouchableOpacity>
+                      // </View>
+                    );
+                  }}
+                />
+              </View>
+            </>
           ) : (
             <View style={{ alignItems: 'center', marginTop: 25 }}>
-              <Text style={{ color: '#fff' }}>Tidak ada surat rujukan</Text>
+              <Text style={{ color: '#fff' }}>
+                Tidak ada surat {typeSelected}
+              </Text>
             </View>
           )}
         </View>
@@ -219,6 +340,15 @@ function RujukanList(props) {
         selection={documentAction}
         setSelectedValue={setSelectedAction}
       ></DocumentOptionModal>
+      <SelectPatient
+        modal={modalSelectPatient}
+        setModal={setModalSelectPatient}
+        accountOwner={props.userData}
+        family={family}
+        title="Pilih Patient"
+        setSelectedValue={setPatient}
+        navigateTo={(screen) => props.navigation.navigate(screen)}
+      />
     </View>
   );
 }
@@ -228,11 +358,43 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#181818',
   },
+  header: {
+    flexDirection: 'row',
+    height: dimHeight * 0.12,
+    paddingTop: dimHeight * 0.045,
+    backgroundColor: '#2F2F2F',
+    marginBottom: 12,
+  },
+  arrow: {
+    flex: 0.12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchArea: {
+    flex: 0.88,
+    borderColor: '#DDDDDD',
+    borderWidth: 1,
+    height: dimHeight * 0.05,
+    padding: dimHeight * 0.01,
+    margin: dimHeight * 0.01,
+    borderRadius: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  textinput: {
+    marginStart: 10,
+    fontSize: 14,
+    flex: 1,
+    color: '#A2A2A2',
+  },
   content: {
     height: dimHeight * 0.88,
     justifyContent: 'space-between',
-    padding: 20,
+    // padding: 20,
+    paddingLeft: 12,
   },
+
   buttonAdd: {
     alignItems: 'center',
     alignSelf: 'center',

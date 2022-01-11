@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,135 +8,149 @@ import {
   TouchableOpacity,
   BackHandler,
   ToastAndroid,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import {setAlergie, getAlergie, deleteAlergie} from '../../stores/action';
-import {connect} from 'react-redux';
-import SetModals from '../../components/modals/setModal';
-import LottieLoader from 'lottie-react-native';
-import SelectPatient from '../../components/modals/selectPatient';
-import SelectModalAllergies from '../../components/modals/modalPickerAllergies';
-import ConfirmationModal from '../../components/modals/ConfirmationModal'
-import GradientHeader from '../../components/headers/GradientHeader';
+  ScrollView,
+  Dimensions,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setAlergie, getAlergie, deleteAlergie } from "../../stores/action";
+import { connect } from "react-redux";
+import LottieLoader from "lottie-react-native";
+import SelectPatient from "../../components/modals/selectPatient";
+import SelectModalAllergies from "../../components/modals/modalPickerAllergies";
+import ConfirmationModal from "../../components/modals/ConfirmationModal";
+import GradientHeader from "../../components/headers/GradientHeader";
 
-const Allergies = props => {
+const dimHeight = Dimensions.get("window").height;
+const dimWidth = Dimensions.get("window").width;
+
+const Allergies = (props) => {
   const [accountOwner, setAccountOwner] = useState(props.userData);
-  const [displayName, setDisplayName] = useState(props.userData.lastName? props.userData.firstName + " " + props.userData.lastName : props.userData.firstName)
+  const [displayName, setDisplayName] = useState(
+    props.userData.lastName
+      ? props.userData.firstName + " " + props.userData.lastName
+      : props.userData.firstName
+  );
 
   const [Load, setLoad] = useState(false);
-  const [inputAlergies, setInputAlergies] = useState('');
-  const allergieTypeSelection = [
-    {
-      label: 'Cuaca',
-      value: 'Cuaca',
-    },
-    {
-      label: 'Obat',
-      value: 'Obat',
-    },
-    {
-      label: 'Makanan',
-      value: 'Makanan',
-    },
-  ];
-  const [type, setType] = useState('Cuaca');
+  const [inputAlergies, setInputAlergies] = useState("");
+  const [needInfo, setNeedInfo] = useState(false)
+
   const [allergies, setAlergies] = useState([]);
-  const [modalW, setModalW] = useState(false);
-  const [idAlergie, setId] = useState(null);
-  const [idUser, setIduser] = useState({firstName: null, _id: null});
+  const [idUser, setIduser] = useState({ firstName: null, _id: null });
   const [family, setFamily] = useState([]);
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
 
-  async function addAlergies(data) {
-    let token = await AsyncStorage.getItem('token');
+  const [selectionType, setSelectionType] = useState([])
+
+  async function addAlergies(type) {
+    let token = await AsyncStorage.getItem("token");
     if (inputAlergies && type) {
+      setModalAllergyTypes(false);
       props
         .setAlergie(
           idUser._id,
-          {alergie: inputAlergies, alergieType: type},
-          JSON.parse(token).token,
+          { alergie: inputAlergies, alergieType: type },
+          JSON.parse(token).token
         )
-        .then(backData => {
+        .then((backData) => {
           _fetchDataAlergi();
-          setInputAlergies('');
-          setType('Cuaca');
+          setInputAlergies("");
         });
     } else {
       ToastAndroid.show(
-        'please fill in allergy and type of allergy',
-        ToastAndroid.LONG,
+        "please fill in allergy and type of allergy",
+        ToastAndroid.LONG
       );
     }
   }
 
   function getFamily() {
-    let dataUser = {
-      _id: props.userData._id,
-      firstName: props.userData.lastName
-        ? props.userData.firstName + ' ' + props.userData.lastName
-        : props.userData.firstName,
-    };
-    const temp = [dataUser];
-    props.userData.family.forEach(el => {
-      temp.push({
-        _id: el._id,
-        firstName: el.lastName
-          ? el.firstName + ' ' + el.lastName
-          : el.firstName,
-      });
+    const temp = [props.userData];
+    props.userData.family.forEach((el) => {
+      temp.push(el);
     });
     setIduser(temp[0]);
     setFamily(temp);
   }
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
+  BackHandler.addEventListener("hardwareBackPress", () => {
     return props.navigation.pop();
   });
 
   async function _fetchDataAlergi() {
+    setNeedInfo(false)
     setAlergies([]);
     setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    let tempt = [];
+    let token = await AsyncStorage.getItem("token");
+    let temp = {
+      OBAT: [],
+      MAKANAN: [],
+      CUACA: [],
+    };
     props
       .getAlergie(idUser._id, JSON.parse(token).token)
-      .then(allAlergi => {
-        // console.log(allAlergi, 'then yang ke 2');
-        allAlergi.data.map((el, idx) => {
-          return el.status == 'Active' ? tempt.push(el) : null;
-        });
-        setAlergies(tempt);
+      .then((allAlergi) => {
+        for (let i = 0; i < allAlergi.data.length; i++) {
+          const item = allAlergi.data[i];
+          if (item.status == "Active") {
+            if (!temp[item.alergieType.toUpperCase()]) {
+              temp[item.alergieType.toUpperCase()] = [];
+            }
+            temp[item.alergieType.toUpperCase()].push({
+              id: item._id,
+              alergi: item.alergie,
+              createBy: item.createBy,
+            });
+          }
+        }
+
+        let fromPatient = false
+        let fromDokter = false
+        allAlergi.data.map(el => {
+          if(el.status === 'Active'){
+            if(el.createBy === 'Patient'){ fromPatient = true}
+            if(el.createBy === 'Dokter'){ fromDokter = true}
+          }
+        })
+
+        if(fromDokter && fromPatient){setNeedInfo(true)}
+
+        const keySelection = Object.keys(temp);
+        const index = keySelection.indexOf("");
+        if (index !== -1) keySelection.splice(index, 1);
+        setSelectionType(keySelection);
+
+        if (temp.OBAT.length === 0) delete temp.OBAT;
+        if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
+        if (temp.CUACA.length === 0) delete temp.CUACA;
+
+        setAlergies(temp);
         setLoad(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
         setLoad(false);
       });
   }
 
-  async function _DeleteAlergi(_idAlergie) {
-    let token = await AsyncStorage.getItem('token');
-    props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
-      // console.log('delete', backData);
-      _fetchDataAlergi();
-    });
-  }
-
   useEffect(() => {
     getFamily();
   }, []);
+
   useEffect(() => {
     if (idUser._id) {
       _fetchDataAlergi();
     }
-  }, [idUser]);
+  }, [idUser, props.navigation.state.params]);
 
   function setSelectedValue(data) {
-    const fullName = data.lastName ? data.firstName + " " + data.lastName : data.firstName
-    const _id = data._id
-    setDisplayName(fullName)
-    setIduser({fullName, _id});
+    const fullName = data.lastName
+      ? data.firstName + " " + data.lastName
+      : data.firstName;
+    const _id = data._id;
+    setDisplayName(fullName);
+    setIduser({ fullName, _id });
   }
 
   return (
@@ -144,17 +158,18 @@ const Allergies = props => {
       {/* Back Button */}
       <GradientHeader
         navigate={props.navigation.navigate}
-        navigateBack={'Home'}
-        title='Alergi Pasien'    
+        navigateBack={"Home"}
+        title="Alergi Pasien"
       />
 
       {/* Name box */}
       <View style={styles.boxContainer}>
         <TouchableOpacity
           onPress={() => setModalPatient(true)}
-          style={{...styles.box, height: 50}}>
+          style={{ ...styles.box, height: 50 }}
+        >
           <Text style={styles.inputText}>{displayName}</Text>
-          <Image source={require('../../assets/png/ArrowDown.png')} />
+          <Image source={require("../../assets/png/ArrowDown.png")} />
         </TouchableOpacity>
 
         <SelectPatient
@@ -162,15 +177,15 @@ const Allergies = props => {
           setModal={setModalPatient}
           accountOwner={accountOwner}
           family={family}
-          title="Siapa yang ingin anda check?"
+          title="Alergi siapa yang ingin anda lihat?"
           setSelectedValue={setSelectedValue}
           navigateTo={props.navigation.navigate}
         />
       </View>
       {Load ? (
-        <View style={{flex: 1, width: '100%', backgroundColor: '#1F1F1F'}}>
+        <View style={{ flex: 1, width: "100%", backgroundColor: "#1F1F1F" }}>
           <LottieLoader
-            source={require('../animation/loading.json')}
+            source={require("../animation/loading.json")}
             autoPlay
             loop
           />
@@ -178,140 +193,107 @@ const Allergies = props => {
       ) : (
         <>
           {/* Lower View */}
-
-          {allergies.length ? (
+          {Object.keys(allergies).length ? (
             // Allergy Box
-            <View style={styles.allergieBoxContainer}>
-              <View style={styles.lowerBox}>
-                <View style={styles.allergiesTextContainerTop}>
-                  <Text style={styles.allergiesTextTop}>Alergi</Text>
-                  <Text style={styles.allergiesTextTop}>Tipe</Text>
+            <View>
+              {
+                needInfo && 
+              <View style={styles.boxDetail}>
+                <View style={styles.itemBoxDetail}>
+                  <View style={styles.boxDokter} />
+                  <Text style={styles.textBoxDetail}>Dibuat oleh Dokter</Text>
                 </View>
-
-                {allergies.map((el, i) => {
+                <View style={styles.itemBoxDetail}>
+                  <View style={styles.boxPatient} />
+                  <Text style={styles.textBoxDetail}>Dibuat oleh Pasien</Text>
+                </View>
+              </View>
+              }
+              <ScrollView style={{ height: dimHeight * 0.7 }}>
+                {Object.keys(allergies).map((el, index) => {
                   return (
-                    <TouchableOpacity
-                      style={{flexDirection: 'row', width: '100%'}}
-                      key={i}
-                      onLongPress={() => {
-                        setModalW(true);
-                        setId(el._id);
-                      }}>
-                      <View style={styles.allergiesTextContainer} key={i}>
-                        <Text style={styles.allergiesText}>{el.alergie}</Text>
-                        <Text style={styles.allergiesText}>
-                          {el.alergieType}
-                        </Text>
+                    <View style={styles.allergieBoxContainer} key={index}>
+                      <View style={styles.allergiesTextContainerTop}>
+                        <Text style={styles.allergiesTextTop}>{el || 'Lainnya'}</Text>
                       </View>
-                    </TouchableOpacity>
+                      <TouchableOpacity style={styles.lowerBox} onPress={() => props.navigation.navigate('EditAllergy', {data: allergies, selected: el, selectionType})}>
+                        <View style={styles.allergiesTextContainer}>
+                          <Text>
+                            {allergies[el].map((item, idx) => {
+                              return (
+                                <Text
+                                  key={idx}
+                                  style={
+                                    item.createBy == "Patient"
+                                      ? styles.allergiesPatientText
+                                      : styles.allergiesDokterText
+                                  }
+                                >
+                                  {item.alergi}
+                                  {allergies[el].length - 1 !== idx
+                                    ? ", "
+                                    : null}
+                                </Text>
+                              );
+                            })}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   );
                 })}
-              </View>
-
-              {/* Add Allergy Button */}
-              <View style={styles.addAlergiesContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalAllergyTypes(true);
-                  }}
-                  style={styles.button}>
-                  {Load ? (
-                    <ActivityIndicator size={'small'} color="#FFF" />
-                  ) : (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        source={require('../../assets/png/PlusSign.png')}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          color: '#FFF',
-                          paddingLeft: 15,
-                          color: '#4398D1',
-                        }}>
-                        Tambah Alergi
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-                <SelectModalAllergies
-                  modal={modalAllergyTypes}
-                  setModal={setModalAllergyTypes}
-                  selection={allergieTypeSelection}
-                  setSelectedValue={setType}
-                  inputAlergies={inputAlergies}
-                  setInputAlergies={setInputAlergies}
-                  load={Load}
-                  addAlergies={addAlergies}
-                />
-              </View>
+              </ScrollView>
             </View>
           ) : (
-            <View style={{flex: 1, alignItems: 'center'}}>
-              <Text style={{padding: 10, color: '#fff'}}>No allergies</Text>
-              <View style={styles.addAlergiesContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalAllergyTypes(true);
-                  }}
-                  style={styles.button}>
-                  {Load ? (
-                    <ActivityIndicator size={'small'} color="#FFF" />
-                  ) : (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        source={require('../../assets/png/PlusSign.png')}
-                      />
-                      <Text
-                        style={{
-                          fontSize: 18,
-                          color: '#FFF',
-                          paddingLeft: 15,
-                          color: '#4398D1',
-                        }}>
-                        Tambah Alergi
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-                <SelectModalAllergies
-                  modal={modalAllergyTypes}
-                  setModal={setModalAllergyTypes}
-                  selection={allergieTypeSelection}
-                  setSelectedValue={setType}
-                  inputAlergies={inputAlergies}
-                  setInputAlergies={setInputAlergies}
-                  load={Load}
-                  addAlergies={addAlergies}
-                />
-              </View>
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ padding: 10, color: "#fff" }}>
+                Tidak ada alergi
+              </Text>
             </View>
           )}
-          <ConfirmationModal
-            modal={modalW}
-            optionLeftFunction={() => {
-                setModalW(false)
-            }}
-            optionLeftText={'BATAL'}
-            optionRightFunction={() => {
-                _DeleteAlergi(idAlergie)
-                setModalW(false)
-            }}
-            optionRightText={'HAPUS'}
-            warning={'Yakin ingin menghapus alergi?'}
-          />
+          {/* Add Allergy Button */}
+          <View style={styles.addAlergiesContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                setModalAllergyTypes(true);
+              }}
+              style={styles.button}
+            >
+              {Load ? (
+                <ActivityIndicator size={"small"} color="#FFF" />
+              ) : (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: "#FFF",
+                      paddingLeft: 15,
+                      color: "#4398D1",
+                    }}
+                  >
+                    Ketuk untuk menambah alergi
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         </>
       )}
+      <SelectModalAllergies
+        modal={modalAllergyTypes}
+        setModal={setModalAllergyTypes}
+        inputAlergies={inputAlergies}
+        setInputAlergies={setInputAlergies}
+        load={Load}
+        addAlergies={addAlergies}
+        selectionType={selectionType}
+      />
     </View>
   );
 };
@@ -319,130 +301,159 @@ const Allergies = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F1F1F',
+    backgroundColor: "#1F1F1F",
   },
   boxContainer: {
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    shadowColor: '#C2C2C2',
-    shadowOffset: {height: 5, width: 5},
+    padding: dimHeight * 0.02,
+    flexDirection: "row",
+    justifyContent: "center",
+    shadowColor: "#C2C2C2",
+    shadowOffset: { height: 5, width: 5 },
     shadowOpacity: 0.61,
     shadowRadius: 9.11,
     elevation: 9,
-    width: '100%',
+    width: "100%",
   },
   box: {
-    width: '100%',
-    borderWidth: 1,
-    paddingHorizontal: 20,
+    width: "100%",
+    paddingHorizontal: dimHeight * 0.02,
     borderRadius: 3,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#2F2F2F',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#2F2F2F",
+  },
+  boxDokter: {
+    backgroundColor: "#4BE395",
+    height: dimHeight * 0.015,
+    width: dimHeight * 0.03,
+    borderRadius: 2,
+  },
+  boxPatient: {
+    backgroundColor: "#A87F0B",
+    height: dimHeight * 0.015,
+    width: dimHeight * 0.03,
+    borderRadius: 2,
   },
   allergieBoxContainer: {
-    padding: 10,
-    flexDirection: 'column',
-    shadowColor: '#C2C2C2',
-    shadowOffset: {height: 5, width: 5},
+    paddingHorizontal: dimHeight * 0.02,
+    paddingVertical: 5,
+    flexDirection: "column",
+    shadowColor: "#C2C2C2",
+    shadowOffset: { height: 5, width: 5 },
     shadowOpacity: 0.61,
     shadowRadius: 9.11,
     elevation: 9,
-    width: '100%',
   },
   lowerBox: {
-    width: '100%',
-    borderWidth: 1,
-    paddingBottom: 25,
-    paddingHorizontal: 15,
+    // width: '100%',
+    paddingHorizontal: dimHeight * 0.02,
     borderRadius: 3,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#2F2F2F',
+    flexDirection: "column",
+    backgroundColor: "#2F2F2F",
   },
   inputBox: {
     flex: 1,
   },
   alergie: {
-    flexDirection: 'row',
-    borderColor: '#3a5756',
+    flexDirection: "row",
+    borderColor: "#3a5756",
     borderWidth: 0.2,
-    width: '90%',
+    width: "90%",
     height: 60,
     margin: 8,
     padding: 8,
     marginBottom: 0,
     borderRadius: 3,
-    alignSelf: 'center',
-    alignItems: 'center',
+    alignSelf: "center",
+    alignItems: "center",
   },
   allergiesTextContainerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingTop: dimHeight * 0.01,
     paddingBottom: 5,
   },
-
+  boxDetail: {
+    flexDirection: "row",
+    width: "100%",
+    padding: dimHeight * 0.02,
+  },
+  itemBoxDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  textBoxDetail: {
+    color: "#B5B5B5",
+    fontStyle: "italic",
+    fontSize: 12,
+    paddingHorizontal: dimHeight * 0.02,
+  },
   allergiesTextContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingTop: 15,
+    flexDirection: "row",
+    width: "100%",
+    paddingVertical: dimHeight * 0.02,
   },
   allergiesTextTop: {
-    color: '#A87F0B',
+    color: "#A0A0A0",
+    textTransform: "uppercase",
   },
-  allergiesText: {
-    color: '#DDDDDD',
+  allergiesDokterText: {
+    color: "#4BE395",
+  },
+  allergiesPatientText: {
+    color: "#A87F0B",
   },
   addAlergiesContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: dimHeight * 0.02,
   },
   button: {
     height: 50,
-    width: '85%',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10,
+    width: "100%",
+    marginTop: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#545454",
+    borderStyle: "dashed",
+    borderRadius: 4,
+    width: "100%",
   },
   picker: {
     height: 60,
-    borderColor: '#3a5756',
+    borderColor: "#3a5756",
     borderWidth: 0.2,
     paddingHorizontal: 8,
     paddingVertical: 10,
-    width: '90%',
+    width: "90%",
     margin: 8,
     marginBottom: 0,
     borderRadius: 3,
-    alignSelf: 'center',
-    justifyContent: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
   },
 
   header: {
     paddingTop: StatusBar.currentHeight,
     height: StatusBar.currentHeight + 50,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    backgroundColor: 'tomato',
+    alignItems: "center",
+    justifyContent: "flex-end",
+    backgroundColor: "tomato",
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontWeight: "bold",
+    color: "#FFF",
     marginBottom: 5,
   },
   content: {
     height: 70,
   },
   inputText: {
-    color: '#DDDDDD',
+    color: "#DDDDDD",
   },
 });
 
@@ -452,11 +463,8 @@ const mapDispatchToProps = {
   deleteAlergie,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return state;
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Allergies);
+export default connect(mapStateToProps, mapDispatchToProps)(Allergies);

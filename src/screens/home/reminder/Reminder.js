@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { connect } from "react-redux";
-import { getDrugs, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
+import { getDrugs, searchAllDrugs, changeAlarmBoolean, updateFinishStatus, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
 import Header from "../../../components/headers/ReminderHeader";
 import ReminderActiveList from "../../../components/reminder/ReminderActiveList";
 import ReminderFinishedList from "../../../components/reminder/ReminderFinishedList";
@@ -16,9 +16,6 @@ import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
-import * as Calendar from 'expo-calendar';
-
-
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -26,36 +23,9 @@ const dimWidth = Dimensions.get("window").width;
 function Reminder(props) {
 	const swiper = useRef(null)
 
-	// useEffect(() => {
-	// 	(async () => {
-	// 	  const { status } = await Calendar.requestCalendarPermissionsAsync();
-	// 	  if (status === 'granted') {
-	// 		const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-	// 		console.log('Here are all your calendars:');
-	// 		console.log({ calendars });
-	// 	  }
-	// 	})();
-	// }, []);
-
-	// async function createCalendar() {
-	// 	const defaultCalendarSource =
-	// 	  Platform.OS === 'ios'
-	// 		? await getDefaultCalendarSource()
-	// 		: { isLocalAccount: true, name: 'Expo Calendar' };
-	// 	const newCalendarID = await Calendar.createCalendarAsync({
-	// 	  title: 'Expo Calendar',
-	// 	  color: 'blue',
-	// 	  entityType: Calendar.EntityTypes.EVENT,
-	// 	  sourceId: defaultCalendarSource.id,
-	// 	  source: defaultCalendarSource,
-	// 	  name: 'internalCalendarName',
-	// 	  ownerAccount: 'personal',
-	// 	  accessLevel: Calendar.CalendarAccessLevel.OWNER,
-	// 	});
-	// 	console.log(`Your new calendar ID is: ${newCalendarID}`);
-	// }
-
+	
 	const [userData, setUserData] = useState(props.userData)
+	const [selectedPatient, setSelectedPatient] = useState(props.userData)
 	const [drugs, setDrugs] = useState([])
 
 	const [load, setLoad] = useState(true)
@@ -64,18 +34,32 @@ function Reminder(props) {
 	const [activeDrugs, setActiveDrugs] = useState([])
 	const [finishedDrugs, setFinishedDrugs] = useState([])
 
+	const [allDrugs, setAllDrugs] = useState([])
+
+	useEffect( async () => {
+		await props.searchAllDrugs()
+		const revised = props.allDrugs.map(el => {
+			el.name = el.itemName
+			return el
+		})
+		setAllDrugs(revised)
+
+	}, [])
+
 	useEffect( async () => {
 		try {
+			setLoad(true)
+			setLoadGetDrugs(true)
 			let token = await AsyncStorage.getItem("token");
 			token = JSON.parse(token).token
-			const patientID = props.userData._id
+			const patientID = selectedPatient._id
 			const allDrugs = await props.getDrugs(patientID, token)
 			setDrugs(allDrugs)
 			setLoadGetDrugs(false)
 		} catch (error){
 			console.log(error, 'error di Reminder Page')
 		}
-	}, [])
+	}, [selectedPatient])
 
 	useEffect(async () => {
 		if(!loadGetDrugs){
@@ -96,18 +80,21 @@ function Reminder(props) {
 	}
 
 	function firstName(){
-		return userData.firstName.split(' ')[0]
+		return selectedPatient.firstName.split(' ')[0]
 	}
 
 	const widthAdd = (dimWidth * 0.06945)
     const heightAdd = (dimHeight * 0.03677)
-
 	const [index, setIndex] = useState(0)
   	return (
 		<View style={styles.container}>
 			<Header
 				navigate={props.navigation.navigate}
 				name={firstName()}
+				imageURL={selectedPatient.imageUrl}
+				family={[userData, ...userData.family]}
+				setPatientID={setSelectedPatient}
+				navigateTo={props.navigation.navigate}
 			/>
 			<View style={styles.options}>
 				<View style={styles.statusContainer}>
@@ -136,8 +123,7 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
-					onPress={() => props.navigation.navigate('AddReminderForm')}
-					// onPress={() => createAlarm()}
+					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs, allDrugs: allDrugs})}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
@@ -152,7 +138,7 @@ function Reminder(props) {
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<ReminderActiveList props={props} drugs={activeDrugs}/>
+						<ReminderActiveList props={props} activeDrugs={activeDrugs} finishedDrugs={finishedDrugs} setActiveDrugs={setActiveDrugs} setFinishedDrugs={setFinishedDrugs} selectedPatient={selectedPatient} updateFinishStatusFunction={props.updateFinishStatus}/>
 					</ScrollView>
 					<ScrollView>
 						<ReminderFinishedList props={props} drugs={finishedDrugs}/>
@@ -222,6 +208,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
 	getDrugs,
+	searchAllDrugs,
+	changeAlarmBoolean,
+	updateFinishStatus,
 	getReminders,
 	changeReminderAlarmTime,
 	changeReminderStatus

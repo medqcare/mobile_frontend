@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Picker,
   BackHandler,
+  ToastAndroid,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -20,31 +21,38 @@ import {
 
 // Radio Form
 import RadioForm from 'react-native-simple-radio-button';
-import DatePicker from 'react-native-datepicker';
 import { edit_profile, setLoading } from '../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Modal
-import { fullMonthFormat } from '../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../helpers/dateFormat';
 import SelectModal from './modals/modalPicker';
 import GradientHeader from './headers/GradientHeader';
 import LocationModalPicker from '../components/modals/LocationModalPicker';
 
 // for proper case
 import capitalFirst from '../helpers/capitalFirst';
-
+import DatePickerIcon from '../assets/svg/DatePickerIcon';
+import DatePicker from '@react-native-community/datetimepicker';
+import nikValidation from '../helpers/validationNIK';
 const editProfile = (props) => {
-  // Moment
-  var moment = require('moment');
-
-  // UserData
+  const dateOfBirthDay = new Date(props.userData.dob);
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(dateOfBirthDay)
+  );
   const [userData, setUserData] = useState({
     photo: props.userData.photo || '',
     nik: props.userData.nik.toString(),
     firstName: props.userData.firstName,
     lastName: props.userData.lastName,
     gender: props.userData.gender || 'Male',
-    dob: moment(props.userData.dob).format('DD/MM/YYYY'),
+    dob: dateOfBirthDay,
     bloodType: props.userData.bloodType || 'A',
     resus: props.userData.resus || '+',
     phoneNumber: props.userData.phoneNumber,
@@ -73,8 +81,6 @@ const editProfile = (props) => {
   const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
     userData.location.city
   );
-
-  const chosenDate = fullMonthFormat(userData.dob);
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
@@ -174,14 +180,18 @@ const editProfile = (props) => {
 
   // Function for validation
   function validation() {
+    if (!nikValidation(userData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+      return;
+    }
+
     if (
-      (userData.nik !== null &&
-        userData.nik.length > 0 &&
-        userData.nik.length !== 16) ||
+      !nikValidation(userData.nik) ||
       userData.firstName == '' ||
       userData.firstName == null ||
       userData.dob == null ||
-      userData.phoneNumber == null
+      userData.phoneNumber == null ||
+      isErrorPhoneNumber
     ) {
       setValid(true);
       setModalF(true);
@@ -209,10 +219,6 @@ const editProfile = (props) => {
   async function sendData(data) {
     setLoad(true);
     let token = await AsyncStorage.getItem('token');
-    console.log(data.dob, 'ini dob');
-    let wantedDate = data.dob.split('/');
-    wantedDate = `${wantedDate[1]}/${wantedDate[0]}/${wantedDate[2]}`;
-    data.dob = new Date(wantedDate);
     props
       .edit_profile(data, props.userData._id, JSON.parse(token).token)
       .then((backData) => {
@@ -230,6 +236,16 @@ const editProfile = (props) => {
     props.navigation.pop();
     return true;
   });
+
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
+    setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+    setUserData({ ...userData, dob: selectedDate });
+  };
 
   return (
     <KeyboardAvoidingView
@@ -332,7 +348,7 @@ const editProfile = (props) => {
           >
             <RadioForm
               radio_props={radio_props}
-              initial={0}
+              initial={userData.gender === 'Male' ? 0 : 1}
               onPress={(value) => {
                 setUserData({ ...userData, gender: value });
               }}
@@ -372,8 +388,22 @@ const editProfile = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={style.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={style.inputText}>
+              {dateWithDDMMMYYYYFormat(chosenDate)}
+            </Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -401,7 +431,7 @@ const editProfile = (props) => {
               onDateChange={(date) => {
                 setUserData({ ...userData, dob: date });
               }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -415,12 +445,18 @@ const editProfile = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setUserData({ ...userData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setUserData({ ...userData, phoneNumber: text });
+              }}
               value={userData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}

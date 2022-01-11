@@ -65,23 +65,30 @@ const ListApointment = (props) => {
     })();
   };
 
-  const openScannerHandler = () => {
-    getHealthFacility()
-      .then((data) => {
-        console.log(data);
-        setmodal(false);
-        props.route.navigate('Scanner', {
-          reservationData: props.data,
-          healthFacility: data,
-        });
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
-  };
-
   const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
     return bookingSchedule === moment().format('DD/MM/YYYY');
+  };
+
+  const openScannerHandler = () => {
+    const isToday = todaysDateIsMatchWithBookingSchedulesDate(
+      dataPatient.bookingSchedule
+    );
+    props.route.navigate('Scanner', {
+      reservationData: props.data,
+      isToday,
+    });
+    // getHealthFacility()
+    //   .then((data) => {
+    //     console.log(data);
+    //     setmodal(false);
+    //     props.route.navigate('Scanner', {
+    //       reservationData: props.data,
+    //       healthFacility: data,
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.log(error.message);
+    //   });
   };
 
   //   <TouchableOpacity
@@ -215,7 +222,7 @@ const ListApointment = (props) => {
                       <Text style={styles.date}>
                         {dataPatient.bookingSchedule}
                       </Text>
-                      <Text> - </Text>
+                      <Text style={styles.date}> - </Text>
                       <Text style={styles.clock}>
                         {dataPatient.bookingTime}
                       </Text>
@@ -247,14 +254,7 @@ const ListApointment = (props) => {
                   Batalkan Pesanan
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={openScannerHandler}
-                disabled={
-                  !todaysDateIsMatchWithBookingSchedulesDate(
-                    dataPatient.bookingSchedule
-                  )
-                }
-              >
+              <TouchableOpacity onPress={openScannerHandler}>
                 <Text
                   style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
                 >

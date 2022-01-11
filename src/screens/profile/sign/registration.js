@@ -31,7 +31,6 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 import RadioForm from 'react-native-simple-radio-button';
 
 // Date picker
-import DatePicker from 'react-native-datepicker';
 
 // For finding width percentage
 import {
@@ -40,15 +39,23 @@ import {
 } from 'react-native-responsive-screen';
 
 // For proper date format
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 
 // For proper number format
 import withZero from '../../../helpers/withZero';
 
+import DatePicker from '@react-native-community/datetimepicker';
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import nikValidation from '../../../helpers/validationNIK';
+
 const DataCompletion = (props) => {
   // Moment
   var moment = require('moment');
-
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(null);
   // Region
   const region = require('../../../assets/Region/province');
 
@@ -67,6 +74,8 @@ const DataCompletion = (props) => {
   const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
     district[0].name
   );
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+
   // console.log(district[0])
   // console.log(selectedDistrictLabel)
 
@@ -77,7 +86,7 @@ const DataCompletion = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: moment(new Date()).format('DD/MMMM/YYYY'),
+    dob: '',
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -94,7 +103,6 @@ const DataCompletion = (props) => {
   const sendDate = `${withZero(newDate.getDate())}/${withZero(
     newDate.getMonth() + 1
   )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
@@ -215,14 +223,21 @@ const DataCompletion = (props) => {
   // },
 
   // Function for validation
+
   function validation() {
+    if (!nikValidation(userData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+      return;
+    }
+
     if (
-      userData.nik == null ||
-      userData.nik.length !== 16 ||
+      !nikValidation(userData.nik) ||
       userData.firstName == null ||
-      userData.dob == null ||
+      !userData.dob ||
       userData.phoneNumber == null ||
-      userData.phoneNumber.length == 0
+      userData.phoneNumber.length == 0 ||
+      isErrorPhoneNumber ||
+      !chosenDate
     ) {
       ToastAndroid.show(
         'Please fill all the necessary data!',
@@ -270,6 +285,15 @@ const DataCompletion = (props) => {
     );
     return true;
   });
+
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
+    setChosenDate(selectedDate);
+    setUserData({ ...userData, dob: selectedDate });
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={'padding'} enabled>
@@ -378,8 +402,24 @@ const DataCompletion = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>
+              {chosenDate
+                ? dateWithDDMMMYYYYFormat(chosenDate)
+                : 'Pilih Tanggal Lahir'}
+            </Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -408,7 +448,7 @@ const DataCompletion = (props) => {
                 setUserData({ ...userData, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -422,12 +462,18 @@ const DataCompletion = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setUserData({ ...userData, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setUserData({ ...userData, phoneNumber: text });
+              }}
               value={userData.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Bloodtype form */}
@@ -579,6 +625,7 @@ const styles = StyleSheet.create({
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,
+    paddingTop: hp('7%'),
   },
 
   header: {

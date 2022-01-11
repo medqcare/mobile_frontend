@@ -23,8 +23,9 @@ const mapDispatchToProps = {
 	uploadImage
 };
 
-function ProfilePictureCamera({navigation, userData, uploadImage}){
-    const { destination } = navigation.state.params
+function ProfilePictureCamera({navigation, uploadImage}){
+    const { destination, userData } = navigation.state.params
+    console.log(userData.firstName);
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)

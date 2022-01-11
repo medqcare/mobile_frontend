@@ -58,7 +58,7 @@ export default function DetailResumeMedis(props) {
         </View>
         <View style={{ marginLeft: -15 }}>
           <Text style={styles.title}>
-            Taken Date {getFormattedDate(resumeMedis?.createdAt)}
+            Taken Date {getFormattedDate(resumeMedis.createdAt)}
           </Text>
         </View>
         <View style={{}}>
@@ -95,7 +95,7 @@ export default function DetailResumeMedis(props) {
                         </View>
                         <View style={styles.contentBox}>
                           <Text style={styles.textContent}>
-                            {resumeMedis.examination.anamnesa}
+                            {resumeMedis.examination?.anamnesa || 'Tidak ada data'}
                           </Text>
                         </View>
                         <View style={styles.item}>
@@ -106,7 +106,7 @@ export default function DetailResumeMedis(props) {
 
                         <View style={styles.contentBox}>
                           <Text style={styles.textContent}>
-                            {resumeMedis.examination.physicalExam}
+                            {resumeMedis.examination?.physicalExam || 'Tidak ada data'}
                           </Text>
                         </View>
                       </View>
@@ -115,17 +115,25 @@ export default function DetailResumeMedis(props) {
                       <Text style={styles.textHeader}>HISTORI PENYAKIT</Text>
                       <View style={styles.line} />
                       <View style={styles.card}>
-                        <View style={styles.item}>
-                          <Text style={styles.textItem}>Belum ada history</Text>
-                        </View>
-                        {/* <View style={styles.item}>
-                          <Text style={styles.textItem}>10 Jan 2014</Text>
-                          <Text style={styles.textItem}>DBD</Text>
-                        </View>
-                        <View style={styles.item}>
-                          <Text style={styles.textItem}>18 Feb 2012</Text>
-                          <Text style={styles.textItem}>Patah Kaki</Text>
-                        </View> */}
+                        {resumeMedis.diagnoseHistory &&
+                        resumeMedis.diagnoseHistory.length ? (
+                          <>
+                            {resumeMedis.diagnoseHistory.map((el) => {
+                              return (
+                                <View style={styles.item}>
+                                    <Text style={styles.textTitle}>
+                                      {new Date(el.date).toLocaleDateString()}
+                                    </Text>
+                                    <Text style={styles.textItem}>
+                                      {el.diagnose}
+                                    </Text>
+                                </View>
+                              );
+                            })}
+                          </>
+                        ) : (
+                          <Text style={styles.textTitle}>Belum ada history</Text>
+                        )}
                       </View>
                     </View>
                     <View style={styles.contentHeader}>
@@ -133,51 +141,51 @@ export default function DetailResumeMedis(props) {
                       <View style={styles.line} />
                       <View style={styles.card}>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Tinggi</Text>
+                          <Text style={styles.textTitle}>Tinggi</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.height}
+                            {resumeMedis.vitalSign?.height || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Berat</Text>
+                          <Text style={styles.textTitle}>Berat</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.weight}
+                            {resumeMedis.vitalSign?.weight || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Systole</Text>
+                          <Text style={styles.textTitle}>Systole</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.systole}
+                            {resumeMedis.vitalSign?.systole || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Dyastole</Text>
+                          <Text style={styles.textTitle}>Dyastole</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.dyastole}
+                            {resumeMedis.vitalSign?.dyastole || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Suhu Tubuh</Text>
+                          <Text style={styles.textTitle}>Suhu Tubuh</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.temperature}
+                            {resumeMedis.vitalSign?.temperature || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Detak Jantung</Text>
+                          <Text style={styles.textTitle}>Detak Jantung</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.heartRate}
+                            {resumeMedis.vitalSign?.heartRate || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>Nutrisi</Text>
+                          <Text style={styles.textTitle}>Nutrisi</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.nutrition}
+                            {resumeMedis.vitalSign?.nutrition || '-'}
                           </Text>
                         </View>
                         <View style={styles.item}>
-                          <Text style={styles.textItem}>BMI</Text>
+                          <Text style={styles.textTitle}>BMI</Text>
                           <Text style={styles.textItem}>
-                            {resumeMedis.vitalSign.bmi}
+                            {resumeMedis.vitalSign?.bmi || '-'}
                           </Text>
                         </View>
                       </View>
@@ -192,7 +200,7 @@ export default function DetailResumeMedis(props) {
                               <View style={styles.item}>
                                 <Text
                                   style={{
-                                    ...styles.textItem,
+                                    ...styles.textTitle,
                                     fontSize: 15,
                                     color: "#DDDDDD",
                                   }}
@@ -203,20 +211,11 @@ export default function DetailResumeMedis(props) {
                               {item.orderDetail.map((action, idx) => {
                                 return (
                                   <View key={idx}>
-                                    {item.facilityDest === "Laboratory" ? (
-                                      <View style={styles.item}>
-                                        <Text style={styles.textItem}>
-                                          {action.name}
-                                        </Text>
-                                      </View>
-                                    ) : null}
-                                    {item.facilityDest === "Radiology" ? (
-                                      <View style={styles.item}>
-                                        <Text style={styles.textItem}>
-                                          {action.NameTest}
-                                        </Text>
-                                      </View>
-                                    ) : null}
+                                    <View style={styles.item}>
+                                      <Text style={styles.textTitle}>
+                                        {action.name || action.NameTest}
+                                      </Text>
+                                    </View>
                                   </View>
                                 );
                               })}
@@ -227,7 +226,7 @@ export default function DetailResumeMedis(props) {
                         <View style={styles.card}>
                           <View style={styles.item}>
                             <Text style={styles.textItem}>
-                              Tidak ada pemeriksaan laboratorium
+                              Tidak ada pemeriksaan Laboratorium / Radiology
                             </Text>
                           </View>
                         </View>
@@ -237,27 +236,27 @@ export default function DetailResumeMedis(props) {
                       <Text style={styles.textHeader}>DIAGNOSIS</Text>
                       <View style={styles.line} />
                       <View style={styles.card}>
-                        {resumeMedis.examination.diagnose !== '' && (
-                            <View style={styles.item}>
-                              <Text style={styles.textItem}>Diagnosa</Text>
-                              <Text style={styles.textItem}>
-                                {resumeMedis.examination.diagnose}
-                              </Text>
-                            </View>
-                        )}
-                        {resumeMedis.examination.ICD !== '' && (
+                        {resumeMedis.examination?.diagnose !== "" && (
                           <View style={styles.item}>
-                            <Text style={styles.textItem}>ICD Kode</Text>
+                            <Text style={styles.textTitle}>Diagnosa</Text>
                             <Text style={styles.textItem}>
-                              {resumeMedis.examination.ICD}
+                              {resumeMedis.examination?.diagnose || '-'}
                             </Text>
                           </View>
                         )}
-                        {resumeMedis.examination.icdInfo !== '' && (
+                        {resumeMedis.examination?.ICD !== "" && (
                           <View style={styles.item}>
-                            <Text style={styles.textItem}>ICD Info</Text>
+                            <Text style={styles.textTitle}>ICD Kode</Text>
                             <Text style={styles.textItem}>
-                              {resumeMedis.examination.icdInfo}
+                              {resumeMedis.examination?.ICD || '-'}
+                            </Text>
+                          </View>
+                        )}
+                        {resumeMedis.examination?.icdInfo !== "" && (
+                          <View style={styles.item}>
+                            <Text style={styles.textTitle}>ICD Info</Text>
+                            <Text style={styles.textItem}>
+                              {resumeMedis.examination?.icdInfo || '-'}
                             </Text>
                           </View>
                         )}
@@ -268,18 +267,18 @@ export default function DetailResumeMedis(props) {
                     >
                       <Text style={styles.textHeader}>NOTES</Text>
                       <View style={styles.line} />
-                      {resumeMedis.soap ? (
+                      {resumeMedis.soap && resumeMedis.soap.doctorNotes !== '' ? (
                         <View style={styles.card}>
                           <View style={{}}>
-                            <Text style={styles.textItem}>
-                              {resumeMedis.soap.doctorNotes}
+                            <Text style={styles.textTitle}>
+                              {resumeMedis.soap?.doctorNotes}
                             </Text>
                           </View>
                         </View>
                       ) : (
                         <View style={styles.card}>
                           <View style={{}}>
-                            <Text style={styles.textItem}>Tidak ada Notes</Text>
+                            <Text style={styles.textTitle}>Tidak ada Notes</Text>
                           </View>
                         </View>
                       )}
@@ -353,8 +352,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
   },
+  textTitle: {
+    color: "#B5B5B5",
+    fontSize: 12,
+    width: "50%",
+    justifyContent: "flex-end",
+    textAlign: "left"
+  },
   textItem: {
     color: "#B5B5B5",
     fontSize: 12,
+    width: "50%",
+    justifyContent: "flex-end",
+    textAlign: "right"
   },
 });

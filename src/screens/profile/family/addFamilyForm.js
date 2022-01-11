@@ -11,7 +11,9 @@ import {
   Image,
   KeyboardAvoidingView,
 } from 'react-native';
-import DatePicker from 'react-native-datepicker';
+
+import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
+import DatePicker from '@react-native-community/datetimepicker';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -24,18 +26,24 @@ import { addFamily, setLoading } from '../../../stores/action';
 //Modal
 import { ToastAndroid } from 'react-native';
 
-import { fullMonthFormat } from '../../../helpers/dateFormat';
+import {
+  dateWithDDMMMYYYYFormat,
+  fullMonthFormat,
+} from '../../../helpers/dateFormat';
 import withZero from '../../../helpers/withZero';
 import LocationModalPicker from '../../../components/modals/LocationModalPicker';
+import nikValidation from '../../../helpers/validationNIK';
 
 const familyForm = (props) => {
-  var moment = require('moment');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState('');
   const [load, setLoad] = useState(false);
   const [valid, setValid] = useState(false);
   const [bloodTypeModal, setBloodTypeModal] = useState(false);
   const [rhesusTypeModal, setRhesusModal] = useState(false);
   const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
   const [statusfamilyModal, setStatusFamilyModal] = useState(false);
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
   const bloodType = ['A', 'AB', 'B', 'O'];
   const resus = ['+', '-'];
   const insuranceStatus = [
@@ -91,7 +99,7 @@ const familyForm = (props) => {
     firstName: '',
     lastName: '',
     gender: 'Male',
-    dob: moment(new Date()).format('DD/MMMM/YYYY') || null,
+    dob: '',
     bloodType: 'A',
     resus: '+',
     phoneNumber: '',
@@ -111,15 +119,19 @@ const familyForm = (props) => {
   ];
 
   const validation = () => {
-    console.log('Validating new family data...');
+    console.log(nikValidation(dataFamily.nik), 'data nik');
+    if (!nikValidation(dataFamily.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.show);
+    }
 
     if (
       dataFamily.firstName == null ||
-      (dataFamily.nik !== null &&
-        dataFamily.nik.length > 1 &&
-        dataFamily.nik.length !== 16) ||
+      !nikValidation(dataFamily.nik) ||
       (dataFamily.firstName !== null && dataFamily.firstName.length == 0) ||
-      dataFamily.dob == null
+      !dataFamily.dob ||
+      isErrorPhoneNumber ||
+      !dataFamily.phoneNumber ||
+      !chosenDate
     ) {
       console.log(dataFamily, 'ini data family');
       setValid(true);
@@ -210,11 +222,15 @@ const familyForm = (props) => {
     dataFamily.relationship
   );
 
-  const newDate = new Date();
-  const sendDate = `${withZero(newDate.getDate())}/${withZero(
-    newDate.getMonth() + 1
-  )}/${withZero(newDate.getFullYear())}`;
-  const [chosenDate, setChosenDate] = useState(fullMonthFormat(sendDate));
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
+    setChosenDate(selectedDate);
+    setDataFamily({ ...dataFamily, dob: selectedDate });
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <Header
@@ -323,22 +339,6 @@ const familyForm = (props) => {
           </View>
         </View>
 
-        {/* DOB Error */}
-        <View style={{ flexDirection: 'row' }}>
-          {!dataFamily.dob && valid && (
-            <Text
-              style={{
-                color: 'red',
-                marginVertical: 15,
-                marginLeft: 5,
-                fontSize: 14,
-              }}
-            >
-              *
-            </Text>
-          )}
-        </View>
-
         {/* DOB Form  */}
         <View style={styles.inputMiddleContainer}>
           <View
@@ -349,8 +349,24 @@ const familyForm = (props) => {
               flexDirection: 'row',
             }}
           >
-            <Text style={styles.inputText}>{chosenDate}</Text>
-            <DatePicker
+            <Text style={styles.inputText}>
+              {chosenDate
+                ? dateWithDDMMMYYYYFormat(chosenDate)
+                : 'Pilih Tanggal lahir'}
+            </Text>
+            {showDatePicker && (
+              <DatePicker
+                value={new Date()}
+                mode={'date'}
+                maximumDate={new Date()}
+                onChange={onChange}
+                onTouchCancel={() => setShowDatePicker(false)}
+              />
+            )}
+            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+              <DatePickerIcon />
+            </TouchableOpacity>
+            {/* <DatePicker
               date={chosenDate} //initial date from state
               mode="date" //The enum of date, datetime and time
               format="DD/MMMM/YYYY"
@@ -379,7 +395,7 @@ const familyForm = (props) => {
                 setDataFamily({ ...dataFamily, dob: date });
                 setChosenDate(fullMonthFormat(date));
               }}
-            />
+            /> */}
           </View>
         </View>
 
@@ -393,12 +409,18 @@ const familyForm = (props) => {
               placeholder={'Nomor Hp'}
               placeholderTextColor="#8b8b8b"
               keyboardType={'numeric'}
-              onChangeText={(text) =>
-                setDataFamily({ ...dataFamily, phoneNumber: text })
-              }
+              onChangeText={(text) => {
+                text.length > 13
+                  ? setIsErrorPhoneNumber(true)
+                  : setIsErrorPhoneNumber(false);
+                setDataFamily({ ...dataFamily, phoneNumber: text });
+              }}
               value={dataFamily.phoneNumber}
             />
           </View>
+          {isErrorPhoneNumber && (
+            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+          )}
         </View>
 
         {/* Blood Input */}

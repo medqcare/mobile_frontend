@@ -24,8 +24,8 @@ const mapDispatchToProps = {
 	uploadImage
 };
 
-function ProfilePictureGallery({navigation, userData, uploadImage}){
-    const { destination } = navigation.state.params
+function ProfilePictureGallery({navigation, uploadImage}){
+    const { destination, userData } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)

@@ -69,10 +69,10 @@ const activityList = (props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <>
       <Header title={'Antrian'} navigate={props.navigation.navigate} />
-      <View style={{ paddingHorizontal: 20, justifyContent: 'flex-start' }}>
-        <ScrollView>
+      <View style={styles.container}>
+        <View>
           <>
             {!props.todayActivity?.length && (
               <View
@@ -85,24 +85,29 @@ const activityList = (props) => {
                 <Text style={{ color: '#fff' }}>Tidak ada daftar antrian</Text>
               </View>
             )}
-            {props.todayActivity &&
-              props.todayActivity.map((el, idx) => {
-                return (
-                  <Activity
-                    key={idx}
-                    flag={true}
-                    bookingID={el.bookingCode}
-                    reservationID={el.reservationID}
-                    queueId={JSON.stringify(el.queueID)}
-                    data={el}
-                    navigation={props.navigation}
-                  />
-                );
-              })}
+            {props.todayActivity && (
+              <FlatList
+                data={props.todayActivity}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item: el }) => {
+                  return (
+                    <Activity
+                      flag={true}
+                      bookingID={el.bookingCode}
+                      reservationID={el.reservationID}
+                      queueId={JSON.stringify(el.queueID)}
+                      data={el}
+                      navigation={props.navigation}
+                    />
+                  );
+                }}
+                keyExtractor={(item) => item._id}
+              />
+            )}
           </>
-        </ScrollView>
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
@@ -120,6 +125,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1F1F1F',
+    padding: 14,
   },
   headerTitle: {
     fontSize: 25,
@@ -145,7 +151,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    marginVertical: 10,
+    marginBottom: 10,
   },
   leftActivityCard: {
     justifyContent: 'flex-start',

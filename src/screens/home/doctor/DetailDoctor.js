@@ -155,6 +155,11 @@ function DetailDoctorPage(props) {
   }, [dataDoctor]);
 
   useEffect(() => {
+    !chooseDate ? setNewData(null) : null
+    setBookingTime('');
+  },[chooseDate])
+
+  useEffect(() => {
     getJadwalPerhari();
     about();
   }, [facility]);
@@ -329,6 +334,8 @@ function DetailDoctorPage(props) {
       ? bookingDate.getDate() + key
       : key + 1;
   };
+
+  console.log(dataDoctor, 'this is data doctor');
 
   return (
     <View style={containerStyle.container}>
@@ -556,14 +563,13 @@ function DetailDoctorPage(props) {
                             {showDetail !== indexFacility ? (
                               <TouchableOpacity
                                 onPress={() => {
-                                  // setNewData(null);
                                   setShowDetail(indexFacility);
                                   setNewData({
                                     ...newData,
                                     [item.facilityName]: [
-                                      checkSchedule(bookingDate.getDay()),
+                                      bookingDate.getDay(),
                                       item.facilitySchedule[
-                                        checkSchedule(bookingDate.getDay())
+                                        bookingDate.getDay()
                                       ],
                                     ],
                                   });
@@ -628,6 +634,7 @@ function DetailDoctorPage(props) {
                                       setBookingDate(bookingDate.minusMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
+                                      setChooseDate(null)
                                     }}
                                   >
                                     <View
@@ -640,7 +647,8 @@ function DetailDoctorPage(props) {
                                       <Text
                                         style={{
                                           fontSize: 16,
-                                          color: '#DDDDDD',
+                                          color: bookingDate.getMonth() ===
+                                          new Date().getMonth() ? '#2F2F2F' : '#DDDFDD',
                                           marginTop: -2,
                                         }}
                                       >
@@ -659,6 +667,7 @@ function DetailDoctorPage(props) {
                                   </Text>
                                   <TouchableOpacity
                                     onPress={() => {
+                                      setChooseDate(null)
                                       setBookingDate(bookingDate.addMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
@@ -814,8 +823,10 @@ function DetailDoctorPage(props) {
                                   >
                                     {newData[item.facilityName][1].map(
                                       (time, fIndex) => {
+                                        console.log(newData[item.facilityName], 'inininini');
                                         return (
                                           <View key={fIndex}>
+                                            {/* <Text>{JSON.stringify(time[1])}</Text> */}
                                             {!(
                                               chooseDate ===
                                                 new Date().getDate() &&

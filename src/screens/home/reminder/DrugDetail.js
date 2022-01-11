@@ -15,7 +15,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import VerticalLine from '../../../assets/svg/VerticalLine'
 import { DataTable } from 'react-native-paper'
 import { getSelectedDate } from "../../../helpers/todaysDate";
-import Calendar from "../../../components/Calendar";
+import Calendar from "../../../components/DrugCalendar";
 import withZero from "../../../helpers/withZero";
 
 const dimension = Dimensions.get('window')
@@ -25,13 +25,14 @@ const dimWidth = dimension.width
 function DrugDetail({navigation, userData}){
     const  { drugDetail } = navigation.state.params
 
-    const { reminders, notes } = drugDetail
+    const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugReminders, setDrugReminders] = useState([])
-    const consumedDrugs = reminders.filter(el => el.status === true)
-    const skippedDrugs = reminders.filter(el => el.status === false)
+    
+    const [consumedDrugs, setConsumedDrugs] = useState([])
+    const [skippedDrugs, setSkippedDrugs] = useState([])
     
     const [displayNotes, setDisplayNotes] = useState(notes)
-    const duration = Math.ceil(drugDetail.quantityTotal / drugDetail.ettiquete.length)
+    const duration = Math.ceil(quantityTotal / etiquette.length)
 
     useEffect(() => {
         setDate(new Date())
@@ -40,16 +41,29 @@ function DrugDetail({navigation, userData}){
     function setDate(date){
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(date)
         const selectedDateReminders = []
+        const consumed = []
+        const skipped = []
         for(let i = 0; i < reminders.length; i++){
             const reminderYear = new Date(reminders[i].alarmTime).getFullYear()
             const reminderMonth = new Date(reminders[i].alarmTime).getMonth()
             const reminderDate = new Date(reminders[i].alarmTime).getDate()
             if(reminderYear === todaysYear && reminderMonth === todaysMonth && reminderDate === todaysDate) selectedDateReminders.push(reminders[i])
+            if(reminders[i].status) consumed.push(reminders[i])
+            else if (reminders[i].status === false) skipped.push(reminders[i])
         }
         setDrugReminders(selectedDateReminders)
+        setConsumedDrugs(consumed)
+        setSkippedDrugs(skipped)
     }
 
-    BackHandler.addEventListener("hardwareBackPress", () => {
+    async function changeNotes(){
+        if(displayNotes !== notes){
+            console.log(displayNotes)
+        }
+    }
+
+    BackHandler.addEventListener("hardwareBackPress", async () => {
+        await changeNotes()
 	    navigation.pop();
 		return true;
 	});
@@ -60,20 +74,21 @@ function DrugDetail({navigation, userData}){
                 title="Rincian Konsumsi Obat"
                 navigate={navigation.navigate}
                 navigateBack="Reminder"
+                additionalFunction={changeNotes}
             />
             <ScrollView>
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: drugDetail.imageUrl ? drugDetail.imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                    <Image source={{uri: imageUrl ? imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
-                           <Text style={styles.lowerCenteredSectionText}>{`${drugDetail.ettiquete.length}x Sehari`}</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{`${etiquette.length}x Sehari`}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Dosis</Text>
-                           <Text style={styles.lowerCenteredSectionText}>1.0 Tablet</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{dose} {type}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Durasi</Text>
@@ -84,8 +99,8 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
-                    <Text style={styles.drugNameText}>{drugDetail.drugName} 200 mg {drugDetail.drugQuantity} {drugDetail.type ? drugDetail.type : ''}</Text>
-                    <Text style={drugDetail.description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{drugDetail.description ? drugDetail.description : 'No description provided by the manufacturer'}</Text>
+                    <Text style={styles.drugNameText}>{drugName} 200 mg {drugQuantity} {type ? type : ''}</Text>
+                    <Text style={description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{description ? description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
@@ -106,7 +121,7 @@ function DrugDetail({navigation, userData}){
                 {/* Middle Container */}
                 <View style={styles.drugStatusDetailContainer}>
                     <View style={styles.centeredSection}>
-                        <Text style={styles.upperCenteredSectionText}>{drugDetail.quantityTotal}</Text>
+                        <Text style={styles.upperCenteredSectionText}>{quantityTotal}</Text>
                         <Text style={styles.lowerCenteredSectionText}>TOTAL OBAT</Text>
                     </View>
                     <View style={styles.centeredSection}>
@@ -121,21 +136,20 @@ function DrugDetail({navigation, userData}){
 
                 {/* Calendar */}
                 <View style={styles.calendarContainer}>
-                    <Calendar onDateSelected={setDate} isDateBlackList={false}/>
+                    <Calendar onDateSelected={setDate}/>
                 </View>
 
                 {/* Bottom Container */}
                 {drugReminders.length > 0 ?
                     <DataTable style={styles.bottomContainer}>
                         {drugReminders.map((el, index) => {
-                            // const status = el.status
                             let { statusChangedAt, status, alarmTime } = el
-                            // const alarmTime = new Date(el.alarmTime)
-                            if(statusChangedAt) statusChangedAt = new Date(statusChangedAt)
-                            else statusChangedAt = new Date(alarmTime)
-                            const hours = statusChangedAt.getHours()
-                            const minutes = statusChangedAt.getMinutes()
+
+                            const datedAlarmTime = new Date(alarmTime)
+                            const hours = datedAlarmTime.getHours()
+                            const minutes = datedAlarmTime.getMinutes()
                             const displayTime = `${withZero(hours)}:${withZero(minutes)}`
+
                             return (
                                 <View key={index}>
                                     <DataTable.Row style={{borderBottomWidth: 0 }}>
@@ -144,7 +158,7 @@ function DrugDetail({navigation, userData}){
                                     </DataTable.Row>
                                     <DataTable.Row style={{borderBottomWidth: 0}}>
                                         <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
-                                        <DataTable.Cell>
+                                        <DataTable.Cell style={styles.statusContainer}>
                                             {status === null ?
                                                 <Text style={{color: 'white'}}>-</Text> :
                                                 status ? 
@@ -157,7 +171,9 @@ function DrugDetail({navigation, userData}){
                             )
                         })}
                     </DataTable> :
-                    <View><Text style={styles.inputText}>Tidak ada data</Text></View>
+                    <View style={styles.noDataContainer}>
+                        <Text style={styles.inputText}>Tidak ada data</Text>
+                    </View>
                 }
             </ScrollView>
         </View>
@@ -184,8 +200,6 @@ const styles = StyleSheet.create({
 
     centeredSection: {
         alignItems: "center",
-        // justifyContent: "space-between",
-        // height: 35,
     },
 
     topDetailContainer: {
@@ -264,7 +278,7 @@ const styles = StyleSheet.create({
     },
 
     bottomContainer: {
-        width: dimWidth * 0.3,
+        width: dimWidth * 0.5,
         marginTop: 10,
     },
 
@@ -276,13 +290,22 @@ const styles = StyleSheet.create({
     icon: {
         alignItems: "center",
         backgroundColor: 'yellow',
+    },
 
+    statusContainer: {
+        width: 500,
     },
 
     status: {
         paddingLeft: 7,
         backgroundColor: 'red',
     },
+
+    noDataContainer: {
+        alignItems: "center",
+        justifyContent: 'center',
+        marginTop: 20,
+    }
 })
 
 const mapStateToProps = state => {

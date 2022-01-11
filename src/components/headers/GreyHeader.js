@@ -21,8 +21,14 @@ export default function GreyHeader({
     navigateTo, 
     title = 'Enter Title Here', 
     edit = false,
-    hidden = true
+    hidden = true,
+    additionalFunction,
+    params
 }){
+    async function callAllFunction(){
+        await additionalFunction()
+        navigate(navigateBack)
+    }
 
     return (
         <View style={styles.container}>
@@ -34,7 +40,7 @@ export default function GreyHeader({
             />
             <View style={styles.touchableContent}>
                 <TouchableOpacity
-                    onPress={() => navigate(navigateBack)}>
+                    onPress={() => additionalFunction ? callAllFunction() : navigate(navigateBack)}>
                     <View style={styles.content} >
                         <Ionicons 
                                 name="arrow-back" 
@@ -48,7 +54,7 @@ export default function GreyHeader({
             </View>
             {edit ? 
                 <TouchableOpacity
-                    onPress={() => navigate(navigateTo)}>
+                    onPress={() => navigate(navigateTo, params)}>
                     <Feather 
                         name="edit" 
                         color="#DDDDDD" 

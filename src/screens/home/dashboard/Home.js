@@ -89,6 +89,7 @@ function HomePage(props) {
       const tokenString = await AsyncStorage.getItem('token');
       if (!tokenString) {
         setload(false);
+        return;
       }
 
       const { token } = JSON.parse(tokenString);
@@ -172,7 +173,10 @@ function HomePage(props) {
                     <View style={{ flexDirection: 'row' }}>
                       <TouchableOpacity
                         style={{ marginTop: 1 }}
-                        onPress={() => notif.localNotif()}
+                        onPress={() => {
+                          notif.localNotif();
+                          props.navigation.navigate('NotificationStack');
+                        }}
                       >
                         <Lonceng />
                       </TouchableOpacity>
@@ -187,7 +191,9 @@ function HomePage(props) {
                             style={style.profilePicture}
                             source={{
                               uri: props.userData?.imageUrl
-                                ? props.userData?.imageUrl
+                                ? `${
+                                    props.userData?.imageUrl
+                                  }?time=${new Date()}`
                                 : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                             }}
                           />
@@ -298,8 +304,8 @@ const style = StyleSheet.create({
       Math.round(
         Dimensions.get('window').width + Dimensions.get('window').height
       ) / 2,
-    width: Dimensions.get('window').width * 0.07,
-    height: Dimensions.get('window').width * 0.07,
+    width: Dimensions.get('window').width * 0.075,
+    height: Dimensions.get('window').width * 0.075,
   },
   greeting: {
     position: 'absolute',
