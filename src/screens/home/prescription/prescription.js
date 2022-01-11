@@ -155,13 +155,6 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					</ScrollView>
 				</Swiper>
 			}
-				{/* {
-					prescriptions ? (  
-						<Text style={styles.textItem}>Ini datanya </Text>
-					) : (
-						<Text style={styles.textItem}>Belum Ada Resep</Text>
-					)
-				} */}
 			</View>
 		</View>
 	);
