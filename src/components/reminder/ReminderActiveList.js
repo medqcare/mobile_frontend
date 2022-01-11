@@ -94,7 +94,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
 	}
 
     // Kedua dilakukan
-    async function createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i){
+    async function createAlarm(alarmTime, drugID, drugName, reminderID, etiquetteIndex, i){
 		const startDate = new Date(alarmTime)
 		const endDate = new Date(alarmTime)
 		endDate.setMinutes(endDate.getMinutes() + 5)
@@ -115,7 +115,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             alarmID : newAlarm,
             reminderID,
             drugID,
-            ettiqueteIndex,
+            etiquetteIndex,
             startDate,
         }
         
@@ -206,15 +206,15 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
 
             const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
-            const currentIndexDrugAlarmIDs = alarmIDs.filter(el => el.ettiqueteIndex === alarmIndex && el.drugID === drugID)
+            const currentIndexDrugAlarmIDs = alarmIDs.filter(el => el.etiquetteIndex === alarmIndex && el.drugID === drugID)
             const hours = currentDate.getHours()
             const minutes = currentDate.getMinutes()
 
             if(currentIndexDrugAlarmIDs.length === 0){
                 const currentIndexReminder = content[currentIndex].reminders
-                // .filter(el => el.ettiqueteIndex === alarmIndex)
+                // .filter(el => el.etiquetteIndex === alarmIndex)
                 for(let i = 0; i < currentIndexReminder.length; i++){
-                    if(currentIndexReminder[i].ettiqueteIndex === alarmIndex){
+                    if(currentIndexReminder[i].etiquetteIndex === alarmIndex){
                         const alarmTime = new Date(currentIndexReminder[i].alarmTime)
                         const { _id } = currentIndexReminder[i]
                         alarmTime.setHours(hours)
@@ -266,8 +266,8 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
     const toggleSwitch = async (index, section) => {
         try {
             setLoadToggle(true)
-            const { reminders, reminder, ettiquete } = section
-            const ettiqueteLength = ettiquete.length
+            const { reminders, reminder, etiquette } = section
+            const etiquetteLength = etiquette.length
             const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const drugID = section._id
             const drugName = section.drugName
@@ -301,21 +301,21 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                     alarmIDs = [...foundAlarmIDs]
                 }
 
-                // let ettiqueteIndex = 0
+                // let etiquetteIndex = 0
                 for(let i = 0; i < reminders.length; i++){
                     const alarmTime = reminders[i].alarmTime
                     const reminderID = reminders[i]._id
-                    const ettiqueteIndex = reminders[i].ettiqueteIndex
+                    const etiquetteIndex = reminders[i].etiquetteIndex
                     // if(i === 0){
-                    //     ettiqueteIndex = 0
+                    //     etiquetteIndex = 0
                     // }
-                    // else if(i % ettiqueteLength === 0){
-                    //     ettiqueteIndex = 0
+                    // else if(i % etiquetteLength === 0){
+                    //     etiquetteIndex = 0
                     // }
                     // else {
-                    //     ettiqueteIndex += 1
+                    //     etiquetteIndex += 1
                     // }
-                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, reminderID, ettiqueteIndex, i)
+                    const createdAlarm = await createAlarm(alarmTime, drugID, drugName, reminderID, etiquetteIndex, i)
                     alarmIDs.push(createdAlarm)
                 }
 
@@ -430,7 +430,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
     }
 
     const renderHeader = (section, _, isActive,) => {
-        const { drugName, drugQuantity, type, information, ettiquete, reminder } = section
+        const { drugName, drugQuantity, type, information, etiquette, reminder } = section
         return (
           <Animatable.View
             key={_}
@@ -478,13 +478,13 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                         <Text style={styles.lighterText}>{information}</Text>
                     </View>
                         {isActive ? null :
-                            <View style={styles.ettiqueteContainter}>
+                            <View style={styles.etiquetteContainter}>
                                 <AntDesign 
                                     name="clockcircleo" 
                                     size={dimWidth * 0.035} 
                                     color="rgba(128, 128, 128, 1)" 
                                 />
-                                <Text style={styles.ettiqueteText}>Hari ini {ettiquete.length}x sehari</Text>
+                                <Text style={styles.etiquetteText}>Hari ini {etiquette.length}x sehari</Text>
                             </View>
                         }
                 </View>
@@ -695,6 +695,7 @@ const styles = StyleSheet.create({
 	drugNameText: {
 		...textStyles.lighterText,
 		fontWeight: '500',
+        maxWidth: dimWidth * 0.6886574,
 	},
 
     detailContainer: {
@@ -702,14 +703,14 @@ const styles = StyleSheet.create({
         paddingVertical: dimHeight * 0.003656,
     },
 
-    ettiqueteContainter: {
+    etiquetteContainter: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         paddingLeft: dimWidth * 0.02315
     },
 
-	ettiqueteText: {
+	etiquetteText: {
 		...textStyles.darkerText,
         paddingLeft: dimWidth * 0.02315
 	},

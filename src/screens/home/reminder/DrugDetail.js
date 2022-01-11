@@ -25,14 +25,14 @@ const dimWidth = dimension.width
 function DrugDetail({navigation, userData}){
     const  { drugDetail } = navigation.state.params
 
-    const { reminders, notes, imageUrl, ettiquete, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
+    const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugReminders, setDrugReminders] = useState([])
     
     const [consumedDrugs, setConsumedDrugs] = useState([])
     const [skippedDrugs, setSkippedDrugs] = useState([])
     
     const [displayNotes, setDisplayNotes] = useState(notes)
-    const duration = Math.ceil(quantityTotal / ettiquete.length)
+    const duration = Math.ceil(quantityTotal / etiquette.length)
 
     useEffect(() => {
         setDate(new Date())
@@ -84,7 +84,7 @@ function DrugDetail({navigation, userData}){
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
-                           <Text style={styles.lowerCenteredSectionText}>{`${ettiquete.length}x Sehari`}</Text>
+                           <Text style={styles.lowerCenteredSectionText}>{`${etiquette.length}x Sehari`}</Text>
                        </View>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Dosis</Text>
@@ -158,7 +158,7 @@ function DrugDetail({navigation, userData}){
                                     </DataTable.Row>
                                     <DataTable.Row style={{borderBottomWidth: 0}}>
                                         <DataTable.Cell style={{justifyContent: 'center', flex: 0.3}}><VerticalLine/></DataTable.Cell>
-                                        <DataTable.Cell>
+                                        <DataTable.Cell style={styles.statusContainer}>
                                             {status === null ?
                                                 <Text style={{color: 'white'}}>-</Text> :
                                                 status ? 
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     },
 
     bottomContainer: {
-        width: dimWidth * 0.3,
+        width: dimWidth * 0.5,
         marginTop: 10,
     },
 
@@ -290,6 +290,10 @@ const styles = StyleSheet.create({
     icon: {
         alignItems: "center",
         backgroundColor: 'yellow',
+    },
+
+    statusContainer: {
+        width: 500,
     },
 
     status: {

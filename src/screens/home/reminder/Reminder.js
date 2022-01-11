@@ -80,7 +80,7 @@ function Reminder(props) {
 	}
 
 	function firstName(){
-		return userData.firstName.split(' ')[0]
+		return selectedPatient.firstName.split(' ')[0]
 	}
 
 	const widthAdd = (dimWidth * 0.06945)
@@ -94,6 +94,7 @@ function Reminder(props) {
 				imageURL={selectedPatient.imageUrl}
 				family={[userData, ...userData.family]}
 				setPatientID={setSelectedPatient}
+				navigateTo={props.navigation.navigate}
 			/>
 			<View style={styles.options}>
 				<View style={styles.statusContainer}>
