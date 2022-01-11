@@ -78,7 +78,7 @@ export default class NotifService {
       channelId: soundName ? 'sound-channel-id' : 'default-channel-id',
       ticker: 'My Notification Ticker', // (optional)
       autoCancel: true, // (optional) default: true
-      largeIcon: 'ic_launcher', // (optional) default: "ic_launcher"
+      largeIcon: 'ic_notification', // (optional) default: "ic_launcher"
       smallIcon: 'ic_notification', // (optional) default: "ic_notification" with fallback for "ic_launcher"
       bigText: 'MedQCare', // (optional) default: "message" prop
       subText: 'This is a subText', // (optional) default: none
