@@ -168,7 +168,9 @@ function HomePage(props) {
                             style={style.profilePicture}
                             source={{
                               uri: props.userData?.imageUrl
-                                ? `${props.userData?.imageUrl}?time=${new Date()}`
+                                ? `${
+                                    props.userData?.imageUrl
+                                  }?time=${new Date()}`
                                 : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                             }}
                           />
