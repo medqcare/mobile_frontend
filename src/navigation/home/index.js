@@ -20,6 +20,7 @@ import rujukanStack from './rujukanStack';
 import prescriptionStack from './prescriptionStack';
 import reminderStack from './reminderStack';
 import appointmentStack from './appointmentStack';
+import NotificationStack from './notificationStack';
 
 export default StackHome = createStackNavigator(
   {
@@ -73,6 +74,12 @@ export default StackHome = createStackNavigator(
     },
     ActivityStack: {
       screen: Activity_Stack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    NotificationStack: {
+      screen: NotificationStack,
       navigationOptions: {
         headerShown: false,
       },
