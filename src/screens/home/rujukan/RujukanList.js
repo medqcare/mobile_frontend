@@ -43,6 +43,7 @@ function RujukanList(props) {
   });
   const [types, setTypes] = useState(['rujukan', 'surat sakit']);
   const [typeSelected, setTypeSelected] = useState('rujukan');
+  const [searchIsFocus, setIsFocusSearch] = useState(false);
 
   useEffect(() => {
     let _family = {
@@ -62,9 +63,11 @@ function RujukanList(props) {
       try {
         const tokenString = await AsyncStorage.getItem('token');
         const { token } = JSON.parse(tokenString);
+        let type = 'rujukan,surat sakit';
         const { data: response } = await getDocumentByPatient(
           token,
-          patient._id
+          patient._id,
+          type
         );
         const { data: docs } = response;
         const defaultDocs = docs.filter(
@@ -104,9 +107,9 @@ function RujukanList(props) {
 
   const shareFileHandler = async () => {
     try {
-      let fileUri = FileSystem.documentDirectory + selectedReferenceFile.name;
+      let fileUri = FileSystem.documentDirectory + selectedDoc.name;
       const { uri } = await FileSystem.downloadAsync(
-        selectedReferenceFile.fileUrl,
+        selectedDoc.fileUrl,
         fileUri
       );
       const isAvailable = await Sharing.isAvailableAsync();
@@ -121,6 +124,7 @@ function RujukanList(props) {
       ToastAndroid.show('Process...', ToastAndroid.SHORT);
       await Sharing.shareAsync(uri);
     } catch (error) {
+      console.log(error);
       ToastAndroid.show('Cancel...', ToastAndroid.SHORT);
     }
   };
@@ -192,22 +196,22 @@ function RujukanList(props) {
             style={styles.textinput}
             placeholder="Cari Dokumen"
             placeholderTextColor="#A2A2A2"
-            // onFocus={() => {
-            //   setFilteredData([]);
-            //   setIsFocusSearch(true);
-            // }}
-            // onChangeText={(text) => {
-            //   if (text === '') {
-            //     setFilteredData(data);
-            //     setIsFocusSearch(false);
-            //     return;
-            //   }
-            //   setIsFocusSearch(true);
-            //   const filteredBySearch = data.filter((doc) =>
-            //     doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
-            //   );
-            //   setFilteredData(filteredBySearch);
-            // }}
+            onFocus={() => {
+              setDocsFiltered([]);
+              setIsFocusSearch(true);
+            }}
+            onChangeText={(text) => {
+              if (text === '') {
+                setDocsFiltered(docs.filter((el) => el.type === typeSelected));
+                setIsFocusSearch(false);
+                return;
+              }
+              setIsFocusSearch(true);
+              const filteredBySearch = docs.filter((doc) =>
+                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
+              );
+              setDocsFiltered(filteredBySearch);
+            }}
           />
           <TouchableOpacity onPress={() => setModalSelectPatient(true)}>
             <Image
@@ -225,27 +229,28 @@ function RujukanList(props) {
           </TouchableOpacity>
         </View>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 14,
-          marginBottom: 16,
-          paddingLeft: 12,
-        }}
-      >
-        <FilterList
-          items={types}
-          itemSelected={typeSelected}
-          setItemSelected={setTypeSelected}
-          onItemSelected={(item) => {
-            setTypeSelected(item);
-            const newFilteredDocs = docs.filter(
-              (element) => element.type === item
-            );
-            setDocsFiltered(newFilteredDocs);
+      {searchIsFocus === false && (
+        <View
+          style={{
+            flexDirection: 'row',
+            marginBottom: 12,
+            paddingLeft: 12,
           }}
-        />
-      </View>
+        >
+          <FilterList
+            items={types}
+            itemSelected={typeSelected}
+            setItemSelected={setTypeSelected}
+            onItemSelected={(item) => {
+              setTypeSelected(item);
+              const newFilteredDocs = docs.filter(
+                (element) => element.type === item
+              );
+              setDocsFiltered(newFilteredDocs);
+            }}
+          />
+        </View>
+      )}
       {isLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
@@ -358,6 +363,7 @@ const styles = StyleSheet.create({
     height: dimHeight * 0.12,
     paddingTop: dimHeight * 0.045,
     backgroundColor: '#2F2F2F',
+    marginBottom: 12,
   },
   arrow: {
     flex: 0.12,
