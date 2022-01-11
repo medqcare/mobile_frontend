@@ -52,7 +52,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
           <Animatable.View
             key={_}
             duration={400}
-            style={styles.eachPrescriptionContainer}
+            style={_ !== 0 ? styles.eachPrescriptionContainer : [styles.eachPrescriptionContainer, { marginTop: 0}]}
             transition="backgroundColor"
         >
            <View style={styles.headerInnerContainer}>
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
 	eachPrescriptionContainer: {
         backgroundColor: 'rgba(47, 47, 47, 1)',
         width: dimWidth * 0.9,
-        marginBottom: dimHeight * 0.0100235
+        marginTop: dimHeight * 0.015,
     },
 
     headerInnerContainer: {
