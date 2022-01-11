@@ -71,7 +71,9 @@ export function CardDocument({
               marginTop: 4,
             }}
           >
-            dr. Corrie James Sp.JP, FIHA
+            {item.createdBy.type === 'doctor'
+              ? `dr. ${item.createdBy.name}`
+              : item.createdBy.name}
           </Text>
         </TouchableOpacity>
         <View

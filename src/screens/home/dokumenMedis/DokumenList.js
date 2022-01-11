@@ -108,7 +108,8 @@ function DokumenList(props) {
   const _fetchData = async () => {
     setLoading(true);
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    getDocumentByPatient(token, patient._id)
+    let type = 'resep,radiologi,laboratorium';
+    getDocumentByPatient(token, patient._id, type)
       .then(({ data }) => {
         setFilteredData(data.data);
         setData(data.data);

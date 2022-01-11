@@ -62,9 +62,11 @@ function RujukanList(props) {
       try {
         const tokenString = await AsyncStorage.getItem('token');
         const { token } = JSON.parse(tokenString);
+        let type = 'rujukan,surat sakit';
         const { data: response } = await getDocumentByPatient(
           token,
-          patient._id
+          patient._id,
+          type
         );
         const { data: docs } = response;
         const defaultDocs = docs.filter(
