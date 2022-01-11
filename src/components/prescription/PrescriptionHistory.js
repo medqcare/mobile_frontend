@@ -107,7 +107,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                                 size={dimWidth * 0.030} 
                                                 color="rgba(128, 128, 128, 1)" 
                                             />
-                                            <Text style={styles.ettiqueteText}>{el.ettiquete.length} x sehari</Text>
+                                            <Text style={styles.ettiqueteText}>{el.etiquette.length} x sehari</Text>
                                         </View>
                                         <View style={styles.paddingLeftFive}>
                                             <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)"  />
@@ -131,12 +131,12 @@ function PrescriptionTodaysList({props, prescriptions }) {
                                     }
                                 </View>
 
-                                {el.notes && (
+                                {el.notes ? (
                                     <View style={{paddingTop: dimHeight * 0.01219}}>
                                         <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>Catatan: </Text>
                                         <Text style={[textStyles.lighterText, { fontSize: RFValue(12, dimHeight) }]}>{el.notes}</Text>
                                     </View>
-                                )}
+                                ) : null}
 
                                 <View style={styles.separator}/>
                             </View>
