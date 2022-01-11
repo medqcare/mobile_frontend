@@ -29,7 +29,6 @@ import QuantitySelector from '../../../components/reminder/QuantitySelector'
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
-const fontScale = Dimensions.get('window').fontScale
 
 function AddReminderForm(props) {
 
@@ -265,7 +264,7 @@ function AddReminderForm(props) {
 							formHorizontal={true}
 							labelHorizontal={true}
 							animation={false}
-							labelStyle={{ paddingRight: 10, fontSize: fontScale * 16, color: '#DDDDDD' }}
+							labelStyle={{ paddingRight: 10, color: '#DDDDDD' }}
 							style={styles.inputContainer}
 							buttonOuterSize={20}
 						/>
@@ -513,7 +512,6 @@ const styles = StyleSheet.create({
 	buttonText: {
 		color: 'rgba(221, 221, 221, 1)',
 		fontWeight: '500',
-		fontSize: fontScale * 23
 	},
 	
 	lightText: {
