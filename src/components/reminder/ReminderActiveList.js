@@ -549,7 +549,10 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                                                     >
                                                         {loadChangeStatusFalse[index] ? 
                                                             <ActivityIndicator size={"small"} color={"red"} /> : 
-                                                            <Text style={[styles.statusReminderButtonText, {fontSize: RFValue(11, dimHeight)}]}>TERLEWAT</Text>
+                                                            <Text style={[
+                                                                styles.statusReminderButtonText,
+                                                                // {fontSize: RFValue(11, dimHeight)}
+                                                            ]}>TERLEWAT</Text>
                                                         }
                                                 </TouchableOpacity>    
                                                 <TouchableOpacity
@@ -558,7 +561,10 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                                                     >
                                                     {loadChangeStatusTrue[index] ? 
                                                         <ActivityIndicator size={"small"} color={"green"} /> : 
-                                                        <Text style={[styles.statusReminderButtonText, {fontSize: RFValue(11, dimHeight)}]}>DIMINUM</Text>
+                                                        <Text style={[
+                                                            styles.statusReminderButtonText, 
+                                                            // {fontSize: RFValue(11, dimHeight)}
+                                                        ]}>DIMINUM</Text>
                                                     }
                                                 </TouchableOpacity>
                                             </View> :
