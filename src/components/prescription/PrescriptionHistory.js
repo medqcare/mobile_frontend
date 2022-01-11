@@ -93,62 +93,67 @@ function PrescriptionTodaysList({props, prescriptions }) {
                         return (
                             <View 
                                 key={index}
-                                style={styles.eachDrugContainer}    
+                                style={index !== 0 ? styles.afterIndexZero : null}      
                             >
-                                <View style={index !== 0 ? styles.afterIndexZero : null}>
-                                <Text style={[
-                                    textStyles.lighterText, 
-                                    // { fontSize: RFValue(10, dimHeight) }
-                                ]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
-                                </View>
-
-                                <View style={styles.contentMiddleContainer}>
-                                    <View style={styles.contentMiddleLeftContainer}>
-                                        <View style={{flexDirection: "row", alignItems: "center"}}>
-                                            <AntDesign 
-                                                name="clockcircleo" 
-                                                size={dimWidth * 0.030} 
-                                                color="rgba(128, 128, 128, 1)" 
-                                            />
-                                            <Text style={styles.ettiqueteText}>{el.etiquette.length} x sehari</Text>
-                                        </View>
-                                        <View style={styles.paddingLeftFive}>
-                                            <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)"  />
-                                        </View>
-                                        <View style={styles.paddingLeftFive}>
-                                            <Text style={
-                                                [textStyles.darkerText, 
-                                                // { fontSize: RFValue(10, dimHeight)}
-                                            ]}>{el.dose[0]} Kapsul</Text>
-                                        </View>
-                                    </View>
-
+                                <View style={{flexDirection: "row", }}>
                                     {el.information === 'Before Meal' ?
-                                        <View 
-                                            style={styles.beforeMeal}>
-                                            <Entypo name="controller-play" size={15} color="rgba(5, 102, 157, 1)"  style={{transform: [{rotateY: '180deg'}]}}/>
-                                            <Text style={styles.information}>Sebelum Makan</Text>
-                                        </View> :
-                                        <View 
-                                            style={styles.afterMeal}>
-                                            <Entypo name="controller-play" size={15} color="rgba(5, 157, 157, 1)" />
-                                            <Text style={styles.information}>Sesudah Makan</Text>
-                                        </View>
+                                            <View style={styles.beforeMeal}>
+                                                <Entypo name="controller-play" size={15} color="rgba(5, 102, 157, 1)"  style={{transform: [{rotateY: '180deg'}]}}/>
+                                                <Text style={styles.information}>Sebelum Makan</Text>
+                                            </View> :
+                                            <View style={styles.afterMeal}>
+                                                <Entypo name="controller-play" size={15} color="rgba(5, 157, 157, 1)" />
+                                                <Text style={styles.information}>Sesudah Makan</Text>
+                                            </View>
                                     }
                                 </View>
 
-                                {el.notes ? (
-                                    <View style={{paddingTop: dimHeight * 0.01219}}>
-                                        <Text style={[
-                                            textStyles.lighterText, 
-                                            // { fontSize: RFValue(12, dimHeight) }
-                                        ]}>Catatan: </Text>
+                                <View style={{marginTop: dimHeight * 0.010024}}>
+                                    <Text style={[
+                                        textStyles.lighterText, 
+                                        // { fontSize: RFValue(10, dimHeight) }
+                                    ]}>{el.drugName} 200 mg {el.drugQuantity} Tablet</Text>
+                                </View>
+
+                                <View style={styles.contentMiddleLeftContainer}>
+                                    <View style={{flexDirection: "row", alignItems: "center"}}>
+                                        <AntDesign 
+                                            name="clockcircleo" 
+                                            size={dimWidth * 0.030} 
+                                            color="rgba(128, 128, 128, 1)" 
+                                        />
+                                        <Text style={styles.ettiqueteText}>{el.etiquette.length} x sehari</Text>
+                                    </View>
+                                    <View style={styles.paddingLeftFive}>
+                                        <Entypo name="dot-single" size={24} color="rgba(181, 181, 181, 1)"  />
+                                    </View>
+                                    <View style={styles.paddingLeftFive}>
+                                        <Text style={
+                                            [textStyles.darkerText, 
+                                            // { fontSize: RFValue(10, dimHeight)}
+                                        ]}>{el.dose[0]} Kapsul</Text>
+                                    </View>
+                                </View>
+
+                                <View style={{paddingTop: dimHeight * 0.01219}}>
+                                    <Text style={[
+                                        textStyles.lighterText, 
+                                        {fontStyle: 'italic', color: '#B5B5B5'} 
+                                        // { fontSize: RFValue(12, dimHeight) }
+                                    ]}>Catatan: </Text>
+                                    {el.notes ? (
                                         <Text style={[
                                             textStyles.lighterText, 
                                             // { fontSize: RFValue(12, dimHeight) }
                                         ]}>{el.notes}</Text>
-                                    </View>
-                                ) : null}
+                                    ) : 
+                                        <Text style={[
+                                            textStyles.lighterText,
+                                            {fontStyle: 'italic', color: '#B5B5B5'} 
+                                            // { fontSize: RFValue(12, dimHeight) }
+                                        ]}>Tidak ada catatan</Text>
+                                    }
+                                </View>
 
                                 <View style={styles.separator}/>
                             </View>
@@ -228,6 +233,7 @@ const styles = StyleSheet.create({
     headerDate: {
         ...textStyles.lighterText,
         // fontSize: RFValue(10, dimHeight)
+        textTransform: 'uppercase'
     },
 
     drugAmount: {
@@ -253,7 +259,7 @@ const styles = StyleSheet.create({
     },
 
     contentInnerContainer: {
-        paddingVertical: dimHeight * 0.01219,
+        paddingBottom: dimHeight * 0.01219,
         paddingHorizontal: dimWidth * 0.04431
     },
 
@@ -272,6 +278,7 @@ const styles = StyleSheet.create({
     },
 
     contentMiddleLeftContainer: {
+        paddingTop: dimHeight * 0.01219,
         flexDirection: "row", 
         alignItems: "center"
     },
