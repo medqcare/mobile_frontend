@@ -200,7 +200,8 @@ const textStyles = {
 const styles = StyleSheet.create({
 	eachPrescriptionContainer: {
         backgroundColor: 'rgba(47, 47, 47, 1)',
-        width: dimWidth * 0.9
+        width: dimWidth * 0.9,
+        marginBottom: dimHeight * 0.0100235
     },
 
     headerInnerContainer: {
