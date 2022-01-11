@@ -154,9 +154,12 @@ function HomePage(props) {
                   />
                   {props.userData && (
                     <View style={{ flexDirection: 'row' }}>
-                      <View style={{ marginTop: 1 }}>
+                      <TouchableOpacity 
+                        style={{ marginTop: 1 }}
+                        onPress={() => props.navigation.navigate('NotificationStack')}
+                      >
                         <Lonceng />
-                      </View>
+                      </TouchableOpacity>
 
                       <TouchableOpacity
                         onPress={() => {
