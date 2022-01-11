@@ -208,130 +208,132 @@ function AddReminderForm(props) {
 				// hidden={false}
 			/>
 			<View style={styles.content}>
-				<View style={styles.inputFormContainer}>
-					<View style={[styles.topLabelContainer]}>
-						<Text style={styles.labelText}>Nama Obat</Text>
-					</View>
-					{/* Drug Name */}
-					<SearchableDropdown
-						onItemSelect={(item) => {
-							setSelectedItem(item)
-							setDrugData({
-								...drugData,
-								...item,
-							})
-						}}
-						itemStyle={styles.itemStyle}
-						itemTextStyle={{ color: '#222' }}
-						itemsContainerStyle={{ maxHeight: 150 }}
-						items={allDrugs}
-						resetValue={true}
-						textInputProps={
-						{
-							placeholder: "Nama obat",
-							placeholderTextColor: '#8b8b8b',
-							underlineColorAndroid: "transparent",
-							value: selectedItem ? selectedItem.name : '',
-							style: {
-								...styles.input,
-								color: 'white'
-							},
-							onTextChange: text => getDrugsByName(text)
-						}
-						}
-						listProps={{
-							nestedScrollEnabled: true,
-						}}
-					/>
-
-					{/* Ettiquete */}
-					<Label text={'Etiket Minum'}/>
-					<View style={{flexDirection: "row"}}>
-						{etiquetteList.map((el, index) => {
-							return (
-								<RenderEttiqueteItem key={index} item={el} index={index}/>
-								)
-							})}
-					</View>
-
-					{/* Information */}
-					<RadioForm
-						radio_props={infromationList}
-						initial={0}
-						onPress={(value) => {
-							setDrugData({ ...drugData, information: value });
-						}}
-						formHorizontal={true}
-						labelHorizontal={true}
-						animation={false}
-						labelStyle={{ paddingRight: 10, fontSize: fontScale * 16, color: '#DDDDDD' }}
-						style={styles.inputContainer}
-						buttonOuterSize={20}
-					/>
-
-					{/* Quantity */}
-					<Label text={'Jumlah Obat'}/>
-					<QuantitySelector drugData={drugData} setDrugData={setDrugData}/>
-
-					{/* Dose */}
-					<Label text={'Dosis'}/>
-					<View style={styles.input}>
-						<TextInput
-							style={styles.inputText}
-							autoCapitalize={'none'}
-							autoFocus={false}
-							placeholder={'Dosis'}
-							keyboardType={'numeric'}
-							placeholderTextColor="#8b8b8b" 
-							onChangeText={number =>
-								setDrugData({...drugData, dose: number})
+				<ScrollView>
+					<View style={styles.inputFormContainer}>
+						<View style={[styles.topLabelContainer]}>
+							<Text style={styles.labelText}>Nama Obat</Text>
+						</View>
+						{/* Drug Name */}
+						<SearchableDropdown
+							onItemSelect={(item) => {
+								setSelectedItem(item)
+								setDrugData({
+									...drugData,
+									...item,
+								})
+							}}
+							itemStyle={styles.itemStyle}
+							itemTextStyle={{ color: '#222' }}
+							itemsContainerStyle={{ maxHeight: 150 }}
+							items={allDrugs}
+							resetValue={true}
+							textInputProps={
+							{
+								placeholder: "Nama obat",
+								placeholderTextColor: '#8b8b8b',
+								underlineColorAndroid: "transparent",
+								value: selectedItem ? selectedItem.name : '',
+								style: {
+									...styles.input,
+									color: 'white'
+								},
+								onTextChange: text => getDrugsByName(text)
 							}
-							value={(drugData.dose).toString()}
-						/>
-					</View>				
-	
-					{/* Expired Date */}
-					<Label text={'Kadaluwarsa'}/>
-					<View style={styles.input}>
-						<TouchableOpacity 
-							style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
-							onPress={() => showDatepicker()}
-						>
-							<Text style={styles.reminderTimeText}>{displayDate}</Text>
-							<FontAwesome name="calendar" size={dimHeight * 0.02405} color="white" />
-						</TouchableOpacity>
-					</View>
-
-					{show && (
-						<DateTimePicker
-							testID="dateTimePicker"
-							value={date}
-							mode={mode}
-							is24Hour={true}
-							display="default"
-							onChange={onChange}
-							minimumDate={new Date()}
-
-						/>
-            		)}
-
-					{/* Optional Notes */}
-					<Label text={'Catatan (Opsional)'}/>
-					<View style={styles.input}>
-						<TextInput
-							style={styles.inputText}
-							autoCapitalize={'none'}
-							autoFocus={false}
-							placeholder={'Contoh: Minum dengan air putih setelah makan'}
-							keyboardType={'default'}
-							placeholderTextColor="#8b8b8b" 
-							onChangeText={text =>
-								setDrugData({...drugData, notes: text})
 							}
-							value={drugData.notes}
+							listProps={{
+								nestedScrollEnabled: true,
+							}}
 						/>
+
+						{/* Ettiquete */}
+						<Label text={'Etiket Minum'}/>
+						<View style={{flexDirection: "row"}}>
+							{etiquetteList.map((el, index) => {
+								return (
+									<RenderEttiqueteItem key={index} item={el} index={index}/>
+									)
+								})}
+						</View>
+
+						{/* Information */}
+						<RadioForm
+							radio_props={infromationList}
+							initial={0}
+							onPress={(value) => {
+								setDrugData({ ...drugData, information: value });
+							}}
+							formHorizontal={true}
+							labelHorizontal={true}
+							animation={false}
+							labelStyle={{ paddingRight: 10, fontSize: fontScale * 16, color: '#DDDDDD' }}
+							style={styles.inputContainer}
+							buttonOuterSize={20}
+						/>
+
+						{/* Quantity */}
+						<Label text={'Jumlah Obat'}/>
+						<QuantitySelector drugData={drugData} setDrugData={setDrugData}/>
+
+						{/* Dose */}
+						<Label text={'Dosis'}/>
+						<View style={styles.input}>
+							<TextInput
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Dosis'}
+								keyboardType={'numeric'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={number =>
+									setDrugData({...drugData, dose: number})
+								}
+								value={(drugData.dose).toString()}
+							/>
+						</View>				
+		
+						{/* Expired Date */}
+						<Label text={'Kadaluwarsa'}/>
+						<View style={styles.input}>
+							<TouchableOpacity 
+								style={{flexDirection: "row", alignItems: "center", justifyContent: "space-between"}}
+								onPress={() => showDatepicker()}
+							>
+								<Text style={styles.reminderTimeText}>{displayDate}</Text>
+								<FontAwesome name="calendar" size={dimHeight * 0.02405} color="white" />
+							</TouchableOpacity>
+						</View>
+
+						{show && (
+							<DateTimePicker
+								testID="dateTimePicker"
+								value={date}
+								mode={mode}
+								is24Hour={true}
+								display="default"
+								onChange={onChange}
+								minimumDate={new Date()}
+
+							/>
+						)}
+
+						{/* Optional Notes */}
+						<Label text={'Catatan (Opsional)'}/>
+						<View style={styles.input}>
+							<TextInput
+								style={styles.inputText}
+								autoCapitalize={'none'}
+								autoFocus={false}
+								placeholder={'Contoh: Minum dengan air putih setelah makan'}
+								keyboardType={'default'}
+								placeholderTextColor="#8b8b8b" 
+								onChangeText={text =>
+									setDrugData({...drugData, notes: text})
+								}
+								value={drugData.notes}
+							/>
+						</View>
 					</View>
-				</View>
+				</ScrollView>
 				
 				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
