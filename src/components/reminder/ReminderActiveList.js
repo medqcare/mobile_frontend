@@ -551,7 +551,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                                                             <ActivityIndicator size={"small"} color={"red"} /> : 
                                                             <Text style={[
                                                                 styles.statusReminderButtonText,
-                                                                // {fontSize: RFValue(11, dimHeight)}
+                                                                {fontSize: RFValue(12, dimHeight)}
                                                             ]}>TERLEWAT</Text>
                                                         }
                                                 </TouchableOpacity>    
@@ -563,7 +563,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                                                         <ActivityIndicator size={"small"} color={"green"} /> : 
                                                         <Text style={[
                                                             styles.statusReminderButtonText, 
-                                                            // {fontSize: RFValue(11, dimHeight)}
+                                                            {fontSize: RFValue(12, dimHeight)}
                                                         ]}>DIMINUM</Text>
                                                     }
                                                 </TouchableOpacity>
