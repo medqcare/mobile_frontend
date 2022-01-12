@@ -46,10 +46,10 @@ function CardDoctor({ navigation, data, myLocation }) {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginVertical: 10,
+              marginTop: 10,
             }}
           >
-            <View style={{ marginRight: 8 }}>
+            {/* <View style={{ marginRight: 8 }}>
               <RatingStar />
             </View>
             <Text style={{ color: '#B2B2B2', marginRight: 12 }}>4.7/5</Text>
@@ -62,7 +62,7 @@ function CardDoctor({ navigation, data, myLocation }) {
                 marginRight: 8,
               }}
             ></View>
-            <Text style={{ color: '#B2B2B2' }}>Online</Text>
+            <Text style={{ color: '#B2B2B2' }}>Online</Text> */}
           </View>
 
           {/* {

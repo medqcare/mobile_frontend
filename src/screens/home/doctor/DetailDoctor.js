@@ -418,13 +418,13 @@ function DetailDoctorPage(props) {
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        marginBottom: 15,
+                        marginBottom: 5,
                       }}
                     >
-                      <View style={{ marginRight: 12 }}>
+                      {/* <View style={{ marginRight: 12 }}>
                         <RatingStar />
-                      </View>
-                      <Text style={{ color: '#B2B2B2' }}>4.7/5</Text>
+                      </View> */}
+                      {/* <Text style={{ color: '#B2B2B2' }}>4.7/5</Text> */}
                     </View>
                     <View>
                       <Text style={fontStyles.titleSp}>
