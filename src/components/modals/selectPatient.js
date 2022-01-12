@@ -185,6 +185,7 @@ const styles = StyleSheet.create({
   name: {
     marginTop: 15,
     color: '#DDDDDD',
+    alignSelf: "center",
   },
 
   vector: {
