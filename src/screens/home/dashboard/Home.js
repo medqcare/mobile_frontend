@@ -30,7 +30,8 @@ import CardPromo from '../../../components/home/dashboard/card-promo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchBar from '../../../components/headers/SearchBar';
 
-import Lonceng from '../../../assets/svg/home-blue/lonceng';
+import NewNotificationBell from '../../../assets/svg/home-blue/lonceng';
+import NoNotificationBell from '../../../assets/svg/NoNotificationBell'
 import LottieLoader from 'lottie-react-native';
 import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
@@ -58,6 +59,8 @@ function HomePage(props) {
       url: require('../../../assets/png/Promo2.png'),
     },
   ]);
+
+  const notification = null
 
   useEffect(() => {
     (async () => {
@@ -153,12 +156,15 @@ function HomePage(props) {
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
                   {props.userData && (
-                    <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                       <TouchableOpacity 
                         style={{ marginTop: 1 }}
                         onPress={() => props.navigation.navigate('NotificationStack')}
                       >
-                        <Lonceng />
+                        {notification ? 
+                          <NewNotificationBell /> :
+                          <NoNotificationBell/>
+                        }
                       </TouchableOpacity>
 
                       <TouchableOpacity
