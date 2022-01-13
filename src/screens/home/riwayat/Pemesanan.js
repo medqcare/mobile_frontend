@@ -158,7 +158,7 @@ export default function Pemesanan(props) {
                       <View style={styles.time}>
                         <Text style={styles.date}>
                           {dateWithDDMMMYYYYFormat(
-                            new Date(item.bookingSchedule)
+                            new Date(item.bookingSchedule.split('/').reverse().join('/'))
                           )}
                         </Text>
                         <View style={styles.dividingPoint}></View>
