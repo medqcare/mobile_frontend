@@ -82,8 +82,8 @@ function DetailDoctorPage(props) {
 
   // const [lang, lat] = clinic.Location.coordinates;
   const distance = (item) => {
-    const lat = item.location.coordinates[0]
-    const lang = item.location.coordinates[1]
+    const lang = item.location.coordinates[0]
+    const lat = item.location.coordinates[1]
     return getDistanceFromLatLonInKm(
       lat,
       lang,
@@ -838,7 +838,6 @@ function DetailDoctorPage(props) {
                                   >
                                     {newData[item.facilityName][1].map(
                                       (time, fIndex) => {
-                                        console.log(newData[item.facilityName], 'inininini');
                                         return (
                                           <View key={fIndex}>
                                             {/* <Text>{JSON.stringify(time[1])}</Text> */}

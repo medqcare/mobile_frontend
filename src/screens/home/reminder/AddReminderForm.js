@@ -191,11 +191,10 @@ function AddReminderForm(props) {
 			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID){
 				const token = JSON.parse(await AsyncStorage.getItem('token')).token
 				const newDrug = await props.createNewDrugFromUser(drugData, token)
-				console.log(newDrug)
-				// const newDrugs = [...activeDrugs, newDrug]
-				// setActiveDrugs(newDrugs)
+				const newDrugs = [...activeDrugs, newDrug]
+				setActiveDrugs(newDrugs)
 	
-				// props.navigation.pop()			
+				props.navigation.pop()			
 			} else {
 				ToastAndroid.show('Mohon melengkapi semua data terlebih dahulu', ToastAndroid.SHORT)
 			}
