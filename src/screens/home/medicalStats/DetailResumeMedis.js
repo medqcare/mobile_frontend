@@ -224,11 +224,9 @@ export default function DetailResumeMedis(props) {
                         })
                       ) : (
                         <View style={styles.card}>
-                          <View style={styles.item}>
-                            <Text style={styles.textItem}>
+                            <Text style={styles.textTitle}>
                               Tidak ada pemeriksaan Laboratorium / Radiology
                             </Text>
-                          </View>
                         </View>
                       )}
                     </View>
@@ -302,6 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#181818",
     margin: 0,
     padding: 15,
+    paddingTop: 20
   },
   content: {
     height: "95%",
