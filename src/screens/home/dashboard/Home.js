@@ -41,11 +41,16 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import { ScrollView } from 'react-native-gesture-handler';
+import InstructionModal from '../../../components/InstructionModal';
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
 
 function HomePage(props) {
+  const fromSreen = props.navigation.getParam('from');
+  const [showInstruction, setShowInstruction] = useState(false);
+
+  const [loadIsShow, setLoadIsShow] = useState(true);
   const [myLocation, setMyLocation] = useState(null);
   const [location, setLocation] = useState(null);
   const [load, setload] = useState(true);
@@ -81,6 +86,22 @@ function HomePage(props) {
       });
     })();
   }, []);
+
+  useEffect(() => {
+    console.log(fromSreen, 'this is from screen!!!!!!!!!!');
+    if (fromSreen === 'registration') {
+      setShowInstruction(true);
+    }
+  }, [fromSreen]);
+
+  // useEffect(() => {
+  //   if (isShow) {
+  //     setShowInstruction(isShow);
+  //     setLoadIsShow(false);
+  //   } else {
+  //     setShowInstruction(false);
+  //   }
+  // }, [isShow, loadIsShow]);
 
   useEffect(() => {
     notificationTrigger();
@@ -251,6 +272,12 @@ function HomePage(props) {
           </View>
         </>
       )}
+      <InstructionModal
+        visible={showInstruction}
+        onFinishOrSkip={() => {
+          setShowInstruction(false);
+        }}
+      />
     </View>
   );
 }

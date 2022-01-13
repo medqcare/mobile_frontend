@@ -5,11 +5,11 @@ import {
   renameDocument,
   deleteDocument,
 } from './medical_resume';
-import { 
+import {
   getAllPrescriptions,
   getTodaysPrescriptions,
-  getPrescriptionHistory
-} from './prescription'
+  getPrescriptionHistory,
+} from './prescription';
 import {
   getDrugs,
   searchAllDrugs,
@@ -18,10 +18,10 @@ import {
   changeAlarmBoolean,
   updateFinishStatus,
 } from './drugs';
-import { 
-  getReminders, 
+import {
+  getReminders,
   changeReminderAlarmTime,
-  changeReminderStatus 
+  changeReminderStatus,
 } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
@@ -435,7 +435,11 @@ export function CreatePatientAsUser(
                 ToastAndroid.SHORT
               );
               modalSuccess(data.message);
-              navigateTo('Home');
+              await AsyncStorage.setItem(
+                'showInstruction',
+                JSON.stringify(true)
+              );
+              navigateTo('Home', { from: 'registration' });
             } catch (error) {
               modalFailed(error);
               console.log('e1', error.message);
@@ -786,7 +790,7 @@ export function edit_profile(userData, userID, token, navigateTo) {
           payload: dataUpdate.data.data,
         });
         ToastAndroid.show(data.data.message, ToastAndroid.SHORT);
-        return data.data
+        return data.data;
       } catch (error) {
         // console.log(error);
         reject(error);
@@ -993,7 +997,7 @@ export function editAlergi(id, alergie, alergieType, token) {
           method: 'PUT',
           data: {
             alergie,
-            alergieType
+            alergieType,
           },
           headers: { Authorization: token },
         });
@@ -1144,20 +1148,11 @@ export function deleteImage(patientId, token) {
   };
 }
 
-export { 
-  getDocumentByPatient, 
-  uploadDocument, 
-  renameDocument, 
-  deleteDocument 
-};
+export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
-export { 
-  getAllPrescriptions, 
-  getTodaysPrescriptions,
-  getPrescriptionHistory 
-};
+export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
 
-export { 
+export {
   getDrugs,
   searchAllDrugs,
   searchDrugByName,
@@ -1166,8 +1161,4 @@ export {
   updateFinishStatus,
 };
 
-export { 
-  getReminders, 
-  changeReminderAlarmTime,
-  changeReminderStatus
-};
+export { getReminders, changeReminderAlarmTime, changeReminderStatus };
