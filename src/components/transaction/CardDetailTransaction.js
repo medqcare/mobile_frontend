@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 import { formatNumberToRupiah } from '../../helpers/formatRupiah';
 import getPaymentMethod from '../../helpers/getPaymentMethod';
 const dimHeight = Dimensions.get('window').height;
@@ -18,8 +19,6 @@ export default function CardDetailTransaction({ transaction }) {
     const bookingTime = stringBookingTime.split(' - ')[0];
     return bookingTime;
   };
-
-  console.log(transaction, '>>> hello guys');
 
   const payment = getPaymentMethod(transaction.paymentMethod);
 
@@ -66,11 +65,14 @@ export default function CardDetailTransaction({ transaction }) {
             </Text>
             <View style={styles.time}>
               <Text style={styles.textcontent}>
-                {transaction.bookingSchedule}, Pukul{' '}
+                {dateWithDDMMMYYYYFormat(
+                  new Date(
+                    transaction.bookingSchedule.split('/').reverse().join('/')
+                  )
+                )}
               </Text>
-              <Text style={styles.textcontent}>
-                {getBookingTime(transaction.bookingTime)}
-              </Text>
+              <View style={styles.dividingPoint}></View>
+              <Text style={styles.textcontent}>{transaction.bookingTime}</Text>
             </View>
           </View>
         </View>
@@ -97,6 +99,7 @@ export default function CardDetailTransaction({ transaction }) {
             );
           }}
         />
+
         {/* Payment Method */}
         {transaction.paymentMethod ? (
           <View
@@ -113,6 +116,17 @@ export default function CardDetailTransaction({ transaction }) {
         <View style={styles.line} />
 
         {/* Transaction status & amount transaction */}
+        <View>
+          <Text style={styles.textcontent}>
+            {transaction.healthFacility.facilityName}
+          </Text>
+          <Text style={styles.textcontent}>
+            Nama Pasien:{' '}
+            <Text style={{ color: '#DDDDDD' }}>
+              {transaction.patient.patientName}
+            </Text>
+          </Text>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -199,5 +213,12 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: '#B5B5B5',
+  },
+  dividingPoint: {
+    height: 4,
+    width: 4,
+    borderRadius: 100,
+    backgroundColor: '#B5B5B5',
+    marginHorizontal: 8,
   },
 });

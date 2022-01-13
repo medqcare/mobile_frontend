@@ -165,9 +165,7 @@ export default function Pemesanan(props) {
                         <Text style={styles.clock}>{item.bookingTime}</Text>
                       </View>
                       <View style={styles.time}>
-                        <Text style={{ color: '#B5B5B5' }}>
-                          Patient Name :{' '}
-                        </Text>
+                        <Text style={{ color: '#B5B5B5' }}>Nama Pasien : </Text>
                         <Text style={{ color: '#DDDDDD' }}>
                           {item.patient.patientName}
                         </Text>
