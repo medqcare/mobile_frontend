@@ -195,7 +195,7 @@ const Allergies = (props) => {
           {/* Lower View */}
           {Object.keys(allergies).length ? (
             // Allergy Box
-            <View>
+            <View style={{ height: dimHeight * 0.7 }}>
               {
                 needInfo && 
               <View style={styles.boxDetail}>
@@ -209,7 +209,7 @@ const Allergies = (props) => {
                 </View>
               </View>
               }
-              <ScrollView style={{ height: dimHeight * 0.7 }}>
+              <ScrollView>
                 {Object.keys(allergies).map((el, index) => {
                   return (
                     <View style={styles.allergieBoxContainer} key={index}>
@@ -301,7 +301,7 @@ const Allergies = (props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1F1F1F",
+    backgroundColor: "#1F1F1F"
   },
   boxContainer: {
     padding: dimHeight * 0.02,
