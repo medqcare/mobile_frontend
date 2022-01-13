@@ -166,8 +166,6 @@ const DataCompletion = (props) => {
     }
   }, [district, selectedDistrictLabel, userData]);
 
-  console.log(userData, 'current userData');
-
   // Function for change data
   function setSelectedValue(
     value,
