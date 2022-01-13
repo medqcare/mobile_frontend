@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     height: 4,
     width: 4,
     borderRadius: 100,
-    backgroundColor: 'white',
+    backgroundColor: '#B5B5B5',
     marginHorizontal: 8,
   },
   priceInfoContainer: {
