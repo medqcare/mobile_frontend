@@ -45,7 +45,7 @@ function Reminder(props) {
 	}, [])
 	
 	useEffect(() => {
-		if(loadSearchAllDrugs) {
+		if(!loadSearchAllDrugs) {
 			const revised = props.allDrugs.map(el => {
 				el.name = el.itemName
 				return el
