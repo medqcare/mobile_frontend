@@ -13,6 +13,7 @@ import axios from 'axios';
 import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieLoader from 'lottie-react-native';
+import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 
 export default function Pemesanan(props) {
   const [appoinment, setAppoinment] = useState([]);
@@ -31,7 +32,7 @@ export default function Pemesanan(props) {
   const _fetchDataAppoinment = async () => {
     _getData().then(({ data }) => {
       try {
-        console.log(data, 'sebelum di set ==============<<<<')
+        console.log(data, 'sebelum di set ==============<<<<');
         let datakebalik = data.data.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
@@ -100,7 +101,12 @@ export default function Pemesanan(props) {
                   >
                     <Text
                       style={{
-                        color: item.status === 'canceled' ? '#EB5959' : item.status === 'Queueing' ? '#4BE395' : '#DDDDDD',
+                        color:
+                          item.status === 'canceled'
+                            ? '#EB5959'
+                            : item.status === 'Queueing'
+                            ? '#4BE395'
+                            : '#DDDDDD',
                         fontStyle: 'italic',
                         marginTop: 7,
                         fontSize: 12,
@@ -150,8 +156,12 @@ export default function Pemesanan(props) {
                         {item.healthFacility.facilityName}
                       </Text>
                       <View style={styles.time}>
-                        <Text style={styles.date}>{item.bookingSchedule}</Text>
-                        <Text style={styles.date}> - </Text>
+                        <Text style={styles.date}>
+                          {dateWithDDMMMYYYYFormat(
+                            new Date(item.bookingSchedule)
+                          )}
+                        </Text>
+                        <View style={styles.dividingPoint}></View>
                         <Text style={styles.clock}>{item.bookingTime}</Text>
                       </View>
                       <View style={styles.time}>
@@ -296,5 +306,12 @@ const styles = StyleSheet.create({
   status: {
     flexGrow: 1,
     // color: '#33E204'
+  },
+  dividingPoint: {
+    height: 4,
+    width: 4,
+    borderRadius: 100,
+    backgroundColor: '#B5B5B5',
+    marginHorizontal: 8,
   },
 });
