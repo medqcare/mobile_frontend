@@ -2628,7 +2628,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#474747',
     borderRadius: 4,
-    maxHeight: 150,
+    height: 200,
     marginBottom: 12,
     backgroundColor: 'transparent',
   },
@@ -2645,6 +2645,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textTransform: 'capitalize',
     color: '#B5B5B5',
+    maxWidth: "60%"
   },
   costTitle: {
     color: '#F37335',
