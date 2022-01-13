@@ -11,7 +11,8 @@ import {
   ActivityIndicator,
   Button,
   FlatList,
-  LogBox
+  LogBox,
+  ToastAndroid
 } from "react-native";
 import { connect } from "react-redux";
 import GreyHeader from '../../../components/headers/GreyHeader'
@@ -186,12 +187,18 @@ function AddReminderForm(props) {
 		
 	async function createDrug(){
 		try {
-			const token = JSON.parse(await AsyncStorage.getItem('token')).token
-			const newDrug = await props.createNewDrugFromUser(drugData, token)
-			const newDrugs = [...activeDrugs, newDrug]
-			setActiveDrugs(newDrugs)
-
-			props.navigation.pop()			
+			const { dose, drugQuantity, etiquette, information, quantityTotal, patientID } = drugData
+			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID){
+				const token = JSON.parse(await AsyncStorage.getItem('token')).token
+				const newDrug = await props.createNewDrugFromUser(drugData, token)
+				console.log(newDrug)
+				// const newDrugs = [...activeDrugs, newDrug]
+				// setActiveDrugs(newDrugs)
+	
+				// props.navigation.pop()			
+			} else {
+				ToastAndroid.show('Mohon melengkapi semua data terlebih dahulu', ToastAndroid.SHORT)
+			}
 		} catch (error) {
 			console.log(error)
 		}
@@ -207,7 +214,7 @@ function AddReminderForm(props) {
 				// hidden={false}
 			/>
 			<View style={styles.content}>
-				<ScrollView>
+				<View>
 					<View style={styles.inputFormContainer}>
 						<View style={[styles.topLabelContainer]}>
 							<Text style={styles.labelText}>Nama Obat</Text>
@@ -244,6 +251,8 @@ function AddReminderForm(props) {
 							}}
 						/>
 
+						<ScrollView style={{height: "80%", }}>
+
 						{/* Ettiquete */}
 						<Label text={'Etiket Minum'}/>
 						<View style={{flexDirection: "row"}}>
@@ -274,13 +283,13 @@ function AddReminderForm(props) {
 						<QuantitySelector drugData={drugData} setDrugData={setDrugData}/>
 
 						{/* Dose */}
-						<Label text={'Dosis'}/>
+						<Label text={'Dosis (Jumlah obat sekali makan)'}/>
 						<View style={styles.input}>
 							<TextInput
 								style={styles.inputText}
 								autoCapitalize={'none'}
 								autoFocus={false}
-								placeholder={'Dosis'}
+								placeholder={'Cth: 1'}
 								keyboardType={'numeric'}
 								placeholderTextColor="#8b8b8b" 
 								onChangeText={number =>
@@ -331,8 +340,10 @@ function AddReminderForm(props) {
 								value={drugData.notes}
 							/>
 						</View>
+
+						</ScrollView>
 					</View>
-				</ScrollView>
+				</View>
 				
 				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
