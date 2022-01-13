@@ -22,6 +22,7 @@ import SelectPatient from '../../../components/modals/selectPatient';
 import PrescriptionTodaysList from '../../../components/prescription/PrescriptionTodaysList'
 import PrescriptionHistory from '../../../components/prescription/PrescriptionHistory'
 import Swiper from 'react-native-swiper'
+import LottieLoader from 'lottie-react-native';
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height;
@@ -139,7 +140,11 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 
 			<View style={styles.content}>
 			{load ? 
-				<ActivityIndicator size={"small"} color={"blue"}/> :
+				<LottieLoader
+				source={require('../../animation/loading.json')}
+				autoPlay
+				loop
+			  /> :
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
