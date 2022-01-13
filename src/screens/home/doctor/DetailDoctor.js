@@ -82,8 +82,8 @@ function DetailDoctorPage(props) {
 
   // const [lang, lat] = clinic.Location.coordinates;
   const distance = (item) => {
-    const lang = item.location.coordinates[0]
-    const lat = item.location.coordinates[1]
+    const lat = item.location.coordinates[0]
+    const lang = item.location.coordinates[1]
     return getDistanceFromLatLonInKm(
       lat,
       lang,
