@@ -29,6 +29,8 @@ import Money from '../../../assets/svg/Money';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 
+import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
+
 const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
@@ -77,6 +79,19 @@ function DetailDoctorPage(props) {
 
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
   const [bookingTime, setBookingTime] = useState('');
+
+  // const [lang, lat] = clinic.Location.coordinates;
+  const distance = (item) => {
+    const lat = item.location.coordinates[0]
+    const lang = item.location.coordinates[1]
+    return getDistanceFromLatLonInKm(
+      lat,
+      lang,
+      props.myLocation.lat,
+      props.myLocation.lng
+    ).toFixed(1);
+
+  } 
 
   Date.isLeapYear = function (year) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -524,7 +539,7 @@ function DetailDoctorPage(props) {
                                   </Text>
                                 )}
                                 <Text style={fontStyles.address}>
-                                  3.1 km dari Anda
+                                {`${distance(item)} km dari Anda`}
                                 </Text>
                               </View>
                               <TouchableOpacity

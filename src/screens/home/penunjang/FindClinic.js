@@ -6909,14 +6909,6 @@ function FindClinic(props) {
               <Text style={{ color: '#DDDDDD' }}>
                 {totalPriceWithFormatRupiah}
               </Text>
-              <TouchableOpacity
-                style={{ flexDirection: 'row', alignItems: 'center' }}
-              >
-                <Text style={{ color: '#DDDDDD', marginRight: 8 }}>
-                  Lihat Semua Jadwal
-                </Text>
-                <Text style={{ color: '#DDDDDD' }}>{'>'}</Text>
-              </TouchableOpacity>
             </View>
           </View>
         ) : null}
