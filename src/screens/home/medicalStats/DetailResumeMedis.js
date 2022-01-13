@@ -267,11 +267,11 @@ export default function DetailResumeMedis(props) {
                     >
                       <Text style={styles.textHeader}>NOTES</Text>
                       <View style={styles.line} />
-                      {resumeMedis.soap && resumeMedis.soap.doctorNotes !== '' ? (
+                      {resumeMedis.notes && resumeMedis.notes.doctorNotes !== '' ? (
                         <View style={styles.card}>
                           <View style={{}}>
                             <Text style={styles.textTitle}>
-                              {resumeMedis.soap?.doctorNotes}
+                              {resumeMedis.notes?.doctorNotes}
                             </Text>
                           </View>
                         </View>
