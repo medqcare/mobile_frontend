@@ -7,7 +7,6 @@ import {
   StatusBar,
   TouchableOpacity,
   StyleSheet,
-  Image,
   Dimensions,
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -15,25 +14,33 @@ import Header from '../../../components/headers/GradientHeader';
 import CardDetailTransaction from '../../../components/transaction/CardDetailTransaction';
 import { baseURL } from '../../../config';
 import LottieLoader from 'lottie-react-native';
+import PatientBoard from '../../../components/PatientBoard';
+import SelectPatient from '../../../components/modals/selectPatient';
 
 const dimHeight = Dimensions.get('window').height;
 
 function Tagihan(props) {
+  const [showModalSelectPatient, setShowModalSelectPatient] = useState(false);
   const [transaction, setTransaction] = useState({});
   const [loading, setLoading] = useState(true);
-  const data = {
-    doctor: {
-      title: 'Dr.',
-      doctorName: 'Corrie James Sp.JP, FIHA',
-      doctorSpecialist: 'Jantung',
-    },
-    bookingSchedule: '27 November 2021',
-    bookingTime: '11.00',
-  };
+  const [family, setFamily] = useState([]);
+  const [patient, setPatient] = useState(props.userData);
+
+  useEffect(() => {
+    let _family = {
+      ...props.userData,
+    };
+    delete _family.family;
+    const temp = [_family];
+    props.userData.family.forEach((el) => {
+      temp.push(el);
+    });
+    setFamily(family.concat(temp));
+  }, []);
 
   useEffect(() => {
     (async () => {
-      const patientID = props.userData._id;
+      const patientID = patient._id;
       setLoading(true);
       try {
         const stringToken = await AsyncStorage.getItem('token');
@@ -55,7 +62,11 @@ function Tagihan(props) {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [patient]);
+
+  const onPatientSelected = (data) => {
+    setPatient({ ...data });
+  };
 
   if (loading) {
     return (
@@ -83,13 +94,33 @@ function Tagihan(props) {
         navigate={props.navigation.navigate}
         navigateBack="Home"
       />
+      <View style={{ paddingHorizontal: 12, marginTop: 16 }}>
+        <PatientBoard
+          patient={patient}
+          onBoardPress={() =>
+            setShowModalSelectPatient(!showModalSelectPatient)
+          }
+        />
+      </View>
+
       {transaction?._id ? (
         <CardDetailTransaction transaction={transaction} />
       ) : (
-        <View style={{ alignItems: 'center', marginTop: 25 }}>
+        <View
+          style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
+        >
           <Text style={{ color: '#fff' }}>Belum ada tagihan</Text>
         </View>
       )}
+      <SelectPatient
+        modal={showModalSelectPatient}
+        setModal={setShowModalSelectPatient}
+        // accountOwner={props.userData}
+        family={family}
+        title="Pilih Patient"
+        setSelectedValue={onPatientSelected}
+        navigateTo={(screen) => props.navigation.navigate(screen)}
+      />
     </View>
   );
 }
