@@ -57,8 +57,6 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             const arrayOfCalendarNames = calendars.map(el => {
                 return el.name
             })
-			// console.log('Here are all your calendars:');
-			// console.log(calendars);
             if(arrayOfCalendarNames.includes('Applimetis Parama Solusi')){
                 ToastAndroid.show('Calendar already created', ToastAndroid.SHORT)
             } else {
@@ -212,7 +210,6 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
 
             if(currentIndexDrugAlarmIDs.length === 0){
                 const currentIndexReminder = content[currentIndex].reminders
-                // .filter(el => el.etiquetteIndex === alarmIndex)
                 for(let i = 0; i < currentIndexReminder.length; i++){
                     if(currentIndexReminder[i].etiquetteIndex === alarmIndex){
                         const alarmTime = new Date(currentIndexReminder[i].alarmTime)
@@ -301,20 +298,10 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                     alarmIDs = [...foundAlarmIDs]
                 }
 
-                // let etiquetteIndex = 0
                 for(let i = 0; i < reminders.length; i++){
                     const alarmTime = reminders[i].alarmTime
                     const reminderID = reminders[i]._id
                     const etiquetteIndex = reminders[i].etiquetteIndex
-                    // if(i === 0){
-                    //     etiquetteIndex = 0
-                    // }
-                    // else if(i % etiquetteLength === 0){
-                    //     etiquetteIndex = 0
-                    // }
-                    // else {
-                    //     etiquetteIndex += 1
-                    // }
                     const createdAlarm = await createAlarm(alarmTime, drugID, drugName, reminderID, etiquetteIndex, i)
                     alarmIDs.push(createdAlarm)
                 }
@@ -447,19 +434,8 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                             <TouchableOpacity
                             style={styles.detailContainer}
                                 onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
-                                // onPress={() => console.log(section._id)}
-                                // onPress={() => createAlarm(new Date())}
-                                // onPress={() => getEvents("2036")}
-                                // onPress={() => getReminders()}
-                                // onPress={() => deleteCalendar("1")}
-                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec865")}
-                                // onPress={() => deleteEvent("61d3bc4f8631aa42083ec864")}
-                                // onPress={() => createCalendar()}
-                                // onPress={() => openCalendar('2306')}
-                                // onPress={() => console.log(Calendar)}
-                                // onPress={() => updateEvent("2293", new Date())}
                             >
-                                    <Text style={styles.lighterText}>Detail</Text>
+                                <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
                         </Animatable.View>
                     :
@@ -644,8 +620,6 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
     );
 }
 
-// dimWidth = 411.42857142857144
-// dimHeight = 820.5714285714286
 
 const textStyles = {
 	darkerText : {
@@ -742,11 +716,9 @@ const styles = StyleSheet.create({
     reminderSwitch: { 
         transform: [
             { 
-                // scaleX: 1.5
                 scaleX: dimWidth * 0.0031
             }, 
             { 
-                // scaleY: 1.5 
                 scaleY: dimHeight * 0.0015 
             }
         ],
@@ -785,7 +757,6 @@ const styles = StyleSheet.create({
         borderWidth: 1, 
         borderColor: 'rgba(156, 156, 156, 1)', 
         borderRadius: 20, 
-        // width: 90, 
         width: dimWidth * 0.231, 
         justifyContent: "center", 
         alignItems: "center",

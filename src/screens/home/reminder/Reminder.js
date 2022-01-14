@@ -225,7 +225,7 @@ const mapDispatchToProps = {
 	getDrugs,
 	searchAllDrugs,
 	changeAlarmBoolean,
-	updateFinishStatus,
+		updateFinishStatus,
 	getReminders,
 	changeReminderAlarmTime,
 	changeReminderStatus

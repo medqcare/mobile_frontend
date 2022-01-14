@@ -10,9 +10,9 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage } from '../../stores/action'
+import { uploadImage, updateDrugImageUrl } from '../../../stores/action'
 
-import createFormData from '../../helpers/formData'
+import createFormData from '../../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
 
 const mapStateToProps = state => {
@@ -20,11 +20,12 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage
+	uploadImage,
+    updateDrugImageUrl
 };
 
-function ProfilePictureCamera({navigation, uploadImage}){
-    const { destination, userData } = navigation.state.params
+function DrugPictureCamera({navigation, updateDrugImageUrl}){
+    const { destination, drugDetail, setDrugImage } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
@@ -37,7 +38,7 @@ function ProfilePictureCamera({navigation, uploadImage}){
         (async () => {
             if (Platform.OS !== 'web') {
               const { status } = await ImagePicker.requestCameraPermissionsAsync();
-              console.log(status, 'status at profilePictureCamera')
+              console.log(status, 'status at DrugPictureCamera')
               if (status !== 'granted') {
                 alert('Sorry, we need camera roll permissions to make this work!');
               }
@@ -59,7 +60,8 @@ function ProfilePictureCamera({navigation, uploadImage}){
         
         if (!result.cancelled) {
             setImage(result.uri);
-            const _id = userData._id
+            setDrugImage(result.uri)
+            const _id = drugDetail._id
             const fileToUpload = createFormData(result, _id)
             setImageToUpload(fileToUpload)
         }
@@ -69,11 +71,11 @@ function ProfilePictureCamera({navigation, uploadImage}){
         setLoad(true)
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
-        const id = userData._id
+        const id = drugDetail._id
 
         console.log('Application is sending data to store/action...')
 
-        await uploadImage(id, imageToUpload, token, navigation.navigate, destination)
+        await updateDrugImageUrl(id, imageToUpload, token, navigation.navigate, destination)
         setLoad(false)
     }
 
@@ -124,7 +126,6 @@ const styles = StyleSheet.create({
         flex: 0.9,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'red',
         width: '100%',
         paddingBottom: 50
     },
@@ -143,7 +144,6 @@ const styles = StyleSheet.create({
     bottomContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        // backgroundColor: 'green',
         paddingVertical: 20,
         width: '100%'
     },
@@ -156,4 +156,4 @@ const styles = StyleSheet.create({
 export default connect(
     mapStateToProps, 
     mapDispatchToProps
-)(ProfilePictureCamera)
+)(DrugPictureCamera)
