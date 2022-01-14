@@ -90,16 +90,6 @@ function HomePage(props) {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   const isFocus = props.navigation.isFocused();
-  //   console.log(props.showInstruction, 'hello boy');
-  //   if (fromSreen === 'registration' && isFocus) {
-  //     console.log(fromSreen === 'registration', 'datang dari screen mana?');
-  //     console.log(isFocus, 'homm scree ini?');
-  //     setModalInstruction(true);
-  //   }
-  // }, [fromSreen]);
-
   useEffect(() => {
     notificationTrigger();
   }, []);
