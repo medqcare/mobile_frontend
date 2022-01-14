@@ -16,6 +16,8 @@ import {
   searchDrugByName,
   createNewDrugFromUser,
   changeAlarmBoolean,
+  updateDrugImageUrl,
+  deleteDrugImageUrl,
   updateFinishStatus,
 } from './drugs';
 import {
@@ -1162,6 +1164,8 @@ export {
   searchDrugByName,
   createNewDrugFromUser,
   changeAlarmBoolean,
+  updateDrugImageUrl,
+  deleteDrugImageUrl,
   updateFinishStatus,
 };
 

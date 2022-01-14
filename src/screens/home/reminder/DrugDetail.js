@@ -9,7 +9,7 @@ import {
   BackHandler,
 } from "react-native";
 import { connect } from "react-redux";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import GreyHeader from "../../../components/headers/GreyHeader";
 import { FontAwesome } from '@expo/vector-icons'; 
 import VerticalLine from '../../../assets/svg/VerticalLine'
@@ -17,26 +17,76 @@ import { DataTable } from 'react-native-paper'
 import { getSelectedDate } from "../../../helpers/todaysDate";
 import Calendar from "../../../components/DrugCalendar";
 import withZero from "../../../helpers/withZero";
+import PictureModal from '../../../components/modals/profilePictureModal'
+import ConfirmationModal from "../../../components/modals/ConfirmationModal";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { deleteDrugImageUrl } from '../../../stores/action'
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
-function DrugDetail({navigation, userData}){
+function DrugDetail({navigation, userData, deleteDrugImageUrl}){
     const  { drugDetail } = navigation.state.params
 
     const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
+    const [drugImage, setDrugImage] = useState(imageUrl)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+    const [load, setLoad] = useState(false)
     const [drugReminders, setDrugReminders] = useState([])
     
     const [consumedDrugs, setConsumedDrugs] = useState([])
     const [skippedDrugs, setSkippedDrugs] = useState([])
     
     const [displayNotes, setDisplayNotes] = useState(notes)
+    const [profilePictureModal, setProfilePictureModal] = useState(false);
     const duration = Math.ceil(quantityTotal / etiquette.length)
 
     useEffect(() => {
         setDate(new Date())
     }, [])
+
+    const profileStatusSelection = [
+        {
+          label: 'Hapus',
+          url: require('../../../assets/png/ic_trash.png'),
+        },
+        {
+          label: 'Kamera',
+          url: require('../../../assets/png/ic_kamera.png'),
+        },
+        {
+          label: 'Galeri',
+          url: require('../../../assets/png/ic_galeri.png'),
+        },
+    ];
+
+    async function setSelectedValue(label) {
+        switch (label) {
+            case 'Kamera':
+                await navigation.navigate('DrugPictureCamera', {
+                    destination: 'DrugDetail',
+                    drugDetail,
+                    setDrugImage
+                });
+            break;
+    
+            case 'Galeri':
+                await navigation.navigate('DrugPictureGallery', {
+                    destination: 'DrugDetail',
+                    drugDetail,
+                    setDrugImage
+                });
+            break;
+    
+            case 'Hapus':
+                setConfirmationModal(true);
+            break;
+    
+            default:
+            break;
+        }
+    }
     
     function setDate(date){
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(date)
@@ -62,6 +112,21 @@ function DrugDetail({navigation, userData}){
         }
     }
 
+    async function deleteImage() {
+        try {
+            setLoad(true);
+            const drugID = drugDetail._id;
+            let token = await AsyncStorage.getItem('token');
+            token = JSON.parse(token).token;
+            await deleteDrugImageUrl(drugID, token);
+            setLoad(false);
+            setConfirmationModal(false);
+            setDrugImage('')
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     BackHandler.addEventListener("hardwareBackPress", async () => {
         await changeNotes()
 	    navigation.pop();
@@ -80,7 +145,36 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: imageUrl ? imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                    <View>
+                        <Image source={{uri: drugImage ? drugImage: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                        <TouchableOpacity
+                            style={{ zIndex: 5, marginTop: -20, marginRight: -10, alignItems: "flex-end" }}
+                            onPress={() => setProfilePictureModal(true)}
+                            >
+                            <Image
+                                source={require('../../../assets/png/ic_camera.png')}
+                                style={{ width: 35, height: 35 }}
+                                />
+                        </TouchableOpacity>
+                        <PictureModal
+                            modal={profilePictureModal}
+                            setModal={setProfilePictureModal}
+                            selection={profileStatusSelection}
+                            setSelectedValue={setSelectedValue}/>
+                        <ConfirmationModal
+                            modal={confirmationModal}
+                            optionLeftFunction={() => {
+                                setConfirmationModal(false);
+                            }}
+                            optionLeftText="Batal"
+                            optionRightFunction={() => {
+                                deleteImage();
+                            }}
+                            optionRightText="Hapus"
+                            warning="Apakah anda yakin ingin menghapus foto anda?"
+                            load={load}
+                        />
+                    </View>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
@@ -312,4 +406,8 @@ const mapStateToProps = state => {
     return state
 }
 
-export default connect(mapStateToProps)(DrugDetail)
+const mapDispatchToProps = {
+    deleteDrugImageUrl
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DrugDetail)
