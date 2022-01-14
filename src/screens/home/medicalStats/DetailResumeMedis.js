@@ -260,27 +260,6 @@ export default function DetailResumeMedis(props) {
                         )}
                       </View>
                     </View>
-                    <View
-                      style={{ ...styles.contentHeader, marginBottom: "20%" }}
-                    >
-                      <Text style={styles.textHeader}>NOTES</Text>
-                      <View style={styles.line} />
-                      {resumeMedis.notes && resumeMedis.notes.doctorNotes !== '' ? (
-                        <View style={styles.card}>
-                          <View style={{}}>
-                            <Text style={styles.textTitle}>
-                              {resumeMedis.notes?.doctorNotes}
-                            </Text>
-                          </View>
-                        </View>
-                      ) : (
-                        <View style={styles.card}>
-                          <View style={{}}>
-                            <Text style={styles.textTitle}>Tidak ada Notes</Text>
-                          </View>
-                        </View>
-                      )}
-                    </View>
                   </View>
                 )}
               </ScrollView>

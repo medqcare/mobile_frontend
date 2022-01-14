@@ -68,60 +68,58 @@ function Tagihan(props) {
     setPatient({ ...data });
   };
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#181818' }}>
-        <StatusBar hidden />
-        <Header
-          title="Detail Transaksi"
-          navigate={props.navigation.navigate}
-          navigateBack="Home"
-        />
-        <LottieLoader
-          source={require('../../animation/loading.json')}
-          autoPlay
-          loop
-        />
-      </View>
-    );
-  }
-
   return (
-    <View style={{ flex: 1, backgroundColor: '#181818' }}>
-      {/* <StatusBar hidden /> */}
+    <>
       <Header
         title="Detail Transaksi"
         navigate={props.navigation.navigate}
         navigateBack="Home"
       />
-      <View style={{ paddingHorizontal: 12, marginTop: 16 }}>
-        <PatientBoard
-          patient={patient}
-          onBoardPress={() =>
-            setShowModalSelectPatient(!showModalSelectPatient)
-          }
-        />
-      </View>
+      <View style={{ flex: 1, backgroundColor: '#181818' }}>
+        {loading ? (
+          <LottieLoader
+            source={require('../../animation/loading.json')}
+            autoPlay
+            loop
+          />
+        ) : (
+          <>
+            {/* <StatusBar hidden /> */}
+            <View style={{ paddingHorizontal: 12, marginTop: 16 }}>
+              <PatientBoard
+                patient={patient}
+                onBoardPress={() =>
+                  setShowModalSelectPatient(!showModalSelectPatient)
+                }
+              />
+            </View>
 
-      {transaction?._id ? (
-        <CardDetailTransaction transaction={transaction} />
-      ) : (
-        <View
-          style={{ alignItems: 'center', flex: 1, justifyContent: 'center' }}
-        >
-          <Text style={{ color: '#fff' }}>Belum ada tagihan</Text>
-        </View>
-      )}
-      <SelectPatient
-        modal={showModalSelectPatient}
-        setModal={setShowModalSelectPatient}
-        // accountOwner={props.userData}
-        family={family}
-        title="Pilih Patient"
-        setSelectedValue={onPatientSelected}
-        navigateTo={(screen) => props.navigation.navigate(screen)}
-      />
-    </View>
+            {transaction?._id ? (
+              <CardDetailTransaction transaction={transaction} />
+            ) : (
+              <View
+                style={{
+                  alignItems: 'center',
+                  flex: 1,
+                  justifyContent: 'center',
+                }}
+              >
+                <Text style={{ color: '#fff' }}>Belum ada tagihan</Text>
+              </View>
+            )}
+            <SelectPatient
+              modal={showModalSelectPatient}
+              setModal={setShowModalSelectPatient}
+              // accountOwner={props.userData}
+              family={family}
+              title="Pilih Patient"
+              setSelectedValue={onPatientSelected}
+              navigateTo={(screen) => props.navigation.navigate(screen)}
+            />
+          </>
+        )}
+      </View>
+    </>
   );
 }
 

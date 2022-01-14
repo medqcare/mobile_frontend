@@ -90,17 +90,17 @@ export default function InstructionModal({ visible, onFinishOrSkip }) {
       },
     },
     {
-      text: 'Hasil pemeriksaan bisa Kamu lihat disini',
+      text: 'Kamu bisa melihat profil dan menambahan anggota keluarga kamu disini',
       style: {
         parent: {
           width: '80%',
-          transform: [{ translateY: heightPercentageToDP('8%') }],
+          transform: [{ translateY: heightPercentageToDP('6.5%') }],
           alignSelf: 'flex-end',
         },
         icon: {
           marginBottom: 8,
           alignSelf: 'flex-end',
-          transform: [{ translateX: widthPercentageToDP('-5%') }],
+          transform: [{ translateX: widthPercentageToDP('-2%') }],
         },
       },
     },
@@ -119,10 +119,7 @@ export default function InstructionModal({ visible, onFinishOrSkip }) {
         icon: {
           marginBottom: 8,
           alignSelf: 'center',
-          transform: [
-            // { translateX: widthPercentageToDP('-5%') },
-            { rotateX: '180deg' },
-          ],
+          transform: [{ rotateX: '180deg' }],
         },
       },
     },

@@ -54,7 +54,7 @@ const InputSecretCode = (props) => {
 
             {/* Back Button */}
             <TouchableOpacity
-                onPress={() => navigation.pop()}
+                onPress={() => props.navigation.pop()}
             >
                 <View style={style.header}>
                     <Image 
