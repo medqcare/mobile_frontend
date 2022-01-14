@@ -23,6 +23,7 @@ import {
   setLoading,
   getDrugs,
   getReminders,
+  setShowInstruction,
 } from '../../../stores/action';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
@@ -48,7 +49,9 @@ const dimHeight = Dimensions.get('window').height;
 
 function HomePage(props) {
   const fromSreen = props.navigation.getParam('from');
-  const [showInstruction, setShowInstruction] = useState(false);
+  // const [modalInstruction, setModalInstruction] = useState(
+  //   props.showInstruction
+  // );
 
   const [loadIsShow, setLoadIsShow] = useState(true);
   const [myLocation, setMyLocation] = useState(null);
@@ -87,21 +90,15 @@ function HomePage(props) {
     })();
   }, []);
 
-  useEffect(() => {
-    console.log(fromSreen, 'this is from screen!!!!!!!!!!');
-    if (fromSreen === 'registration') {
-      setShowInstruction(true);
-    }
-  }, [fromSreen]);
-
   // useEffect(() => {
-  //   if (isShow) {
-  //     setShowInstruction(isShow);
-  //     setLoadIsShow(false);
-  //   } else {
-  //     setShowInstruction(false);
+  //   const isFocus = props.navigation.isFocused();
+  //   console.log(props.showInstruction, 'hello boy');
+  //   if (fromSreen === 'registration' && isFocus) {
+  //     console.log(fromSreen === 'registration', 'datang dari screen mana?');
+  //     console.log(isFocus, 'homm scree ini?');
+  //     setModalInstruction(true);
   //   }
-  // }, [isShow, loadIsShow]);
+  // }, [fromSreen]);
 
   useEffect(() => {
     notificationTrigger();
@@ -273,9 +270,10 @@ function HomePage(props) {
         </>
       )}
       <InstructionModal
-        visible={showInstruction}
+        visible={props.showInstruction}
         onFinishOrSkip={() => {
-          setShowInstruction(false);
+          // setModalInstruction(false);
+          props.setShowInstruction(false);
         }}
       />
     </View>
@@ -373,6 +371,7 @@ const mapDispatchToProps = {
   GetUser,
   getDrugs,
   getReminders,
+  setShowInstruction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

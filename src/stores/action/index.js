@@ -440,6 +440,7 @@ export function CreatePatientAsUser(
                 JSON.stringify(true)
               );
               navigateTo('Home', { from: 'registration' });
+              dispatch(setShowInstruction(true));
             } catch (error) {
               modalFailed(error);
               console.log('e1', error.message);
@@ -1145,6 +1146,13 @@ export function deleteImage(patientId, token) {
         'Error found when trying to delete avatar'
       );
     }
+  };
+}
+
+export function setShowInstruction(payload) {
+  return {
+    type: 'SHOW_INSTRUCTION',
+    payload: payload,
   };
 }
 

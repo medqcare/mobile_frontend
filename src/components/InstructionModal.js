@@ -7,6 +7,7 @@ import {
 } from 'react-native-responsive-screen';
 import ArrowBack from '../assets/svg/ArrowBackNew';
 import IconPointer from '../assets/svg/ic_pointer.';
+import { setShowInstruction } from '../stores/action';
 
 export default function InstructionModal({ visible, onFinishOrSkip }) {
   const [items, setItem] = React.useState([
@@ -133,6 +134,7 @@ export default function InstructionModal({ visible, onFinishOrSkip }) {
       setIndex(index + 1);
     } else {
       if (typeof onFinishOrSkip === 'function') {
+        setIndex(0);
         onFinishOrSkip();
       }
     }
@@ -143,6 +145,7 @@ export default function InstructionModal({ visible, onFinishOrSkip }) {
       setIndex(index - 1);
     } else {
       if (typeof onFinishOrSkip === 'function') {
+        setIndex(0);
         onFinishOrSkip();
       }
     }
