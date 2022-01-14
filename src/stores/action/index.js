@@ -480,10 +480,8 @@ export function resetPasswordEmail(email, navigate, navigateTo, isResend) {
         navigate(navigateTo, { email });
       }
     } catch (error) {
-      console.log(error);
-      const { message } = error.response.data.err;
       console.log(
-        message,
+        error.message,
         'Error found when trying to reset password and send email'
       );
       ToastAndroid.show(message, ToastAndroid.SHORT);
@@ -515,13 +513,11 @@ export function resetPasswordPhone(
         navigate(navigateTo, { phoneNumber, email });
       }
     } catch (error) {
-      console.log(error);
-      const { message } = error.response.data.err;
       console.log(
-        message,
+        error.message,
         'Error found when trying to reset password and send email'
       );
-      ToastAndroid.show(message, ToastAndroid.SHORT);
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
   };
 }
