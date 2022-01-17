@@ -23,6 +23,7 @@ import LottieLoader from 'lottie-react-native';
 import InformationIcon from '../../../assets/svg/information';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import BarcodeSvg from '../../../assets/svg/Barcode';
+import * as Location from 'expo-location'
 
 //action
 const Assistant_scan = (props) => {
@@ -35,6 +36,24 @@ const Assistant_scan = (props) => {
   const [loading, setLoading] = useState(false);
   const [isScanFailed, setIsScanFailed] = useState(false);
   const [loadingCheckin, setLoadingCheckin] = useState(false);
+  const [userLocation, setUserLocation] = useState({
+    latitude: null,
+    longitude: null
+  })
+
+  useEffect( async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync()
+    if(status !== 'granted'){
+      return ToastAndroid.show('Permission to access location was denied')
+    }
+
+    const { coords} = await Location.getCurrentPositionAsync({})
+    const {latitude, longitude} = coords
+    setUserLocation({
+      latitude,
+      longitude
+    })
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -111,8 +130,8 @@ const Assistant_scan = (props) => {
     const { clinicIdWeb } = reservationData.healthFacility;
     const { location } = healthFacilityData;
     const [lng, lat] = location.coordinates;
-    const { lat: latUser, lng: lngUser } = props.myLocation;
-    const distance = getDistanceFromLatLonInKm(latUser, lngUser, lat, lng);
+    const { latitude, longitude } = userLocation
+    const distance = getDistanceFromLatLonInKm(latitude, longitude, lat, lng);
 
     if (Number(dataBarCode) !== Number(clinicIdWeb)) {
       return { status: false, message: 'Invalid Barcode' };
