@@ -20,6 +20,8 @@ import {
 } from '../../../stores/action';
 import { connect } from 'react-redux';
 
+import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
+
 // For proper case
 import capitalFirst from '../../../helpers/capitalFirst';
 
@@ -50,6 +52,8 @@ import withZero from '../../../helpers/withZero';
 import DatePicker from '@react-native-community/datetimepicker';
 import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
 import nikValidation from '../../../helpers/validationNIK';
+import AsycnStorage from '@react-native-async-storage/async-storage'
+import { changePassword } from '../../../stores/action';
 
 const DataCompletion = (props) => {
   // Moment
@@ -98,6 +102,24 @@ const DataCompletion = (props) => {
       coordinates: [district[0].longitude, district[0].latitude],
     },
   });
+
+  const [passwordData, setPasswordData] = useState({
+    password: '',
+    confirmPassword: ''
+  })
+
+  const [secureTextEntry, setSecureTextEntry] = useState({
+    password: true,
+    confirmPassword: true
+  });
+
+  const updateSecureTextEntry = (key) => {
+    setSecureTextEntry({
+      ...secureTextEntry,
+      [key]: !secureTextEntry[key]
+    });
+  };
+
 
   const newDate = new Date();
   const sendDate = `${withZero(newDate.getDate())}/${withZero(
@@ -148,6 +170,13 @@ const DataCompletion = (props) => {
 
   // Success Message
   const [sucess, setSuccsess] = useState('');
+
+  const [googleEmail, setGoogleUserEmail] = useState('')
+
+  useEffect(async () => {
+    const googleUserEmail = await AsycnStorage.getItem('GoogleUserEmail')
+    if(googleUserEmail) setGoogleUserEmail(googleUserEmail)
+  })
 
   // Use effect for province and district
   useEffect(() => {
@@ -222,7 +251,8 @@ const DataCompletion = (props) => {
 
   // Function for validation
 
-  function validation() {
+
+  async function validation() {
     if (!nikValidation(userData.nik)) {
       ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
       return;
@@ -238,11 +268,25 @@ const DataCompletion = (props) => {
       !chosenDate
     ) {
       ToastAndroid.show(
-        'Please fill all the necessary data!',
+        'Tolong lengkapi seluruh data yang diperlukan!',
         ToastAndroid.LONG
       );
     } else {
-      FilterDataSend(userData);
+      if(googleEmail) {
+        const { password, confirmPassword } = passwordData
+        if(password.length < 7) {
+          ToastAndroid.show('Password harus lebih banyak dari 6 karakter', ToastAndroid.SHORT) 
+        }
+        else if(password !== confirmPassword){
+          ToastAndroid.show('Password anda tidak sesuai', ToastAndroid.SHORT)
+        } else {
+          props.changePassword(googleEmail, password, props.navigation.navigate, 'Home')
+          FilterDataSend(userData)
+          await AsycnStorage.removeItem('GoogleUserEmail')
+        }
+      } else {
+        FilterDataSend(userData)
+      }
     }
   }
 
@@ -278,7 +322,7 @@ const DataCompletion = (props) => {
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     ToastAndroid.show(
-      'You have to fill this form before you can continue to use MedQCare',
+      'Anda harus melengkapi form ini agar bisa menggunakan MedQCare',
       ToastAndroid.SHORT
     );
     return true;
@@ -363,6 +407,63 @@ const DataCompletion = (props) => {
             />
           </View>
         </View>
+
+        {googleEmail ? (
+          <>
+            <View style={styles.inputMiddleContainer}>
+              <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                <TextInput
+                  style={[styles.inputText, {flex: 1,}]}
+                  autoCapitalize={'sentences'}
+                  secureTextEntry={secureTextEntry.password}
+                  autoFocus={false}
+                  placeholder={'Password'}
+                  placeholderTextColor="#8b8b8b"
+                  onChangeText={(text) =>
+                    setPasswordData({ ...passwordData, password: text })
+                  }
+                  value={passwordData.password}
+                />
+                <TouchableOpacity 
+                  style={{paddingLeft: 10}}
+                  onPress={() => updateSecureTextEntry('password')}>
+                  {secureTextEntry.password ? (
+                    <Feather name="eye-off" size={20} color="grey" />
+                  ) : (
+                    <Feather name="eye" size={20} color="grey" />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.inputMiddleContainer}>
+              <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+                <TextInput
+                  style={[styles.inputText, {flex: 1,}]}
+                  autoCapitalize={'sentences'}
+                  secureTextEntry={secureTextEntry.confirmPassword}
+                  autoFocus={false}
+                  placeholder={'Confrim Password'}
+                  placeholderTextColor="#8b8b8b"
+                  onChangeText={(text) =>
+                    setPasswordData({ ...passwordData, confirmPassword: text })
+                  }
+                  value={passwordData.confirmPassword}
+                />
+
+                  <TouchableOpacity 
+                    style={{paddingLeft: 10}}
+                    onPress={() => updateSecureTextEntry('confirmPassword')}>
+                    {secureTextEntry.password ? (
+                      <Feather name="eye-off" size={20} color="grey" />
+                    ) : (
+                      <Feather name="eye" size={20} color="grey" />
+                    )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        ) : null}
 
         {/* Gender Form */}
         <View style={styles.inputMiddleContainer}>
@@ -1217,6 +1318,7 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   CreatePatientAsUser,
   setLoading,
+  changePassword,
   Logout,
 };
 
