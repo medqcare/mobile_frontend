@@ -122,7 +122,7 @@ const Assistant_scan = (props) => {
     if (distance > 100) {
       return {
         status: false,
-        message: 'Silahkahn Check-In ke Faskes yang sudah dipilih',
+        message: 'Anda berada di luar jangkauan faskes, silahkan melakukan check in di dalam fakses tersebut',
       };
     }
 
