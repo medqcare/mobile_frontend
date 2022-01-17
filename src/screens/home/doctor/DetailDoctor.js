@@ -538,9 +538,9 @@ function DetailDoctorPage(props) {
                                     {item.facilityAddress.substring(0, 50)}...
                                   </Text>
                                 )}
-                                <Text style={fontStyles.address}>
+                                {/* <Text style={fontStyles.address}>
                                 {`${distance(item)} km dari Anda`}
-                                </Text>
+                                </Text> */}
                               </View>
                               <TouchableOpacity
                                 style={{
