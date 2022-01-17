@@ -146,16 +146,18 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
                 {/* Top Container */}
                 <View style={styles.topContainer}>
                     <View>
-                        <Image source={{uri: drugImage ? drugImage: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
-                        <TouchableOpacity
-                            style={{ zIndex: 5, marginTop: -20, marginRight: -10, alignItems: "flex-end" }}
-                            onPress={() => setProfilePictureModal(true)}
-                            >
+                            <View style={{ width: 150, height: 180}}>
+                                <Image source={{uri: drugImage ? drugImage : 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                                <TouchableOpacity
+                                    style={{ alignSelf: "flex-end", top: -20, right: -10, width: 40, }}
+                                    onPress={() => setProfilePictureModal(true)}
+                                >
                             <Image
                                 source={require('../../../assets/png/ic_camera.png')}
                                 style={{ width: 35, height: 35 }}
                                 />
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                            </View>
                         <PictureModal
                             modal={profilePictureModal}
                             setModal={setProfilePictureModal}
@@ -194,7 +196,6 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
                     <Text style={styles.drugNameText}>{drugName} 200 mg {drugQuantity} {type ? type : ''}</Text>
-                    <Text style={description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{description ? description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
