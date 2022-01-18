@@ -823,7 +823,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message });
       } catch (error) {
         console.log(error);

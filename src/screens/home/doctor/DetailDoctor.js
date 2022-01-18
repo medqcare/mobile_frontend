@@ -149,7 +149,7 @@ function DetailDoctorPage(props) {
       // url: `${baseURL}/api/v1/members/detailDoctor/618ab3931dbe3c74a14d6a18`
     })
       .then(({ data }) => {
-        console.log(data, '===============setelah axios===================');
+        // console.log(data, '===============setelah axios===================');
         // console.log(data);
         setDataDoctor(data);
         setLoading(false);
@@ -291,7 +291,7 @@ function DetailDoctorPage(props) {
   };
 
   const about = () => {
-    console.log('??', dataDoctor, '??');
+    // console.log('??', dataDoctor, '??');
 
     // if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
     //   if (dataDoctor.doctorProfile.abstract.length > 120) {
@@ -350,7 +350,7 @@ function DetailDoctorPage(props) {
       : key + 1;
   };
 
-  console.log(dataDoctor, 'this is data doctor');
+  // console.log(dataDoctor, 'this is data doctor');
 
   return (
     <View style={containerStyle.container}>
