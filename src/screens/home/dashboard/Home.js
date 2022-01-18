@@ -13,9 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import { connect } from 'react-redux';
-import GetLocation from 'react-native-get-location';
 import * as Location from 'expo-location';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   setCurrentLocation,
   changeLogin,
@@ -49,13 +47,8 @@ const dimHeight = Dimensions.get('window').height;
 
 function HomePage(props) {
   const fromSreen = props.navigation.getParam('from');
-  // const [modalInstruction, setModalInstruction] = useState(
-  //   props.showInstruction
-  // );
 
-  const [loadIsShow, setLoadIsShow] = useState(true);
   const [myLocation, setMyLocation] = useState(null);
-  const [location, setLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {

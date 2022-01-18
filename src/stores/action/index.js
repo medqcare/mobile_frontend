@@ -613,6 +613,7 @@ export function GetUser(token, navigation) {
           console.log('Application Found dataLogged');
           let temp = data.data;
           let docFav = await AsyncStorage.getItem('doctorFavorite');
+          await AsyncStorage.setItem('userData', JSON.stringify(data.data));
           if (docFav) {
             temp.doctorFavorites = JSON.parse(docFav);
           }
