@@ -99,6 +99,7 @@ const buatJanji = (props) => {
       placeOfBirth: null,
       mobilePhone: null,
       resus: null,
+      parentID: null
     },
   });
 
@@ -124,6 +125,7 @@ const buatJanji = (props) => {
       mobilePhone: null,
       patientTitle: null,
       resus: null,
+      parentID: null
     },
   });
   const [jadwal, setJadwal] = useState(null);
@@ -270,6 +272,7 @@ const buatJanji = (props) => {
             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
         },
       };
+
       var sendCreate = {
         facilityID: book.healthFacility.facilityID,
         patient: {
@@ -324,6 +327,7 @@ const buatJanji = (props) => {
           placeOfBirth: family[0]?.placeOfBirth || '',
           patientTitle: '',
           resus: family[0]?.resus || '+',
+          parentID: family[0]?.parentID || null
         },
       });
     }
@@ -395,7 +399,8 @@ const buatJanji = (props) => {
         age: getAge(data.dob),
         patientTitle: '',
         placeOfBirth: data.placeOfBirth || data.location.province,
-        resus: data.resus || '+'
+        resus: data.resus || '+',
+        parentID: data.parentID || null
       },
     });
     setDisplayName(

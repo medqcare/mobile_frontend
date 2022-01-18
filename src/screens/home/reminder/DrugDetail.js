@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   BackHandler,
+  ToastAndroid,
 } from "react-native";
 import { connect } from "react-redux";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
@@ -20,14 +21,14 @@ import withZero from "../../../helpers/withZero";
 import PictureModal from '../../../components/modals/profilePictureModal'
 import ConfirmationModal from "../../../components/modals/ConfirmationModal";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { deleteDrugImageUrl } from '../../../stores/action'
+import { changeDrugNotes, deleteDrugImageUrl, } from '../../../stores/action'
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
-function DrugDetail({navigation, userData, deleteDrugImageUrl}){
-    const  { drugDetail } = navigation.state.params
+function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, }){
+    const  { drugDetail, activeDrugs, setActiveDrugs } = navigation.state.params
 
     const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugImage, setDrugImage] = useState(imageUrl)
@@ -107,8 +108,22 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
     }
 
     async function changeNotes(){
-        if(displayNotes !== notes){
-            console.log(displayNotes)
+        try {
+            if(displayNotes !== notes){
+                const drugID = drugDetail._id;
+                const token = JSON.parse(await AsyncStorage.getItem('token')).token
+                const { message, data} = await changeDrugNotes(drugID, token, displayNotes)
+                const newActiveDrugs = activeDrugs.map(el => {
+                    if(el._id === drugDetail._id){
+                        el.notes = data
+                    }
+                    return el
+                })
+                setActiveDrugs(newActiveDrugs)
+                ToastAndroid.show(message, ToastAndroid.SHORT)
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -146,16 +161,18 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
                 {/* Top Container */}
                 <View style={styles.topContainer}>
                     <View>
-                        <Image source={{uri: drugImage ? drugImage: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
-                        <TouchableOpacity
-                            style={{ zIndex: 5, marginTop: -20, marginRight: -10, alignItems: "flex-end" }}
-                            onPress={() => setProfilePictureModal(true)}
-                            >
+                            <View style={{ width: 150, height: 180}}>
+                                <Image source={{uri: drugImage ? drugImage : 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                                <TouchableOpacity
+                                    style={{ alignSelf: "flex-end", top: -20, right: -10, width: 40, }}
+                                    onPress={() => setProfilePictureModal(true)}
+                                >
                             <Image
                                 source={require('../../../assets/png/ic_camera.png')}
                                 style={{ width: 35, height: 35 }}
                                 />
-                        </TouchableOpacity>
+                            </TouchableOpacity>
+                            </View>
                         <PictureModal
                             modal={profilePictureModal}
                             setModal={setProfilePictureModal}
@@ -194,7 +211,6 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
                     <Text style={styles.drugNameText}>{drugName} 200 mg {drugQuantity} {type ? type : ''}</Text>
-                    <Text style={description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{description ? description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
@@ -407,7 +423,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    deleteDrugImageUrl
+    changeDrugNotes,
+    deleteDrugImageUrl,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrugDetail)
