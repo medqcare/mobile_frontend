@@ -15,6 +15,7 @@ import {
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
+  changeDrugNotes,
   changeAlarmBoolean,
   updateDrugImageUrl,
   deleteDrugImageUrl,
@@ -823,7 +824,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message });
       } catch (error) {
         console.log(error);
@@ -1163,6 +1164,7 @@ export {
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
+  changeDrugNotes,
   changeAlarmBoolean,
   updateDrugImageUrl,
   deleteDrugImageUrl,

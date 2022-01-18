@@ -433,7 +433,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                         animation={'wobble'}>
                             <TouchableOpacity
                             style={styles.detailContainer}
-                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section})}
+                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section, activeDrugs: activeDrugs, setActiveDrugs: setActiveDrugs})}
                             >
                                 <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>

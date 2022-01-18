@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   BackHandler,
+  ToastAndroid,
 } from "react-native";
 import { connect } from "react-redux";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
@@ -20,14 +21,14 @@ import withZero from "../../../helpers/withZero";
 import PictureModal from '../../../components/modals/profilePictureModal'
 import ConfirmationModal from "../../../components/modals/ConfirmationModal";
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { deleteDrugImageUrl } from '../../../stores/action'
+import { changeDrugNotes, deleteDrugImageUrl, } from '../../../stores/action'
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
-function DrugDetail({navigation, userData, deleteDrugImageUrl}){
-    const  { drugDetail } = navigation.state.params
+function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, }){
+    const  { drugDetail, activeDrugs, setActiveDrugs } = navigation.state.params
 
     const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugImage, setDrugImage] = useState(imageUrl)
@@ -107,8 +108,22 @@ function DrugDetail({navigation, userData, deleteDrugImageUrl}){
     }
 
     async function changeNotes(){
-        if(displayNotes !== notes){
-            console.log(displayNotes)
+        try {
+            if(displayNotes !== notes){
+                const drugID = drugDetail._id;
+                const token = JSON.parse(await AsyncStorage.getItem('token')).token
+                const { message, data} = await changeDrugNotes(drugID, token, displayNotes)
+                const newActiveDrugs = activeDrugs.map(el => {
+                    if(el._id === drugDetail._id){
+                        el.notes = data
+                    }
+                    return el
+                })
+                setActiveDrugs(newActiveDrugs)
+                ToastAndroid.show(message, ToastAndroid.SHORT)
+            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -408,7 +423,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    deleteDrugImageUrl
+    changeDrugNotes,
+    deleteDrugImageUrl,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(DrugDetail)
