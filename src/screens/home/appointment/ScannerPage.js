@@ -42,17 +42,25 @@ const Assistant_scan = (props) => {
   })
 
   useEffect( async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync()
-    if(status !== 'granted'){
-      return ToastAndroid.show('Permission to access location was denied')
-    }
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync()
+      if(status !== 'granted'){
+        return ToastAndroid.show('Permission to access location was denied')
+      }
 
-    const { coords} = await Location.getCurrentPositionAsync({})
-    const {latitude, longitude} = coords
-    setUserLocation({
-      latitude,
-      longitude
-    })
+      const { coords} = await Location.getCurrentPositionAsync({})
+      const {latitude, longitude} = coords
+      setUserLocation({
+        latitude,
+        longitude
+      })
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally {
+      setLoading(false);
+    }
   }, [])
 
   useEffect(() => {
@@ -75,9 +83,7 @@ const Assistant_scan = (props) => {
       } catch (error) {
         vis;
         console.log(error.message, 'this is error from scanner check in');
-      } finally {
-        setLoading(false);
-      }
+      } 
     }
   }, []);
 
