@@ -87,6 +87,24 @@ export function createNewDrugFromUser(newDrug, token){
     }
 }
 
+export function changeDrugNotes(drugID, token, notes){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/changeDrugNotes/${drugID}`,
+                headers: {
+                    authorization: token
+                },
+                data: { notes },
+            })
+            return data
+        } catch (error) {
+            return error.message
+        }
+    }
+}
+
 export function changeAlarmBoolean(drugID, token){
     return async dispatch => {
         try {
