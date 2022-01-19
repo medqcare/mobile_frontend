@@ -1,4 +1,8 @@
 const DATA = {
+  Tunai: {
+    name: 'Tunai',
+    iconUrl: require('../assets/png/ic_linkaja.png'),
+  },
   LinkAja: {
     name: 'LinkAja',
     iconUrl: require('../assets/png/ic_linkaja.png'),
