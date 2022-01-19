@@ -1013,7 +1013,6 @@ export function editAlergi(id, alergie, alergieType, token) {
 }
 
 export function getAlergie(patientId, token) {
-  console.log(patientId, 'ini id di action');
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -1025,7 +1024,6 @@ export function getAlergie(patientId, token) {
         resolve(data.data);
       } catch (err) {
         console.log(err.response.status, 'ini kembalian data get alergie');
-        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
         reject(err.response.status);
       }
     });
