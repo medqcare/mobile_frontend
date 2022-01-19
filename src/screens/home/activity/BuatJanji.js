@@ -27,6 +27,8 @@ import BuatJanji from '../../../assets/svg/BuatJanji';
 import formatRP from '../../../helpers/rupiah';
 import Header from '../../../components/headers/GradientHeader';
 
+import IcTunai from "../../../assets/svg/ic_tunai"
+
 import SettingModal from '../../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
 import Modal from 'react-native-modal';
@@ -139,7 +141,7 @@ const buatJanji = (props) => {
   const [modalP, setModalP] = useState(true);
   const [modalL, setModalL] = useState(false);
 
-  const [dompet, setDompet] = useState('');
+  const [dompet, setDompet] = useState('Tunai');
   const [accountOwner, setAccountOwner] = useState(props.userData);
   const [displayName, setDisplayName] = useState(
     props.userData.lastName
@@ -637,12 +639,63 @@ const buatJanji = (props) => {
                 </TouchableOpacity>
               </TouchableOpacity>
             </View> */}
-            <Text
-              style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
-            >
-              Transfer Bank
-            </Text>
+            
             <View style={cardStyle.dompet}>
+              <TouchableOpacity
+                style={cardStyle.pembayaran}
+                onPress={() => setDompet('Tunai')}
+              >
+                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
+                  {/* <Image
+                    source={require('../../../assets/png/ic_tunai.png')}
+                    height={20}
+                    width={20}
+                  /> */}
+                  <IcTunai />
+                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+                    Tunai
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={() => setDompet('Tunai')}>
+                  {dompet === 'Tunai' ? (
+                    <View
+                      style={{
+                        height: 15,
+                        width: 15,
+                        borderRadius: 15,
+                        backgroundColor: '#1380C3',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <View
+                        style={{
+                          height: 7,
+                          width: 7,
+                          borderRadius: 7,
+                          backgroundColor: '#DDDDDD',
+                        }}
+                      />
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        height: 15,
+                        width: 15,
+                        borderRadius: 15,
+                        borderColor: '#DDDDDD',
+                        borderWidth: 1,
+                      }}
+                    />
+                  )}
+                </TouchableOpacity>
+              </TouchableOpacity>
+              {/* <Text
+                style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
+              >
+                Transfer Bank
+              </Text>
               <TouchableOpacity
                 style={cardStyle.pembayaran}
                 onPress={() => setDompet('Mandiri')}
@@ -785,7 +838,7 @@ const buatJanji = (props) => {
                     />
                   )}
                 </TouchableOpacity>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         )}
@@ -948,7 +1001,7 @@ const buatJanji = (props) => {
           <View style={viewModalP.container}>
             <View style={viewModalP.header}>
               <View style={viewModalP.toogle} />
-              <Text style={viewModalP.title}>Pilih Insurance</Text>
+              <Text style={viewModalP.title}>Pilih Pembayaran</Text>
             </View>
             <View style={viewModalP.patient}>
               <TouchableOpacity
@@ -974,17 +1027,21 @@ const buatJanji = (props) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  setPatient({
-                    ...patient,
-                    patient: {
-                      ...patient.patient,
-                      insuranceStatus: 'BPJS',
-                    },
-                  });
-                  setModalL(false);
+                  ToastAndroid.show(
+                    'Belum Tersedia Saat Ini',
+                    ToastAndroid.SHORT
+                  );
+                  // setPatient({
+                  //   ...patient,
+                  //   patient: {
+                  //     ...patient.patient,
+                  //     insuranceStatus: 'BPJS',
+                  //   },
+                  // });
+                  // setModalL(false);
                 }}
               >
-                <View style={viewModalP.cardName}>
+                <View style={viewModalP.cardNameDisabled}>
                   <View style={viewModalP.familyName}>
                     <Text style={viewModalP.name}>BPJS</Text>
                   </View>
@@ -995,17 +1052,21 @@ const buatJanji = (props) => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  setPatient({
-                    ...patient,
-                    patient: {
-                      ...patient.patient,
-                      insuranceStatus: 'ASURANSI',
-                    },
-                  });
-                  setModalL(false);
+                  ToastAndroid.show(
+                    'Belum Tersedia Saat Ini',
+                    ToastAndroid.SHORT
+                  );
+                  // setPatient({
+                  //   ...patient,
+                  //   patient: {
+                  //     ...patient.patient,
+                  //     insuranceStatus: 'ASURANSI',
+                  //   },
+                  // });
+                  // setModalL(false);
                 }}
               >
-                <View style={viewModalP.cardName}>
+                <View style={viewModalP.cardNameDisabled}>
                   <View style={viewModalP.familyName}>
                     <Text style={viewModalP.name}>Asuransi</Text>
                   </View>
@@ -1142,6 +1203,17 @@ const viewModalP = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 10,
   },
+  cardNameDisabled: {
+    marginTop: 10,
+    borderColor: '#757575',
+    backgroundColor: "#757575",
+    borderWidth: 1,
+    borderRadius: 3,
+    minHeight: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
   familyName: {
     flexDirection: 'row',
   },
@@ -1183,7 +1255,7 @@ const cardStyle = StyleSheet.create({
     borderRadius: 5,
   },
   dompet: {
-    marginHorizontal: 15,
+    margin: 15,
     backgroundColor: '#2F2F2F',
     borderRadius: 5,
   },
@@ -1218,6 +1290,7 @@ const cardStyle = StyleSheet.create({
   pembayaran: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: "center",
     marginRight: 15,
     marginVertical: 15,
   },
