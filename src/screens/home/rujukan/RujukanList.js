@@ -320,7 +320,7 @@ function RujukanList(props) {
               </View>
             </>
           ) : (
-            <View style={{ alignItems: 'center', marginTop: 25 }}>
+            <View style={{ display: "flex", height: "80%", alignItems: 'center', justifyContent: 'center'}}>
               <Text style={{ color: '#fff' }}>
                 Tidak ada surat {typeSelected}
               </Text>

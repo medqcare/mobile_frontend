@@ -7,9 +7,10 @@ import {
   Image,
   TextInput,
   BackHandler,
+  ToastAndroid,
 } from "react-native";
 import { connect } from "react-redux";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import GreyHeader from "../../../components/headers/GreyHeader";
 import { FontAwesome } from '@expo/vector-icons'; 
 import VerticalLine from '../../../assets/svg/VerticalLine'
@@ -17,26 +18,76 @@ import { DataTable } from 'react-native-paper'
 import { getSelectedDate } from "../../../helpers/todaysDate";
 import Calendar from "../../../components/DrugCalendar";
 import withZero from "../../../helpers/withZero";
+import PictureModal from '../../../components/modals/profilePictureModal'
+import ConfirmationModal from "../../../components/modals/ConfirmationModal";
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { changeDrugNotes, deleteDrugImageUrl, } from '../../../stores/action'
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
-function DrugDetail({navigation, userData}){
-    const  { drugDetail } = navigation.state.params
+function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, }){
+    const  { drugDetail, activeDrugs, setActiveDrugs } = navigation.state.params
 
     const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
+    const [drugImage, setDrugImage] = useState(imageUrl)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+    const [load, setLoad] = useState(false)
     const [drugReminders, setDrugReminders] = useState([])
     
     const [consumedDrugs, setConsumedDrugs] = useState([])
     const [skippedDrugs, setSkippedDrugs] = useState([])
     
     const [displayNotes, setDisplayNotes] = useState(notes)
+    const [profilePictureModal, setProfilePictureModal] = useState(false);
     const duration = Math.ceil(quantityTotal / etiquette.length)
 
     useEffect(() => {
         setDate(new Date())
     }, [])
+
+    const profileStatusSelection = [
+        {
+          label: 'Hapus',
+          url: require('../../../assets/png/ic_trash.png'),
+        },
+        {
+          label: 'Kamera',
+          url: require('../../../assets/png/ic_kamera.png'),
+        },
+        {
+          label: 'Galeri',
+          url: require('../../../assets/png/ic_galeri.png'),
+        },
+    ];
+
+    async function setSelectedValue(label) {
+        switch (label) {
+            case 'Kamera':
+                await navigation.navigate('DrugPictureCamera', {
+                    destination: 'DrugDetail',
+                    drugDetail,
+                    setDrugImage
+                });
+            break;
+    
+            case 'Galeri':
+                await navigation.navigate('DrugPictureGallery', {
+                    destination: 'DrugDetail',
+                    drugDetail,
+                    setDrugImage
+                });
+            break;
+    
+            case 'Hapus':
+                setConfirmationModal(true);
+            break;
+    
+            default:
+            break;
+        }
+    }
     
     function setDate(date){
         const { todaysYear, todaysMonth, todaysDate } = getSelectedDate(date)
@@ -57,8 +108,37 @@ function DrugDetail({navigation, userData}){
     }
 
     async function changeNotes(){
-        if(displayNotes !== notes){
-            console.log(displayNotes)
+        try {
+            if(displayNotes !== notes){
+                const drugID = drugDetail._id;
+                const token = JSON.parse(await AsyncStorage.getItem('token')).token
+                const { message, data} = await changeDrugNotes(drugID, token, displayNotes)
+                const newActiveDrugs = activeDrugs.map(el => {
+                    if(el._id === drugDetail._id){
+                        el.notes = data
+                    }
+                    return el
+                })
+                setActiveDrugs(newActiveDrugs)
+                ToastAndroid.show(message, ToastAndroid.SHORT)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async function deleteImage() {
+        try {
+            setLoad(true);
+            const drugID = drugDetail._id;
+            let token = await AsyncStorage.getItem('token');
+            token = JSON.parse(token).token;
+            await deleteDrugImageUrl(drugID, token);
+            setLoad(false);
+            setConfirmationModal(false);
+            setDrugImage('')
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -80,7 +160,38 @@ function DrugDetail({navigation, userData}){
 
                 {/* Top Container */}
                 <View style={styles.topContainer}>
-                    <Image source={{uri: imageUrl ? imageUrl: 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                    <View>
+                            <View style={{ width: 150, height: 180}}>
+                                <Image source={{uri: drugImage ? drugImage : 'https://www.royalcontainers.com/wp-content/uploads/2016/09/placeholder.png'}} style={styles.imageContainer}/>
+                                <TouchableOpacity
+                                    style={{ alignSelf: "flex-end", top: -20, right: -10, width: 40, }}
+                                    onPress={() => setProfilePictureModal(true)}
+                                >
+                            <Image
+                                source={require('../../../assets/png/ic_camera.png')}
+                                style={{ width: 35, height: 35 }}
+                                />
+                            </TouchableOpacity>
+                            </View>
+                        <PictureModal
+                            modal={profilePictureModal}
+                            setModal={setProfilePictureModal}
+                            selection={profileStatusSelection}
+                            setSelectedValue={setSelectedValue}/>
+                        <ConfirmationModal
+                            modal={confirmationModal}
+                            optionLeftFunction={() => {
+                                setConfirmationModal(false);
+                            }}
+                            optionLeftText="Batal"
+                            optionRightFunction={() => {
+                                deleteImage();
+                            }}
+                            optionRightText="Hapus"
+                            warning="Apakah anda yakin ingin menghapus foto anda?"
+                            load={load}
+                        />
+                    </View>
                     <View style={styles.topDetailContainer}>
                        <View style={styles.centeredSection}>
                            <Text style={styles.upperCenteredSectionText}>Frekuensi</Text>
@@ -100,7 +211,6 @@ function DrugDetail({navigation, userData}){
                 {/* Top Lower Container */}
                 <View style={styles.upperMiddleContainer}>
                     <Text style={styles.drugNameText}>{drugName} 200 mg {drugQuantity} {type ? type : ''}</Text>
-                    <Text style={description ? styles.drugDescriptionText : styles.noDrugDescriptionText}>{description ? description : 'No description provided by the manufacturer'}</Text>
                     <Text style={[{paddingTop: 20, color: 'rgba(221, 221, 221, 1)'}]}>Notes: </Text>
                     <View style={styles.notesContainer}>
                         <TextInput
@@ -312,4 +422,9 @@ const mapStateToProps = state => {
     return state
 }
 
-export default connect(mapStateToProps)(DrugDetail)
+const mapDispatchToProps = {
+    changeDrugNotes,
+    deleteDrugImageUrl,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DrugDetail)

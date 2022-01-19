@@ -87,6 +87,24 @@ export function createNewDrugFromUser(newDrug, token){
     }
 }
 
+export function changeDrugNotes(drugID, token, notes){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/changeDrugNotes/${drugID}`,
+                headers: {
+                    authorization: token
+                },
+                data: { notes },
+            })
+            return data
+        } catch (error) {
+            return error.message
+        }
+    }
+}
+
 export function changeAlarmBoolean(drugID, token){
     return async dispatch => {
         try {
@@ -100,6 +118,46 @@ export function changeAlarmBoolean(drugID, token){
             return data.message
         } catch (error) {
             console.log(error.message, 'error at change alarm boolean')
+        }
+    }
+}
+
+export function updateDrugImageUrl(drugID, fileToUpload, token, navigateTo, destination, setDrugImage){
+    return async dispatch => {
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/updateDrugImageUrl/${drugID}`,
+                headers: {
+                    Accept: 'application/json',
+                    authorization: token,
+                    'content-type': 'multipart/form-data',
+                },
+                data: fileToUpload
+            })
+            navigateTo(destination)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export function deleteDrugImageUrl(drugID, token){
+    return async dispatch => {
+        console.log('masuk ke action')
+        try {
+            let { data } = await drugInstance({
+                method: 'PATCH',
+                url: `/deleteDrugImageUrl/${drugID}`,
+                headers: {
+                    authorization: token,
+                },
+                data: {
+                    key: drugID
+                }
+            })
+        } catch (error) {
+            console.log(error)
         }
     }
 }

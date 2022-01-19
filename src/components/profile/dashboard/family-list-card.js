@@ -78,7 +78,7 @@ const familyList = (props) => {
           <Image            
             source={{
               uri: family.imageUrl
-                ? `${family.imageUrl}?time=${new Date()}`
+                ? `${family.imageUrl}`
                 : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
             }}
             style={styles.image}

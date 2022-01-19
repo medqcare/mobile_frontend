@@ -22,7 +22,7 @@ export default function DetailTransaction(props) {
         navigate={props.navigation.navigate}
         navigateBack="Riwayat"
       />
-      <CardDetailTransaction transaction={transaction} />
+      <CardDetailTransaction transaction={transaction} props={props}/>
     </View>
   );
 }

@@ -54,58 +54,68 @@ const activityList = (props) => {
     return true;
   });
 
-  if (refresh) {
-    return (
-      <View style={styles.container}>
-        <Header title={'Antrian'} navigate={props.navigation.navigate} />
+  // if (refresh) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Header title={'Antrian'} navigate={props.navigation.navigate} />
 
-        <LottieLoader
-          source={require('../animation/loading.json')}
-          loop
-          autoPlay
-        />
-      </View>
-    );
-  }
+  // <LottieLoader
+  //   source={require('../animation/loading.json')}
+  //   loop
+  //   autoPlay
+  // />
+  //     </View>
+  //   );
+  // }
 
   return (
     <>
       <Header title={'Antrian'} navigate={props.navigation.navigate} />
       <View style={styles.container}>
-        <View>
-          <>
-            {!props.todayActivity?.length && (
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 25,
-                }}
-              >
-                <Text style={{ color: '#fff' }}>Tidak ada daftar antrian</Text>
-              </View>
-            )}
-            {props.todayActivity && (
-              <FlatList
-                data={props.todayActivity}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item: el }) => {
-                  return (
-                    <Activity
-                      flag={true}
-                      bookingID={el.bookingCode}
-                      reservationID={el.reservationID}
-                      queueId={JSON.stringify(el.queueID)}
-                      data={el}
-                      navigation={props.navigation}
-                    />
-                  );
-                }}
-                keyExtractor={(item) => item._id}
-              />
-            )}
-          </>
-        </View>
+        {refresh ? (
+          <LottieLoader
+            source={require('../animation/loading.json')}
+            loop
+            autoPlay
+          />
+        ) : (
+          <View>
+            <>
+              {!props.todayActivity?.length && (
+                <View
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 25,
+                  }}
+                >
+                  <Text style={{ color: '#fff' }}>
+                    Tidak ada daftar antrian
+                  </Text>
+                </View>
+              )}
+              {props.todayActivity && (
+                <FlatList
+                  data={props.todayActivity}
+                  showsVerticalScrollIndicator={false}
+                  renderItem={({ item: el }) => {
+                    return (
+                      <Activity
+                        flag={true}
+                        bookingID={el.bookingCode}
+                        reservationID={el.reservationID}
+                        queueId={JSON.stringify(el.queueID)}
+                        data={el}
+                        navigation={props.navigation}
+                      />
+                    );
+                  }}
+                  keyExtractor={(item) => item._id}
+                />
+              )}
+            </>
+          </View>
+        )}
       </View>
     </>
   );

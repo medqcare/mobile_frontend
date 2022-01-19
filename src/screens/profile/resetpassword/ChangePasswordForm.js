@@ -19,7 +19,7 @@ import {
 import { changePassword } from '../../../stores/action';
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
 
-function ChangePasswordForm({ navigation, changePassword }) {
+function ChangePasswordForm({ navigation, ...props }) {
   const { email, destination } = navigation.state.params;
   const [load, setLoad] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState({
@@ -40,12 +40,12 @@ function ChangePasswordForm({ navigation, changePassword }) {
 
   const submitNewPassword = () => {
     const { password, confirmPassword } = form;
-    if (password < 5) {
+    if (password.length < 5) {
       ToastAndroid.show('Password must be at least 5 characters');
     } else if (password !== confirmPassword) {
       ToastAndroid.show('Confirm password does not match');
     } else {
-      changePassword(email, password, navigation.navigate, destination);
+      props.changePassword(email, password, navigation.navigate, destination);
     }
   };
 

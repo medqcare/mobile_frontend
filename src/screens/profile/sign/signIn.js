@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import IconFontA from 'react-native-vector-icons/FontAwesome5';
-// import PushNotification from 'react-native-push-notification';
 
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
 
@@ -23,14 +22,14 @@ import { LinearGradient } from 'expo-linear-gradient'; // Made for background li
 
 import * as Google from 'expo-google-app-auth';
 
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import {
   changeLogin,
   SignIn,
   SignInGoogle,
   setLoading,
 } from '../../../stores/action';
-// import {GoogleSignin} from '';
-// import firebase, {messaging} from '@react-native-firebase/app';
 
 const mapDispatchToProps = {
   setLoading,
@@ -90,20 +89,6 @@ const signIn = (props) => {
     ToastAndroid.show(_message, ToastAndroid.SHORT);
   }
 
-  useEffect(() => {
-    // GoogleSignin.configure({
-    // 	// scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
-    // 	webClientId:
-    // 		'222408999452-o7kis5ujt3sacau3iplrhr9ptqhn3jr5.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-    // 	offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-    // 	hostedDomain: '', // specifies a hosted domain restriction
-    // 	loginHint: '', // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
-    // 	forceConsentPrompt: true, // [Android] if you want to show the authorization prompt at each login.
-    // 	accountName: '', // [Android] specifies an account name on the device that should be used
-    // 	// iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-    // });
-  }, []);
-
   const googleLogin = async () => {
     console.log('User is trying to login via Google Account');
     const navigateTo = props.navigation.state?.params?.navigateTo
@@ -119,6 +104,7 @@ const signIn = (props) => {
       const loginResult = await Google.logInAsync(config);
       console.log(loginResult, 'this is the login result');
       const { type, user, accessToken, idToken } = loginResult;
+      await AsyncStorage.setItem('GoogleUserEmail',  user.email)
 
       if (type === 'success') {
         const { email, name, photoUrl, givenName, familyName } = user;
@@ -126,37 +112,9 @@ const signIn = (props) => {
       } else {
         console.log('Google sign in was cancelled');
       }
-      // add any configuration settings here:
-      // await GoogleSignin.hasPlayServices();
-      // const userInfo = await GoogleSignin.signIn();
-      // const data = await GoogleSignin.getTokens({
-      // 	idToken: 'string',
-      // 	accessToken: 'string',
-      // });
-      // console.log('ini user info', userInfo.serverAuthCode);
-      // console.log('ini id token ', data);
-
-      // // create a new firebase credential with the token
-      // const credential = firebase.auth.GoogleAuthProvider.credential(
-      // 	userInfo.idToken,
-      // 	userInfo.accessToken,
-      // );
-      // // login with credential
-      // const firebaseUserCredential = await firebase
-      // 	.auth()
-      // 	.signInWithCredential(credential);
-
-      // console.log(await firebaseUserCredential.user.getIdToken(), 'ini sudah');
-      // let tokenDikirim = await firebaseUserCredential.user.getIdToken();
-
-      // props.SignInGoogle(tokenDikirim, props.navigation);
       props.SignInGoogle(idToken, props.navigation, navigateTo);
-      // // console.warn(JSON.stringify(firebaseUserCredential.user.toJSON()));
     } catch (error) {
       console.log(error, 'Error in google sign in');
-      // setLoading(false);
-      // console.log(e, 'ini error google');
-      // console.error(e);
     }
   };
 

@@ -10,21 +10,23 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage } from '../../stores/action'
+import { uploadImage, updateDrugImageUrl, } from '../../../stores/action'
 
-import createFormData from '../../helpers/formData'
+import createFormData from '../../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
+
 
 const mapStateToProps = state => {
     return state
 }
 
 const mapDispatchToProps = {
-	uploadImage
+	uploadImage,
+    updateDrugImageUrl,
 };
 
-function ProfilePictureCamera({navigation, uploadImage}){
-    const { destination, userData } = navigation.state.params
+function DrugPictureGallery({navigation, updateDrugImageUrl}){
+    const { destination, drugDetail, setDrugImage } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
@@ -32,48 +34,49 @@ function ProfilePictureCamera({navigation, uploadImage}){
     // Load
     const [load, setLoad] = useState(false)
 
+
     // Use effect for asking permission
     useEffect(() => {
         (async () => {
             if (Platform.OS !== 'web') {
-              const { status } = await ImagePicker.requestCameraPermissionsAsync();
-              console.log(status, 'status at profilePictureCamera')
-              if (status !== 'granted') {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
                 alert('Sorry, we need camera roll permissions to make this work!');
-              }
+                }
             }
         })();
-        takePicture()
+        pickImage()
     }, [])
 
 
-    // Function for open camera and take a picture
-    const takePicture = async () => {
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+    // Function for picking an image from gallery
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+          exif: true,
         });
-
         
         if (!result.cancelled) {
             setImage(result.uri);
-            const _id = userData._id
+            setDrugImage(result.uri)
+            const _id = drugDetail._id
             const fileToUpload = createFormData(result, _id)
             setImageToUpload(fileToUpload)
-        }
+        } 
     }
 
-    const saveImage = async() => {
+    const saveImage = async () => {
         setLoad(true)
         let token = await AsyncStorage.getItem('token')
         token = JSON.parse(token).token
-        const id = userData._id
-
+        const id = drugDetail._id
+        
         console.log('Application is sending data to store/action...')
-
-        await uploadImage(id, imageToUpload, token, navigation.navigate, destination)
+        
+        await updateDrugImageUrl(id, imageToUpload, token, navigation.navigate, destination)
         setLoad(false)
     }
 
@@ -82,7 +85,7 @@ function ProfilePictureCamera({navigation, uploadImage}){
             <View style={styles.topContainer}>
                 <TouchableOpacity
                     style={styles.editTouchable}
-                    onPress={() => takePicture()}
+                    onPress={() => pickImage()}
                 >
                     <Text style={styles.text}>Edit foto profil</Text>
                 </TouchableOpacity>
@@ -97,16 +100,19 @@ function ProfilePictureCamera({navigation, uploadImage}){
                 >
                     <Text style={styles.text}>Kembali</Text>  
                 </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => saveImage()}
-                    disabled={load}
+                {imageToUpload ? 
+                    <TouchableOpacity
+                        onPress={() => saveImage()}
+                        disabled={load}
                     >
                         {load ? (
                             <ActivityIndicator size={"small"} color="#FFF" />
                             ) : (
                                 <Text style={styles.text}>Simpan</Text>
                             )}
-                </TouchableOpacity>
+                    </TouchableOpacity> :
+                    <Text style={styles.text}>Pilih foto untuk melanjutkan</Text>
+                }
             </View>
         </View>
     )
@@ -124,7 +130,6 @@ const styles = StyleSheet.create({
         flex: 0.9,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'red',
         width: '100%',
         paddingBottom: 50
     },
@@ -143,7 +148,6 @@ const styles = StyleSheet.create({
     bottomContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        // backgroundColor: 'green',
         paddingVertical: 20,
         width: '100%'
     },
@@ -156,4 +160,4 @@ const styles = StyleSheet.create({
 export default connect(
     mapStateToProps, 
     mapDispatchToProps
-)(ProfilePictureCamera)
+)(DrugPictureGallery)

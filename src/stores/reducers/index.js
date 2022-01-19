@@ -10,7 +10,8 @@ const initState = {
   activity: null,
   isPriority: true,
   RM_patient: null,
-  todayActivity: null
+  todayActivity: null,
+  showInstruction: false
 }
 
 export default (state = initState, action) => {
@@ -100,6 +101,11 @@ export default (state = initState, action) => {
     //     ...state,
     //     RM_Patient: action.payload
     //   }
+    case 'SHOW_INSTRUCTION':
+        return {
+          ...state,
+          showInstruction: action.payload
+        }
     default:
       return state
   }

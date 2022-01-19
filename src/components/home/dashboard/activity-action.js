@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
 import ActiveCard from '../../../assets/svg/home-blue/activecard-blue';
 import MedicalStats from '../../../assets/svg/home-blue/medicalstats-blue';
@@ -239,7 +242,7 @@ const style = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: widthPercentageToDP('20%'),
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP('3.5%'),
   },
   image: {
     height: 50,

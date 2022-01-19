@@ -49,13 +49,13 @@ const ListFavDoctor = ({data, navigation, deleteFav}) => {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginBottom: 15,
+              marginBottom: 5,
             }}>
-            <View style={{marginRight: 12}}>
+            {/* <View style={{marginRight: 12}}>
               <RatingStar />
-            </View>
-            <Text style={{color: '#B2B2B2', marginRight: 15}}>4.7/5</Text>
-            <View
+            </View> */}
+            {/* <Text style={{color: '#B2B2B2', marginRight: 15}}>4.7/5</Text> */}
+            {/* <View
               style={{
                 backgroundColor: '#11BF66',
                 height: 10,
@@ -64,7 +64,7 @@ const ListFavDoctor = ({data, navigation, deleteFav}) => {
                 marginRight: 8,
               }}
             />
-            <Text style={{color: '#B2B2B2'}}>Online</Text>
+            <Text style={{color: '#B2B2B2'}}>Online</Text> */}
           </View>
           { data.facility &&
             data.facility[0].facilityEstPrice && (

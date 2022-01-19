@@ -12,11 +12,10 @@ import {
   TextInput,
   Platform,
   Alert,
+  BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
-import GetLocation from 'react-native-get-location';
 import * as Location from 'expo-location';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   setCurrentLocation,
   changeLogin,
@@ -24,6 +23,7 @@ import {
   setLoading,
   getDrugs,
   getReminders,
+  setShowInstruction,
 } from '../../../stores/action';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
@@ -31,7 +31,8 @@ import CardPromo from '../../../components/home/dashboard/card-promo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchBar from '../../../components/headers/SearchBar';
 
-import Lonceng from '../../../assets/svg/home-blue/lonceng';
+import NewNotificationBell from '../../../assets/svg/home-blue/lonceng';
+import NoNotificationBell from '../../../assets/svg/NoNotificationBell';
 import LottieLoader from 'lottie-react-native';
 import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
@@ -42,12 +43,14 @@ import {
 } from 'react-native-responsive-screen';
 import { ScrollView } from 'react-native-gesture-handler';
 import NotifService from '../../../../NotificationService';
+import InstructionModal from '../../../components/InstructionModal';
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
+  const fromSreen = props.navigation.getParam('from');
+
   const [myLocation, setMyLocation] = useState(null);
-  const [location, setLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {
@@ -117,6 +120,10 @@ function HomePage(props) {
   const handlePerm = (perm) => {
     Alert.alert('Permissions', JSON.stringify(perms));
   };
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    BackHandler.exitApp();
+    return true;
+  });
 
   return (
     <View
@@ -170,7 +177,13 @@ function HomePage(props) {
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
                   {props.userData && (
-                    <View style={{ flexDirection: 'row' }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <TouchableOpacity
                         style={{ marginTop: 1 }}
                         onPress={() => {
@@ -178,7 +191,11 @@ function HomePage(props) {
                           props.navigation.navigate('NotificationStack');
                         }}
                       >
-                        <Lonceng />
+                        {notification ? (
+                          <NewNotificationBell />
+                        ) : (
+                          <NoNotificationBell />
+                        )}
                       </TouchableOpacity>
 
                       <TouchableOpacity
@@ -191,9 +208,7 @@ function HomePage(props) {
                             style={style.profilePicture}
                             source={{
                               uri: props.userData?.imageUrl
-                                ? `${
-                                    props.userData?.imageUrl
-                                  }?time=${new Date()}`
+                                ? props.userData?.imageUrl
                                 : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                             }}
                           />
@@ -256,6 +271,13 @@ function HomePage(props) {
           </View>
         </>
       )}
+      <InstructionModal
+        visible={props.showInstruction}
+        onFinishOrSkip={() => {
+          // setModalInstruction(false);
+          props.setShowInstruction(false);
+        }}
+      />
     </View>
   );
 }
@@ -352,6 +374,7 @@ const mapDispatchToProps = {
   GetUser,
   getDrugs,
   getReminders,
+  setShowInstruction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

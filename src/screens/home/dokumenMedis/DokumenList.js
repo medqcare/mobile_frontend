@@ -435,7 +435,6 @@ function DokumenList(props) {
       </View>
 
       <>
-        {data.length !== 0 && !searchIsFocus ? (
           <View
             style={{
               marginVertical: 12,
@@ -453,7 +452,6 @@ function DokumenList(props) {
               />
             </View>
           </View>
-        ) : null}
         <View style={styles.docsContainer}>
           {filteredData.length && !loading ? (
             <View style={styles.document}>

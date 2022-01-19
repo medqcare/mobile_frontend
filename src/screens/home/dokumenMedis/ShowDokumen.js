@@ -8,7 +8,7 @@ import PDFReader from "rn-pdf-reader-js";
 const dimHeight = Dimensions.get("window").height;
 
 function ShowDocument(props) {
-  const { uri, name, base64, backTo } = props.navigation.state.params;
+  const { uri, name, base64, backTo, option } = props.navigation.state.params;
 
   const source = {};
 
@@ -24,6 +24,7 @@ function ShowDocument(props) {
         title={name.length > 20 ? name.slice(0, 20) + " ..." : name}
         navigate={props.navigation.navigate}
         navigateBack={backTo}
+        option={option}
       />
       <PDFReader source={source} withPinchZoom={true} />
     </View>

@@ -15,6 +15,7 @@ import { baseURL } from '../../../config';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import LottieLoader from 'lottie-react-native';
 import getPaymentMethod from '../../../helpers/getPaymentMethod';
+import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
@@ -84,12 +85,18 @@ export default function Transaksi(props) {
             keyExtractor={(item) => `${item._id}`}
             renderItem={({ item }) => {
               const status = getTransactionStatus(item.status);
-              const payment = getPaymentMethod(item.paymentMethod);
+              const scheduleDate = item.bookingSchedule
+                .split('/')
+                .reverse()
+                .join('/');
+              const schedule = dateWithDDMMMYYYYFormat(new Date(scheduleDate));
               return (
                 <TouchableOpacity
                   style={{
                     backgroundColor: '#2F2F2F',
-                    padding: 10,
+                    // padding: 10,
+                    paddingHorizontal: 10,
+                    paddingVertical: 12,
                     borderRadius: 5,
                     marginBottom: 12,
                   }}
@@ -101,7 +108,13 @@ export default function Transaksi(props) {
                     });
                   }}
                 >
-                  <View style={{ flexDirection: 'row', paddingVertical: 15 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      // paddingVertical: 6,
+                      alignItems: 'center',
+                    }}
+                  >
                     <View style={{}}>
                       <View style={styles.borderImage}>
                         <Image
@@ -122,18 +135,26 @@ export default function Transaksi(props) {
                         <Text style={styles.textcontent}>
                           Spesialis {item.doctor.doctorSpecialist}
                         </Text>
-                        <View style={styles.time}>
-                          <Text style={styles.textcontent}>
-                            {item.bookingSchedule}, Pukul{' '}
-                          </Text>
-                          <Text style={styles.textcontent}>
-                            {item.bookingTime}
-                          </Text>
-                        </View>
                       </View>
                     ) : null}
                   </View>
                   <View style={styles.line} />
+                  <View>
+                    <Text style={styles.textcontent}>
+                      {item.healthFacility.facilityName}
+                    </Text>
+                    <View style={styles.time}>
+                      <Text style={styles.textcontent}>{schedule}</Text>
+                      <View style={styles.dividingPoint}></View>
+                      <Text style={styles.textcontent}>{item.bookingTime}</Text>
+                    </View>
+                    <Text style={styles.textcontent}>
+                      Nama Pasien:{' '}
+                      <Text style={{ color: '#DDDDDD' }}>
+                        {item.patient.patientName}
+                      </Text>
+                    </Text>
+                  </View>
                   <View
                     style={{
                       flexDirection: 'row',
@@ -163,14 +184,6 @@ export default function Transaksi(props) {
                         alignItems: 'center',
                       }}
                     >
-                      {item.paymentMethod ? <Image
-                        style={{
-                          height: 30,
-                          width: 50,
-                          marginTop: 5,
-                        }}
-                        source={payment.iconUrl}
-                      /> : null}
                       <View style={{ flexDirection: 'column', marginLeft: 12 }}>
                         <Text
                           style={{
@@ -235,6 +248,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 12,
     color: '#DDDDDD',
+    marginBottom: 4,
   },
   address: {
     color: '#B2BABB',
@@ -243,14 +257,23 @@ const styles = StyleSheet.create({
   textcontent: {
     fontSize: 12,
     color: '#B5B5B5',
-    marginTop: 5,
+    marginBottom: 4,
   },
   time: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    marginBottom: 4,
   },
   date: {
     fontSize: 14,
     color: '#B5B5B5',
+  },
+  dividingPoint: {
+    height: 4,
+    width: 4,
+    borderRadius: 100,
+    backgroundColor: '#B5B5B5',
+    marginHorizontal: 8,
   },
 });

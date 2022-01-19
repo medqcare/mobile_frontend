@@ -37,18 +37,18 @@ function fullMonthFormat(date, dayNumber) {
 
 function dateWithDDMMMYYYYFormat(date) {
   const months = [
-    'Januari',
-    'Februari',
-    'Maret',
-    'April',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
     'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
-    'September',
-    'Oktober',
-    'November',
-    'Desember',
+    'Jun',
+    'Jul',
+    'Ags',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
   ];
   const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
   const monthName = months[date.getMonth()];
@@ -62,9 +62,9 @@ function dateWithDDMMMYYYYFormat(date) {
 function getFormattedDate(date, startsFromZero) {
   date = new Date(date);
   let year = date.getFullYear();
-  let month = ''
-  if(startsFromZero){
-    month = (date.getMonth()).toString().padStart(2, '0');
+  let month = '';
+  if (startsFromZero) {
+    month = date.getMonth().toString().padStart(2, '0');
   } else {
     month = (1 + date.getMonth()).toString().padStart(2, '0');
   }

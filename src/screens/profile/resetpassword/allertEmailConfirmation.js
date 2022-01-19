@@ -45,7 +45,7 @@ const emailConfirmation = (props) => {
 
             {/* Back Button */}
             <TouchableOpacity
-                onPress={() => navigation.pop()}
+                onPress={() => props.navigation.pop()}
             >
                 <View style={style.header}>
                     <Image 
@@ -69,7 +69,7 @@ const emailConfirmation = (props) => {
                     {/* Resend Email Info */}
                     {countDown &&
                     <View style={style.resendEmailInfoContainer}>
-                        <Text style={style.resendEmailInfoText}>Tidak Menerima Kode</Text>
+                    <Text style={style.resendEmailInfoText}>Tidak Menerima Kode ?</Text>
                         <View style={style.resendEmailInfoSecondsContainer}>
                             <Text style={style.resendEmailInfoText}>Kirim ulang dalam</Text>
                             <Text style={style.resendEmailInfoSecondText}>{displayTime}</Text>

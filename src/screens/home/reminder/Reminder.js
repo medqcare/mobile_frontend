@@ -16,6 +16,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from "react-native-paper";
+import LottieLoader from 'lottie-react-native';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
@@ -35,16 +36,25 @@ function Reminder(props) {
 	const [finishedDrugs, setFinishedDrugs] = useState([])
 
 	const [allDrugs, setAllDrugs] = useState([])
+	const [loadSearchAllDrugs, setLoadSearchAllDrugs] = useState(true)
+	const [loadRevisedAllDrugs, setLoadRevisedAllDrugs] = useState(true)
 
 	useEffect( async () => {
 		await props.searchAllDrugs()
-		const revised = props.allDrugs.map(el => {
-			el.name = el.itemName
-			return el
-		})
-		setAllDrugs(revised)
-
+		setLoadSearchAllDrugs(false)
 	}, [])
+	
+	useEffect(() => {
+		if(!loadSearchAllDrugs) {
+			const revised = props.allDrugs.map(el => {
+				el.name = el.itemName
+				return el
+			})
+			setAllDrugs(revised)
+			setLoadRevisedAllDrugs(false)
+		}
+
+	}, [loadSearchAllDrugs])
 
 	useEffect( async () => {
 		try {
@@ -123,13 +133,18 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
+					disabled={loadRevisedAllDrugs}
 					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs, allDrugs: allDrugs})}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>
 			</View>
 			{load ? 
-				<ActivityIndicator size={"small"} color={"blue"}/> :
+				<LottieLoader
+				source={require('../../animation/loading.json')}
+				autoPlay
+				loop
+			  /> :
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
@@ -210,7 +225,7 @@ const mapDispatchToProps = {
 	getDrugs,
 	searchAllDrugs,
 	changeAlarmBoolean,
-	updateFinishStatus,
+		updateFinishStatus,
 	getReminders,
 	changeReminderAlarmTime,
 	changeReminderStatus

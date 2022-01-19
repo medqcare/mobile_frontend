@@ -35,11 +35,6 @@ function FamilyDetail(props){
     const payment = userData.payment || 'Umum'
     const address = `${capitalFirst(userData.location.city)}, ${capitalFirst(userData.location.province)}` 
 
-    BackHandler.addEventListener("hardwareBackPress", () => {
-        navigation.pop()
-        return true
-    })
-
     return(
         <ScrollView style={styles.container} contentContainerStyle={{alignItems: 'center'}}>
             <GreyHeader

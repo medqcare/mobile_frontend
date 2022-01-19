@@ -5,23 +5,26 @@ import {
   renameDocument,
   deleteDocument,
 } from './medical_resume';
-import { 
+import {
   getAllPrescriptions,
   getTodaysPrescriptions,
-  getPrescriptionHistory
-} from './prescription'
+  getPrescriptionHistory,
+} from './prescription';
 import {
   getDrugs,
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
+  changeDrugNotes,
   changeAlarmBoolean,
+  updateDrugImageUrl,
+  deleteDrugImageUrl,
   updateFinishStatus,
 } from './drugs';
-import { 
-  getReminders, 
+import {
+  getReminders,
   changeReminderAlarmTime,
-  changeReminderStatus 
+  changeReminderStatus,
 } from './reminders';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
@@ -435,7 +438,12 @@ export function CreatePatientAsUser(
                 ToastAndroid.SHORT
               );
               modalSuccess(data.message);
-              navigateTo('Home');
+              await AsyncStorage.setItem(
+                'showInstruction',
+                JSON.stringify(true)
+              );
+              navigateTo('Home', { from: 'registration' });
+              dispatch(setShowInstruction(true));
             } catch (error) {
               modalFailed(error);
               console.log('e1', error.message);
@@ -475,10 +483,8 @@ export function resetPasswordEmail(email, navigate, navigateTo, isResend) {
         navigate(navigateTo, { email });
       }
     } catch (error) {
-      console.log(error);
-      const { message } = error.response.data.err;
       console.log(
-        message,
+        error.message,
         'Error found when trying to reset password and send email'
       );
       ToastAndroid.show(message, ToastAndroid.SHORT);
@@ -510,13 +516,11 @@ export function resetPasswordPhone(
         navigate(navigateTo, { phoneNumber, email });
       }
     } catch (error) {
-      console.log(error);
-      const { message } = error.response.data.err;
       console.log(
-        message,
+        error.message,
         'Error found when trying to reset password and send email'
       );
-      ToastAndroid.show(message, ToastAndroid.SHORT);
+      ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
   };
 }
@@ -609,6 +613,7 @@ export function GetUser(token, navigation) {
           console.log('Application Found dataLogged');
           let temp = data.data;
           let docFav = await AsyncStorage.getItem('doctorFavorite');
+          await AsyncStorage.setItem('userData', JSON.stringify(data.data));
           if (docFav) {
             temp.doctorFavorites = JSON.parse(docFav);
           }
@@ -786,7 +791,7 @@ export function edit_profile(userData, userID, token, navigateTo) {
           payload: dataUpdate.data.data,
         });
         ToastAndroid.show(data.data.message, ToastAndroid.SHORT);
-        return data.data
+        return data.data;
       } catch (error) {
         // console.log(error);
         reject(error);
@@ -820,7 +825,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message });
       } catch (error) {
         console.log(error);
@@ -993,7 +998,7 @@ export function editAlergi(id, alergie, alergieType, token) {
           method: 'PUT',
           data: {
             alergie,
-            alergieType
+            alergieType,
           },
           headers: { Authorization: token },
         });
@@ -1008,19 +1013,21 @@ export function editAlergi(id, alergie, alergieType, token) {
 }
 
 export function getAlergie(patientId, token) {
-  console.log(patientId, 'ini id di action');
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log(`Application is trying to find patient's allergies`)
         let data = await instance({
           url: `/v1/members/alergies/${patientId}`,
           method: 'GET',
           headers: { Authorization: token },
         });
         resolve(data.data);
+        if(data.data.data.length > 1) console.log(`Application found ${data.data.data.length} allergies for the selected patient`)
+        else console.log(`Application found ${data.data.data.length} allergy for the selected patient`)
+        
       } catch (err) {
         console.log(err.response.status, 'ini kembalian data get alergie');
-        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
         reject(err.response.status);
       }
     });
@@ -1144,30 +1151,27 @@ export function deleteImage(patientId, token) {
   };
 }
 
-export { 
-  getDocumentByPatient, 
-  uploadDocument, 
-  renameDocument, 
-  deleteDocument 
-};
+export function setShowInstruction(payload) {
+  return {
+    type: 'SHOW_INSTRUCTION',
+    payload: payload,
+  };
+}
 
-export { 
-  getAllPrescriptions, 
-  getTodaysPrescriptions,
-  getPrescriptionHistory 
-};
+export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
-export { 
+export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
+
+export {
   getDrugs,
   searchAllDrugs,
   searchDrugByName,
   createNewDrugFromUser,
+  changeDrugNotes,
   changeAlarmBoolean,
+  updateDrugImageUrl,
+  deleteDrugImageUrl,
   updateFinishStatus,
 };
 
-export { 
-  getReminders, 
-  changeReminderAlarmTime,
-  changeReminderStatus
-};
+export { getReminders, changeReminderAlarmTime, changeReminderStatus };

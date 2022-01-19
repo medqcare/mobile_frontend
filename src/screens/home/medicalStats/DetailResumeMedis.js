@@ -224,11 +224,9 @@ export default function DetailResumeMedis(props) {
                         })
                       ) : (
                         <View style={styles.card}>
-                          <View style={styles.item}>
-                            <Text style={styles.textItem}>
+                            <Text style={styles.textTitle}>
                               Tidak ada pemeriksaan Laboratorium / Radiology
                             </Text>
-                          </View>
                         </View>
                       )}
                     </View>
@@ -262,27 +260,6 @@ export default function DetailResumeMedis(props) {
                         )}
                       </View>
                     </View>
-                    <View
-                      style={{ ...styles.contentHeader, marginBottom: "20%" }}
-                    >
-                      <Text style={styles.textHeader}>NOTES</Text>
-                      <View style={styles.line} />
-                      {resumeMedis.soap && resumeMedis.soap.doctorNotes !== '' ? (
-                        <View style={styles.card}>
-                          <View style={{}}>
-                            <Text style={styles.textTitle}>
-                              {resumeMedis.soap?.doctorNotes}
-                            </Text>
-                          </View>
-                        </View>
-                      ) : (
-                        <View style={styles.card}>
-                          <View style={{}}>
-                            <Text style={styles.textTitle}>Tidak ada Notes</Text>
-                          </View>
-                        </View>
-                      )}
-                    </View>
                   </View>
                 )}
               </ScrollView>
@@ -302,12 +279,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#181818",
     margin: 0,
     padding: 15,
+    paddingTop: 20
   },
   content: {
     height: "95%",
     backgroundColor: "#2F2F2F",
     borderRadius: 10,
     padding: 15,
+    paddingBottom: 40
   },
   header: {
     flexDirection: "row",

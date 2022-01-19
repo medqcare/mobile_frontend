@@ -2,24 +2,27 @@ import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
-  StatusBar,
   TouchableOpacity,
   StyleSheet,
   Image,
   Dimensions,
+  PermissionsAndroid
 } from 'react-native';
+
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
 import { FlatList } from 'react-native-gesture-handler';
+import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 import { formatNumberToRupiah } from '../../helpers/formatRupiah';
 import getPaymentMethod from '../../helpers/getPaymentMethod';
 const dimHeight = Dimensions.get('window').height;
 
-export default function CardDetailTransaction({ transaction }) {
+export default function CardDetailTransaction({ transaction, props }) {
   const getBookingTime = (stringBookingTime) => {
     const bookingTime = stringBookingTime.split(' - ')[0];
     return bookingTime;
   };
-
-  console.log(transaction, '>>> hello guys');
 
   const payment = getPaymentMethod(transaction.paymentMethod);
 
@@ -40,6 +43,51 @@ export default function CardDetailTransaction({ transaction }) {
   };
 
   const transactionStatus = getTransactionStatus(transaction.status);
+
+  const gantiBahasa = (item) => {
+    let result = item
+    switch (item) {
+      case "Doctor Price":
+        result = "Biaya Konsultasi"
+        break
+    
+      case "Prescription Price":
+        result = "Harga Obat"
+        break
+
+      default:
+        break
+    }
+    return result
+  }
+
+  const checkPermission = async () => {
+    const result = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+    );
+    return result;
+  };
+
+  const askPermission = async () => {
+    const result = await PermissionsAndroid.request(
+      'android.permission.WRITE_EXTERNAL_STORAGE'
+    );
+    return result;
+  };
+
+  const shareFile = async (selectedUrl) => {
+    (async () => {
+      const permission = await checkPermission();
+      if (!permission) {
+        await askPermission();
+      }
+
+      let fileUri = FileSystem.documentDirectory + "struk.pdf";
+      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
+      await Sharing.shareAsync(uri);
+    })();
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -66,11 +114,14 @@ export default function CardDetailTransaction({ transaction }) {
             </Text>
             <View style={styles.time}>
               <Text style={styles.textcontent}>
-                {transaction.bookingSchedule}, Pukul{' '}
+                {dateWithDDMMMYYYYFormat(
+                  new Date(
+                    transaction.bookingSchedule.split('/').reverse().join('/')
+                  )
+                )}
               </Text>
-              <Text style={styles.textcontent}>
-                {getBookingTime(transaction.bookingTime)}
-              </Text>
+              <View style={styles.dividingPoint}></View>
+              <Text style={styles.textcontent}>{transaction.bookingTime}</Text>
             </View>
           </View>
         </View>
@@ -89,7 +140,7 @@ export default function CardDetailTransaction({ transaction }) {
                   marginBottom: dimHeight * 0.01,
                 }}
               >
-                <Text style={styles.textcontent}>{item.itemName}</Text>
+                <Text style={styles.textcontent}>{gantiBahasa(item.itemName)}</Text>
                 <Text style={styles.textcontent}>
                   {formatNumberToRupiah(item.itemPrice)}
                 </Text>
@@ -97,6 +148,7 @@ export default function CardDetailTransaction({ transaction }) {
             );
           }}
         />
+
         {/* Payment Method */}
         {transaction.paymentMethod ? (
           <View
@@ -113,6 +165,17 @@ export default function CardDetailTransaction({ transaction }) {
         <View style={styles.line} />
 
         {/* Transaction status & amount transaction */}
+        <View>
+          <Text style={styles.textcontent}>
+            {transaction.healthFacility.facilityName}
+          </Text>
+          <Text style={styles.textcontent}>
+            Nama Pasien:{' '}
+            <Text style={{ color: '#DDDDDD' }}>
+              {transaction.patient.patientName}
+            </Text>
+          </Text>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -138,14 +201,30 @@ export default function CardDetailTransaction({ transaction }) {
             </Text>
             <Text
               style={{
-                fontSize: 12,
-                color: '#F37335',
+                fontSize: 18,
+                color: '#DDDDDD',
                 textAlign: 'right',
                 marginTop: dimHeight * 0.01,
               }}
             >
               {formatNumberToRupiah(transaction.amount)}
             </Text>
+            {
+              transaction.status === "success" && transaction.file.url !== '' && 
+              <TouchableOpacity style={{marginTop: 15}} onPress={() => {
+                props.navigation.navigate('ShowDokumen', {
+                  uri: transaction.file.url,
+                  name: "Struk Pembayaran",
+                  backTo: "DetailTransaction",
+                  option: {
+                    name: "share",
+                    action: () => shareFile(transaction.file.url)
+                  }
+                })
+              }}>
+                <Text style={{color: "#F37335", fontSize: 11, textAlign: "right"}}>LIHAT STRUK</Text>
+              </TouchableOpacity>
+            }
           </View>
         </View>
       </View>
@@ -199,5 +278,12 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: '#B5B5B5',
+  },
+  dividingPoint: {
+    height: 4,
+    width: 4,
+    borderRadius: 100,
+    backgroundColor: '#B5B5B5',
+    marginHorizontal: 8,
   },
 });

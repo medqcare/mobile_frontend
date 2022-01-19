@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -29,12 +29,15 @@ import Money from '../../../assets/svg/Money';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 
+import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
+
 const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
 function DetailDoctorPage(props) {
   // console.log(props,'props')
   // console.log(props.navigation.actions, 'navigation')
+  const calendarRef = useRef(null)
   const months = [
     'Januari',
     'Februari',
@@ -78,6 +81,18 @@ function DetailDoctorPage(props) {
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
   const [bookingTime, setBookingTime] = useState('');
 
+  // const [lang, lat] = clinic.Location.coordinates;
+  const distance = (item) => {
+    const lat = item.location.coordinates[0];
+    const lang = item.location.coordinates[1];
+    return getDistanceFromLatLonInKm(
+      lat,
+      lang,
+      props.myLocation.lat,
+      props.myLocation.lng
+    ).toFixed(1);
+  };
+
   Date.isLeapYear = function (year) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
   };
@@ -112,6 +127,8 @@ function DetailDoctorPage(props) {
     this.setDate(1);
     this.setMonth(this.getMonth() + 1);
     this.setDate(Math.min(n, this.getDaysInMonth()));
+console.log(Math.min(n, this.getDaysInMonth()), 'hello bro');
+console.log(this, 'after add');
     return this;
   };
 
@@ -120,6 +137,8 @@ function DetailDoctorPage(props) {
     this.setDate(1);
     this.setMonth(this.getMonth() - 1);
     this.setDate(Math.min(n, this.getDaysInMonth()));
+    console.log(Math.min(n, this.getDaysInMonth()), 'hello bro');
+    console.log(this, 'after minus')
     return this;
   };
 
@@ -134,7 +153,7 @@ function DetailDoctorPage(props) {
       // url: `${baseURL}/api/v1/members/detailDoctor/618ab3931dbe3c74a14d6a18`
     })
       .then(({ data }) => {
-        console.log(data, '===============setelah axios===================');
+        // console.log(data, '===============setelah axios===================');
         // console.log(data);
         setDataDoctor(data);
         setLoading(false);
@@ -155,9 +174,9 @@ function DetailDoctorPage(props) {
   }, [dataDoctor]);
 
   useEffect(() => {
-    !chooseDate ? setNewData(null) : null
+    !chooseDate ? setNewData(null) : null;
     setBookingTime('');
-  },[chooseDate])
+  }, [chooseDate]);
 
   useEffect(() => {
     getJadwalPerhari();
@@ -276,7 +295,7 @@ function DetailDoctorPage(props) {
   };
 
   const about = () => {
-    console.log('??', dataDoctor, '??');
+    // console.log('??', dataDoctor, '??');
 
     // if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
     //   if (dataDoctor.doctorProfile.abstract.length > 120) {
@@ -335,7 +354,20 @@ function DetailDoctorPage(props) {
       : key + 1;
   };
 
-  console.log(dataDoctor, 'this is data doctor');
+  const isNextMonthDisabled = () => {
+    const dateNow = new Date()
+    const yearNow = dateNow.getFullYear()
+    const yearBooking = bookingDate.getFullYear()
+
+    if (yearNow === yearBooking) {
+      return (dateNow.getMonth() + 1) === bookingDate.getMonth()
+    } else {
+      return yearBooking.getMonth() === 0
+    }
+    
+  }
+
+  // console.log(dataDoctor, 'this is data doctor');
 
   return (
     <View style={containerStyle.container}>
@@ -418,13 +450,13 @@ function DetailDoctorPage(props) {
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        marginBottom: 15,
+                        marginBottom: 5,
                       }}
                     >
-                      <View style={{ marginRight: 12 }}>
+                      {/* <View style={{ marginRight: 12 }}>
                         <RatingStar />
-                      </View>
-                      <Text style={{ color: '#B2B2B2' }}>4.7/5</Text>
+                      </View> */}
+                      {/* <Text style={{ color: '#B2B2B2' }}>4.7/5</Text> */}
                     </View>
                     <View>
                       <Text style={fontStyles.titleSp}>
@@ -523,9 +555,9 @@ function DetailDoctorPage(props) {
                                     {item.facilityAddress.substring(0, 50)}...
                                   </Text>
                                 )}
-                                <Text style={fontStyles.address}>
-                                  3.1 km dari Anda
-                                </Text>
+                                {/* <Text style={fontStyles.address}>
+                                {`${distance(item)} km dari Anda`}
+                                </Text> */}
                               </View>
                               <TouchableOpacity
                                 style={{
@@ -634,7 +666,12 @@ function DetailDoctorPage(props) {
                                       setBookingDate(bookingDate.minusMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
-                                      setChooseDate(null)
+                                      setChooseDate(null);
+                                      calendarRef.current.scrollTo({
+                                        x: 0,
+                                        y: 0,
+                                        animated: true,
+                                      })
                                     }}
                                   >
                                     <View
@@ -647,8 +684,11 @@ function DetailDoctorPage(props) {
                                       <Text
                                         style={{
                                           fontSize: 16,
-                                          color: bookingDate.getMonth() ===
-                                          new Date().getMonth() ? '#2F2F2F' : '#DDDFDD',
+                                          color:
+                                            bookingDate.getMonth() ===
+                                            new Date().getMonth()
+                                              ? '#2F2F2F'
+                                              : '#DDDFDD',
                                           marginTop: -2,
                                         }}
                                       >
@@ -666,8 +706,9 @@ function DetailDoctorPage(props) {
                                     {months[month]}
                                   </Text>
                                   <TouchableOpacity
+                                    disabled={isNextMonthDisabled()}
                                     onPress={() => {
-                                      setChooseDate(null)
+                                      setChooseDate(null);
                                       setBookingDate(bookingDate.addMonths());
                                       setBookingTime('');
                                       setMonth(bookingDate.getMonth());
@@ -683,7 +724,9 @@ function DetailDoctorPage(props) {
                                       <Text
                                         style={{
                                           fontSize: 16,
-                                          color: '#DDDDDD',
+                                          color: isNextMonthDisabled()
+                                            ? '#2f2f2f'
+                                            : '#DDDDDD',
                                           marginTop: -2,
                                         }}
                                       >
@@ -696,6 +739,7 @@ function DetailDoctorPage(props) {
                                 <ScrollView
                                   horizontal
                                   showsHorizontalScrollIndicator={false}
+                                  ref={calendarRef}
                                 >
                                   <View
                                     style={{
@@ -823,7 +867,6 @@ function DetailDoctorPage(props) {
                                   >
                                     {newData[item.facilityName][1].map(
                                       (time, fIndex) => {
-                                        console.log(newData[item.facilityName], 'inininini');
                                         return (
                                           <View key={fIndex}>
                                             {/* <Text>{JSON.stringify(time[1])}</Text> */}
