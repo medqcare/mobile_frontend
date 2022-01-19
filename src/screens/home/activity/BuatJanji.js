@@ -18,6 +18,7 @@ import {
   findPatientFacility,
   createPatientFacility,
   setLoading,
+  getAlergie,
 } from '../../../stores/action';
 
 
@@ -40,6 +41,7 @@ const mapDispatchToProps = {
   findPatientFacility,
   createPatientFacility,
   setLoading,
+  getAlergie,
 };
 
 const mapStateToProps = (state) => {
@@ -104,6 +106,8 @@ const buatJanji = (props) => {
       parentID: null
     },
   });
+
+  const [allergies, setAllergies] = useState([])
 
   const [family, setFamily] = useState([]);
   const [forFind, setForfind] = useState({
@@ -381,7 +385,17 @@ const buatJanji = (props) => {
     return arrDate.join('-');
   }
 
-  function setSelectedValue(data) {
+  async function setSelectedValue(data) {
+    const patientId = data._id
+    const token = JSON.parse(await AsyncStorage.getItem('token')).token
+    const {data : selectedPatientAllergies} = await props.getAlergie(patientId, token)
+    if(selectedPatientAllergies.length > 0) {
+      const allergies = selectedPatientAllergies.map(el =>  {
+        el.patientID = el.patientID._id
+        return el
+      })
+      setAllergies(allergies)
+    }
     setPatient({
       patient: {
         patientID: data._id,
