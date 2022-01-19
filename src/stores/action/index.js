@@ -1016,12 +1016,16 @@ export function getAlergie(patientId, token) {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log(`Application is trying to find patient's allergies`)
         let data = await instance({
           url: `/v1/members/alergies/${patientId}`,
           method: 'GET',
           headers: { Authorization: token },
         });
         resolve(data.data);
+        if(data.data.data.length > 1) console.log(`Application found ${data.data.data.length} allergies for the selected patient`)
+        else console.log(`Application found ${data.data.data.length} allergy for the selected patient`)
+        
       } catch (err) {
         console.log(err.response.status, 'ini kembalian data get alergie');
         reject(err.response.status);
