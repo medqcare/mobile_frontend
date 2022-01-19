@@ -341,7 +341,7 @@ function SearchDoctorPage(props) {
                   }}
                 >
                   <Text style={{ color: '#fff' }}>
-                    There is no doctor nearby
+                    Tidak ada dokter terdekat
                   </Text>
                 </View>
               </ScrollView>
