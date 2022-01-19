@@ -11,6 +11,7 @@ import {
   Dimensions,
   TextInput,
   Platform,
+  BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as Location from 'expo-location';
@@ -104,6 +105,11 @@ function HomePage(props) {
       }
     })();
   }, []);
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    BackHandler.exitApp()
+    return true
+  })
 
   return (
     <View
