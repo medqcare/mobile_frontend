@@ -191,7 +191,7 @@ function HomePage(props) {
                           props.navigation.navigate('NotificationStack');
                         }}
                       >
-                        {notification ? (
+                        {null ? (
                           <NewNotificationBell />
                         ) : (
                           <NoNotificationBell />

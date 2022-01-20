@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "842094855961-5o7fu9on17eph0ecfcp9aa50kurour1j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.medqcare.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "842094855961-pv2aoa09qnrfqigkbo8ptcom7cgcnnqh.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1101,7 +1101,7 @@
     xcode "^3.0.1"
     xml2js "^0.4.23"
 
-"@expo/config-plugins@4.0.15", "@expo/config-plugins@^4.0.2", "@expo/config-plugins@^4.0.3":
+"@expo/config-plugins@4.0.15", "@expo/config-plugins@^4.0.2":
   version "4.0.15"
   resolved "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-4.0.15.tgz"
   integrity sha512-QqxVEt2bFu3ZuI1soULRJv7i0Zrg/FMZ0IxNV7Y3AjH7fhtUJH3pPo9f6MURvqNr+PLxhBlkofkWfunrVejSkw==
@@ -1109,6 +1109,28 @@
     "@expo/config-types" "^43.0.1"
     "@expo/json-file" "8.2.34"
     "@expo/plist" "0.0.16"
+    "@expo/sdk-runtime-versions" "^1.0.0"
+    "@react-native/normalize-color" "^2.0.0"
+    chalk "^4.1.2"
+    debug "^4.3.1"
+    find-up "~5.0.0"
+    fs-extra "9.0.0"
+    getenv "^1.0.0"
+    glob "7.1.6"
+    resolve-from "^5.0.0"
+    semver "^7.3.5"
+    slash "^3.0.0"
+    xcode "^3.0.1"
+    xml2js "0.4.23"
+
+"@expo/config-plugins@^4.0.15":
+  version "4.0.16"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.0.16.tgz#832fb533245180c6dfd82fd359474f68a8e857b2"
+  integrity sha512-UTyE5JTBatMSwoOZCtX0u2H3zkp/ybMftc1228ARMop35Dbq+sYO11Ym3MrY5RPh8PYPofokDSOvoUq1jjORXw==
+  dependencies:
+    "@expo/config-types" "^43.0.1"
+    "@expo/json-file" "8.2.34"
+    "@expo/plist" "0.0.17"
     "@expo/sdk-runtime-versions" "^1.0.0"
     "@react-native/normalize-color" "^2.0.0"
     chalk "^4.1.2"
@@ -1239,6 +1261,15 @@
   version "0.0.16"
   resolved "https://registry.npmjs.org/@expo/plist/-/plist-0.0.16.tgz"
   integrity sha512-yQMt2CTm2VNLiHv2/EqHYrHvfflI2mFJd+DZIQQy569hvpZle0CxMPGH1p2KatbrO8htxJNvwrlR/4TIwhQJ5w==
+  dependencies:
+    "@xmldom/xmldom" "~0.7.0"
+    base64-js "^1.2.3"
+    xmlbuilder "^14.0.0"
+
+"@expo/plist@0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@expo/plist/-/plist-0.0.17.tgz#0f6c594e116f45a28f5ed20998dadb5f3429f88b"
+  integrity sha512-5Ul3d/YOYE6mfum0jCE25XUnkKHZ5vGlU/X2275ZmCtGrpRn1Fl8Nq+jQKSaks3NqTfxdyXROi/TgH8Zxeg2wg==
   dependencies:
     "@xmldom/xmldom" "~0.7.0"
     base64-js "^1.2.3"
@@ -1491,14 +1522,19 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-7.1.7.tgz#10e96922c90a0ff9755dcfbfc92a9d83ec45cd87"
   integrity sha512-QCEuvbTAD7vyCsSsgbWedhTfXlClp4TVHVWYYMjnN7nz6xgZbSp+MI3oo7X5C4JlDHpRm/Q+63hsCgAqKt3WVA==
 
-"@react-native-firebase/app@^13.0.1":
-  version "13.0.1"
-  resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-13.0.1.tgz"
-  integrity sha512-ZURaagmBy97oI5it9IiZkX+0Fpfbv6nc5CKs9ISShxEmDqgTbGXcD8o6k0uDxtG9nbi0ft2dsWgKqXm6YI1o9w==
+"@react-native-firebase/app@^14.2.2":
+  version "14.2.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-14.2.2.tgz#a6bd7cf0d53cabb4d548f1d4805c4bbe5c6dc725"
+  integrity sha512-kp4diBisEJVKwhPMFCj0kLoG+1ofuj3WHH4lx8OPgnSi6hsfYiyN1BrDJLTYTyouhLkNYdyoRYl6sAxFY7K62Q==
   dependencies:
-    "@expo/config-plugins" "^4.0.3"
+    "@expo/config-plugins" "^4.0.15"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
+
+"@react-native-firebase/auth@^14.2.2":
+  version "14.2.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-14.2.2.tgz#f2185e9b9e29479c168586cb42f94de8c6f353b7"
+  integrity sha512-FI/ykYFg/cbBL3uRxS1+OiaqlsJ8yJOl1k6CcStAzbZ46UBASuh66CvnBmW1VZ9j/yw5vh8jRHMGM+zWEmmbjQ==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
