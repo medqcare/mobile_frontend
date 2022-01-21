@@ -13,10 +13,12 @@ import LottieLoader from 'lottie-react-native';
 import { Camera } from 'expo-camera';
 import GreyHeader from '../../../components/headers/GreyHeader';
 import BarcodeSvg from '../../../assets/svg/Barcode';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import { baseURL } from '../../../config';
 import { connect } from 'react-redux';
 const ScanMedres = (props) => {
+  const patientID = props.navigation.getParam('patientID');
   const [loading, setLoading] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [loadingScan, setLoadingScan] = useState(false);
@@ -27,28 +29,29 @@ const ScanMedres = (props) => {
     setLoadingScan(true);
     try {
       let token = await AsyncStorage.getItem('token');
-      token = JSON.parse(token);
+      token = JSON.parse(token).token;
       const payload = {
         clinicIdWeb: +data,
-        patientID: props.userData._id,
+        patientID: patientID,
       };
       await axios({
         url: `${baseURL}/api/v1/members/medres/share`,
         method: 'POST',
         headers: {
-          Authorization: token,
+          authorization: token,
+          'X-Secret': 123456,
         },
-        body: payload,
+        data: payload,
       });
       ToastAndroid.show('Success', ToastAndroid.LONG);
       props.navigation.pop();
     } catch (error) {
       setIsScanFailed(true);
+      console.log(error.response);
       console.log(error.message, 'this is erro from share medres');
     } finally {
       setLoadingScan(false);
     }
-    console.log(data);
   };
 
   return (

@@ -263,7 +263,9 @@ function MedicalResume(props) {
                   onPress={() => {
                     setModalKonfirmasi(false);
                     // setModalQR(true);
-                    props.navigation.navigate('ScannerShareMedres');
+                    props.navigation.navigate('ScannerShareMedres', {
+                      patientID: patient.patient.patientID,
+                    });
                   }}
                 >
                   <Text
