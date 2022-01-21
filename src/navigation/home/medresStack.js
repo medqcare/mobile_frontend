@@ -4,6 +4,7 @@ import {
 } from 'react-navigation-stack';
 import medicalStats from '../../screens/home/medicalStats/MedicalStats';
 import DetailResumeMedis from '../../screens/home/medicalStats/DetailResumeMedis';
+import ScanMedres from '../../screens/home/medicalStats/ScanMedres';
 
 // import MedresList from '../../screens/home/medicalStats/MedicalStats'
 // import DetailMedres from '../../components/home/medicalStats/detailMedicalStats'
@@ -21,6 +22,12 @@ export default StackMedres = createStackNavigator(
     },
     DetailResumeMedis: {
       screen: DetailResumeMedis,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    ScannerShareMedres: {
+      screen: ScanMedres,
       navigationOptions: {
         headerShown: false,
       },
