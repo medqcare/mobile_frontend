@@ -139,7 +139,10 @@ function MedicalResume(props) {
         </TouchableOpacity>
       </View>
       <View style={Styles.container}>
-        <TouchableOpacity style={Styles.cardName} onPress={() => setModalPatient(true)}>
+        <TouchableOpacity
+          style={Styles.cardName}
+          onPress={() => setModalPatient(true)}
+        >
           <Text style={Styles.textName}>{displayName}</Text>
           <Text style={Styles.button}>UBAH</Text>
         </TouchableOpacity>
@@ -259,13 +262,14 @@ function MedicalResume(props) {
                 <TouchableOpacity
                   onPress={() => {
                     setModalKonfirmasi(false);
-                    setModalQR(true);
+                    // setModalQR(true);
+                    props.navigation.navigate('ScannerShareMedres');
                   }}
                 >
                   <Text
                     style={{ fontSize: 16, color: '#FBB632', marginTop: 20 }}
                   >
-                    BAGIKAN
+                    SCAN
                   </Text>
                 </TouchableOpacity>
               </View>
