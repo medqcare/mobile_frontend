@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "842094855961",
-    "project_id": "medqcare-exmaple-cm",
-    "storage_bucket": "medqcare-exmaple-cm.appspot.com"
+    "project_number": "419286487519",
+    "project_id": "medqcare-333108",
+    "storage_bucket": "medqcare-333108.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:842094855961:android:5f6a922d121282c6a6a788",
+        "mobilesdk_app_id": "1:419286487519:android:bebf27eb92575158d5b46a",
         "android_client_info": {
           "package_name": "com.medqcare.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "842094855961-5o7fu9on17eph0ecfcp9aa50kurour1j.apps.googleusercontent.com",
+          "client_id": "419286487519-67g0cmun1op498q3csg50pkpj9b4oqj2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.medqcare.app",
@@ -22,21 +22,28 @@
           }
         },
         {
-          "client_id": "842094855961-pv2aoa09qnrfqigkbo8ptcom7cgcnnqh.apps.googleusercontent.com",
+          "client_id": "419286487519-mjn10k3nr8jbm7siifib38vk2o7jqo03.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCa3Li5BGTXrA6Ah0MYaifAU92OuTy_Q9Q"
+          "current_key": "AIzaSyCiEBVExLvxhnxfz2xZqjTXzvRYZSKXYMQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "842094855961-pv2aoa09qnrfqigkbo8ptcom7cgcnnqh.apps.googleusercontent.com",
+              "client_id": "419286487519-mjn10k3nr8jbm7siifib38vk2o7jqo03.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "419286487519-d4c4k85hmnlspuv44mj9khp5ve3jrgpo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "host.exp.exponent"
+              }
             }
           ]
         }

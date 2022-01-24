@@ -24,6 +24,7 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 
 const InputSecretCodeOTP = (props) => {
   const { email, phoneNumber } = props.navigation.state.params;
@@ -56,10 +57,15 @@ const InputSecretCodeOTP = (props) => {
     }
 
     try {
-      const result = await confirm.confirm(secretCode);
+      const verificationId = props.navigation.getParam('verificationId');
+      const result = await firebaseAuthService.confirmCode(
+        verificationId,
+        secretCode
+      );
       console.log(result, 'this is result');
       props.navigation.navigate('SignIn');
     } catch (error) {
+      console.log(error);
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
     }
   }
