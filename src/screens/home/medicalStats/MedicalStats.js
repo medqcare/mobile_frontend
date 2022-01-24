@@ -27,6 +27,7 @@ import { heightPercentageToDP } from 'react-native-responsive-screen';
 const dimHeight = Dimensions.get('window').height;
 
 function MedicalResume(props) {
+  console.log(props.userData._id);
   const [dataMedRes, setDataMedres] = useState([]);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
@@ -139,7 +140,10 @@ function MedicalResume(props) {
         </TouchableOpacity>
       </View>
       <View style={Styles.container}>
-        <TouchableOpacity style={Styles.cardName} onPress={() => setModalPatient(true)}>
+        <TouchableOpacity
+          style={Styles.cardName}
+          onPress={() => setModalPatient(true)}
+        >
           <Text style={Styles.textName}>{displayName}</Text>
           <Text style={Styles.button}>UBAH</Text>
         </TouchableOpacity>
@@ -259,13 +263,16 @@ function MedicalResume(props) {
                 <TouchableOpacity
                   onPress={() => {
                     setModalKonfirmasi(false);
-                    setModalQR(true);
+                    // setModalQR(true);
+                    props.navigation.navigate('ScannerShareMedres', {
+                      patientID: patient.patient.patientID,
+                    });
                   }}
                 >
                   <Text
                     style={{ fontSize: 16, color: '#FBB632', marginTop: 20 }}
                   >
-                    BAGIKAN
+                    SCAN
                   </Text>
                 </TouchableOpacity>
               </View>
