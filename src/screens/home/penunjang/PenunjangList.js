@@ -19,7 +19,10 @@ import RightArrow from '../../../assets/svg/RightArrow';
 import InformationIcon from '../../../assets/svg/information';
 import ClearableSearchBar from '../../../components/headers/ClearableSearchBar';
 import LottieLoader from 'lottie-react-native';
-import { widthPercentageToDP } from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -2338,7 +2341,7 @@ function PenunjangList(props) {
         speciment.speciment_name === specimentSelected.speciment_name
           ? '#77BFF4'
           : '#B5B5B5',
-      fontSize: 14,
+      fontSize: 12,
       textTransform: 'capitalize',
     },
   });
@@ -2429,6 +2432,7 @@ function PenunjangList(props) {
           value={item.selected}
           color={item.selected ? '#017EF9' : null}
           onValueChange={() => onTestSelected(item.test_id)}
+          style={{ width: 16, height: 16 }}
         />
       </TouchableOpacity>
     );
@@ -2484,14 +2488,38 @@ function PenunjangList(props) {
                     <ActivityIndicator color="white" size="large" />
                   </View>
                 ) : (
-                  <FlatList
-                    data={filteredTests}
-                    style={styles.specimentItemContainer}
-                    renderItem={renderTests}
-                    showsVerticalScrollIndicator={true}
-                    persistentScrollbar={true}
-                    keyExtractor={(item) => `${item.test_id}-test`}
-                  ></FlatList>
+                  <View>
+                    <FlatList
+                      data={filteredTests}
+                      style={styles.specimentItemContainer}
+                      renderItem={renderTests}
+                      showsVerticalScrollIndicator={true}
+                      persistentScrollbar={true}
+                      keyExtractor={(item) => `${item.test_id}-test`}
+                    ></FlatList>
+                    <TouchableOpacity
+                      style={{ paddingHorizontal: 12 }}
+                      onPress={() => {
+                        setTotalPrice(0);
+                        setTests(
+                          tests.map((el) => {
+                            el.selected = false;
+                            return el;
+                          })
+                        );
+                      }}
+                    >
+                      <Text
+                        style={{
+                          textTransform: 'uppercase',
+                          color: '#F04444',
+                          fontSize: 12,
+                        }}
+                      >
+                        clear all
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 )}
               </>
             ) : null}
@@ -2598,7 +2626,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 12,
-    maxHeight: 250,
+    maxHeight: heightPercentageToDP('25%'),
     marginBottom: 12,
   },
   specimentItemSection: {
@@ -2607,11 +2635,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#474747',
-    paddingBottom: 14,
+    paddingBottom: 12,
     marginBottom: 12,
   },
   specimentItemText: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#DDDDDD',
     maxWidth: '70%',
   },
@@ -2628,7 +2656,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#474747',
     borderRadius: 4,
-    height: 200,
+    height: heightPercentageToDP('25%'),
     marginBottom: 12,
     backgroundColor: 'transparent',
   },
@@ -2642,10 +2670,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   costText: {
-    fontSize: 14,
+    fontSize: 12,
     textTransform: 'capitalize',
     color: '#B5B5B5',
-    maxWidth: "60%"
+    maxWidth: '60%',
   },
   costTitle: {
     color: '#F37335',
