@@ -21,14 +21,13 @@ import {
   getAlergie,
 } from '../../../stores/action';
 
-
 import ArrowDownWhite from '../../../assets/svg/ArrowDownWhite';
 import Vector from '../../../assets/svg/Vector';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import formatRP from '../../../helpers/rupiah';
 import Header from '../../../components/headers/GradientHeader';
 
-import IcTunai from "../../../assets/svg/ic_tunai"
+import IcTunai from '../../../assets/svg/ic_tunai';
 
 import SettingModal from '../../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
@@ -103,11 +102,11 @@ const buatJanji = (props) => {
       placeOfBirth: null,
       mobilePhone: null,
       resus: null,
-      parentID: null
+      parentID: null,
     },
   });
 
-  const [allergies, setAllergies] = useState([])
+  const [allergies, setAllergies] = useState([]);
 
   const [family, setFamily] = useState([]);
   const [forFind, setForfind] = useState({
@@ -131,7 +130,7 @@ const buatJanji = (props) => {
       mobilePhone: null,
       patientTitle: null,
       resus: null,
-      parentID: null
+      parentID: null,
     },
   });
   const [jadwal, setJadwal] = useState(null);
@@ -269,6 +268,9 @@ const buatJanji = (props) => {
         ...book,
         patient: {
           ...patient2,
+          mobilePhone: !patient2.mobilePhone
+            ? props.userData.phoneNumber
+            : patient2.mobilePhone,
           patientTitle: getTitle(patient2),
           paymentMethod: dompet,
           insuranceNumber: insuranceNumber,
@@ -333,7 +335,7 @@ const buatJanji = (props) => {
           placeOfBirth: family[0]?.placeOfBirth || '',
           patientTitle: '',
           resus: family[0]?.resus || '+',
-          parentID: family[0]?.parentID || null
+          parentID: family[0]?.parentID || null,
         },
       });
     }
@@ -386,15 +388,18 @@ const buatJanji = (props) => {
   }
 
   async function setSelectedValue(data) {
-    const patientId = data._id
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token
-    const {data : selectedPatientAllergies} = await props.getAlergie(patientId, token)
-    if(selectedPatientAllergies.length > 0) {
-      const allergies = selectedPatientAllergies.map(el =>  {
-        el.patientID = el.patientID._id
-        return el
-      })
-      setAllergies(allergies)
+    const patientId = data._id;
+    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
+    const { data: selectedPatientAllergies } = await props.getAlergie(
+      patientId,
+      token
+    );
+    if (selectedPatientAllergies.length > 0) {
+      const allergies = selectedPatientAllergies.map((el) => {
+        el.patientID = el.patientID._id;
+        return el;
+      });
+      setAllergies(allergies);
     }
     setPatient({
       patient: {
@@ -416,7 +421,7 @@ const buatJanji = (props) => {
         patientTitle: '',
         placeOfBirth: data.placeOfBirth || data.location.province,
         resus: data.resus || '+',
-        parentID: data.parentID || null
+        parentID: data.parentID || null,
       },
     });
     setDisplayName(
@@ -653,7 +658,7 @@ const buatJanji = (props) => {
                 </TouchableOpacity>
               </TouchableOpacity>
             </View> */}
-            
+
             <View style={cardStyle.dompet}>
               <TouchableOpacity
                 style={cardStyle.pembayaran}
@@ -1220,7 +1225,7 @@ const viewModalP = StyleSheet.create({
   cardNameDisabled: {
     marginTop: 10,
     borderColor: '#757575',
-    backgroundColor: "#757575",
+    backgroundColor: '#757575',
     borderWidth: 1,
     borderRadius: 3,
     minHeight: 50,
@@ -1304,7 +1309,7 @@ const cardStyle = StyleSheet.create({
   pembayaran: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: "center",
+    alignItems: 'center',
     marginRight: 15,
     marginVertical: 15,
   },

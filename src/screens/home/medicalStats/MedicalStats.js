@@ -27,6 +27,7 @@ import { heightPercentageToDP } from 'react-native-responsive-screen';
 const dimHeight = Dimensions.get('window').height;
 
 function MedicalResume(props) {
+  console.log(props.userData._id);
   const [dataMedRes, setDataMedres] = useState([]);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
