@@ -8,7 +8,8 @@ const instance = axios.create({
 export function getDocumentByPatient(
   token,
   patientid,
-  stringTypeSeparateByComma
+  stringTypeSeparateByComma,
+  page
 ) {
   let type = null;
 
@@ -25,6 +26,7 @@ export function getDocumentByPatient(
       Authorization: token,
       patientid,
       type,
+      page: page,
     },
   });
 }
