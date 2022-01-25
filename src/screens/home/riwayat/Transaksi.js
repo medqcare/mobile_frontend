@@ -24,7 +24,6 @@ const DEFAULT_IMAGE_URL =
 export default function Transaksi(props) {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log(props);
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -32,12 +31,16 @@ export default function Transaksi(props) {
         const stringToken = await AsyncStorage.getItem('token');
         const { token } = JSON.parse(stringToken);
         const patientId = props.userData._id;
+        const patientIDs = props.userData.family
+          .map((e) => e._id)
+          .concat(patientId);
         const { data: response } = await axios({
           method: 'GET',
           url: baseURL + `/api/v1/members/transactions/${patientId}`,
           headers: {
             authorization: token,
             'X-Secret': 123456,
+            ids: patientIDs.join(','),
           },
         });
         const { transactions } = response.data;
