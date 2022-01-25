@@ -207,9 +207,10 @@ function RujukanList(props) {
                 return;
               }
               setIsFocusSearch(true);
-              const filteredBySearch = docs.filter((doc) =>
-                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
-              );
+              var regexp = new RegExp(text, 'gi');
+              const filteredBySearch = docs.filter((doc) => {
+                return doc.name.match(regexp) !== null;
+              });
               setDocsFiltered(filteredBySearch);
             }}
           />
@@ -320,7 +321,14 @@ function RujukanList(props) {
               </View>
             </>
           ) : (
-            <View style={{ display: "flex", height: "80%", alignItems: 'center', justifyContent: 'center'}}>
+            <View
+              style={{
+                display: 'flex',
+                height: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <Text style={{ color: '#fff' }}>
                 Tidak ada surat {typeSelected}
               </Text>

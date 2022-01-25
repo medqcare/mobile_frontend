@@ -411,9 +411,10 @@ function DokumenList(props) {
                 return;
               }
               setIsFocusSearch(true);
-              const filteredBySearch = data.filter((doc) =>
-                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
-              );
+              var regexp = new RegExp(text, 'gi');
+              const filteredBySearch = data.filter((doc) => {
+                return doc.name.match(regexp) !== null;
+              });
               setFilteredData(filteredBySearch);
             }}
           />
@@ -435,23 +436,23 @@ function DokumenList(props) {
       </View>
 
       <>
-          <View
-            style={{
-              marginVertical: 12,
-              width: '100%',
-              paddingLeft: 12,
-            }}
-          >
-            <View style={{ flexDirection: 'row' }}>
-              <FlatList
-                data={types}
-                renderItem={renderType}
-                keyExtractor={(_, index) => `${index}-type`}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
+        <View
+          style={{
+            marginVertical: 12,
+            width: '100%',
+            paddingLeft: 12,
+          }}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <FlatList
+              data={types}
+              renderItem={renderType}
+              keyExtractor={(_, index) => `${index}-type`}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
+        </View>
         <View style={styles.docsContainer}>
           {filteredData.length && !loading ? (
             <View style={styles.document}>
