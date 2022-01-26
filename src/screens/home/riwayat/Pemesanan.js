@@ -30,8 +30,8 @@ export default function Pemesanan(props) {
   };
 
   const _fetchDataAppoinment = async () => {
-    _getData().then(({ data }) => {
-      try {
+    _getData()
+      .then(({ data }) => {
         console.log(data, 'sebelum di set ==============<<<<');
         let datakebalik = data.data.reverse();
         let newAppoinment = [];
@@ -42,12 +42,12 @@ export default function Pemesanan(props) {
         });
         setAppoinment(newAppoinment);
         setLoad(false);
-      } catch (error) {
+      })
+      .catch((error) => {
         setRefreshing(false);
         setLoad(false);
         console.log(error);
-      }
-    });
+      });
   };
 
   const onRefresh = React.useCallback(() => {
@@ -158,7 +158,12 @@ export default function Pemesanan(props) {
                       <View style={styles.time}>
                         <Text style={styles.date}>
                           {dateWithDDMMMYYYYFormat(
-                            new Date(item.bookingSchedule.split('/').reverse().join('/'))
+                            new Date(
+                              item.bookingSchedule
+                                .split('/')
+                                .reverse()
+                                .join('/')
+                            )
                           )}
                         </Text>
                         <View style={styles.dividingPoint}></View>

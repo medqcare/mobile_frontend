@@ -46,13 +46,15 @@ import ModalUploadDocument from '../../../components/modals/ModalUploadDocument'
 import { CardDocument } from '../../../components/document/CardDocument';
 import getFullName from '../../../helpers/getFullName';
 import { ActivityIndicator } from 'react-native-paper';
+import getToken from '../../../helpers/localStorage/token';
+import axios from 'axios';
+import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
   const [modalRename, setModalRename] = useState(false);
@@ -64,8 +66,8 @@ function DokumenList(props) {
   const [selectedKey, setSelectedKey] = useState(null);
   const [selectedUrl, setfileUrl] = useState(null);
   const [modalLoad, setModalLoad] = useState(false);
-  const [searchIsFocus, setIsFocusSearch] = useState(false);
-
+  const [searchIsFocus, setSearchIsFocus] = useState(false);
+  const [search, setSearch] = useState('');
   const [types, setTypes] = useState([
     'semua',
     'resep',
@@ -82,8 +84,8 @@ function DokumenList(props) {
   const [patient, setPatient] = useState({
     ...props.userData,
   });
-  const [isLastPage, setIsLastPage] = useState(false);
   const [loadingPagination, setLoadingPagination] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     let _family = {
@@ -98,10 +100,13 @@ function DokumenList(props) {
   }, []);
 
   useEffect(async () => {
+    if (searchIsFocus) {
+      return;
+    }
+
     const tokenString = await AsyncStorage.getItem('token');
     const { token } = JSON.parse(tokenString);
     const patientId = patient._id;
-
     if (pageNumber === 1) {
       await _fetchData(token, patientId, typeSelected, pageNumber);
     } else {
@@ -114,19 +119,25 @@ function DokumenList(props) {
     }
   }, [patient, pageNumber, typeSelected]);
 
-  // useEffect(async () => {
-  //   console.log(typeSelected);
-  //   setPageNumber(1);
-  //   const tokenString = await AsyncStorage.getItem('token');
-  //   const { token } = JSON.parse(tokenString);
-  //   await _fetchData(token, patient._id, typeSelected, pageNumber);
-  // }, [typeSelected]);
+  useEffect(async () => {
+    if (search === '') {
+      return;
+    }
+
+    if (searchIsFocus === false) {
+      return;
+    }
+
+    const patientId = patient._id;
+    await fetchBySearchQuery(search, patientId);
+  }, [search]);
 
   const _fetchData = async (token, patientId, type, page) => {
     setLoading(true);
     getDocumentByPatient(token, patientId, type, page)
       .then(({ data: response }) => {
         setData(response.data);
+        setTotalPages(response.totalPages);
       })
       .catch((err) => {
         ToastAndroid.show(
@@ -141,9 +152,6 @@ function DokumenList(props) {
   };
 
   const fetchDocumentsWithPagination = async (token, patientId, type, page) => {
-    if (isLastPage === true) {
-      return;
-    }
     try {
       setLoadingPagination(true);
       const { data: response } = await getDocumentByPatient(
@@ -154,10 +162,7 @@ function DokumenList(props) {
       );
       const documents = response.data;
       if (documents.length > 0) {
-        // setFilteredData(data.concat(documents));
         setData(data.concat(documents));
-      } else {
-        setIsLastPage(true);
       }
     } catch (error) {
       ToastAndroid.show('Gagal memuat documents', ToastAndroid.LONG);
@@ -166,12 +171,35 @@ function DokumenList(props) {
     }
   };
 
+  const fetchBySearchQuery = async (search, patientId) => {
+    let token = await AsyncStorage.getItem('token');
+    token = JSON.parse(token).token;
+
+    try {
+      setLoading(true);
+      const { data: response } = await axios({
+        method: 'GET',
+        url: baseURL + `/api/v1/members/getDocumentByPatient?search=${search}`,
+        headers: {
+          Authorization: token,
+          patientid: patientId,
+          type: 'resep,radiologi,laboratorium',
+        },
+      });
+      setData(response.data);
+    } catch (error) {
+      ToastAndroid.show('Gagal memuat dokumen, silahkan coba kembali');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const upload = async (data) => {
     let token = JSON.parse(await AsyncStorage.getItem('token')).token;
     uploadDocument(token, patient._id, data)
       .then(({ data }) => {
         console.log(data);
-        _fetchData();
+        setPageNumber(1);
       })
       .catch((error) => {
         console.log(error);
@@ -189,7 +217,7 @@ function DokumenList(props) {
     };
     renameDocument(token, patient._id, payload)
       .then(({ data }) => {
-        _fetchData();
+        setPageNumber(1);
       })
       .catch((error) => {
         console.log(error);
@@ -209,7 +237,7 @@ function DokumenList(props) {
     deleteDocument(token, patient._id, payload)
       .then(({ data }) => {
         console.log(data);
-        _fetchData();
+        setPageNumber(1);
       })
       .catch((error) => {
         console.log(error);
@@ -422,7 +450,6 @@ function DokumenList(props) {
             setTypeSelected(item);
           }
           setPageNumber(1);
-          setIsLastPage(false);
         }}
       >
         <Text style={text}>{item}</Text>
@@ -458,21 +485,17 @@ function DokumenList(props) {
             placeholder="Cari Dokumen"
             placeholderTextColor="#A2A2A2"
             onFocus={() => {
-              setFilteredData([]);
-              setIsFocusSearch(true);
+              setData([]);
+              setSearchIsFocus(true);
             }}
             onChangeText={(text) => {
               if (text === '') {
-                setFilteredData(data);
-                setIsFocusSearch(false);
+                setSearchIsFocus(false);
+                setPageNumber(1);
                 return;
               }
-              setIsFocusSearch(true);
-              var regexp = new RegExp(text, 'gi');
-              const filteredBySearch = data.filter((doc) => {
-                return doc.name.match(regexp) !== null;
-              });
-              setFilteredData(filteredBySearch);
+              setSearchIsFocus(true);
+              setSearch(text);
             }}
           />
           <TouchableOpacity onPress={() => setModalPatient(true)}>
@@ -544,13 +567,13 @@ function DokumenList(props) {
                         }}
                       >
                         {loadingPagination && (
-                          <ActivityIndicator color="white" size={'large'} />
+                          <ActivityIndicator color="#005EA2" size={'small'} />
                         )}
                       </View>
                     );
                   }}
                   onEndReached={() => {
-                    if (isLastPage == false) {
+                    if (pageNumber !== totalPages) {
                       setPageNumber(pageNumber + 1);
                     }
                   }}
@@ -580,7 +603,7 @@ function DokumenList(props) {
             </>
           )}
 
-          {!loading ? (
+          {loading === false && searchIsFocus === false ? (
             <View
               style={{
                 alignItems: 'center',
@@ -654,7 +677,11 @@ function DokumenList(props) {
         accountOwner={accountOwner}
         family={family}
         title="Pilih Patient"
-        setSelectedValue={setPatient}
+        setSelectedValue={(patient) => {
+          setPatient(patient);
+          setPageNumber(1);
+          setLoadingPagination(false);
+        }}
         navigateTo={(screen) => props.navigation.navigate(screen)}
       />
     </View>
@@ -700,6 +727,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     color: '#A2A2A2',
+    width: '100%',
   },
   textHeader: {
     flexDirection: 'row',
