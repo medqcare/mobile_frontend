@@ -21,7 +21,9 @@ const getToken = async () => {
     return null;
   }
 
-  return JSON.parse(value).token;
+  const { token } = JSON.parse(value);
+
+  return token;
 };
 
 export default getToken;

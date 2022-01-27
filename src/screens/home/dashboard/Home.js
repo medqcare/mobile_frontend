@@ -13,6 +13,7 @@ import {
   Platform,
   Alert,
   BackHandler,
+  ToastAndroid,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as Location from 'expo-location';
@@ -44,12 +45,14 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import NotifService from '../../../../NotificationService';
 import InstructionModal from '../../../components/InstructionModal';
+import _checkLogin from '../../../helpers/getToken';
+import getToken from '../../../helpers/localStorage/token';
+import axios from 'axios';
+import { baseURL } from '../../../config';
 // import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
-  const fromSreen = props.navigation.getParam('from');
-
   const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
@@ -83,43 +86,69 @@ function HomePage(props) {
       });
     })();
   }, []);
-  // useEffect(() => {
-  //   notificationTrigger();
-  // }, []);
 
-  useEffect(() => {
-    (async () => {
+  useEffect(async () => {
+    try {
       const tokenString = await AsyncStorage.getItem('token');
       if (!tokenString) {
         setload(false);
         return;
       }
-
       const { token } = JSON.parse(tokenString);
-      try {
-        await props.GetUser(token, props.navigation);
-      } catch (error) {
-      } finally {
-        setload(false);
-      }
-    })();
+      await props.GetUser(token, props.navigation);
+    } catch (error) {
+    } finally {
+      setload(false);
+    }
   }, []);
 
-  // Notification
+  useEffect(async () => {
+    // Update firebase token to database
+
+    if (!registerToken) {
+      return;
+    }
+
+    const token = await getToken();
+    const isLogin = !!token;
+
+    if (isLogin == false) {
+      return;
+    }
+
+    if (!props.userData) {
+      return;
+    }
+
+    const { firebaseNotificationToken, _id: userID } = props.userData.userID;
+    if (firebaseNotificationToken === registerToken) {
+      return;
+    }
+
+    try {
+      const { data: response } = await axios({
+        url: `${baseURL}/api/v1/members/firebase/token`,
+        method: 'PATCH',
+        headers: {
+          Authorization: token,
+        },
+        data: {
+          token: registerToken,
+          userID,
+        },
+      });
+    } catch (error) {
+      console.log(error.message, 'error update token');
+    }
+  }, [registerToken, props.userData]);
+
   const onRegister = (token) => {
-    console.log(token, 'this is token from device');
     setRegisterToken(token.token);
     setFcmRegistered(true);
   };
 
-  const onNotif = (notif) => {
-    Alert.alert(notif.title, notif.message);
-  };
+  const notif = new NotifService(onRegister);
 
-  const notif = new NotifService(onRegister, onNotif);
-  const handlePerm = (perm) => {
-    Alert.alert('Permissions', JSON.stringify(perms));
-  };
   BackHandler.addEventListener('hardwareBackPress', () => {
     BackHandler.exitApp();
     return true;

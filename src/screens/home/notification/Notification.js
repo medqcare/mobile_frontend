@@ -34,8 +34,9 @@ function Notification({ navigation, ...props }) {
       const tokenString = await AsyncStorage.getItem('token');
       const { token } = JSON.parse(tokenString);
       const parentID = props.userData.userID._id;
+      const patientID = props.userData._id;
       const { data } = await axios({
-        url: `${baseURL}/api/v1/members/notifications/${parentID}`,
+        url: `${baseURL}/api/v1/members/notifications/${patientID}/${parentID}`,
         method: 'GET',
         headers: {
           Authorization: token,
