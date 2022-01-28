@@ -428,7 +428,7 @@ export function CreatePatientAsUser(
             ToastAndroid.show(data.message, ToastAndroid.LONG);
           } else {
             try {
-              // console.log('masuk after signIn', data);
+              console.log('masuk after signIn', data);
               await dispatch({
                 type: 'GET_USER_DATA',
                 payload: data.data,
@@ -443,6 +443,7 @@ export function CreatePatientAsUser(
                 JSON.stringify(true)
               );
               navigateTo('Home', { from: 'registration' });
+              navigateTo('Home')
               dispatch(setShowInstruction(true));
             } catch (error) {
               modalFailed(error);

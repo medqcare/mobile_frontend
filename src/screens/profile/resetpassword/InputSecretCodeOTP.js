@@ -27,8 +27,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 
 const InputSecretCodeOTP = (props) => {
-  const { email, phoneNumber } = props.navigation.state.params;
-  const confirm = props.navigation.getParam('confirm');
+  const {
+    email,
+    phoneNumber,
+    back = 'Home',
+    onSuccess,
+  } = props.navigation.state.params;
   const CELL_COUNT = 6;
   const [secretCode, setSecretCode] = useState('');
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
@@ -39,7 +43,6 @@ const InputSecretCodeOTP = (props) => {
   });
 
   async function validation() {
-    // let storedSecretCode = await AsyncStorage.getItem('storedSecretCode')
     const isNumber = +secretCode;
     if (secretCode.length < 6) {
       ToastAndroid.show(
@@ -62,8 +65,12 @@ const InputSecretCodeOTP = (props) => {
         verificationId,
         secretCode
       );
-      console.log(result, 'this is result');
-      props.navigation.navigate('SignIn');
+      console.log('Verification Result: ', result);
+      /**
+       * params: onSuccess
+       * function
+       */
+      await onSuccess();
     } catch (error) {
       console.log(error);
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
@@ -73,7 +80,7 @@ const InputSecretCodeOTP = (props) => {
   return (
     <View style={style.container}>
       {/* Back Button */}
-      <TouchableOpacity onPress={() => props.navigation.pop()}>
+      <TouchableOpacity onPress={() => props.navigation.navigate(back)}>
         <View style={style.header}>
           <Image
             source={require('../../../assets/png/ic_close.png')}

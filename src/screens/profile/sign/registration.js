@@ -12,6 +12,7 @@ import {
   StatusBar,
   Image,
   Picker,
+  ActivityIndicator
 } from 'react-native';
 import {
   CreatePatientAsUser,
@@ -52,12 +53,13 @@ import withZero from '../../../helpers/withZero';
 import DatePicker from '@react-native-community/datetimepicker';
 import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
 import nikValidation from '../../../helpers/validationNIK';
-import AsycnStorage from '@react-native-async-storage/async-storage'
+import AsycnStorage from '@react-native-async-storage/async-storage';
 import { changePassword } from '../../../stores/action';
+import formatPhoneNumber from '../../../helpers/formatPhoneNumber';
+import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 
 const DataCompletion = (props) => {
-  // Moment
-  var moment = require('moment');
+  const [loadingSendSMS, setLoadingSendSMS] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [chosenDate, setChosenDate] = useState(null);
   // Region
@@ -105,26 +107,25 @@ const DataCompletion = (props) => {
 
   const [passwordData, setPasswordData] = useState({
     password: '',
-    confirmPassword: ''
-  })
+    confirmPassword: '',
+  });
 
   const [secureTextEntry, setSecureTextEntry] = useState({
     password: true,
-    confirmPassword: true
+    confirmPassword: true,
   });
 
   const updateSecureTextEntry = (key) => {
     setSecureTextEntry({
       ...secureTextEntry,
-      [key]: !secureTextEntry[key]
+      [key]: !secureTextEntry[key],
     });
   };
 
-
-  const newDate = new Date();
-  const sendDate = `${withZero(newDate.getDate())}/${withZero(
-    newDate.getMonth() + 1
-  )}/${withZero(newDate.getFullYear())}`;
+  // const newDate = new Date();
+  // const sendDate = `${withZero(newDate.getDate())}/${withZero(
+  //   newDate.getMonth() + 1
+  // )}/${withZero(newDate.getFullYear())}`;
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
@@ -171,12 +172,12 @@ const DataCompletion = (props) => {
   // Success Message
   const [sucess, setSuccsess] = useState('');
 
-  const [googleEmail, setGoogleUserEmail] = useState('')
+  const [googleEmail, setGoogleUserEmail] = useState('');
 
   useEffect(async () => {
-    const googleUserEmail = await AsycnStorage.getItem('GoogleUserEmail')
-    if(googleUserEmail) setGoogleUserEmail(googleUserEmail)
-  })
+    const googleUserEmail = await AsycnStorage.getItem('GoogleUserEmail');
+    if (googleUserEmail) setGoogleUserEmail(googleUserEmail);
+  });
 
   // Use effect for province and district
   useEffect(() => {
@@ -241,16 +242,7 @@ const DataCompletion = (props) => {
     }
   }
 
-  // location = {
-  //     city: "KABUPATEN SIMEULUE",
-  //     // index 0 = longitude, index 1 = latitude
-  //     coordinates: [ 96.08333, 2.61667,],
-  //     province: "ACEH",
-  //     type: "Point",
-  // },
-
   // Function for validation
-
 
   async function validation() {
     if (!nikValidation(userData.nik)) {
@@ -272,20 +264,27 @@ const DataCompletion = (props) => {
         ToastAndroid.LONG
       );
     } else {
-      if(googleEmail) {
-        const { password, confirmPassword } = passwordData
-        if(password.length < 7) {
-          ToastAndroid.show('Password harus lebih banyak dari 6 karakter', ToastAndroid.SHORT) 
-        }
-        else if(password !== confirmPassword){
-          ToastAndroid.show('Password anda tidak sesuai', ToastAndroid.SHORT)
+      if (googleEmail) {
+        const { password, confirmPassword } = passwordData;
+        if (password.length < 7) {
+          ToastAndroid.show(
+            'Password harus lebih banyak dari 6 karakter',
+            ToastAndroid.SHORT
+          );
+        } else if (password !== confirmPassword) {
+          ToastAndroid.show('Password anda tidak sesuai', ToastAndroid.SHORT);
         } else {
-          props.changePassword(googleEmail, password, props.navigation.navigate, 'Home')
-          FilterDataSend(userData)
-          await AsycnStorage.removeItem('GoogleUserEmail')
+          props.changePassword(
+            googleEmail,
+            password,
+            props.navigation.navigate,
+            'Home'
+          );
+          FilterDataSend(userData);
+          await AsycnStorage.removeItem('GoogleUserEmail');
         }
       } else {
-        FilterDataSend(userData)
+        FilterDataSend(userData);
       }
     }
   }
@@ -302,7 +301,7 @@ const DataCompletion = (props) => {
   }
 
   // Function for sending data to server
-  function FilterDataSend(data) {
+  async function FilterDataSend(data) {
     Object.filter = (obj, predicate) =>
       Object.keys(obj)
         .filter((key) => predicate(obj[key]))
@@ -312,12 +311,29 @@ const DataCompletion = (props) => {
     var send = Object.filter(data, (value) => value !== null);
     send = Object.filter(send, (value) => value !== '');
     console.log(send, 'seudah Filter');
-    props.CreatePatientAsUser(
-      send,
-      dataSuccess,
-      dataError,
-      props.navigation.navigate
-    );
+    const code = formatPhoneNumber(send.phoneNumber);
+
+    try {
+      setLoadingSendSMS(true);
+      const verificationId = await firebaseAuthService.verifyPhoneNumber(code);
+      props.navigation.navigate('InputSecretCodeOTP', {
+        verificationId: verificationId,
+        phoneNumber: code,
+        back: 'UserDataCompletion',
+        onSuccess: async () => {
+          await props.CreatePatientAsUser(
+            send,
+            dataSuccess,
+            dataError,
+            props.navigation.navigate
+          );
+        }
+      });
+    } catch (error) {
+      console.log('SMS Error :', error);
+    } finally {
+      setLoadingSendSMS(false);
+    }
   }
 
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -411,9 +427,18 @@ const DataCompletion = (props) => {
         {googleEmail ? (
           <>
             <View style={styles.inputMiddleContainer}>
-              <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+              <View
+                style={[
+                  styles.input,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
                 <TextInput
-                  style={[styles.inputText, {flex: 1,}]}
+                  style={[styles.inputText, { flex: 1 }]}
                   autoCapitalize={'sentences'}
                   secureTextEntry={secureTextEntry.password}
                   autoFocus={false}
@@ -424,9 +449,10 @@ const DataCompletion = (props) => {
                   }
                   value={passwordData.password}
                 />
-                <TouchableOpacity 
-                  style={{paddingLeft: 10}}
-                  onPress={() => updateSecureTextEntry('password')}>
+                <TouchableOpacity
+                  style={{ paddingLeft: 10 }}
+                  onPress={() => updateSecureTextEntry('password')}
+                >
                   {secureTextEntry.password ? (
                     <Feather name="eye-off" size={20} color="grey" />
                   ) : (
@@ -437,9 +463,18 @@ const DataCompletion = (props) => {
             </View>
 
             <View style={styles.inputMiddleContainer}>
-              <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
+              <View
+                style={[
+                  styles.input,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}
+              >
                 <TextInput
-                  style={[styles.inputText, {flex: 1,}]}
+                  style={[styles.inputText, { flex: 1 }]}
                   autoCapitalize={'sentences'}
                   secureTextEntry={secureTextEntry.confirmPassword}
                   autoFocus={false}
@@ -451,14 +486,15 @@ const DataCompletion = (props) => {
                   value={passwordData.confirmPassword}
                 />
 
-                  <TouchableOpacity 
-                    style={{paddingLeft: 10}}
-                    onPress={() => updateSecureTextEntry('confirmPassword')}>
-                    {secureTextEntry.password ? (
-                      <Feather name="eye-off" size={20} color="grey" />
-                    ) : (
-                      <Feather name="eye" size={20} color="grey" />
-                    )}
+                <TouchableOpacity
+                  style={{ paddingLeft: 10 }}
+                  onPress={() => updateSecureTextEntry('confirmPassword')}
+                >
+                  {secureTextEntry.password ? (
+                    <Feather name="eye-off" size={20} color="grey" />
+                  ) : (
+                    <Feather name="eye" size={20} color="grey" />
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -518,36 +554,6 @@ const DataCompletion = (props) => {
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <DatePickerIcon />
             </TouchableOpacity>
-            {/* <DatePicker
-              date={chosenDate} //initial date from state
-              mode="date" //The enum of date, datetime and time
-              format="DD/MMMM/YYYY"
-              maxDate={new Date()}
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              customStyles={{
-                dateIcon: {
-                  display: 'none',
-                  position: 'absolute',
-                  right: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  shadowColor: 'black',
-                },
-                dateInput: {
-                  marginLeft: 0,
-                  borderWidth: 0,
-                  borderColor: '#D5EDE1',
-                },
-                dateText: {
-                  display: 'none',
-                },
-              }}
-              onDateChange={(date) => {
-                setUserData({ ...userData, dob: date });
-                setChosenDate(fullMonthFormat(date));
-              }}
-            /> */}
           </View>
         </View>
 
@@ -571,7 +577,9 @@ const DataCompletion = (props) => {
             />
           </View>
           {isErrorPhoneNumber && (
-            <Text style={{ color: '#ef4444' }}>Invalid mobile number</Text>
+            <Text style={{ color: '#ef4444' }}>
+              Mohon masukkan no. HP yang valid
+            </Text>
           )}
         </View>
 
@@ -703,9 +711,10 @@ const DataCompletion = (props) => {
             onPress={() => {
               validation();
             }}
+            disabled={loadingSendSMS === true}
             style={styles.submitButton}
           >
-            {load ? (
+            {loadingSendSMS === true ? (
               <ActivityIndicator size={'small'} color="#FFF" />
             ) : (
               <Text style={{ fontSize: 18, color: '#FFF' }}>Simpan Data</Text>
