@@ -1,71 +1,51 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   Image,
   BackHandler,
-  ActivityIndicator,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 //action
 import { validateSecretCode } from '../../../stores/action';
-import ArrowBack from '../../../assets/svg/ArrowBack';
 import { ToastAndroid } from 'react-native';
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
-  useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 
 const InputSecretCodeOTP = (props) => {
+  const CELL_COUNT = 6;
   const {
-    email,
     phoneNumber,
     back = 'Home',
     onSuccess,
   } = props.navigation.state.params;
-  const CELL_COUNT = 6;
-  const [secretCode, setSecretCode] = useState('');
+
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
+  const [secretCode, setSecretCode] = useState('');
+  const [timer, setTimer] = useState(30);
+  const [verificationId, setVerificationId] = useState('');
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    props.navigation.pop();
-    return true;
-  });
-
-  async function validation() {
-    const isNumber = +secretCode;
-    if (secretCode.length < 6) {
-      ToastAndroid.show(
-        'Mohon ketik kode yang anda terima di SMS',
-        ToastAndroid.SHORT
-      );
-
-      return;
-    } else if (!isNumber) {
-      ToastAndroid.show(
-        'Format kode tidak valid, mohon masukan angka',
-        ToastAndroid.SHORT
-      );
+  useEffect(() => {
+    if (timer === 0) {
       return;
     }
 
+    setTimeout(() => setTimer(timer - 1), 1000);
+  }, [timer]);
+
+  async function onPressHandler() {
+    ToastAndroid.show('Verifikasi...', ToastAndroid.SHORT);
     try {
-      const verificationId = props.navigation.getParam('verificationId');
-      const result = await firebaseAuthService.confirmCode(
-        verificationId,
-        secretCode
-      );
-      console.log('Verification Result: ', result);
+      await firebaseAuthService.confirmCode(verificationId, secretCode);
       /**
        * params: onSuccess
        * function
@@ -77,8 +57,29 @@ const InputSecretCodeOTP = (props) => {
     }
   }
 
+  const resendCodeHandler = () => {
+    ToastAndroid.show(
+      'Proses...',
+      ToastAndroid.SHORT
+    )(async () => {
+      try {
+        const verificationId = await firebaseAuthService.verifyPhoneNumber(
+          phoneNumber
+        );
+        setVerificationId(verificationId);
+      } catch (error) {
+        ToastAndroid.show('Yeah :)', ToastAndroid.LONG);
+      }
+    })();
+  };
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    props.navigation.pop();
+    return true;
+  });
+
   return (
-    <View style={style.container}>
+    <KeyboardAvoidingView style={style.container}>
       {/* Back Button */}
       <TouchableOpacity onPress={() => props.navigation.navigate(back)}>
         <View style={style.header}>
@@ -107,8 +108,6 @@ const InputSecretCodeOTP = (props) => {
             textContentType="oneTimeCode"
             renderCell={({ index, symbol, isFocused }) => (
               <View
-                // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
-                // onLayout={getCellOnLayoutHandler(index)}
                 key={index}
                 style={[style.cellRoot, isFocused && style.focusCell]}
               >
@@ -122,15 +121,39 @@ const InputSecretCodeOTP = (props) => {
         <View style={style.bottomButtonContainer}>
           <TouchableOpacity
             style={style.bottomButton}
-            onPress={() => validation()}
+            onPress={() => onPressHandler()}
           >
             <View>
-              <Text style={style.bottomButtonText}>Masukan kode</Text>
+              <Text style={style.bottomButtonText}>Verifikasi</Text>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              alignItems: 'center',
+            }}
+            disabled={timer > 0}
+            onPress={() => resendCodeHandler()}
+          >
+            <Text
+              style={{
+                color: '#DDDDDD',
+                fontSize: 16,
+              }}
+            >
+              {timer === 0 ? (
+                'Kirim Ulang Kode'
+              ) : (
+                <>
+                  <Text>Kirim ulang kode dalam </Text>
+                  <Text style={{ color: '#FBB632' }}>{`${timer} `}</Text>
+                  <Text>detik</Text>
+                </>
+              )}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -141,7 +164,8 @@ const style = StyleSheet.create({
   container: {
     backgroundColor: '#1F1F1F',
     height: dimHeight,
-    // minHeight: '100%'
+    // minHeight: '100%,
+    flex: 1,
   },
 
   header: {
@@ -227,6 +251,7 @@ const style = StyleSheet.create({
   bottomButtonText: {
     fontSize: 16,
     color: '#00FFEC',
+    textTransform: 'uppercase',
   },
 
   bottomButton: {

@@ -15,7 +15,6 @@ import {
 import { resetPasswordPhone } from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import GreyHeader from '../../../components/headers/GreyHeader';
-import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 import formatPhoneNumber from '../../../helpers/formatPhoneNumber';
 
 const resetPasswdPhone = (props) => {
@@ -51,8 +50,6 @@ const resetPasswdPhone = (props) => {
   async function Finalvalidation() {
     try {
       const code = formatPhoneNumber(phoneNumber);
-      const verificationId = await firebaseAuthService.verifyPhoneNumber(code);
-      ToastAndroid.show('Berhasil mengirim verifikasi kode', ToastAndroid.LONG);
       props.navigation.navigate('InputSecretCodeOTP', {
         verificationId: 'hello',
         phoneNumber: code,

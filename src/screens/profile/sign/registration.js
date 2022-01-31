@@ -12,7 +12,7 @@ import {
   StatusBar,
   Image,
   Picker,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import {
   CreatePatientAsUser,
@@ -59,6 +59,7 @@ import formatPhoneNumber from '../../../helpers/formatPhoneNumber';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 
 const DataCompletion = (props) => {
+  const [code, setCode] = useState('');
   const [loadingSendSMS, setLoadingSendSMS] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [chosenDate, setChosenDate] = useState(null);
@@ -196,6 +197,7 @@ const DataCompletion = (props) => {
     }
   }, [district, selectedDistrictLabel, userData]);
 
+
   // Function for change data
   function setSelectedValue(
     value,
@@ -311,13 +313,11 @@ const DataCompletion = (props) => {
     var send = Object.filter(data, (value) => value !== null);
     send = Object.filter(send, (value) => value !== '');
     console.log(send, 'seudah Filter');
-    const code = formatPhoneNumber(send.phoneNumber);
 
     try {
       setLoadingSendSMS(true);
-      const verificationId = await firebaseAuthService.verifyPhoneNumber(code);
+      // const verificationId = await firebaseAuthService.verifyPhoneNumber(code);
       props.navigation.navigate('InputSecretCodeOTP', {
-        verificationId: verificationId,
         phoneNumber: code,
         back: 'UserDataCompletion',
         onSuccess: async () => {
@@ -327,7 +327,7 @@ const DataCompletion = (props) => {
             dataError,
             props.navigation.navigate
           );
-        }
+        },
       });
     } catch (error) {
       console.log('SMS Error :', error);
@@ -571,7 +571,9 @@ const DataCompletion = (props) => {
                 text.length > 13
                   ? setIsErrorPhoneNumber(true)
                   : setIsErrorPhoneNumber(false);
+
                 setUserData({ ...userData, phoneNumber: text });
+                setCode(formatPhoneNumber(text));
               }}
               value={userData.phoneNumber}
             />
