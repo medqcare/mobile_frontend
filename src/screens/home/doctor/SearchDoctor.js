@@ -28,11 +28,11 @@ import ArrowBack from '../../../assets/svg/ArrowBack';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
 import { ActivityIndicator } from 'react-native-paper';
 import LottieLoader from 'lottie-react-native';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function SearchDoctorPage(props) {
   // const [searchFromHome, setSearchFromHome] = useState(true)
   const [location, setLocation] = useState(props.myLocation);
+  const [availableLocations, setAvalaibleLocations] = useState([])
   const [currentPage, setCurrentPage] = useState(0);
   const [show, setShow] = useState([]);
   const [showLoading, setLoading] = useState(true);
@@ -53,27 +53,23 @@ function SearchDoctorPage(props) {
     _fetchDataDoctorPagination(name);
   }, [name]);
 
-  useEffect(() => {
-    if (!location && show) {
-      show.sort((a, b) => {
-        return a.doctorName.toLowerCase() > b.doctorName.toLowerCase();
-      });
-    }
-  }, [show]);
+//   useEffect(() => {
+//     if (!location && show) {
+//       show.sort((a, b) => {
+//         return a.doctorName.toLowerCase() > b.doctorName.toLowerCase();
+//       });
+//     }
+//   }, [show]);
 
   const _fetchDataDoctorPagination = async (params) => {
-    // NOTE FOR LAT DAN LON
-    // biasanya ada lat longnya yang kebalik dimasukkan
-    // lat itu isinya yang pake minus (-)
-    // kalo lon yang lebih panjang biasanya
     console.log(params, 'params ...', currentPage);
     if (params == 'All') {
       try {
         let { data } = await axios.post(
           `${baseURL}/api/v1/members/searchDoctor?page=${currentPage}`,
           {
-            lat: location ? location.lat : -6.268809,
-            lon: location ? location.lng : 106.974705,
+            // lat: location ? location.lat : -6.268809,
+            // lon: location ? location.lng : 106.974705,
             maxDistance: 1000000,
           },
           { timeout: 4000 }
@@ -81,15 +77,16 @@ function SearchDoctorPage(props) {
         console.log(`Found ${data.data.length} selection of doctors`);
         if (currentPage == 0) {
           setShow(data.data);
+          setAvalaibleLocations(data.data);
         } else {
           setShow(show.concat(data.data));
+          setAvalaibleLocations(availableLocations.concat(data.data));
         }
         setLoading(false);
         let nextPage = currentPage + 1;
         setCurrentPage(nextPage);
       } catch (error) {
         setLoading(false);
-        // console.log(error)
         ToastAndroid.show(error.message, ToastAndroid.LONG);
       }
     } else {
@@ -97,8 +94,8 @@ function SearchDoctorPage(props) {
         let { data } = await axios.post(
           `${baseURL}/api/v1/members/searchDoctorSpecialist?page=${currentPage}`,
           {
-            lat: location ? location.lat : -6.268809,
-            lon: location ? location.lng : 106.974705,
+            // lat: location ? location.lat : -6.268809,
+            // lon: location ? location.lng : 106.974705,
             maxDistance: 1000000,
             specialist: name,
           },
@@ -110,11 +107,11 @@ function SearchDoctorPage(props) {
         setLoading(false);
       } catch (error) {
         setLoading(false);
-        // console.log(error);
         ToastAndroid.show(error.message, ToastAndroid.LONG);
       }
     }
   };
+
 
   const _textChange = async (params) => {
     setShow([]);
@@ -165,7 +162,6 @@ function SearchDoctorPage(props) {
       }
     } catch (error) {
       setLoading(false);
-      // console.log(error)
     }
   };
 
@@ -180,14 +176,12 @@ function SearchDoctorPage(props) {
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.pop();
   });
-  // console.log(props.userData, '>>>>> dari props user data');
   return (
     <KeyboardAvoidingView
       style={styles.Container}
       behavior="height"
       enabled={false}
     >
-      {/* <StatusBar hidden /> */}
       <View style={{ height: heightPercentageToDP('18%') }}>
         <ImageBackground
           source={require('../../../assets/background/RectangleHeader.png')}
@@ -264,14 +258,6 @@ function SearchDoctorPage(props) {
           })}
         </ScrollView>
       </View>
-      {/* <SkeletonContent
-        containerStyle={{flex: 1}}
-        duration={1000}
-        animationType={'shiver'}
-        animationDirection={'diagonalDownRight'}
-        isLoading={showLoading}
-        layout={layoutSkeleton}
-        boneColor={'#1F1F1F'}> */}
       {showLoading ? (
         <View
           style={{
@@ -302,22 +288,31 @@ function SearchDoctorPage(props) {
                     <RefreshControl refreshing={loader} onRefresh={onRefresh} />
                   }
                   style={{ flex: 1 }}
-                  data={show}
+                  data={availableLocations}
                   keyExtractor={(item, index) => String(index)}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        props.navigation.navigate('DetailDoctor', {
-                          data: item,
-                          back: 'SearchDoctor',
-                        });
-                      }}
-                    >
-                      <View style={{ marginHorizontal: dimWidth * 0.03 }}>
-                        <CardDoctor data={item} myLocation={props.myLocation} />
-                      </View>
-                    </TouchableOpacity>
-                  )}
+                  renderItem={({ item }) => {
+					const { distance, doctors } = item
+					return (
+						doctors.map(el => {
+							return (
+								<TouchableOpacity
+									key={el._id}
+									onPress={() => {
+										props.navigation.navigate('DetailDoctor', {
+											data: el,
+											back: 'SearchDoctor',
+											distance
+										});
+									}}
+								>
+									<View style={{ marginHorizontal: dimWidth * 0.03 }}>
+										<CardDoctor data={el} myLocation={props.myLocation} distance={distance} />
+									</View>
+								</TouchableOpacity>
+							)
+						})
+                    )
+                  }}
                   onEndReached={() => {
                     if (show.length >= 5) {
                       _fetchDataDoctorPagination(name);
@@ -349,9 +344,8 @@ function SearchDoctorPage(props) {
           </View>
         </>
       )}
-      {/* </SkeletonContent> */}
 
-      {sortby && (
+      {/* {sortby && (
         <Shortby
           setVisible={() => setsortby(!sortby)}
           setFar={() => {
@@ -379,11 +373,7 @@ function SearchDoctorPage(props) {
             });
           }}
         />
-      )}
-      {/* {specialistBy && <SpecialistBy
-        setVisible={() => setSpecialistBy(!specialistBy)}
-        findDoctor={(params) => setName(params)}
-      />} */}
+      )} */}
     </KeyboardAvoidingView>
   );
 }
