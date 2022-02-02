@@ -19,6 +19,7 @@ import { baseURL } from '../../../config';
 import { connect } from 'react-redux';
 const ScanMedres = (props) => {
   const patientID = props.navigation.getParam('patientID');
+  console.log('This is patient ID (Scanner): ', patientID);
   const [loading, setLoading] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [loadingScan, setLoadingScan] = useState(false);
@@ -106,7 +107,9 @@ const ScanMedres = (props) => {
             </TouchableOpacity>
           )}
           {!scanned && (
-            <TouchableOpacity onPress={() => props.navigation.pop()}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('MedResList')}
+            >
               <View style={styles.reScanViewNull}>
                 <Text
                   style={{ color: 'white', fontWeight: 'bold', fontSize: 20 }}
