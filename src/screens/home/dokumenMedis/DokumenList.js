@@ -54,6 +54,9 @@ const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
+  const { types: DEFAULT_TYPES, allowUploadDocument } =
+    props.navigation.state.params;
+  const DEFAULT_TYPE_SELECTED = 'semua';
   const [data, setData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
@@ -68,15 +71,8 @@ function DokumenList(props) {
   const [modalLoad, setModalLoad] = useState(false);
   const [searchIsFocus, setSearchIsFocus] = useState(false);
   const [search, setSearch] = useState('');
-  const [types, setTypes] = useState([
-    'semua',
-    'resep',
-    'radiologi',
-    'laboratorium',
-  ]);
-  const [typeSelected, setTypeSelected] = useState(
-    'resep,radiologi,laboratorium'
-  );
+  const [types, setTypes] = useState([DEFAULT_TYPE_SELECTED, ...DEFAULT_TYPES]);
+  const [typeSelected, setTypeSelected] = useState(DEFAULT_TYPE_SELECTED);
   const [pageNumber, setPageNumber] = useState(1);
   const [accountOwner, setAccountOwner] = useState(props.userData);
   const [modalPatient, setModalPatient] = useState(false);
@@ -108,7 +104,7 @@ function DokumenList(props) {
     const { token } = JSON.parse(tokenString);
     const patientId = patient._id;
     if (pageNumber === 1) {
-      await _fetchData(token, patientId, typeSelected, pageNumber);
+      await _fetchData();
     } else {
       await fetchDocumentsWithPagination(
         token,
@@ -132,33 +128,51 @@ function DokumenList(props) {
     await fetchBySearchQuery(search, patientId);
   }, [search]);
 
-  const _fetchData = async (token, patientId, type, page) => {
-    setLoading(true);
-    getDocumentByPatient(token, patientId, type, page)
-      .then(({ data: response }) => {
-        setData(response.data);
-        setTotalPages(response.totalPages);
-      })
-      .catch((err) => {
-        ToastAndroid.show(
-          `Please check your internet connection`,
-          ToastAndroid.SHORT
-        );
-        console.log(err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
+  const _fetchData = async () => {
+    let type =
+      typeSelected === DEFAULT_TYPE_SELECTED
+        ? DEFAULT_TYPES.join(',')
+        : typeSelected;
 
-  const fetchDocumentsWithPagination = async (token, patientId, type, page) => {
+    setLoading(true);
     try {
-      setLoadingPagination(true);
+      const tokenString = await AsyncStorage.getItem('token');
+      const { token } = JSON.parse(tokenString);
+      const patientId = patient._id;
       const { data: response } = await getDocumentByPatient(
         token,
         patientId,
         type,
-        page
+        pageNumber
+      );
+      setData(response.data);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      ToastAndroid.show(
+        `Please check your internet connection`,
+        ToastAndroid.SHORT
+      );
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDocumentsWithPagination = async () => {
+    let type =
+      typeSelected === DEFAULT_TYPE_SELECTED
+        ? 'resep,laboratorium,radiologi'
+        : typeSelected;
+    try {
+      setLoadingPagination(true);
+      const tokenString = await AsyncStorage.getItem('token');
+      const { token } = JSON.parse(tokenString);
+      const patientId = patient._id;
+      const { data: response } = await getDocumentByPatient(
+        token,
+        patientId,
+        type,
+        pageNumber
       );
       const documents = response.data;
       if (documents.length > 0) {
@@ -183,7 +197,7 @@ function DokumenList(props) {
         headers: {
           Authorization: token,
           patientid: patientId,
-          type: 'resep,radiologi,laboratorium',
+          type: DEFAULT_TYPES.join(','),
         },
       });
       setData(response.data);
@@ -200,12 +214,11 @@ function DokumenList(props) {
       .then(({ data }) => {
         console.log(data);
         setPageNumber(1);
+        setUploadLoading(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
-      })
-      .finally(() => {
-        setUploadLoading(false);
       });
   };
 
@@ -218,13 +231,14 @@ function DokumenList(props) {
     renameDocument(token, patient._id, payload)
       .then(({ data }) => {
         setPageNumber(1);
+        setModalRename(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
       })
       .finally(() => {
         setModalLoad(false);
-        setModalRename(false);
       });
   };
 
@@ -238,13 +252,14 @@ function DokumenList(props) {
       .then(({ data }) => {
         console.log(data);
         setPageNumber(1);
+        setModalDelete(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
       })
       .finally(() => {
         setModalLoad(false);
-        setModalDelete(false);
       });
   };
 
@@ -413,15 +428,11 @@ function DokumenList(props) {
   };
 
   const typeStyleBehavior = (type) => {
-    const isAllType =
-      typeSelected === 'resep,radiologi,laboratorium' && type === 'semua';
     return {
       container: {
-        backgroundColor:
-          type === typeSelected || isAllType ? '#212D3D' : '#2F2F2F',
+        backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
         borderWidth: 1,
-        borderColor:
-          type === typeSelected || isAllType ? '#77BFF4' : 'transparent',
+        borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 99,
@@ -431,7 +442,7 @@ function DokumenList(props) {
         marginRight: 8,
       },
       text: {
-        color: type === typeSelected || isAllType ? '#77BFF4' : '#B5B5B5',
+        color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
         fontSize: 12,
         textTransform: 'capitalize',
       },
@@ -444,11 +455,7 @@ function DokumenList(props) {
       <TouchableOpacity
         style={container}
         onPress={() => {
-          if (item === 'semua') {
-            setTypeSelected('resep,radiologi,laboratorium');
-          } else {
-            setTypeSelected(item);
-          }
+          setTypeSelected(item);
           setPageNumber(1);
         }}
       >
@@ -492,6 +499,7 @@ function DokumenList(props) {
               if (text === '') {
                 setSearchIsFocus(false);
                 setPageNumber(1);
+                _fetchData()
                 return;
               }
               setSearchIsFocus(true);
@@ -603,7 +611,9 @@ function DokumenList(props) {
             </>
           )}
 
-          {loading === false && searchIsFocus === false ? (
+          {loading === false &&
+          searchIsFocus === false &&
+          allowUploadDocument ? (
             <View
               style={{
                 alignItems: 'center',

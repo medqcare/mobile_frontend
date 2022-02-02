@@ -69,7 +69,7 @@ const ActivityAction = ({ navigation, data }) => {
         style={style.content}
         onPress={() =>
           data
-            ? navigation.navigate('DokumenMedisStack')
+            ? navigation.navigate('DokumenMedisStack', { name: 'Hello World' })
             : navigation.navigate('Sign')
         }
       >

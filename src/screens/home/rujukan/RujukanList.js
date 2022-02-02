@@ -41,8 +41,8 @@ function RujukanList(props) {
     _id: props.userData._id,
     imageUrl: props.userData.imageUrl,
   });
-  const [types, setTypes] = useState(['rujukan', 'surat sakit']);
-  const [typeSelected, setTypeSelected] = useState('rujukan');
+  const [types, setTypes] = useState(['semua', 'rujukan', 'surat sakit']);
+  const [typeSelected, setTypeSelected] = useState('semua');
   const [searchIsFocus, setIsFocusSearch] = useState(false);
 
   useEffect(() => {
@@ -63,25 +63,23 @@ function RujukanList(props) {
       try {
         const tokenString = await AsyncStorage.getItem('token');
         const { token } = JSON.parse(tokenString);
-        let type = 'rujukan,surat sakit';
+        const type =
+          typeSelected === 'semua' ? 'rujukan,surat sakit' : typeSelected;
         const { data: response } = await getDocumentByPatient(
           token,
           patient._id,
           type
         );
         const { data: docs } = response;
-        const defaultDocs = docs.filter(
-          (element) => element.type === 'rujukan'
-        );
         setDocs(docs);
-        setDocsFiltered(defaultDocs);
+        setDocsFiltered(docs);
       } catch (error) {
         console.log(error.message, 'this is error from rujukan');
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [patient]);
+  }, [patient, typeSelected]);
 
   const addDocumentOptions = [
     {
@@ -242,13 +240,7 @@ function RujukanList(props) {
             items={types}
             itemSelected={typeSelected}
             setItemSelected={setTypeSelected}
-            onItemSelected={(item) => {
-              setTypeSelected(item);
-              const newFilteredDocs = docs.filter(
-                (element) => element.type === item
-              );
-              setDocsFiltered(newFilteredDocs);
-            }}
+            onItemSelected={(item) => setTypeSelected(item)}
           />
         </View>
       )}

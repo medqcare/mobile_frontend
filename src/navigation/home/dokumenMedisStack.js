@@ -23,6 +23,10 @@ export default StackDokumenMedis = createStackNavigator(
   },
   {
     initialRouteName: 'ListDokumenMedis',
+    initialRouteParams: {
+      types: ['resep', 'radiologi', 'laboratorium'],
+      allowUploadDocument: true,
+    },
     defaultNavigationOptions: {
       ...TransitionPresets.SlideFromRightIOS,
     },
