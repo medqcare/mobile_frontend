@@ -6,12 +6,12 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   ToastAndroid,
   StatusBar,
   PermissionsAndroid,
   Image,
   TextInput,
+  BackHandler,
 } from 'react-native';
 
 import * as MediaLibrary from 'expo-media-library';
@@ -30,7 +30,6 @@ import {
   uploadDocument,
 } from '../../../stores/action';
 
-import PictureModal from '../../../components/modals/profilePictureModal';
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
 import RenameModal from '../../../components/modals/modalRename';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
@@ -38,15 +37,11 @@ import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import LottieLoader from 'lottie-react-native';
 
 import Ic_Sort from '../../../assets/svg/ic_sort';
-import Ic_Dokumen from '../../../assets/svg/ic_documen';
-import Ic_Option from '../../../assets/svg/ic_option';
 import * as DocumentPicker from 'expo-document-picker';
-import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
 import { CardDocument } from '../../../components/document/CardDocument';
 import getFullName from '../../../helpers/getFullName';
 import { ActivityIndicator } from 'react-native-paper';
-import getToken from '../../../helpers/localStorage/token';
 import axios from 'axios';
 import { baseURL } from '../../../config';
 
@@ -56,6 +51,7 @@ const dimWidth = Dimensions.get('window').width;
 function DokumenList(props) {
   const { types: DEFAULT_TYPES, allowUploadDocument } =
     props.navigation.state.params;
+  const { routeName: SCREEN_NAME } = props.navigation.state;
   const DEFAULT_TYPE_SELECTED = 'semua';
   const [data, setData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
@@ -464,6 +460,17 @@ function DokumenList(props) {
     );
   };
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        props.navigation.navigate('Home');
+        return true;
+      }
+    );
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -473,7 +480,7 @@ function DokumenList(props) {
       />
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => props.navigation.pop()}
+          onPress={() => props.navigation.navigate('Home')}
           style={styles.arrow}
         >
           <Ionicons
@@ -499,7 +506,7 @@ function DokumenList(props) {
               if (text === '') {
                 setSearchIsFocus(false);
                 setPageNumber(1);
-                _fetchData()
+                _fetchData();
                 return;
               }
               setSearchIsFocus(true);
@@ -560,7 +567,7 @@ function DokumenList(props) {
                         item={item}
                         onOptionPressedHandler={onOptionPressedHandler}
                         {...props}
-                        backTo={'ListDokumenMedis'}
+                        backTo={SCREEN_NAME}
                       />
                     );
                   }}
