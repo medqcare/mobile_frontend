@@ -36,103 +36,115 @@ import Modal from 'react-native-modal';
 import SelectPatient from '../../../components/modals/selectPatient';
 
 const mapDispatchToProps = {
-  bookDoctor,
-  findPatientFacility,
-  createPatientFacility,
-  setLoading,
-  getAlergie,
+	bookDoctor,
+	findPatientFacility,
+	createPatientFacility,
+	setLoading,
+	getAlergie,
 };
 
 const mapStateToProps = (state) => {
-  return state;
+  	return state;
 };
 
 const buatJanji = (props) => {
-  const [insuranceNumber, setInsuranceNumber] = useState(null);
-  const [bpjsNumber, setBpjsNumber] = useState(null);
-  let datadoctor = props.navigation.getParam('data');
-  const [getDay, setGetDay] = useState('');
-  let dayChoose = null;
-  const [time, setTime] = useState([]);
-  const day = ['0', '1', '2', '3', '4', '5', '6'];
-  const dayName = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
-  const [book, setBook] = useState({
-    userID: props.userData.userID._id,
-    email: props.userData.userID.email,
-    healthFacility: {
-      facilityID: datadoctor.facility[0].facilityID,
-      facilityName: datadoctor.facility[0].facilityName,
-      facilityType: datadoctor.facility[0].facilityType,
-      facilityMainType: datadoctor.facility[0].facilityMainType,
-      clinicIdWeb: datadoctor.facility[0].clinicIdWeb,
-    },
-    doctor: {
-      doctorID: datadoctor._id,
-      doctorName: datadoctor.doctorName,
-      doctorGender: datadoctor.gender,
-      doctorSpecialist: datadoctor.specialist,
-      doctorPhoto: datadoctor.photo,
-      title: datadoctor.title,
-      dokterIdWeb: datadoctor.dokterIdWeb,
-    },
-    bookingSchedule: formatDate(datadoctor.bookingSchedule),
-    bookingTime: datadoctor.bookingTime,
-  });
-  const [patient, setPatient] = useState({
-    patient: {
-      patientID: null,
-      patientName: null,
-      gender: null,
-      nik: null,
-      photo: null,
-      dob: null,
-      insuranceStatus: null,
-      bloodType: null,
-      age: null,
-      mobilePhone: null,
-      address: null,
-      placeOfBirth: null,
-      mobilePhone: null,
-      resus: null,
-      parentID: null,
-    },
-  });
+	const { doctorData } = props.navigation.state.params
+	const { 
+		healthFacility, 
+		bookingSchedule, 
+		bookingTime,
+		_id :doctorID,
+		doctorName,
+		gender: doctorGender,
+		specialist: doctorSpecialist,
+		photo: doctorPhoto,
+		title,
+		dokterIdWeb 
+	} = doctorData
 
-  const [allergies, setAllergies] = useState([]);
+	const { email, _id } = props.userData.userID
+	const [insuranceNumber, setInsuranceNumber] = useState(null);
+	const [bpjsNumber, setBpjsNumber] = useState(null);
+	let datadoctor = props.navigation.getParam('data');
+	const [getDay, setGetDay] = useState('');
+	let dayChoose = null;
+	const [time, setTime] = useState([]);
+	const day = ['0', '1', '2', '3', '4', '5', '6'];
+	const dayName = [
+		'Sunday',
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+	];
 
-  const [family, setFamily] = useState([]);
-  const [forFind, setForfind] = useState({
-    facilityID: null,
-    patientID: null,
-  });
-  const [forCreate, setForcreate] = useState({
-    facilityID: null,
-    patient: {
-      patientID: null,
-      patientName: null,
-      gender: null,
-      nik: null,
-      photo: null,
-      insuranceStatus: null,
-      bloodType: null,
-      age: null,
-      mobilePhone: null,
-      address: null,
-      placeOfBirth: null,
-      mobilePhone: null,
-      patientTitle: null,
-      resus: null,
-      parentID: null,
-    },
-  });
+	const [book, setBook] = useState({
+		userID: _id,
+		email,
+		healthFacility,
+		doctor: {
+			doctorID,
+			doctorName,
+			doctorGender,
+			doctorSpecialist,
+			doctorPhoto,
+			title,
+			dokterIdWeb,
+		},
+		bookingSchedule: formatDate(bookingSchedule),
+		bookingTime,
+		orderType: 'doctor'
+	});
+
+	const [patient, setPatient] = useState({
+		patient: {
+		patientID: null,
+		patientName: null,
+		gender: null,
+		nik: null,
+		photo: null,
+		dob: null,
+		insuranceStatus: null,
+		bloodType: null,
+		age: null,
+		mobilePhone: null,
+		address: null,
+		placeOfBirth: null,
+		mobilePhone: null,
+		resus: null,
+		parentID: null,
+		},
+	});
+
+	const [allergies, setAllergies] = useState([]);
+
+	const [family, setFamily] = useState([]);
+	const [forFind, setForfind] = useState({
+		facilityID: null,
+		patientID: null,
+	});
+	const [forCreate, setForcreate] = useState({
+		facilityID: null,
+		patient: {
+			patientID: null,
+			patientName: null,
+			gender: null,
+			nik: null,
+			photo: null,
+			insuranceStatus: null,
+			bloodType: null,
+			age: null,
+			mobilePhone: null,
+			address: null,
+			placeOfBirth: null,
+			mobilePhone: null,
+			patientTitle: null,
+			resus: null,
+			parentID: null,
+		},
+	});
   const [jadwal, setJadwal] = useState(null);
 
   const [modals, setModal] = useState(false);
@@ -152,61 +164,61 @@ const buatJanji = (props) => {
       : props.userData.firstName
   );
 
-  async function gobookDoctor(dataSend, dataCreate) {
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    props
-      .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-      .then((data, status) => {
-        return props.bookDoctor(dataSend, JSON.parse(token).token);
-      })
-      .then((data) => {
-        if (data.message == 'already reserve for that patient') {
-          setLoad(false);
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-        } else {
-          setLoad(false);
-          setModal(true);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        setMessageF(error);
-        setModalf(true);
-        // alert('Something Wrong', error)
-        console.log(error, 'loh kok error weehhh');
-      });
-  }
+	async function gobookDoctor(dataSend, dataCreate) {
+		setLoad(true);
+		let token = await AsyncStorage.getItem('token');
+		props
+		.findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
+		.then((data, status) => {
+			return props.bookDoctor(dataSend, JSON.parse(token).token);
+		})
+		.then((data) => {
+			if (data.message == 'already reserve for that patient') {
+				setLoad(false);
+				ToastAndroid.show(data.message, ToastAndroid.LONG);
+			} else {
+				setLoad(false);
+				setModal(true);
+			}
+		})
+		.catch((error) => {
+			setLoad(false);
+			setMessageF(error);
+			setModalf(true);
+			// alert('Something Wrong', error)
+			console.log(error, 'loh kok error weehhh');
+		});
+	}
 
-  useEffect(() => {
-    if (!patient.patient.patientID) {
-      setForfind({
-        facilityID: book.healthFacility.facilityID,
-        patientID: patient.patient.patientID,
-      });
+	useEffect(() => {
+		if (patient.patient.patientID) {
+			setForfind({
+				facilityID: book.healthFacility.facilityID,
+				patientID: patient.patient.patientID,
+			});
 
-      setForcreate({
-        facilityID: book.healthFacility.facilityID,
-        patient: {
-          patientID: patient.patient.patientID,
-          patientName: patient.patient.patientName,
-          gender: patient.patient.gender,
-          nik: patient.patient.nik,
-          photo: patient.patient.imageUrl,
-          insuranceStatus: patient.patient.insuranceStatus,
-          bloodType: patient.patient.bloodType,
-          age: getAge(patient.patient.dob),
-          mobilePhone: patient.patient.mobilePhone,
-          address: patient.patient?.address,
-          placeOfBirth: patient.patient?.placeOfBirth || '',
-          patientTitle: '',
-          resus: patient.patient?.resus || '+',
-        },
-      });
-    }
+			setForcreate({
+				facilityID: book.healthFacility.facilityID,
+				patient: {
+					patientID: patient.patient.patientID,
+					patientName: patient.patient.patientName,
+					gender: patient.patient.gender,
+					nik: patient.patient.nik,
+					photo: patient.patient.photo,
+					insuranceStatus: patient.patient.insuranceStatus,
+					bloodType: patient.patient.bloodType,
+					age: getAge(patient.patient.dob),
+					mobilePhone: patient.patient.mobilePhone,
+					address: patient.patient?.address,
+					placeOfBirth: patient.patient?.placeOfBirth || '',
+					patientTitle: '',
+					resus: patient.patient?.resus || '+',
+				},
+			});
+		}
 
-    getJadwal();
-  }, [book, patient]);
+		// getJadwal();
+	}, [book, patient]);
 
   const getAge = (dob) => {
     const date = new Date();
@@ -239,124 +251,125 @@ const buatJanji = (props) => {
     );
   };
 
-  const validation = () => {
-    Object.filter = (obj, predicate) =>
-      Object.keys(obj)
-        .filter((key) => predicate(obj[key]))
-        .reduce((res, key) => ((res[key] = obj[key]), res), {});
+	const validation = () => {
+		Object.filter = (obj, predicate) =>
+			Object.keys(obj)
+				.filter((key) => predicate(obj[key]))
+				.reduce((res, key) => ((res[key] = obj[key]), res), {});
 
-    var filter = Object.filter(book, (value) => value == null);
-    if (Object.keys(filter).length) {
-      ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
-    } else {
-      var filternull = Object.filter(
-        patient.patient,
-        (value) => value !== null
-      );
-      var patient2 = Object.filter(filternull, (value) => value !== undefined);
+		var filter = Object.filter(book, (value) => value == null);
 
-      var filterForcreate = Object.filter(
-        forCreate.patient,
-        (value) => value !== null
-      );
-      var filterForcreate2 = Object.filter(
-        filterForcreate,
-        (value) => value !== undefined
-      );
+		if (Object.keys(filter).length) {
+			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+		} else {
+			var filternull = Object.filter(
+				patient.patient,
+				(value) => value !== null
+			);
+			var patient2 = Object.filter(filternull, (value) => value !== undefined);
 
-      var forsend = {
-        ...book,
-        patient: {
-          ...patient2,
-          mobilePhone: !patient2.mobilePhone
-            ? props.userData.phoneNumber
-            : patient2.mobilePhone,
-          patientTitle: getTitle(patient2),
-          paymentMethod: dompet,
-          insuranceNumber: insuranceNumber,
-          bpjsNumber: bpjsNumber,
-          photo: patient2.photo
-            ? patient2.photo
-            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
-        },
-      };
+			var filterForcreate = Object.filter(
+				forCreate.patient,
+				(value) => value !== null
+			);
+			// console.log(forCreate.patient)
+			var filterForcreate2 = Object.filter(
+				filterForcreate,
+				(value) => value !== undefined
+			);
 
-      var sendCreate = {
-        facilityID: book.healthFacility.facilityID,
-        patient: {
-          patientID: filterForcreate2.patientID,
-          patientName: filterForcreate2.patientName,
-          gender: filterForcreate2.gender,
-          nik: filterForcreate2.nik,
-          photo: filterForcreate2.photo,
-        },
-      };
-      gobookDoctor(forsend, sendCreate);
-    }
-  };
+			var forsend = {
+				...book,
+				patient: {
+				...patient2,
+				mobilePhone: !patient2.mobilePhone
+					? props.userData.phoneNumber
+					: patient2.mobilePhone,
+				patientTitle: getTitle(patient2),
+				paymentMethod: dompet,
+				insuranceNumber: insuranceNumber,
+				bpjsNumber: bpjsNumber,
+				photo: patient2.photo
+					? patient2.photo
+					: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+				},
+			};
 
-  useEffect(() => {
-    let _family = {
-      ...props.userData,
-    };
-    delete _family.family;
-    const temp = [_family];
-    props.userData.family.forEach((el) => {
-      temp.push(el);
-    });
-    setFamily(family.concat(temp));
-  }, []);
+			var sendCreate = {
+				facilityID: book.healthFacility.facilityID,
+				patient: {
+					patientID: filterForcreate2.patientID,
+					patientName: filterForcreate2.patientName,
+					gender: filterForcreate2.gender,
+					nik: filterForcreate2.nik,
+					photo: filterForcreate2.photo,
+				},
+			};
+		
+		  	gobookDoctor(forsend, sendCreate);
+		}
+	};
 
-  useEffect(() => {
-    settime();
-  }, [getDay]);
+	useEffect(() => {
+		let _family = {
+		...props.userData,
+		};
+		delete _family.family;
+		const temp = [_family];
+		props.userData.family.forEach((el) => {
+		temp.push(el);
+		});
+		setFamily(family.concat(temp));
+	}, []);
 
-  useEffect(() => {
-    if (!patient.patient.patientName) {
-      setPatient({
-        ...patient,
-        patient: {
-          ...patient?.patient,
-          patientID: family[0]?._id,
-          patientName: family[0]?.lastName
-            ? family[0]?.firstName + ' ' + family[0]?.lastName
-            : family[0]?.firstName,
-          nik: family[0]?.nik,
-          dob: family[0]?.dob,
-          gender: family[0]?.gender,
-          photo: family[0]?.photo || '',
-          insuranceStatus: family[0]?.insuranceStatus,
-          bloodType: family[0]?.bloodType,
-          age: getAge(family[0]?.dob),
-          mobilePhone: family[0]?.mobilePhone || '',
-          address: !family[0]?.address
-            ? `${family[0]?.location?.city}, ${family[0]?.location?.province}`
-            : family[0]?.address,
-          placeOfBirth: family[0]?.placeOfBirth || '',
-          patientTitle: '',
-          resus: family[0]?.resus || '+',
-          parentID: family[0]?.parentID || null,
-        },
-      });
-    }
-  }, [modalP]);
+	// useEffect(() => {
+	// 	settime();
+	// }, [getDay]);
 
-  function settime() {
-    if (getDay !== '') {
-      datadoctor.facility.forEach((item) => {
-        Object.keys(item.facilitySchedule).forEach((item2, index2) => {
-          if (getDay == item2) {
-            dayChoose = Object.values(item.facilitySchedule);
-            setTime(dayChoose[index2]);
-            // setBook({...book, bookingTime: dayChoose[index2]});
-          }
-        });
-      });
-    } else {
-      setTime([]);
-      // setBook({...book, bookingTime: null});
-    }
-  }
+	useEffect(() => {
+		if (!patient.patient.patientName) {
+			setPatient({
+				...patient,
+				patient: {
+				...patient?.patient,
+				patientID: family[0]?._id,
+				patientName: family[0]?.lastName
+					? family[0]?.firstName + ' ' + family[0]?.lastName
+					: family[0]?.firstName,
+				nik: family[0]?.nik,
+				dob: family[0]?.dob,
+				gender: family[0]?.gender,
+				photo: family[0]?.photo || '',
+				insuranceStatus: family[0]?.insuranceStatus,
+				bloodType: family[0]?.bloodType,
+				age: getAge(family[0]?.dob),
+				mobilePhone: family[0]?.mobilePhone || '',
+				address: !family[0]?.address
+					? `${family[0]?.location?.city}, ${family[0]?.location?.province}`
+					: family[0]?.address,
+				placeOfBirth: family[0]?.placeOfBirth || '',
+				patientTitle: '',
+				resus: family[0]?.resus || '+',
+				parentID: family[0]?.parentID || null,
+				},
+			});
+		}
+	}, [modalP]);
+
+	// function settime() {
+	// 	if (getDay !== '') {
+	// 	datadoctor.facility.forEach((item) => {
+	// 		Object.keys(item.facilitySchedule).forEach((item2, index2) => {
+	// 		if (getDay == item2) {
+	// 			dayChoose = Object.values(item.facilitySchedule);
+	// 			setTime(dayChoose[index2]);
+	// 		}
+	// 		});
+	// 	});
+	// 	} else {
+	// 		setTime([]);
+	// 	}
+	// }
 
   function getJadwal() {
     datadoctor.facility.forEach((item) => {
@@ -386,720 +399,718 @@ const buatJanji = (props) => {
     arrDate[1].length === 1 ? (arrDate[1] = '0' + arrDate[1]) : null;
     return arrDate.join('-');
   }
+	async function setSelectedValue(data) {
+		const patientId = data._id;
+		const token = JSON.parse(await AsyncStorage.getItem('token')).token;
+		const { data: selectedPatientAllergies } = await props.getAlergie(
+			patientId,
+			token
+		);
+		if (selectedPatientAllergies.length > 0) {
+			const allergies = selectedPatientAllergies.map((el) => {
+				el.patientID = el.patientID._id;
+				return el;
+			});
+			setAllergies(allergies);
+		}
+		setPatient({
+			patient: {
+				patientID: data._id,
+				patientName: data.lastName
+				? data.firstName + ' ' + data.lastName
+				: data.firstName,
+				nik: data.nik,
+				dob: data.dob,
+				gender: data.gender,
+				photo: data.imageUrl || '',
+				insuranceStatus: data.insuranceStatus,
+				bloodType: data.bloodType,
+				mobilePhone: data.phoneNumber,
+				address: !data.address
+				? `${data.location.city}, ${data.location.province}`
+				: data.address,
+				age: getAge(data.dob),
+				patientTitle: '',
+				placeOfBirth: data.placeOfBirth || data.location.province,
+				resus: data.resus || '+',
+				parentID: data.parentID || null,
+			},
+		});
+		setDisplayName(
+			data.lastName ? data.firstName + ' ' + data.lastName : data.firstName
+		);
+	}
 
-  async function setSelectedValue(data) {
-    const patientId = data._id;
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    const { data: selectedPatientAllergies } = await props.getAlergie(
-      patientId,
-      token
-    );
-    if (selectedPatientAllergies.length > 0) {
-      const allergies = selectedPatientAllergies.map((el) => {
-        el.patientID = el.patientID._id;
-        return el;
-      });
-      setAllergies(allergies);
-    }
-    setPatient({
-      patient: {
-        patientID: data._id,
-        patientName: data.lastName
-          ? data.firstName + ' ' + data.lastName
-          : data.firstName,
-        nik: data.nik,
-        dob: data.dob,
-        gender: data.gender,
-        photo: data.imageUrl || '',
-        insuranceStatus: data.insuranceStatus,
-        bloodType: data.bloodType,
-        mobilePhone: data.phoneNumber,
-        address: !data.address
-          ? `${data.location.city}, ${data.location.province}`
-          : data.address,
-        age: getAge(data.dob),
-        patientTitle: '',
-        placeOfBirth: data.placeOfBirth || data.location.province,
-        resus: data.resus || '+',
-        parentID: data.parentID || null,
-      },
-    });
-    setDisplayName(
-      data.lastName ? data.firstName + ' ' + data.lastName : data.firstName
-    );
-  }
+  	return (
+    	<View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+			<ScrollView>
+				<Header
+					title={'Detail Pemesanan'}
+					navigate={props.navigation.navigate}
+					navigateBack={'DetailDoctor'}
+				/>
 
-  return (
-    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-      <ScrollView>
-        <Header
-          title={'Detail Pemesanan'}
-          navigate={props.navigation.navigate}
-          navigateBack={'DetailDoctor'}
-        />
+				<View style={cardStyle.container}>
+					<View style={cardStyle.card}>
+						<View style={{ flex: 0.2, alignItems: 'center' }}>
+							<Image
+								style={cardStyle.image}
+								source={{
+								uri: !doctorPhoto
+									? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
+									: doctorPhoto,
+								}}
+							/>
+						</View>
 
-        <View style={cardStyle.container}>
-          <View style={cardStyle.card}>
-            <View style={{ flex: 0.2, alignItems: 'center' }}>
-              <Image
-                style={cardStyle.image}
-                source={{
-                  uri: !datadoctor.photo
-                    ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
-                    : datadoctor.photo,
-                }}
-              />
-            </View>
-            <View style={cardStyle.detail}>
-              <Text style={{ color: '#DDDDDD', fontSize: 16 }}>
-                {datadoctor.title} {datadoctor.doctorName}
-              </Text>
-              <Text style={{ color: '#B5B5B5', fontSize: 14, marginTop: 2 }}>
-                {datadoctor.specialist}
-              </Text>
-              <Text style={{ color: '#DDDDDD', fontSize: 15, marginTop: 5 }}>
-                {datadoctor.healthFacility.facilityName}
-              </Text>
-              <View style={cardStyle.line} />
-              <View style={cardStyle.patient}>
-                <View style={{ flexDirection: 'row' }}>
-                  <Text style={{ color: '#B5B5B5' }}>Pasien :</Text>
-                  <Text style={{ color: '#DDDDDD', marginLeft: 5 }}>
-                    {displayName}
-                  </Text>
-                </View>
-                <View>
-                  <TouchableOpacity onPress={() => setModalP(true)}>
-                    <Text style={{ color: '#F37335', fontSize: 12 }}>Ubah</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <Text style={{ color: '#B5B5B5', marginTop: 2 }}>
-                {datadoctor.bookingSchedule.split('-').reverse().join('-')} -{' '}
-                {datadoctor.bookingTime}
-              </Text>
-              <View style={cardStyle.patient}>
-                <Text style={{ color: '#DDDDDD', marginTop: 2 }}>
-                  Biaya Konsultasi
-                </Text>
-                <Text style={{ color: '#DDDDDD', marginTop: 7 }}>
-                  {formatRP(datadoctor.facility[0].facilityEstPrice, 'RP')}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <View style={cardStyle.container}>
-          <TouchableOpacity onPress={() => setModalL(true)}>
-            <View style={cardStyle.pembayaran}>
-              <Text
-                style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 14 }}
-              >
-                Pembayaran - {patient.patient.insuranceStatus}
-              </Text>
-              <View style={{ marginTop: 8 }}>
-                <ArrowDownWhite />
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-        {patient.patient.insuranceStatus === 'UMUM' && (
-          <View>
-            {/* E-Wallet */}
-            {/* <Text
-              style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
-            >
-              Dompet Digital
-            </Text>
-            <View style={cardStyle.dompet}>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('gopay')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_gopay.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-                    Go-Pay
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('gopay')}>
-                  {dompet === 'gopay' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('linkaja')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_linkaja.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-                    LinkAja
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('linkaja')}>
-                  {dompet === 'linkaja' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('ovo')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_ovo.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>OVO</Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('ovo')}>
-                  {dompet === 'ovo' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-            </View> */}
+						<View style={cardStyle.detail}>
+							<Text style={{ color: '#DDDDDD', fontSize: 16 }}>
+								{title} {doctorName}
+							</Text>
+							<Text style={{ color: '#B5B5B5', fontSize: 14, marginTop: 2 }}>
+								{doctorSpecialist}
+							</Text>
+							<Text style={{ color: '#DDDDDD', fontSize: 15, marginTop: 5 }}>
+								{healthFacility.facilityName}
+							</Text>
 
-            <View style={cardStyle.dompet}>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('Tunai')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  {/* <Image
-                    source={require('../../../assets/png/ic_tunai.png')}
-                    height={20}
-                    width={20}
-                  /> */}
-                  <IcTunai />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-                    Tunai
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('Tunai')}>
-                  {dompet === 'Tunai' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-              {/* <Text
-                style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
-              >
-                Transfer Bank
-              </Text>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('Mandiri')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_mandiri.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-                    Mandiri
-                  </Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('Mandiri')}>
-                  {dompet === 'Mandiri' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('BNI')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_BNI.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BNI</Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('BNI')}>
-                  {dompet === 'BNI' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={cardStyle.pembayaran}
-                onPress={() => setDompet('BCA')}
-              >
-                <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  <Image
-                    source={require('../../../assets/png/ic_BCA.png')}
-                    height={20}
-                    width={20}
-                  />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BCA</Text>
-                </View>
-                <TouchableOpacity onPress={() => setDompet('BCA')}>
-                  {dompet === 'BCA' ? (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        backgroundColor: '#1380C3',
-                        alignContent: 'center',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <View
-                        style={{
-                          height: 7,
-                          width: 7,
-                          borderRadius: 7,
-                          backgroundColor: '#DDDDDD',
-                        }}
-                      />
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: 15,
-                        width: 15,
-                        borderRadius: 15,
-                        borderColor: '#DDDDDD',
-                        borderWidth: 1,
-                      }}
-                    />
-                  )}
-                </TouchableOpacity>
-              </TouchableOpacity> */}
-            </View>
-          </View>
-        )}
-        {patient.patient.insuranceStatus === 'BPJS' && (
-          <View
-            style={{
-              ...cardStyle.container,
-              borderWidth: 1,
-              borderColor: '#545454',
-            }}
-          >
-            <View style={cardStyle.pembayaran}>
-              <TextInput
-                placeholder={'Masukkan nomor BPJS'}
-                keyboardType="number-pad"
-                placeholderTextColor={'#B5B5B5'}
-                style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
-                value={bpjsNumber}
-                onChangeText={setBpjsNumber}
-              />
-            </View>
-          </View>
-        )}
+							<View style={cardStyle.line} />
 
-        {patient.patient.insuranceStatus === 'ASURANSI' && (
-          <View
-            style={{
-              ...cardStyle.container,
-              borderWidth: 1,
-              borderColor: '#545454',
-            }}
-          >
-            <View style={cardStyle.pembayaran}>
-              <TextInput
-                placeholder={'Masukkan nomor Asuransi'}
-                placeholderTextColor={'#B5B5B5'}
-                style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
-                value={insuranceNumber}
-                onChangeText={setInsuranceNumber}
-              />
-            </View>
-          </View>
-        )}
-      </ScrollView>
-      {isValidPayment() ? (
-        <View
-          style={{
-            padding: 10,
-            backgroundColor: '#1F1F1F',
-            height: 65,
-            justifyContent: 'center',
-            alignContent: 'center',
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => validation()}
-            style={viewStyle.button}
-          >
-            {load ? (
-              <ActivityIndicator size={'small'} color={'#FFF'} />
-            ) : (
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ marginTop: 2 }}>
-                  <BuatJanji />
-                </View>
-                <Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
-                  Buat Janji
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
-      ) : null}
+							<View style={cardStyle.patient}>
+								<View style={{ flexDirection: 'row' }}>
+									<Text style={{ color: '#B5B5B5' }}>Pasien :</Text>
+									<Text style={{ color: '#DDDDDD', marginLeft: 5 }}>{displayName}</Text>
+								</View>
+								<View>
+									<TouchableOpacity onPress={() => setModalP(true)}>
+										<Text style={{ color: '#F37335', fontSize: 12 }}>Ubah</Text>
+									</TouchableOpacity>
+								</View>
+							</View>
+							<Text style={{ color: '#B5B5B5', marginTop: 2 }}>
+								{bookingSchedule.split('-').reverse().join('-')} -{' '}
+								{bookingTime}
+							</Text>
+							<View style={cardStyle.patient}>
+								<Text style={{ color: '#DDDDDD', marginTop: 2 }}>Biaya Konsultasi</Text>
+								{/* <Text style={{ color: '#DDDDDD', marginTop: 7 }}>
+									{formatRP(datadoctor.facility[0].facilityEstPrice, 'RP')}
+								</Text> */}
+							</View>
+						</View>
+					</View>
+				</View>
+				<View style={cardStyle.container}>
+					<TouchableOpacity onPress={() => setModalL(true)}>
+						<View style={cardStyle.pembayaran}>
+							<Text
+								style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 14 }}
+							>
+								Pembayaran - {patient.patient.insuranceStatus}
+							</Text>
+							<View style={{ marginTop: 8 }}>
+								<ArrowDownWhite />
+							</View>
+						</View>
+					</TouchableOpacity>
+				</View>
 
-      {
-        // modals &&
-        <Modal
-          presentationStyle={'overFullScreen'}
-          statusBarTranslucent={false}
-          transparent
-          visible={modals}
-        >
-          <View
-            style={{
-              height: '120%',
-              width: '120%',
-              marginLeft: -30,
-              marginTop: -100,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <View style={{ width: '100%', height: '20%' }}>
-              <LottieLoader
-                source={require('../../animation/success-green.json')}
-                autoPlay
-                speed={0.7}
-                loop={false}
-                onAnimationFinish={() => {
-                  setModal(false);
-                  props.navigation.navigate('Appointment');
-                }}
-              />
-            </View>
-            <View
-              style={{
-                backgroundColor: '#2F2F2F',
-                width: '80%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 5,
-              }}
-            >
-              <Text style={{ marginVertical: 20, color: '#DDDDDD' }}>
-                Reservasi berhasil
-              </Text>
-            </View>
-          </View>
-        </Modal>
-      }
-      {modalf && (
-        <SettingModal
-          _visible={modalf}
-          _navigationRight={() => {
-            setModalf(false);
-          }}
-          _textRight={'OK'}
-          _message={_messageF}
-          _iconId={'failed'}
-        />
-      )}
-      <SelectPatient
-        modal={modalP}
-        setModal={setModalP}
-        accountOwner={accountOwner}
-        family={family}
-        title="Siapa yang ingin anda periksa?"
-        setSelectedValue={setSelectedValue}
-        modalP={modalP}
-        setModalP={setModalP}
-        patient={patient}
-        setPatient={setPatient}
-        family={family}
-        navigateTo={props.navigation.navigate}
-      />
-      {
-        // modal Pilih Insurance
-        <Modal
-          isVisible={modalL}
-          swipeDirection={'down'}
-          onSwipeComplete={() => setModalL(false)}
-          style={{
-            justifyContent: 'flex-end',
-            margin: 0,
-          }}
-          animationType="slide"
-          onRequestClose={() => setModalP(false)}
-        >
-          <View style={viewModalP.container}>
-            <View style={viewModalP.header}>
-              <View style={viewModalP.toogle} />
-              <Text style={viewModalP.title}>Pilih Pembayaran</Text>
-            </View>
-            <View style={viewModalP.patient}>
-              <TouchableOpacity
-                onPress={() => {
-                  setPatient({
-                    ...patient,
-                    patient: {
-                      ...patient.patient,
-                      insuranceStatus: 'UMUM',
-                    },
-                  });
-                  setModalL(false);
-                }}
-              >
-                <View style={viewModalP.cardName}>
-                  <View style={viewModalP.familyName}>
-                    <Text style={viewModalP.name}>Umum</Text>
-                  </View>
-                  <View style={viewModalP.vector}>
-                    <Vector />
-                  </View>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  ToastAndroid.show(
-                    'Belum Tersedia Saat Ini',
-                    ToastAndroid.SHORT
-                  );
-                  // setPatient({
-                  //   ...patient,
-                  //   patient: {
-                  //     ...patient.patient,
-                  //     insuranceStatus: 'BPJS',
-                  //   },
-                  // });
-                  // setModalL(false);
-                }}
-              >
-                <View style={viewModalP.cardNameDisabled}>
-                  <View style={viewModalP.familyName}>
-                    <Text style={viewModalP.name}>BPJS</Text>
-                  </View>
-                  <View style={viewModalP.vector}>
-                    <Vector />
-                  </View>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  ToastAndroid.show(
-                    'Belum Tersedia Saat Ini',
-                    ToastAndroid.SHORT
-                  );
-                  // setPatient({
-                  //   ...patient,
-                  //   patient: {
-                  //     ...patient.patient,
-                  //     insuranceStatus: 'ASURANSI',
-                  //   },
-                  // });
-                  // setModalL(false);
-                }}
-              >
-                <View style={viewModalP.cardNameDisabled}>
-                  <View style={viewModalP.familyName}>
-                    <Text style={viewModalP.name}>Asuransi</Text>
-                  </View>
-                  <View style={viewModalP.vector}>
-                    <Vector />
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      }
-    </View>
-  );
+				{/* Payment Selections */}
+        		{patient.patient.insuranceStatus === 'UMUM' && (
+          			<View>
+						{/* E-Wallet */}
+						<Text style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}>
+							Dompet Digital
+						</Text>
+
+						<View style={cardStyle.dompet}>
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('gopay')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_gopay.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+										Go-Pay
+									</Text>
+								</View>
+
+								<TouchableOpacity onPress={() => setDompet('gopay')}>
+									{dompet === 'gopay' ? (
+										<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
+											}}
+										>
+											<View
+												style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+												}}
+											/>
+										</View>
+									) : (
+										<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												borderColor: '#DDDDDD',
+												borderWidth: 1,
+											}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('linkaja')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_linkaja.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+										LinkAja
+									</Text>
+								</View>
+								<TouchableOpacity onPress={() => setDompet('linkaja')}>
+									{dompet === 'linkaja' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+											height: 7,
+											width: 7,
+											borderRadius: 7,
+											backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												borderColor: '#DDDDDD',
+												borderWidth: 1,
+											}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('ovo')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_ovo.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>OVO</Text>
+								</View>
+								<TouchableOpacity onPress={() => setDompet('ovo')}>
+									{dompet === 'ovo' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+											height: 7,
+											width: 7,
+											borderRadius: 7,
+											backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											borderColor: '#DDDDDD',
+											borderWidth: 1,
+										}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+						</View>
+
+            			<View style={cardStyle.dompet}>
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('Tunai')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<IcTunai />
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+										Tunai
+									</Text>
+								</View>
+
+								<TouchableOpacity onPress={() => setDompet('Tunai')}>
+									{dompet === 'Tunai' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											borderColor: '#DDDDDD',
+											borderWidth: 1,
+										}}
+										/>
+									)}
+								</TouchableOpacity>
+              				</TouchableOpacity>
+
+							<Text
+								style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
+							>
+								Transfer Bank
+							</Text>
+
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('Mandiri')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_mandiri.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+										Mandiri
+									</Text>
+								</View>
+								<TouchableOpacity onPress={() => setDompet('Mandiri')}>
+									{dompet === 'Mandiri' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											borderColor: '#DDDDDD',
+											borderWidth: 1,
+										}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('BNI')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_BNI.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BNI</Text>
+								</View>
+
+								<TouchableOpacity onPress={() => setDompet('BNI')}>
+									{dompet === 'BNI' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+											height: 7,
+											width: 7,
+											borderRadius: 7,
+											backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											borderColor: '#DDDDDD',
+											borderWidth: 1,
+										}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={cardStyle.pembayaran}
+								onPress={() => setDompet('BCA')}
+							>
+								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+									<Image
+										source={require('../../../assets/png/ic_BCA.png')}
+										height={20}
+										width={20}
+									/>
+									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BCA</Text>
+								</View>
+								<TouchableOpacity onPress={() => setDompet('BCA')}>
+									{dompet === 'BCA' ? (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											backgroundColor: '#1380C3',
+											alignContent: 'center',
+											alignItems: 'center',
+											justifyContent: 'center',
+										}}
+										>
+										<View
+											style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+											}}
+										/>
+										</View>
+									) : (
+										<View
+										style={{
+											height: 15,
+											width: 15,
+											borderRadius: 15,
+											borderColor: '#DDDDDD',
+											borderWidth: 1,
+										}}
+										/>
+									)}
+								</TouchableOpacity>
+							</TouchableOpacity>
+						</View>
+          			</View>
+				)}
+
+				{/* {patient.patient.insuranceStatus === 'BPJS' && (
+				<View
+					style={{
+					...cardStyle.container,
+					borderWidth: 1,
+					borderColor: '#545454',
+					}}
+				>
+					<View style={cardStyle.pembayaran}>
+					<TextInput
+						placeholder={'Masukkan nomor BPJS'}
+						keyboardType="number-pad"
+						placeholderTextColor={'#B5B5B5'}
+						style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+						value={bpjsNumber}
+						onChangeText={setBpjsNumber}
+					/>
+					</View>
+				</View>
+				)} */}
+
+				{/* {patient.patient.insuranceStatus === 'ASURANSI' && (
+				<View
+					style={{
+					...cardStyle.container,
+					borderWidth: 1,
+					borderColor: '#545454',
+					}}
+				>
+					<View style={cardStyle.pembayaran}>
+					<TextInput
+						placeholder={'Masukkan nomor Asuransi'}
+						placeholderTextColor={'#B5B5B5'}
+						style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+						value={insuranceNumber}
+						onChangeText={setInsuranceNumber}
+					/>
+					</View>
+				</View>
+				)} */}
+      		</ScrollView>
+
+			{isValidPayment() ? (
+				<View
+					style={{
+						padding: 10,
+						backgroundColor: '#1F1F1F',
+						height: 65,
+						justifyContent: 'center',
+						alignContent: 'center',
+					}}
+					>
+					<TouchableOpacity
+						onPress={() => validation()}
+						style={viewStyle.button}
+					>
+						{load ? (
+							<ActivityIndicator size={'small'} color={'#FFF'} />
+						) : (
+							<View style={{ flexDirection: 'row' }}>
+								<View style={{ marginTop: 2 }}>
+									<BuatJanji />
+								</View>
+								<Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
+									Buat Janji
+								</Text>
+							</View>
+						)}
+					</TouchableOpacity>
+				</View>
+			) : null}
+
+			{
+				modals &&
+				<Modal
+				presentationStyle={'overFullScreen'}
+				statusBarTranslucent={false}
+				transparent
+				visible={modals}
+				>
+				<View
+					style={{
+					height: '120%',
+					width: '120%',
+					marginLeft: -30,
+					marginTop: -100,
+					backgroundColor: 'rgba(0,0,0,0.6)',
+					justifyContent: 'center',
+					alignItems: 'center',
+					}}
+				>
+					<View style={{ width: '100%', height: '20%' }}>
+					<LottieLoader
+						source={require('../../animation/success-green.json')}
+						autoPlay
+						speed={0.7}
+						loop={false}
+						onAnimationFinish={() => {
+						setModal(false);
+						props.navigation.navigate('Appointment');
+						}}
+					/>
+					</View>
+					<View
+					style={{
+						backgroundColor: '#2F2F2F',
+						width: '80%',
+						justifyContent: 'center',
+						alignItems: 'center',
+						borderRadius: 5,
+					}}
+					>
+					<Text style={{ marginVertical: 20, color: '#DDDDDD' }}>
+						Reservasi berhasil
+					</Text>
+					</View>
+				</View>
+				</Modal>
+			}
+
+			{modalf && (
+				<SettingModal
+					_visible={modalf}
+					_navigationRight={() => {
+						setModalf(false);
+					}}
+					_textRight={'OK'}
+					_message={_messageF}
+					_iconId={'failed'}
+				/>
+			)}
+
+			<SelectPatient
+				modal={modalP}
+				setModal={setModalP}
+				accountOwner={accountOwner}
+				family={family}
+				title="Siapa yang ingin anda periksa?"
+				setSelectedValue={setSelectedValue}
+				modalP={modalP}
+				setModalP={setModalP}
+				patient={patient}
+				setPatient={setPatient}
+				family={family}
+				navigateTo={props.navigation.navigate}
+			/>
+			{
+				// modal Pilih Insurance
+				<Modal
+					isVisible={modalL}
+					swipeDirection={'down'}
+					onSwipeComplete={() => setModalL(false)}
+					style={{
+						justifyContent: 'flex-end',
+						margin: 0,
+					}}
+					animationType="slide"
+					onRequestClose={() => setModalP(false)}
+				>
+					<View style={viewModalP.container}>
+						<View style={viewModalP.header}>
+							<View style={viewModalP.toogle} />
+							<Text style={viewModalP.title}>Pilih Pembayaran</Text>
+						</View>
+						<View style={viewModalP.patient}>
+							<TouchableOpacity
+								onPress={() => {
+									setPatient({
+										...patient,
+										patient: {
+										...patient.patient,
+										insuranceStatus: 'UMUM',
+										},
+									});
+									setModalL(false);
+								}}
+							>
+								<View style={viewModalP.cardName}>
+									<View style={viewModalP.familyName}>
+										<Text style={viewModalP.name}>Umum</Text>
+									</View>
+									<View style={viewModalP.vector}>
+										<Vector />
+									</View>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => {
+									ToastAndroid.show(
+										'Belum Tersedia Saat Ini',
+										ToastAndroid.SHORT
+									);
+									// setPatient({
+									// ...patient,
+									// patient: {
+									// 	...patient.patient,
+									// 	insuranceStatus: 'BPJS',
+									// },
+									// });
+									// setModalL(false);
+								}}
+							>
+								<View style={viewModalP.cardNameDisabled}>
+									<View style={viewModalP.familyName}>
+										<Text style={viewModalP.name}>BPJS</Text>
+									</View>
+									<View style={viewModalP.vector}>
+										<Vector />
+									</View>
+								</View>
+							</TouchableOpacity>
+							<TouchableOpacity
+								onPress={() => {
+									ToastAndroid.show(
+										'Belum Tersedia Saat Ini',
+										ToastAndroid.SHORT
+									);
+									}}
+							>
+								<View style={viewModalP.cardNameDisabled}>
+									<View style={viewModalP.familyName}>
+										<Text style={viewModalP.name}>Asuransi</Text>
+									</View>
+									<View style={viewModalP.vector}>
+										<Vector />
+									</View>
+								</View>
+							</TouchableOpacity>
+						</View>
+					</View>
+				</Modal>
+			}
+    	</View>
+  	);
 };
 
 const viewStyle = StyleSheet.create({

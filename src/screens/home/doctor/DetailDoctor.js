@@ -53,7 +53,7 @@ function DetailDoctorPage(props) {
 
 
   const { data: doctorDetail, back, distance } = props.navigation.state.params
-  const { photo, title, doctorName, specialist, estPrice, facilities, schedules} = doctorDetail
+  const { photo, title, doctorName, specialist, estPrice, facilities, schedules, _id,nik,gender,address,phoneNumber, dokterIdWeb} = doctorDetail
 
   const _data = props.navigation.getParam('data');
   const _idHostpital = props.navigation.getParam('idHos');
@@ -63,13 +63,28 @@ function DetailDoctorPage(props) {
   const [showAbout, setShowAbout] = useState(false);
   const [showAddress, setShowAddress] = useState(true);
   const [aktif, setaktif] = useState('');
-  const [dataDoctor, setDataDoctor] = useState(doctorDetail);
+  const [dataDoctor, setDataDoctor] = useState({
+	specialist, 
+	_id,
+	title, 
+	doctorName, 
+	nik,
+	gender,
+	address,
+	phoneNumber,
+	photo, 
+	dokterIdWeb,
+	estPrice, 
+  });
   const [jadwalPerhari, setjadwalPerhari] = useState([]);
+
 
   const [aktifDay, setAktifDay] = useState(null);
   const [aktifHospital, setAktifHospital] = useState(null);
   const [newData, setNewData] = useState(null);
   const [bookingDate, setBookingDate] = useState(new Date());
+  const [bookingSchedule, setBookingSchedule] = useState(new Date())
+  const [currentSchedules, setCurrentSchedules] = useState(null)
   const [month, setMonth] = useState(bookingDate.getMonth());
 
   const [facility, setFacility] = useState(null);
@@ -244,17 +259,12 @@ function DetailDoctorPage(props) {
   };
 
   const buatJanji = async () => {
-    // console.log('ini untuk buat janji, anti diredirect')
-    // console.log(value,'ini valuenya..')
     if (bookingTime === '') {
       ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
     } else {
-      props.userData
-        ? // console.log('ini bisa di redirect'),
-          props.navigation.push('BuatJanji', { data: dataDoctor })
-        : // console.log('gabisa di redirect karena belom login, arahin ke bagian sign'),
-          (props.navigation.navigate('DetailDoctor'),
-          props.navigation.navigate('Sign'));
+      props.userData ? props.navigation.push('BuatJanji', { doctorData: dataDoctor }) : 
+		(props.navigation.navigate('DetailDoctor'),
+		props.navigation.navigate('Sign'));
     }
   };
 
@@ -312,13 +322,25 @@ function DetailDoctorPage(props) {
     }
   };
 
-  const checkSchedule = (key) => {
-    return new Date(
-      `${month + 1}/${calcDate(key)}/${bookingDate.getFullYear()}`
-    )
-      .getDay()
-      .toString();
-  };
+	const calcDate = (key) => {
+		const isCurrentMonth = month === new Date().getMonth()
+		const currentMonthResult = bookingDate.getDate() + key
+		const nextMonthResult = key + 1
+
+		if(isCurrentMonth) return currentMonthResult
+		else return nextMonthResult
+	};
+
+	const checkSchedule = (key) => {
+		const Month = month + 1
+		const date = calcDate(key)
+		const year = bookingDate.getFullYear()
+
+		const newDate = new Date(`${Month}/${date}/${year}`)
+		const result = newDate.getDay().toString()
+
+		return result
+	};
 
   function parsingData() {
     let day = {};
@@ -349,11 +371,7 @@ function DetailDoctorPage(props) {
     Linking.openURL(url);
   };
 
-  const calcDate = (key) => {
-    return month === new Date().getMonth()
-      ? bookingDate.getDate() + key
-      : key + 1;
-  };
+ 
 
   const isNextMonthDisabled = () => {
     const dateNow = new Date()
@@ -367,7 +385,6 @@ function DetailDoctorPage(props) {
     }
     
   }
-
 
   return (
 	<View style={containerStyle.container}>
@@ -547,6 +564,7 @@ function DetailDoctorPage(props) {
 														facilityName,
 														facilityType,
 														facilityMainType,
+														clinicIdWeb
 													}
 												});
 											}}
@@ -575,6 +593,9 @@ function DetailDoctorPage(props) {
 															new Date().getMonth()
 														}
 														onPress={() => {
+															bookingSchedule.setMonth(bookingSchedule.getMonth() - 1)
+															setCurrentSchedules(null)
+
 															setBookingDate(bookingDate.minusMonths());
 															setBookingTime('');
 															setMonth(bookingDate.getMonth());
@@ -620,6 +641,9 @@ function DetailDoctorPage(props) {
 													<TouchableOpacity
 														disabled={isNextMonthDisabled()}
 														onPress={() => {
+															bookingSchedule.setMonth(bookingSchedule.getMonth() + 1)
+															setCurrentSchedules(null)
+
 															setChooseDate(null);
 															setBookingDate(bookingDate.addMonths());
 															setBookingTime('');
@@ -648,6 +672,180 @@ function DetailDoctorPage(props) {
                                   					</TouchableOpacity>
 												</View>
 											</View>
+
+											{/* Calendar */}
+											<ScrollView
+												horizontal
+												showsHorizontalScrollIndicator={false}
+												ref={calendarRef}
+											>
+
+												<View
+													style={{
+													flexDirection: 'row',
+													}}
+												>
+
+													{Array.from(
+														Array(
+															month === new Date().getMonth()
+															? bookingDate.getDaysInMonth() -
+																bookingDate.getDate() +
+																1
+															: bookingDate.getDaysInMonth()
+														).keys()
+														).map((key, index) => {
+															const numberDay = new Date(
+																`${month + 1}/${calcDate(
+																key
+																)}/${bookingDate.getFullYear()}`
+															).getDay()
+															const displayDay = day[numberDay]
+															return (
+																<TouchableOpacity
+																	key={key}
+																	// disabled={
+																	// 	!item.facilitySchedule[
+																		// checkSchedule(key)
+																	// 	]
+																	// }
+																	onPress={() => {
+																		bookingSchedule.setDate(calcDate(key))
+																		const selectedDay = bookingSchedule.getDay()
+																		const newSchedules = filteredSchedules.filter(el => el.scheduleDay === selectedDay)
+																		setCurrentSchedules(newSchedules)
+																		
+
+																		setBookingTime('');
+																		setChooseDate(calcDate(key));
+																		checkSchedule(key);
+																		// setNewData({
+																		// ...newData,
+																		// [item.facilityName]: [
+																		// 	checkSchedule(key),
+																		// 	item.facilitySchedule[
+																		// 	checkSchedule(key)
+																		// 	],
+																		// ],
+																		// });
+																		setDataDoctor({
+																			...dataDoctor,
+																			healthFacility: {
+																				facilityID: _id,
+																				facilityName,
+																				facilityType,
+																				facilityMainType,
+																				clinicIdWeb
+																			}
+																		});
+																	}}
+																>
+																	<View
+																		style={{
+																		marginTop: 10,
+																		marginRight: 10,
+																		height: 75,
+																		width: 55,
+																		borderRadius: 12,
+																		backgroundColor:
+																			chooseDate === calcDate(key)
+																			? '#005EA2'
+																			: '#3F3F3F',
+																		}}
+																	>
+																		<Text
+																			style={{
+																				fontSize: 14,
+																				marginVertical: 10,
+																				textAlign: 'center',
+																				color: '#DDDDDD'
+																				// color: item.facilitySchedule[
+																				// checkSchedule(key)
+																				// ]
+																				// ? '#DDDDDD'
+																				// : '#727272',
+																			}}
+																		>
+																			{displayDay}
+																		</Text>
+																		<Text
+																			style={{
+																				fontSize: 14,
+																				marginBottom: 15,
+																				textAlign: 'center',
+																				color: '#DDDDDD'
+																				// color: item.facilitySchedule[
+																				// checkSchedule(key)
+																				// ]
+																				// ? '#DDDDDD'
+																				// : '#727272',
+																			}}
+																		>
+																			{calcDate(key)}
+																		</Text>
+																	</View>
+																</TouchableOpacity>
+															);
+													})}
+												</View>
+
+											</ScrollView>
+
+											<View style={{ marginVertical: 15 }}>
+												<ScrollView
+													horizontal
+													showsHorizontalScrollIndicator={false}
+												>
+													{currentSchedules && currentSchedules.map((el, scheduleIndex) => {
+														const { status, limit, scheduleDay, scheduleTime, doctorID, clinicIDWeb } = el
+														const selectedDay = bookingSchedule.getDay()
+														const disabled = false
+															return(
+																<View key={scheduleIndex}>
+																	<TouchableOpacity
+																		// disabled={disabled}
+																		onPress={() => {
+																			const year = bookingSchedule.getFullYear()
+																			const Month = bookingSchedule.getMonth()
+																			const date = bookingSchedule.getDate()
+																			// const year = bookingDate.getFullYear()
+																			// const Month = bookingDate.getMonth() + 1
+																			setBookingTime(scheduleTime);
+																			setDataDoctor({
+																				...dataDoctor,
+																				bookingTime: scheduleTime,
+																				bookingSchedule: `${year}-${Month}-${date}`,
+																			});
+																		}}
+																	>
+																		<View
+																			style={{
+																				height: 40,
+																				width: 120,
+																				marginRight: 10,
+																				borderRadius: 5,
+																				backgroundColor: bookingTime === scheduleTime
+																					? '#005EA2'
+																					: '#3F3F3F',
+																			}}
+																		>
+																			<Text
+																				style={{
+																					color: !disabled ? '#DDDDDD' : '#727272',
+																					textAlign: 'center',
+																					marginTop: 10,
+																				}}
+																			>
+																				{scheduleTime}
+																			</Text>
+																		</View>
+																	  </TouchableOpacity>
+																</View>
+															)
+													})}
+												</ScrollView>
+											</View>
+
 											<TouchableOpacity
 												onPress={() => setShowDetail(null)}
 											>
@@ -668,6 +866,33 @@ function DetailDoctorPage(props) {
 					})}
 				</ScrollView>
 			</View>
+
+			{/* Make Reservation Button */}
+			<TouchableOpacity
+				onPress={async () => {
+					buatJanji();
+				}}
+            >
+              	<View
+					style={{
+						height: 50,
+						backgroundColor: '#005EA2',
+						alignItems: 'center',
+						justifyContent: 'center',
+						borderRadius: 5,
+						margin: 10,
+					}}
+              	>
+                	<View style={{ flexDirection: 'row' }}>
+						<View style={{ marginTop: 2 }}>
+							<BuatJanji />
+						</View>
+						<Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
+							Buat Janji
+						</Text>
+                	</View>
+              	</View>
+            </TouchableOpacity>
 
         {/* {dataDoctor ? (
           <>
