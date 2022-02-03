@@ -22,7 +22,6 @@ function ShowDocument(props) {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
       () => {
-        console.log('SHOW DOCUMENT');
         props.navigation.navigate(backTo);
         return true;
       }
