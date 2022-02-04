@@ -42,8 +42,6 @@ import LottieLoader from 'lottie-react-native';
 
 function SearchDoctorPage(props) {
   // console.log(props.navigation.state.params.facility,'ini params')
-  console.log(props.myLocation);
-  console.log(props.userData);
   let mainFac = props.navigation.state.params.facility;
   const [loader, setLoad] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -61,7 +59,6 @@ function SearchDoctorPage(props) {
       let { data } = await axios(
         {
           method: 'POST',
-          // url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
           url: `${baseURL}/api/v1/members/searchFacility`,
           data: {
             lat: location ? location.lat : -6.268809,

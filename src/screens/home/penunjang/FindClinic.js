@@ -6686,7 +6686,7 @@ const TIMES = [
 ];
 
 function FindClinic(props) {
-  console.log(props.myLocation);
+  console.log(props.myLocation), '';
   const [clinics, setClinics] = useState(DUMMIES_CLINIC);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedClinic, setSelectedClinic] = useState();
