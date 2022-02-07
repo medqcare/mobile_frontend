@@ -42,6 +42,25 @@ const InputSecretCodeOTP = (props) => {
     setTimeout(() => setTimer(timer - 1), 1000);
   }, [timer]);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const verificationId = await firebaseAuthService.verifyPhoneNumber(
+          phoneNumber
+        );
+        setVerificationId(verificationId);
+      } catch (error) {
+        console.log(error.message);
+        ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG)
+      }
+    })();
+
+    return () => {
+      setVerificationId('');
+      setSecretCode('');
+    };
+  }, []);
+
   async function onPressHandler() {
     ToastAndroid.show('Verifikasi...', ToastAndroid.SHORT);
     try {
@@ -58,15 +77,14 @@ const InputSecretCodeOTP = (props) => {
   }
 
   const resendCodeHandler = () => {
-    ToastAndroid.show(
-      'Proses...',
-      ToastAndroid.SHORT
-    )(async () => {
+    (async () => {
       try {
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
+        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG)
         setVerificationId(verificationId);
+        setTimer(120)
       } catch (error) {
         ToastAndroid.show('Yeah :)', ToastAndroid.LONG);
       }
