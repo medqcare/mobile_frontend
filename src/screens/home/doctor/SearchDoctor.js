@@ -100,9 +100,17 @@ function SearchDoctorPage(props) {
 				},
 				{ timeout: 4000 }
 				);
+				
 				if (data.data) {
-				setShow(data.data);
+					if (currentPage == 0) {
+						setShow(data.data);
+						setAvalaibleLocations(data.data);
+					} else {
+						setShow(show.concat(data.data));
+						setAvalaibleLocations(availableLocations.concat(data.data));
+					}
 				}
+
 				setLoading(false);
 			} catch (error) {
 				setLoading(false);
@@ -114,6 +122,7 @@ function SearchDoctorPage(props) {
 
 	const _textChange = async (params) => {
 		setShow([]);
+		setAvalaibleLocations([])
 		setCurrentPage(0);
 		if (params === '') {
 			setCurrentPage(0);
@@ -122,7 +131,7 @@ function SearchDoctorPage(props) {
 		try {
 			let { data, status } = await axios({
 				method: 'POST',
-				url: `${baseURL}/api/v1/members/searchDoctor?page=${currentPage}`,
+				url: `${baseURL}/api/v1/members/searchDoctor?page=0`,
 				data: {
 					lat: location ? location.lat : -6.268809,
             		lon: location ? location.lng : 106.974705,
@@ -167,9 +176,15 @@ function SearchDoctorPage(props) {
 				// datawanted.sort((a, b) => {
 				//   return a.distance > b.distance;
 				// });
-				setShow(data.data);
-				setAvalaibleLocations(data.data)
-				setLoading(false);
+				// if(availableLocations.length > 0){
+				// 	console.log('harusnya ditambahin di sini')
+				// 	setAvalaibleLocations(availableLocations.concat(data.data));
+				// 	setLoading(false);
+				// } else {
+					setShow(data.data);
+					setAvalaibleLocations(data.data)
+					setLoading(false);
+				// }
 			} else {
 				setLoading(false);
 			}
@@ -177,6 +192,8 @@ function SearchDoctorPage(props) {
 			setLoading(false);
 		}
 	};
+
+	console.log(availableLocations.length, 'length dari available locations')
 
 
   const onRefresh = React.useCallback(async () => {
