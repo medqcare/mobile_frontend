@@ -83,13 +83,12 @@ function SearchDoctorPage(props) {
     setShow([]);
     try {
       let { data, status } = await axios.get(
-        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Hospital`,
+        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Clinic`,
         { timeout: 4000 }
       );
       if (status == 204) {
         setLoading(false);
       } else {
-        console.log('===========================');
         data.data.sort((a, b) => {
           let distanceA = latLongToKM(
             a.location.coordinates[1],
