@@ -9,6 +9,7 @@ function getSelectedDate(date = new Date()){
     const todaysMillisecond = todaysNewDate.getMilliseconds()
 
     return {
+        todaysNewDate,
         todaysYear, 
         todaysMonth, 
         todaysDate,
