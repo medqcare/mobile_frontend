@@ -30,6 +30,7 @@ import BuatJanji from '../../../assets/svg/BuatJanji';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
+import { checkDisabled } from '../../../helpers/disabledScheduleTime';
 
 const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
@@ -258,15 +259,15 @@ function DetailDoctorPage(props) {
     }
   };
 
-  const buatJanji = async () => {
-    if (bookingTime === '') {
-      ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
-    } else {
-      props.userData ? props.navigation.push('BuatJanji', { doctorData: dataDoctor }) : 
-		(props.navigation.navigate('DetailDoctor'),
-		props.navigation.navigate('Sign'));
-    }
-  };
+	const buatJanji = async () => {
+		if (bookingTime === '') {
+			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+		} else {
+			props.userData ? props.navigation.push('BuatJanji', { doctorData: dataDoctor }) : 
+				(props.navigation.navigate('DetailDoctor'),
+				props.navigation.navigate('Sign'));
+		}
+	};
 
   const getFacility = () => {
     let temp = null;
@@ -719,15 +720,6 @@ function DetailDoctorPage(props) {
 																		setBookingTime('');
 																		setChooseDate(calcDate(key));
 																		checkSchedule(key);
-																		// setNewData({
-																		// ...newData,
-																		// [item.facilityName]: [
-																		// 	checkSchedule(key),
-																		// 	item.facilitySchedule[
-																		// 	checkSchedule(key)
-																		// 	],
-																		// ],
-																		// });
 																		setDataDoctor({
 																			...dataDoctor,
 																			healthFacility: {
@@ -799,17 +791,15 @@ function DetailDoctorPage(props) {
 													{currentSchedules && currentSchedules.map((el, scheduleIndex) => {
 														const { status, limit, scheduleDay, scheduleTime, doctorID, clinicIDWeb } = el
 														const selectedDay = bookingSchedule.getDay()
-														const disabled = false
+														const disabled = checkDisabled(el, bookingSchedule)
 															return(
 																<View key={scheduleIndex}>
 																	<TouchableOpacity
-																		// disabled={disabled}
+																		disabled={disabled}
 																		onPress={() => {
 																			const year = bookingSchedule.getFullYear()
-																			const Month = bookingSchedule.getMonth()
+																			const Month = bookingSchedule.getMonth() + 1
 																			const date = bookingSchedule.getDate()
-																			// const year = bookingDate.getFullYear()
-																			// const Month = bookingDate.getMonth() + 1
 																			setBookingTime(scheduleTime);
 																			setDataDoctor({
 																				...dataDoctor,
