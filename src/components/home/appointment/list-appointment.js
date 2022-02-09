@@ -23,12 +23,9 @@ import openMap from '../../../helpers/openMap';
 import Qrcode from '../../../assets/svg/Qrcode';
 
 const ListApointment = (props) => {
-  const [address, setAddres] = useState(false);
   const [dataPatient, setPatient] = useState(null);
   const [modal, setmodal] = useState(false);
-  const [healthFacilityData, setHealthFacilityData] = useState(null);
 
-  const [loadingLocation, setLoadingLocation] = useState(false);
   var moment = require('moment');
 
   useEffect(() => {
@@ -77,41 +74,7 @@ const ListApointment = (props) => {
       reservationData: props.data,
       isToday,
     });
-    // getHealthFacility()
-    //   .then((data) => {
-    //     console.log(data);
-    //     setmodal(false);
-    //     props.route.navigate('Scanner', {
-    //       reservationData: props.data,
-    //       healthFacility: data,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.log(error.message);
-    //   });
   };
-
-  //   <TouchableOpacity
-  //   style={{ alignSelf: 'flex-start' }}
-  //   onPress={() => {
-  //     openMapHandler();
-  //   }}
-  // >
-  //   <View
-  //     style={{
-  //       alignItems: 'center',
-  //       height: 40,
-  //       width: 40,
-  //       borderRadius: 40,
-  //       borderColor: '#7D7D7D',
-  //       borderWidth: 1,
-  //       alignItems: 'center',
-  //       justifyContent: 'center',
-  //     }}
-  //   >
-  //     <ButtonMap />
-  //   </View>
-  // </TouchableOpacity>
 
   //function
   function socketConnection() {
@@ -244,8 +207,9 @@ const ListApointment = (props) => {
             >
               <TouchableOpacity
                 onPress={() => {
-                  props.setModalDelete(true);
-                  props.function();
+                  if (typeof props.onCancelReservation === 'function') {
+                    props.onCancelReservation(props.data._id);
+                  }
                 }}
               >
                 <Text

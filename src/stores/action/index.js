@@ -274,7 +274,12 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
   };
 }
 
-export function SignInWithEmailOrPhoneNumber(userData, navigation, modalF, navigateTo) {
+export function SignInWithEmailOrPhoneNumber(
+  userData,
+  navigation,
+  modalF,
+  navigateTo
+) {
   return (dispatch) => {
     console.log(userData, 'Email and password of the user trying to sign in');
     // console.log(navigation, 'ini navigationnya')
@@ -350,28 +355,36 @@ export function SignInWithEmailOrPhoneNumber(userData, navigation, modalF, navig
 export function AddNewUser(userData, navigation) {
   return async (dispatch) => {
     try {
-      const { data: response } = await instance({ url: '/v1/members/users', method: 'POST', data: userData })
-      const { token } = response.data
-      await AsyncStorage.setItem('token', JSON.stringify({ token }))
-      const { data: responseDataLogged } = await instance({ url: '/v1/members/dataLogged', method: 'GET', headers: { Authorization: token}})
+      const { data: response } = await instance({
+        url: '/v1/members/users',
+        method: 'POST',
+        data: userData,
+      });
+      const { token } = response.data;
+      await AsyncStorage.setItem('token', JSON.stringify({ token }));
+      const { data: responseDataLogged } = await instance({
+        url: '/v1/members/dataLogged',
+        method: 'GET',
+        headers: { Authorization: token },
+      });
 
       if (!responseDataLogged.data) {
         dispatch({
           type: 'GET_USER_DATA',
-          payload: responseDataLogged.data
-        })
+          payload: responseDataLogged.data,
+        });
         navigation.navigate('UserDataCompletion', {
           phoneNumber: userData.phoneNumber,
         });
       } else {
         dispatch({
           type: 'AFTER_SIGNIN',
-          payload: responseDataLogged.data
-        })
-        navigation.navigate('Home')
+          payload: responseDataLogged.data,
+        });
+        navigation.navigate('Home');
       }
     } catch (error) {
-      ToastAndroid.show(error.message, ToastAndroid.LONG)
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
     }
   };
 }
@@ -1021,7 +1034,7 @@ export function cancelRecervation(reservationID) {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem('token');
     try {
-      let data = await instance({
+      let { data } = await instance({
         url: `/v1/members/cancelReservation`,
         method: 'PATCH',
         headers: {
@@ -1031,6 +1044,7 @@ export function cancelRecervation(reservationID) {
           reservationID: reservationID,
         },
       });
+      console.log(data);
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }

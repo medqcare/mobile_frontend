@@ -6758,6 +6758,9 @@ function FindClinic(props) {
     });
   };
 
+  // lang 106
+  // lat -6
+
   const renderClinics = ({ item: clinic }) => {
     const [lang, lat] = clinic.Location.coordinates;
     const totalPriceWithFormatRupiah = formatNumberToRupiah(clinic.totalPrice);
