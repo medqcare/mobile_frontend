@@ -5,6 +5,7 @@ import { TouchableOpacity, Text, Image, View } from 'react-native'
 import HomeStack from './home'
 import LoadingStack from './switchNavigation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { TransitionPresets } from 'react-navigation-stack';
 
 const TabNavigator = createBottomTabNavigator({
   Home: {

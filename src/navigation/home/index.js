@@ -21,7 +21,6 @@ import prescriptionStack from './prescriptionStack';
 import reminderStack from './reminderStack';
 import appointmentStack from './appointmentStack';
 import NotificationStack from './notificationStack';
-
 export default StackHome = createStackNavigator(
   {
     Home: {
@@ -143,7 +142,10 @@ export default StackHome = createStackNavigator(
     initialRouteName: 'Home',
     defaultNavigationOptions: {
       ...TransitionPresets.SlideFromRightIOS,
-      animationEnabled: false,
+      cardStyle: {
+        backgroundColor: '#1F1F1F',
+        opacity: 1,
+      },
     },
   }
 );
