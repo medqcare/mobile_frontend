@@ -7,6 +7,7 @@ import { baseURL } from '../../config';
 
 const activeActivity = (props) => {
   // console.log(Object.keys(props.data.registration))
+  console.log(props.data, 'this is data')
   let queuingNumber = props.data.queuingNumber;
   const [quesekarang, setquesekarang] = useState(props.currentQueue);
 
