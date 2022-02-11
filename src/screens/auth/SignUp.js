@@ -23,7 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mapDispatchToProps = {
   setLoading,
-  AddNewUser
+  AddNewUser,
 };
 const mapStateToProps = (state) => {
   return state;
@@ -88,18 +88,25 @@ const SignUpScreen = (props) => {
 
     if (!isEmailValid) {
       setErrorEmail(true);
+    } else {
+      setErrorEmail(false);
     }
 
     if (!isPhoneNumberValid) {
       setErrorPhonenNumber(true);
+    } else {
+      setErrorPhonenNumber(false);
     }
-
     if (!isPasswordValid) {
       setErrorPassword(true);
+    } else {
+      setErrorPassword(false);
     }
 
     if (!isPasswordMatch) {
       setErrorConfirmationPassword(true);
+    } else {
+      setErrorConfirmationPassword(false);
     }
 
     const isPayloadValid =
@@ -122,7 +129,7 @@ const SignUpScreen = (props) => {
 
   const onSubmitHandler = async () => {
     const validationResult = payloadValidation();
-
+    console.log(validationResult, 'this is validator result');
     if (validationResult === false) {
       return;
     }
@@ -155,13 +162,13 @@ const SignUpScreen = (props) => {
       const payload = {
         email: credential.email,
         password: credential.password,
-        phoneNumber: phoneNumber
-      }
+        phoneNumber: phoneNumber,
+      };
       props.navigation.navigate('InputSecretCodeOTP', {
         phoneNumber,
         backTo: 'SignUp',
         onSuccess: () => {
-          props.AddNewUser(payload, props.navigation)
+          props.AddNewUser(payload, props.navigation);
         },
       });
     } catch (error) {
