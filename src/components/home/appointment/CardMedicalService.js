@@ -11,13 +11,18 @@ function CardMedicalService({ reservation, ...props }) {
   const {
     location: { lat, long },
   } = reservation.healthFacility;
-  const { lat: latUser, lng: lngUser } = props.myLocation;
-  const distance = getDistanceFromLatLonInKm(
-    lat,
-    long,
-    latUser,
-    lngUser
-  ).toFixed(1);
+
+  const getDistance = () => {
+    const { lat: latUser, lng: lngUser } = props.myLocation;
+    const distance = getDistanceFromLatLonInKm(
+      lat,
+      long,
+      latUser,
+      lngUser
+    ).toFixed(1);
+    return distance
+  }
+
   return (
     <View>
       <View style={styles.topWrapper}>
@@ -35,9 +40,9 @@ function CardMedicalService({ reservation, ...props }) {
             {/* <Text style={styles.textGreyServiceInfo}>
               Jl. Meranti Utara III Blok D 98
             </Text> */}
-            <Text style={styles.textGreyServiceInfo}>
-              {distance} KM dari Anda
-            </Text>
+            {props.myLocation && (
+              <Text style={styles.textGreyServiceInfo}>{getDistance()} KM dari Anda</Text>
+            )}
           </View>
           <View style={styles.actionOpenMapWrapper}>
             <TouchableOpacity
