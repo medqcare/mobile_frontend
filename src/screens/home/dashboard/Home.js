@@ -321,7 +321,7 @@ const style = StyleSheet.create({
     flexDirection: 'column',
     marginHorizontal: 16,
     transform: [{ translateY: -hp('5.5%') }],
-    height: hp('75%'),
+    height: hp('85%'),
   },
   headerImage: {
     width: '100%',
