@@ -68,17 +68,48 @@ const activity = (props) => {
     <>
       {scannedData && (
         <View style={{ marginBottom: 16 }}>
-          <View style={Styles.middleBox}>
-            <Text style={Styles.text}>Dokter </Text>
-            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-              <View style={{ marginTop: 2 }}>
+          {scannedData.doctor ? (
+            <View style={Styles.middleBox}>
+              <Text style={Styles.text}>Dokter </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginTop: 10,
+                  alignItems: 'center',
+                }}
+              >
                 <IcDokter />
+                <Text style={{ color: '#FFF', fontSize: 14, marginLeft: 10 }}>
+                  {scannedData?.doctor.doctorName}
+                </Text>
               </View>
-              <Text style={{ color: '#FFF', fontSize: 14, marginLeft: 10 }}>
-                {scannedData?.doctor.doctorName}
-              </Text>
             </View>
-          </View>
+          ) : (
+            <View style={Styles.middleBox}>
+              <Text style={Styles.text}>Layanan Medis</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginTop: 10,
+                  alignItems: 'center',
+                }}
+              >
+                <View>
+                  <IcDokter />
+                </View>
+                <Text
+                  style={{
+                    color: '#FFF',
+                    fontSize: 14,
+                    marginLeft: 10,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {scannedData?.services.name}
+                </Text>
+              </View>
+            </View>
+          )}
           <ActiveActivity
             data={scannedData}
             queueId={queueID}
