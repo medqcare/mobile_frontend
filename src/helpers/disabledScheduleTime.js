@@ -12,9 +12,9 @@ function checkDisabled(schedule, bookingSchedule){
     } = getSelectedDate()
     const { status, limit, scheduleDay, scheduleTime, doctorID, clinicIDWeb, cancelledDates } = schedule
 
+
     let disabled = false
 
-    // let isCancelled;
     const bookingDate = withZero(bookingSchedule.getDate()) 
     const bookingMonth= withZero(bookingSchedule.getMonth() + 1)
     const bookingYear = bookingSchedule.getFullYear()
@@ -23,7 +23,7 @@ function checkDisabled(schedule, bookingSchedule){
         if(cancelledDate === bookingDate && cancelledMonth === bookingMonth && +cancelledYear === bookingYear) disabled = true
     }
 
-    const arrayTime = scheduleTime.split(' - ')[1]
+    const arrayTime = scheduleTime.split(' - ')[1].split(':')
     const [scheduleHours, scheduleMinutes] = arrayTime
     const limitOrderMinutes = 30
     todaysNewDate.setHours(+scheduleHours)
@@ -31,9 +31,11 @@ function checkDisabled(schedule, bookingSchedule){
     todaysNewDate.setMinutes(todaysNewDate.getMinutes() - limitOrderMinutes)
     const lastOrderHours = todaysNewDate.getHours()
     const lastOrderMinutes = todaysNewDate.getMinutes()
-     
+    
+    const firstValidation = todaysHour > lastOrderHours && todaysDate === +bookingDate
+    const secondValidation = todaysHour > lastOrderHours && todaysMinutes > lastOrderMinutes && todaysDate === +bookingDate
 
-    if(!status || todaysHour > lastOrderHours ||  (todaysHour > lastOrderHours && todaysMinutes > lastOrderMinutes)) disabled = true
+    if(!status || firstValidation ||  secondValidation) disabled = true
 
     return disabled
 }
