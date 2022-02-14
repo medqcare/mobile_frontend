@@ -51,7 +51,7 @@ const SignUpScreen = (props) => {
   };
 
   const checkPasswordValid = (password) => {
-    return password.length > 6;
+    return password.length >= 6;
   };
 
   const checkPhoneNumberValid = (phoneNumber) => {
@@ -212,7 +212,7 @@ const SignUpScreen = (props) => {
           </View>
 
           {errorEmail && (
-            <Text style={styles.errorMessage}>Nomor hp tidak valid</Text>
+            <Text style={styles.errorMessage}>Email tidak valid</Text>
           )}
 
           <View style={styles.action_below}>
@@ -253,7 +253,7 @@ const SignUpScreen = (props) => {
           </View>
           {errorPassword && (
             <Text style={styles.errorMessage}>
-              Password harus lebih dari 6 karakter
+              Password minimal 6 karakter
             </Text>
           )}
           <View style={styles.action_below}>
