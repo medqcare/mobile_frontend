@@ -23,6 +23,20 @@ function CardMedicalService({ reservation, ...props }) {
     return distance
   }
 
+  const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
+    return bookingSchedule === moment().format('DD/MM/YYYY');
+  };
+
+  const openScannerHandler = () => {
+    const isToday = todaysDateIsMatchWithBookingSchedulesDate(
+      reservation.bookingSchedule
+    );
+    props.route.navigate('Scanner', {
+      reservationData: reservation,
+      isToday,
+    });
+  }
+
   return (
     <View>
       <View style={styles.topWrapper}>
@@ -60,7 +74,7 @@ function CardMedicalService({ reservation, ...props }) {
         {/* <TouchableOpacity>
           <Text style={styles.textCancel}>Batalkan Pesanan</Text>
         </TouchableOpacity> */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={openScannerHandler}>
           <Text style={styles.textCheckIn}>Check-In</Text>
         </TouchableOpacity>
       </View>

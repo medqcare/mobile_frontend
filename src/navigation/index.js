@@ -23,6 +23,10 @@ const IndexStack = createStackNavigator(
     initialRouteName: 'Home',
     defaultNavigationOptions: {
       ...TransitionPresets.SlideFromRightIOS,
+      cardStyle: {
+        backgroundColor: '#1F1F1F',
+        opacity: 1,
+      },
     },
   }
 );

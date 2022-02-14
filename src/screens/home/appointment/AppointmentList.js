@@ -163,7 +163,7 @@ const Appointment = (props) => {
     if (orderType === 'service') {
       return (
         <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
-          <CardMedicalService reservation={item}/>
+          <CardMedicalService reservation={item} {...props}/>
         </View>
       );
     }
