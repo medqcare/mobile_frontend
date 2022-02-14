@@ -215,7 +215,6 @@ function HomePage(props) {
                       <TouchableOpacity
                         style={{ marginTop: 1 }}
                         onPress={() => {
-                          notif.localNotif();
                           props.navigation.navigate('NotificationStack');
                         }}
                       >
