@@ -22,10 +22,13 @@ export default function Pemesanan(props) {
 
   const _getData = async () => {
     let token = await AsyncStorage.getItem('token');
+    token = JSON.parse(token).token;
     return axios({
-      url: `${baseURL}/api/v1/members/getReservation`,
-      method: 'POST',
-      headers: { Authorization: JSON.parse(token).token },
+      url: baseURL + `/api/v1/members/reservations/user?type=doctor`,
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
     });
   };
 
@@ -33,7 +36,7 @@ export default function Pemesanan(props) {
     _getData()
       .then(({ data }) => {
         console.log(data, 'sebelum di set ==============<<<<');
-        let datakebalik = data.data.reverse();
+        let datakebalik = data.data.reservations.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
           if (item.status !== 'booked') {
