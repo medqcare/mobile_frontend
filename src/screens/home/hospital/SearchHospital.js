@@ -42,8 +42,6 @@ import LottieLoader from 'lottie-react-native';
 
 function SearchDoctorPage(props) {
   // console.log(props.navigation.state.params.facility,'ini params')
-  console.log(props.myLocation);
-  console.log(props.userData);
   let mainFac = props.navigation.state.params.facility;
   const [loader, setLoad] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -61,7 +59,6 @@ function SearchDoctorPage(props) {
       let { data } = await axios(
         {
           method: 'POST',
-          // url: `${baseURL}/api/v1/members/searchFacilityType/${mainFac}`,
           url: `${baseURL}/api/v1/members/searchFacility`,
           data: {
             lat: location ? location.lat : -6.268809,
@@ -86,13 +83,12 @@ function SearchDoctorPage(props) {
     setShow([]);
     try {
       let { data, status } = await axios.get(
-        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Hospital`,
+        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Clinic`,
         { timeout: 4000 }
       );
       if (status == 204) {
         setLoading(false);
       } else {
-        console.log('===========================');
         data.data.sort((a, b) => {
           let distanceA = latLongToKM(
             a.location.coordinates[1],
