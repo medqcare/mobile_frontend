@@ -23,7 +23,7 @@ import LottieLoader from 'lottie-react-native';
 import InformationIcon from '../../../assets/svg/information';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import BarcodeSvg from '../../../assets/svg/Barcode';
-import * as Location from 'expo-location'
+import * as Location from 'expo-location';
 
 //action
 const Assistant_scan = (props) => {
@@ -38,30 +38,28 @@ const Assistant_scan = (props) => {
   const [loadingCheckin, setLoadingCheckin] = useState(false);
   const [userLocation, setUserLocation] = useState({
     latitude: null,
-    longitude: null
-  })
+    longitude: null,
+  });
 
-  useEffect( async () => {
+  useEffect(async () => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync()
-      if(status !== 'granted'){
-        return ToastAndroid.show('Permission to access location was denied')
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return ToastAndroid.show('Permission to access location was denied');
       }
 
-      const { coords} = await Location.getCurrentPositionAsync({})
-      const {latitude, longitude} = coords
+      const { coords } = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = coords;
       setUserLocation({
         latitude,
-        longitude
-      })
-    }
-    catch(error){
-      console.log(error)
-    }
-    finally {
+        longitude,
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -79,11 +77,17 @@ const Assistant_scan = (props) => {
           method: 'POST',
           url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
         });
-        setHealthFacilityData(response.data);
+        console.log(response)
+
+        if (response.data) {
+          setHealthFacilityData(response.data);
+        } else {  
+          setHealthFacilityData(reservationData.healthFacility)
+        } 
+
       } catch (error) {
-        vis;
         console.log(error.message, 'this is error from scanner check in');
-      } 
+      }
     }
   }, []);
 
@@ -135,8 +139,14 @@ const Assistant_scan = (props) => {
   const isValidBarCode = (dataBarCode) => {
     const { clinicIdWeb } = reservationData.healthFacility;
     const { location } = healthFacilityData;
-    const [lng, lat] = location.coordinates;
-    const { latitude, longitude } = userLocation
+
+    let { lat, long: lng } = location
+
+    if (location.length) {
+      lng = location.coordinates[0]
+      lat = location.coordinates[1]
+    }
+    const { latitude, longitude } = userLocation;
     const distance = getDistanceFromLatLonInKm(latitude, longitude, lat, lng);
 
     if (Number(dataBarCode) !== Number(clinicIdWeb)) {
@@ -147,7 +157,8 @@ const Assistant_scan = (props) => {
     if (distance > 100) {
       return {
         status: false,
-        message: 'Anda berada di luar jangkauan faskes, silahkan melakukan check in di dalam fakses tersebut',
+        message:
+          'Anda berada di luar jangkauan faskes, silahkan melakukan check in di dalam fakses tersebut',
       };
     }
 
@@ -164,6 +175,7 @@ const Assistant_scan = (props) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
+
 
   if (!isToday) {
     return (
