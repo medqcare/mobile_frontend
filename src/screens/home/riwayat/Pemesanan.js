@@ -118,6 +118,7 @@ export default function Pemesanan(props) {
                       {item.status === 'Report Done' ? 'Telah Selesai' : ''}
                       {item.status === 'Queueing' ? 'Dalam Antrian' : ''}
                       {item.status === 'canceled' ? 'Dibatalkan' : ''}
+                      {item.status === 'registered' ? 'Dalam Antrian' : ''}
                     </Text>
                   </View>
                   <View
