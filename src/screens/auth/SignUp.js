@@ -207,6 +207,7 @@ const SignUpScreen = (props) => {
               style={styles.textInput}
               autoCapitalize="none"
               keyboardType={'email-address'}
+              autoFocus={true}
               onChangeText={(text) => onTextChangeHandler('email', text)}
             />
           </View>
