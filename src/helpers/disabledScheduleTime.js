@@ -35,7 +35,7 @@ function checkDisabled(schedule, bookingSchedule){
     const firstValidation = todaysHour > lastOrderHours && todaysDate === +bookingDate
     const secondValidation = todaysHour > lastOrderHours && todaysMinutes > lastOrderMinutes && todaysDate === +bookingDate
 
-    if(!status || firstValidation ||  secondValidation) disabled = true
+    if(!status && firstValidation ||  secondValidation) disabled = true
 
     return disabled
 }
