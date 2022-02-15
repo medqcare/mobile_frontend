@@ -43,39 +43,63 @@ function CardMedicalService({ reservation, ...props }) {
         <View style={styles.serviceImage}>
           <FontAwesome name="hospital-o" size={70} color="#dddddd" />
         </View>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={styles.infoServiceWrapper}>
-            <Text style={styles.textServiceName} numberOfLines={2}>
-              {reservation.services.name}
-            </Text>
-            <Text style={styles.textGreyServiceInfo}>
-              Klinik Meranti Corrie
-            </Text>
-            {/* <Text style={styles.textGreyServiceInfo}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row' }}>
+            <View style={styles.infoServiceWrapper}>
+              <Text style={styles.textServiceName} numberOfLines={2}>
+                {reservation.services.name}
+              </Text>
+              <Text style={styles.textGreyServiceInfo}>
+                Klinik Meranti Corrie
+              </Text>
+              {/* <Text style={styles.textGreyServiceInfo}>
               Jl. Meranti Utara III Blok D 98
             </Text> */}
-            {props.myLocation && (
-              <Text style={styles.textGreyServiceInfo}>
-                {getDistance()} KM dari Anda
-              </Text>
-            )}
+              {props.myLocation && (
+                <Text style={styles.textGreyServiceInfo}>
+                  {getDistance()} KM dari Anda
+                </Text>
+              )}
+            </View>
+            <View style={styles.actionOpenMapWrapper}>
+              <TouchableOpacity
+                style={styles.openMap}
+                onPress={() => {
+                  openMap(long, lat);
+                }}
+              >
+                <ButtonMap />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.actionOpenMapWrapper}>
-            <TouchableOpacity
-              style={styles.openMap}
-              onPress={() => {
-                openMap(long, lat);
-              }}
-            >
-              <ButtonMap />
-            </TouchableOpacity>
+          <View style={styles.borderLine} />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <View>
+              <View style={styles.rowCenterWrap}>
+                <Text style={styles.textSmallGrey}>Patient Name : </Text>
+                <Text style={styles.textSmallWhite}>
+                  {reservation.patient.patientName}
+                </Text>
+              </View>
+              <View style={styles.rowCenterWrap}>
+                <Text style={styles.textSmallGrey}>
+                  {reservation.bookingSchedule}
+                </Text>
+                <Text style={styles.textSmallGrey}> - </Text>
+                <Text style={styles.textSmallGrey}>
+                  {reservation.bookingTime}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
       <View style={styles.bottomWrapper}>
-        {/* <TouchableOpacity>
-          <Text style={styles.textCancel}>Batalkan Pesanan</Text>
-        </TouchableOpacity> */}
         <TouchableOpacity onPress={openScannerHandler}>
           <Text style={styles.textCheckIn}>Check-In</Text>
         </TouchableOpacity>
@@ -111,7 +135,7 @@ const styles = StyleSheet.create({
     borderColor: '#7d7d7d',
   },
   textServiceName: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
     color: '#DDDDDD',
     textTransform: 'capitalize',
@@ -119,7 +143,7 @@ const styles = StyleSheet.create({
   },
   textGreyServiceInfo: {
     fontWeight: '400',
-    fontSize: 10,
+    fontSize: 12,
     color: '#A5A5A5',
     maxWidth: '90%',
     marginBottom: 4,
@@ -153,6 +177,24 @@ const styles = StyleSheet.create({
     color: '#F26359',
     fontSize: 12,
     fontWeight: '400',
+  },
+  textSmallGrey: {
+    color: '#B5B5B5',
+    fontSize: 12,
+  },
+  textSmallWhite: {
+    color: '#DDDDDD',
+    fontSize: 12,
+  },
+  borderLine: {
+    height: 0.5,
+    backgroundColor: '#515151',
+    marginVertical: 10,
+  },
+  rowCenterWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
   },
 });
 
