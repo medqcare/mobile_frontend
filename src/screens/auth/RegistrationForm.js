@@ -199,7 +199,7 @@ const RegistrationForm = (props) => {
           firstName,
           lastName,
           gender: employee.gender === 'Laki-laki' ? 'Male' : 'Female',
-          nik: employee.nik ? employee.nik : '',
+          nik: employee.NIK ? employee.NIK : '',
           dob: employee.dob ? dob : '',
           phoneNumber: user.phoneNumber,
         });
