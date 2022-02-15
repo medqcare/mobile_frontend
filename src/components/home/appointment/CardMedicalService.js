@@ -7,7 +7,7 @@ import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
 import openMap from '../../../helpers/openMap';
 function CardMedicalService({ reservation, ...props }) {
   // const distance
-
+  const moment = require('moment');
   const {
     location: { lat, long },
   } = reservation.healthFacility;
@@ -20,8 +20,8 @@ function CardMedicalService({ reservation, ...props }) {
       latUser,
       lngUser
     ).toFixed(1);
-    return distance
-  }
+    return distance;
+  };
 
   const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
     return bookingSchedule === moment().format('DD/MM/YYYY');
@@ -31,11 +31,11 @@ function CardMedicalService({ reservation, ...props }) {
     const isToday = todaysDateIsMatchWithBookingSchedulesDate(
       reservation.bookingSchedule
     );
-    props.route.navigate('Scanner', {
+    props.navigation.navigate('Scanner', {
       reservationData: reservation,
       isToday,
     });
-  }
+  };
 
   return (
     <View>
@@ -55,7 +55,9 @@ function CardMedicalService({ reservation, ...props }) {
               Jl. Meranti Utara III Blok D 98
             </Text> */}
             {props.myLocation && (
-              <Text style={styles.textGreyServiceInfo}>{getDistance()} KM dari Anda</Text>
+              <Text style={styles.textGreyServiceInfo}>
+                {getDistance()} KM dari Anda
+              </Text>
             )}
           </View>
           <View style={styles.actionOpenMapWrapper}>
