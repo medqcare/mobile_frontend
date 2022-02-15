@@ -16,6 +16,7 @@ import Header from '../../../components/headers/GradientHeader'
 import Icon from 'react-native-vector-icons/Ionicons'
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons'
 import ArrowBack from '../../../assets/svg/ArrowBack'
+import DokterIcon from "../../../assets/svg/Dokter"
 
 
 const dimHeight = Dimensions.get('window').height
@@ -125,27 +126,57 @@ function DetailHospitalPage(props) {
                 </TouchableOpacity>
                 {dataHospital !== 0 && dataHospital.doctors.length !== 0 &&
                   Object.entries(dataHospital.doctors).map((el, index) => {
+                    console.log(el, 'this is detail clinic')
+                    // console.log(el.photo, 'ini photo aja')
                     return (
-                      <TouchableOpacity 
-                      
-                      onPress={() => {
-                        props.navigation.navigate('DetailDoctor', { data: el[1], idHos: dataHospital._id, back: "DetailHospital" })
-                      }} 
-                      key={index}
-                        style={{ backgroundColor: '#2F2F2F', marginTop: 10, flexDirection: 'row', borderRadius: 10, alignItems: 'center', padding: 10 }}>
-                        
+                      <TouchableOpacity
+                        onPress={() => {
+                          props.navigation.navigate('DetailDoctor', {
+                            data: el[1],
+                            idHos: dataHospital._id,
+                            back: 'DetailHospital',
+                          });
+                        }}
+                        key={index}
+                        style={{
+                          backgroundColor: '#2F2F2F',
+                          marginTop: 10,
+                          flexDirection: 'row',
+                          borderRadius: 10,
+                          alignItems: 'center',
+                          padding: 10,
+                        }}
+                      >
                         <View style={styles.borderPhoto}>
                           <Image
-                            style={{ minWidth: 60, minHeight: 60, resizeMode: 'cover', }}
-                            source={{ uri: (!el.photo) ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg' : el[1].photo }} />
+                            style={{
+                              minWidth: 60,
+                              minHeight: 60,
+                              resizeMode: 'cover',
+                            }}
+                            source={{
+                              uri: !el[1].photo
+                                ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
+                                : el[1].photo,
+                            }}
+                          />
                         </View>
-                        <View style={{flex:1,}}>
-                          <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#fff' }}>{el[1].title} {el[1].doctorName}</Text>
-                          <Text style={{ fontSize: 14, color: '#5E5D5D' }}>Spesialis {el[1].specialist}</Text>
-                          
+                        <View style={{ flex: 1 }}>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              fontWeight: 'bold',
+                              color: '#fff',
+                            }}
+                          >
+                            {el[1].title} {el[1].doctorName}
+                          </Text>
+                          <Text style={{ fontSize: 14, color: '#5E5D5D' }}>
+                            Spesialis {el[1].specialist}
+                          </Text>
                         </View>
                       </TouchableOpacity>
-                    )
+                    );
                   })
                 }
               </View>

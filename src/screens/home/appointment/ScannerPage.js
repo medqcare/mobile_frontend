@@ -77,6 +77,7 @@ const Assistant_scan = (props) => {
           method: 'POST',
           url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
         });
+        console.log(reservationData)
         console.log(response)
 
         if (response.data) {

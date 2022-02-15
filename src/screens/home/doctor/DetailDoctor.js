@@ -497,362 +497,375 @@ function DetailDoctorPage(props) {
 						const sortedSchedules = filteredSchedules.sort((a, b) => {
 							return a.scheduleTime > b.scheduleTime
 						})
-						return(
-							<View
-								key={facilityIndex}
-								style={{
-									backgroundColor: '#2F2F2F',
-									marginVertical: 5,
-									paddingLeft: 10,
-									paddingVertical: 10,
-									paddingRight: 10,
-									borderRadius: 5,
-								}}
-							>
-								<View>
-									<View style={containerStyle.detMedfac}>
-										<Image
-											source={
-											facilityPhoto
-												? { uri: facilityPhoto }
-												: require('../../../assets/png/klinik.png')
-											}
-											style={styles.imageRS}
-										/>
-										<View style={containerStyle.detRS}>
-											<Text style={fontStyles.name}>{facilityName}</Text>
-											<Text style={fontStyles.address}>{googleAddress}</Text>
-											<Text style={fontStyles.address}>{distance} Km dari anda</Text>
-										</View>
-										<TouchableOpacity
-											style={{
-												alignSelf: 'flex-start',
-												transform: [{ translateX: 10 }],
-											}}
-											onPress={() => _openMap(lon, lat)}
-                              			>
-											<View
-												style={{
-													alignItems: 'center',
-													height: 40,
-													width: 40,
-													borderRadius: 40,
-													borderColor: '#7D7D7D',
-													borderWidth: 1,
-													alignItems: 'center',
-													justifyContent: 'center',
-												}}
-											>
-												<ButtonMap />
-											</View>
-										</TouchableOpacity>
-									</View>
-									{showDetail !== facilityIndex ? (
-										<TouchableOpacity
-											onPress={() => {
-												setShowDetail(facilityIndex);
-												// setNewData({
-												// 	...newData,
-												// 	[facilityName]: [
-												// 		bookingDate.getDay(),
-												// 		facilitySchedule[bookingDate.getDay()],
-												// 	],
-												// });
-												setDataDoctor({
-													...dataDoctor,
-													healthFacility: {
-														facilityID: _id,
-														facilityName,
-														facilityType,
-														facilityMainType,
-														clinicIdWeb
-													}
-												});
-											}}
-										>
-											<View style={{ flexDirection: 'row' }}>
-											<Text style={{ color: '#F37335' }}>
-												Selengkapnya
-											</Text>
-											<View style={{ marginLeft: 8, marginTop: 5 }}>
-												<ArrowDown />
-											</View>
-											</View>
-										</TouchableOpacity>
-									) : (
-										<View>
-											<View style={dateStyle.chooseMonth}>
-												<View
-													style={{
-														flexDirection: 'row',
-														justifyContent: 'space-between',
-													}}
-												>
-													<TouchableOpacity
-														disabled={
-															bookingDate.getMonth() ===
-															new Date().getMonth()
-														}
-														onPress={() => {
-															bookingSchedule.setMonth(bookingSchedule.getMonth() - 1)
-															setCurrentSchedules(null)
+						return (
+              <View
+                key={facilityIndex}
+                style={{
+                  backgroundColor: '#2F2F2F',
+                  marginVertical: 5,
+                  paddingLeft: 10,
+                  paddingVertical: 10,
+                  paddingRight: 10,
+                  borderRadius: 5,
+                }}
+              >
+                <View>
+                  <View style={containerStyle.detMedfac}>
+                    <Image
+                      source={
+                        facilityPhoto
+                          ? { uri: facilityPhoto }
+                          : require('../../../assets/png/klinik.png')
+                      }
+                      style={styles.imageRS}
+                    />
+                    <View style={containerStyle.detRS}>
+                      <Text style={fontStyles.name}>{facilityName}</Text>
+                      <Text style={fontStyles.address}>{googleAddress}</Text>
+                      <Text style={fontStyles.address}>
+                        <Text style={{textTransform: "capitalize"}}>{distance}</Text> dari anda
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      style={{
+                        alignSelf: 'flex-start',
+                        transform: [{ translateX: 10 }],
+                      }}
+                      onPress={() => _openMap(lon, lat)}
+                    >
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          height: 40,
+                          width: 40,
+                          borderRadius: 40,
+                          borderColor: '#7D7D7D',
+                          borderWidth: 1,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <ButtonMap />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  {showDetail !== facilityIndex ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowDetail(facilityIndex);
+                        // setNewData({
+                        // 	...newData,
+                        // 	[facilityName]: [
+                        // 		bookingDate.getDay(),
+                        // 		facilitySchedule[bookingDate.getDay()],
+                        // 	],
+                        // });
+                        setDataDoctor({
+                          ...dataDoctor,
+                          healthFacility: {
+                            facilityID: _id,
+                            facilityName,
+                            facilityType,
+                            facilityMainType,
+                            clinicIdWeb,
+                          },
+                        });
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ color: '#F37335' }}>Selengkapnya</Text>
+                        <View style={{ marginLeft: 8, marginTop: 5 }}>
+                          <ArrowDown />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ) : (
+                    <View>
+                      <View style={dateStyle.chooseMonth}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <TouchableOpacity
+                            disabled={
+                              bookingDate.getMonth() === new Date().getMonth()
+                            }
+                            onPress={() => {
+                              bookingSchedule.setMonth(
+                                bookingSchedule.getMonth() - 1
+                              );
+                              setCurrentSchedules(null);
 
-															setBookingDate(bookingDate.minusMonths());
-															setBookingTime('');
-															setMonth(bookingDate.getMonth());
-															setChooseDate(null);
-															calendarRef.current.scrollTo({
-																x: 0,
-																y: 0,
-																animated: true,
-															})
-														}}
-													>
-														<View
-															style={{
-																height: 20,
-																width: 50,
-																alignItems: 'center',
-															}}
-														>
-															<Text
-																style={{
-																	fontSize: 16,
-																	color:
-																	bookingDate.getMonth() ===
-																	new Date().getMonth()
-																		? '#2F2F2F'
-																		: '#DDDFDD',
-																	marginTop: -2,
-																}}
-															>
-																{'<'}
-															</Text>
-														</View>
-													</TouchableOpacity>
-													<Text
-														style={{
-															fontSize: 14,
-															color: '#DDDDDD',
-															marginBottom: 10,
-														}}
-													>
-														{months[month]}
-													</Text>
-													<TouchableOpacity
-														disabled={isNextMonthDisabled()}
-														onPress={() => {
-															bookingSchedule.setMonth(bookingSchedule.getMonth() + 1)
-															setCurrentSchedules(null)
+                              setBookingDate(bookingDate.minusMonths());
+                              setBookingTime('');
+                              setMonth(bookingDate.getMonth());
+                              setChooseDate(null);
+                              calendarRef.current.scrollTo({
+                                x: 0,
+                                y: 0,
+                                animated: true,
+                              });
+                            }}
+                          >
+                            <View
+                              style={{
+                                height: 20,
+                                width: 50,
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  color:
+                                    bookingDate.getMonth() ===
+                                    new Date().getMonth()
+                                      ? '#2F2F2F'
+                                      : '#DDDFDD',
+                                  marginTop: -2,
+                                }}
+                              >
+                                {'<'}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              color: '#DDDDDD',
+                              marginBottom: 10,
+                            }}
+                          >
+                            {months[month]}
+                          </Text>
+                          <TouchableOpacity
+                            disabled={isNextMonthDisabled()}
+                            onPress={() => {
+                              bookingSchedule.setMonth(
+                                bookingSchedule.getMonth() + 1
+                              );
+                              setCurrentSchedules(null);
 
-															setChooseDate(null);
-															setBookingDate(bookingDate.addMonths());
-															setBookingTime('');
-															setMonth(bookingDate.getMonth());
-														}}
-													>
-														<View
-															style={{
-																height: 20,
-																width: 50,
-																alignItems: 'center',
-															}}
-														>
-															<Text
-																style={{
-																fontSize: 16,
-																color: isNextMonthDisabled()
-																	? '#2f2f2f'
-																	: '#DDDDDD',
-																marginTop: -2,
-																}}
-															>
-																{'>'}
-															</Text>
-                                    					</View>
-                                  					</TouchableOpacity>
-												</View>
-											</View>
+                              setChooseDate(null);
+                              setBookingDate(bookingDate.addMonths());
+                              setBookingTime('');
+                              setMonth(bookingDate.getMonth());
+                            }}
+                          >
+                            <View
+                              style={{
+                                height: 20,
+                                width: 50,
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  color: isNextMonthDisabled()
+                                    ? '#2f2f2f'
+                                    : '#DDDDDD',
+                                  marginTop: -2,
+                                }}
+                              >
+                                {'>'}
+                              </Text>
+                            </View>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
 
-											{/* Calendar */}
-											<ScrollView
-												horizontal
-												showsHorizontalScrollIndicator={false}
-												ref={calendarRef}
-											>
+                      {/* Calendar */}
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        ref={calendarRef}
+                      >
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                          }}
+                        >
+                          {Array.from(
+                            Array(
+                              month === new Date().getMonth()
+                                ? bookingDate.getDaysInMonth() -
+                                    bookingDate.getDate() +
+                                    1
+                                : bookingDate.getDaysInMonth()
+                            ).keys()
+                          ).map((key, index) => {
+                            const numberDay = new Date(
+                              `${month + 1}/${calcDate(
+                                key
+                              )}/${bookingDate.getFullYear()}`
+                            ).getDay();
+                            const displayDay = day[numberDay];
+                            return (
+                              <TouchableOpacity
+                                key={key}
+                                // disabled={
+                                // 	!item.facilitySchedule[
+                                // checkSchedule(key)
+                                // 	]
+                                // }
+                                onPress={() => {
+                                  bookingSchedule.setDate(calcDate(key));
+                                  const selectedDay = bookingSchedule.getDay();
+                                  const newSchedules = filteredSchedules.filter(
+                                    (el) => el.scheduleDay === selectedDay
+                                  );
+                                  setCurrentSchedules(newSchedules);
 
-												<View
-													style={{
-													flexDirection: 'row',
-													}}
-												>
+                                  setBookingTime('');
+                                  setChooseDate(calcDate(key));
+                                  checkSchedule(key);
+                                  setDataDoctor({
+                                    ...dataDoctor,
+                                    healthFacility: {
+                                      facilityID: _id,
+                                      facilityName,
+                                      facilityType,
+                                      facilityMainType,
+                                      clinicIdWeb,
+                                    },
+                                  });
+                                }}
+                              >
+                                <View
+                                  style={{
+                                    marginTop: 10,
+                                    marginRight: 10,
+                                    height: 75,
+                                    width: 55,
+                                    borderRadius: 12,
+                                    backgroundColor:
+                                      chooseDate === calcDate(key)
+                                        ? '#005EA2'
+                                        : '#3F3F3F',
+                                  }}
+                                >
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      marginVertical: 10,
+                                      textAlign: 'center',
+                                      color: '#DDDDDD',
+                                      // color: item.facilitySchedule[
+                                      // checkSchedule(key)
+                                      // ]
+                                      // ? '#DDDDDD'
+                                      // : '#727272',
+                                    }}
+                                  >
+                                    {displayDay}
+                                  </Text>
+                                  <Text
+                                    style={{
+                                      fontSize: 14,
+                                      marginBottom: 15,
+                                      textAlign: 'center',
+                                      color: '#DDDDDD',
+                                      // color: item.facilitySchedule[
+                                      // checkSchedule(key)
+                                      // ]
+                                      // ? '#DDDDDD'
+                                      // : '#727272',
+                                    }}
+                                  >
+                                    {calcDate(key)}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          })}
+                        </View>
+                      </ScrollView>
 
-													{Array.from(
-														Array(
-															month === new Date().getMonth()
-															? bookingDate.getDaysInMonth() -
-																bookingDate.getDate() +
-																1
-															: bookingDate.getDaysInMonth()
-														).keys()
-														).map((key, index) => {
-															const numberDay = new Date(
-																`${month + 1}/${calcDate(
-																key
-																)}/${bookingDate.getFullYear()}`
-															).getDay()
-															const displayDay = day[numberDay]
-															return (
-																<TouchableOpacity
-																	key={key}
-																	// disabled={
-																	// 	!item.facilitySchedule[
-																		// checkSchedule(key)
-																	// 	]
-																	// }
-																	onPress={() => {
-																		bookingSchedule.setDate(calcDate(key))
-																		const selectedDay = bookingSchedule.getDay()
-																		const newSchedules = filteredSchedules.filter(el => el.scheduleDay === selectedDay)
-																		setCurrentSchedules(newSchedules)
-																		
+                      <View style={{ marginVertical: 15 }}>
+                        <ScrollView
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                        >
+                          {currentSchedules &&
+                            currentSchedules.map((el, scheduleIndex) => {
+                              const {
+                                status,
+                                limit,
+                                scheduleDay,
+                                scheduleTime,
+                                doctorID,
+                                clinicIDWeb,
+                              } = el;
+                              const selectedDay = bookingSchedule.getDay();
+                              const disabled = checkDisabled(
+                                el,
+                                bookingSchedule
+                              );
+                              return (
+                                <View key={scheduleIndex}>
+                                  <TouchableOpacity
+                                    disabled={disabled}
+                                    onPress={() => {
+                                      const year =
+                                        bookingSchedule.getFullYear();
+                                      const Month =
+                                        bookingSchedule.getMonth() + 1;
+                                      const date = bookingSchedule.getDate();
+                                      setBookingTime(scheduleTime);
+                                      setDataDoctor({
+                                        ...dataDoctor,
+                                        bookingTime: scheduleTime,
+                                        bookingSchedule: `${year}-${Month}-${date}`,
+                                      });
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        height: 40,
+                                        width: 120,
+                                        marginRight: 10,
+                                        borderRadius: 5,
+                                        backgroundColor:
+                                          bookingTime === scheduleTime
+                                            ? '#005EA2'
+                                            : '#3F3F3F',
+                                      }}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: !disabled
+                                            ? '#DDDDDD'
+                                            : '#727272',
+                                          textAlign: 'center',
+                                          marginTop: 10,
+                                        }}
+                                      >
+                                        {scheduleTime}
+                                      </Text>
+                                    </View>
+                                  </TouchableOpacity>
+                                </View>
+                              );
+                            })}
+                        </ScrollView>
+                      </View>
 
-																		setBookingTime('');
-																		setChooseDate(calcDate(key));
-																		checkSchedule(key);
-																		setDataDoctor({
-																			...dataDoctor,
-																			healthFacility: {
-																				facilityID: _id,
-																				facilityName,
-																				facilityType,
-																				facilityMainType,
-																				clinicIdWeb
-																			}
-																		});
-																	}}
-																>
-																	<View
-																		style={{
-																		marginTop: 10,
-																		marginRight: 10,
-																		height: 75,
-																		width: 55,
-																		borderRadius: 12,
-																		backgroundColor:
-																			chooseDate === calcDate(key)
-																			? '#005EA2'
-																			: '#3F3F3F',
-																		}}
-																	>
-																		<Text
-																			style={{
-																				fontSize: 14,
-																				marginVertical: 10,
-																				textAlign: 'center',
-																				color: '#DDDDDD'
-																				// color: item.facilitySchedule[
-																				// checkSchedule(key)
-																				// ]
-																				// ? '#DDDDDD'
-																				// : '#727272',
-																			}}
-																		>
-																			{displayDay}
-																		</Text>
-																		<Text
-																			style={{
-																				fontSize: 14,
-																				marginBottom: 15,
-																				textAlign: 'center',
-																				color: '#DDDDDD'
-																				// color: item.facilitySchedule[
-																				// checkSchedule(key)
-																				// ]
-																				// ? '#DDDDDD'
-																				// : '#727272',
-																			}}
-																		>
-																			{calcDate(key)}
-																		</Text>
-																	</View>
-																</TouchableOpacity>
-															);
-													})}
-												</View>
-
-											</ScrollView>
-
-											<View style={{ marginVertical: 15 }}>
-												<ScrollView
-													horizontal
-													showsHorizontalScrollIndicator={false}
-												>
-													{currentSchedules && currentSchedules.map((el, scheduleIndex) => {
-														const { status, limit, scheduleDay, scheduleTime, doctorID, clinicIDWeb } = el
-														const selectedDay = bookingSchedule.getDay()
-														const disabled = checkDisabled(el, bookingSchedule)
-															return(
-																<View key={scheduleIndex}>
-																	<TouchableOpacity
-																		disabled={disabled}
-																		onPress={() => {
-																			const year = bookingSchedule.getFullYear()
-																			const Month = bookingSchedule.getMonth() + 1
-																			const date = bookingSchedule.getDate()
-																			setBookingTime(scheduleTime);
-																			setDataDoctor({
-																				...dataDoctor,
-																				bookingTime: scheduleTime,
-																				bookingSchedule: `${year}-${Month}-${date}`,
-																			});
-																		}}
-																	>
-																		<View
-																			style={{
-																				height: 40,
-																				width: 120,
-																				marginRight: 10,
-																				borderRadius: 5,
-																				backgroundColor: bookingTime === scheduleTime
-																					? '#005EA2'
-																					: '#3F3F3F',
-																			}}
-																		>
-																			<Text
-																				style={{
-																					color: !disabled ? '#DDDDDD' : '#727272',
-																					textAlign: 'center',
-																					marginTop: 10,
-																				}}
-																			>
-																				{scheduleTime}
-																			</Text>
-																		</View>
-																	  </TouchableOpacity>
-																</View>
-															)
-													})}
-												</ScrollView>
-											</View>
-
-											<TouchableOpacity
-												onPress={() => setShowDetail(null)}
-											>
-												<View style={{ flexDirection: 'row' }}>
-													<Text style={{ color: '#F37335' }}>
-														Tutup
-													</Text>
-													<View style={{ marginLeft: 8, marginTop: 5 }}>
-														<ArrowUp />
-													</View>
-												</View>
-											</TouchableOpacity>
-										</View>
-									)}
-								</View>
-							</View>
-						)
+                      <TouchableOpacity onPress={() => setShowDetail(null)}>
+                        <View style={{ flexDirection: 'row' }}>
+                          <Text style={{ color: '#F37335' }}>Tutup</Text>
+                          <View style={{ marginLeft: 8, marginTop: 5 }}>
+                            <ArrowUp />
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              </View>
+            );
 					})}
 				</ScrollView>
 			</View>
