@@ -190,14 +190,21 @@ export default function Pemesanan(props) {
                       {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
                       <TouchableOpacity
                         onPress={() => {
-                          const data = {
-                            doctorID: item.doctor.doctorID,
-                          };
-
-                          props.navigation.navigate('DetailDoctor', {
-                            data,
-                            back: 'Riwayat',
-                          });
+                          (async () => {
+                            try {
+                              const { data } = await axios({
+                                method: 'POST',
+                                url: `${baseURL}/api/v1/members/detailDoctor/${item.doctor.doctorID}`,
+                              });
+                              console.log(data);
+                              props.navigation.navigate('DetailDoctor', {
+                                data,
+                                back: 'Riwayat',
+                              });
+                            } catch (error) {
+                              console.log(error, 'error get Dockter');
+                            }
+                          })();
                         }}
                       >
                         <View

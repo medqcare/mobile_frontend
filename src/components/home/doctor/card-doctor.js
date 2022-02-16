@@ -15,6 +15,7 @@ import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconLove from 'react-native-vector-icons/Ionicons';
 
 import { Fontisto } from '@expo/vector-icons';
+import { INTER_400, INTER_500 } from '../../../values/font';
 // import axios from 'axios';
 
 const mapStateToProps = (state) => ({
@@ -36,7 +37,7 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
           />
       </View>
       <View style={styles.DetailDokter}>
-        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: 'Inter-SemiBold'}}>
+        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: INTER_500}}>
           {data.title} {data.doctorName}
         </Text>
         <Text style={{ ...styles.TextContent, textTransform: 'capitalize' }}>
@@ -95,7 +96,7 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
             color="gray"
             style={{marginRight: 5, marginLeft: -20}}
           /> */}
-          <Text style={{ color: '#DDDDDD', marginLeft: -25 }}>
+          <Text style={{ color: '#DDDDDD', marginLeft: -25, fontFamily: INTER_400 }}>
             &#177;{'  ' + distance}
           </Text>
         </View>
