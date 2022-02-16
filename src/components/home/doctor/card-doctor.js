@@ -23,7 +23,6 @@ const mapStateToProps = (state) => ({
 });
 
 function CardDoctor({ navigation, data, myLocation, distance }) {
-  console.log(distance, 'ini distance');
   return (
     <View style={styles.Container}>
       <View style={styles.Photo}>
@@ -37,7 +36,7 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
           />
       </View>
       <View style={styles.DetailDokter}>
-        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#DDDDDD' }}>
+        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: 'Inter-SemiBold'}}>
           {data.title} {data.doctorName}
         </Text>
         <Text style={{ ...styles.TextContent, textTransform: 'capitalize' }}>
