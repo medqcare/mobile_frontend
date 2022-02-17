@@ -13,9 +13,9 @@ import RatingStar from '../../../assets/svg/RatingStar';
 import latLongToKM from '../../../helpers/latlongToKM';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconLove from 'react-native-vector-icons/Ionicons';
-
 import { Fontisto } from '@expo/vector-icons';
 import { INTER_400, INTER_500 } from '../../../values/font';
+import { WHITE_PRIMARY } from '../../../values/color';
 // import axios from 'axios';
 
 const mapStateToProps = (state) => ({
@@ -27,17 +27,17 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
   return (
     <View style={styles.Container}>
       <View style={styles.Photo}>
-          <Image
-            style={{ width: 55, height: 55, borderRadius: 55 }}
-            source={{
-              uri: !data.photo
-                ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
-                : data.photo,
-            }}
-          />
+        <Image
+          style={{ width: 55, height: 55, borderRadius: 55 }}
+          source={{
+            uri: !data.photo
+              ? 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg'
+              : data.photo,
+          }}
+        />
       </View>
       <View style={styles.DetailDokter}>
-        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: INTER_500}}>
+        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: INTER_500 }}>
           {data.title} {data.doctorName}
         </Text>
         <Text style={{ ...styles.TextContent, textTransform: 'capitalize' }}>
@@ -79,7 +79,7 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
           {data.estPrice && (
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }} />
-              <Text style={{ ...styles.TextContent, color: '#DDDDDD' }}>
+              <Text style={{ ...styles.TextContent, color: WHITE_PRIMARY, fontFamily: INTER_400 }}>
                 {formatRP(data.estPrice, 'IDR ')}
               </Text>
             </View>
@@ -87,17 +87,15 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
         </View>
       </View>
       {myLocation && (
-        <View
-          style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}
-        >
+        <View style={{ flexDirection: 'row' }}>
           {/* <IconFA
             name="location-arrow"
             size={18}
             color="gray"
             style={{marginRight: 5, marginLeft: -20}}
           /> */}
-          <Text style={{ color: '#DDDDDD', marginLeft: -25, fontFamily: INTER_400 }}>
-            &#177;{'  ' + distance}
+          <Text style={{ color: WHITE_PRIMARY }}>
+            &#177; <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
           </Text>
         </View>
       )}
@@ -128,7 +126,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderWidth: 1,
     borderColor: '#33E204',
-    backgroundColor: '#DDDDDD'
+    backgroundColor: WHITE_PRIMARY,
   },
   DetailDokter: {
     // marginLeft: 10,

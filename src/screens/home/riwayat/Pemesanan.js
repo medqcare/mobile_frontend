@@ -35,7 +35,6 @@ export default function Pemesanan(props) {
   const _fetchDataAppoinment = async () => {
     _getData()
       .then(({ data }) => {
-        console.log(data, 'sebelum di set ==============<<<<');
         let datakebalik = data.data.reservations.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
@@ -134,13 +133,11 @@ export default function Pemesanan(props) {
                         <View style={styles.borderImage}>
                           <Image
                             style={styles.image}
-                            source={
-                              item.doctor.doctorPhoto
-                                ? { uri: item.doctor.doctorPhoto }
-                                : {
-                                    uri: 'https://www.isteducation.com/wp-content/plugins/learnpress/assets/images/no-image.png',
-                                  }
-                            }
+                            source={{
+                              uri: item.doctor.doctorPhoto
+                                ? item.doctor.doctorPhoto
+                                : 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
+                            }}
                           />
                         </View>
                       </View>
@@ -259,6 +256,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
   },
   image: {
     height: 50,
