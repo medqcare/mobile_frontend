@@ -21,6 +21,7 @@ import prescriptionStack from './prescriptionStack';
 import reminderStack from './reminderStack';
 import appointmentStack from './appointmentStack';
 import NotificationStack from './notificationStack';
+import HomeCareStack from './HomeCareStack';
 export default StackHome = createStackNavigator(
   {
     Home: {
@@ -133,6 +134,12 @@ export default StackHome = createStackNavigator(
     },
     Undefined: {
       screen: Undefined,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+    HomeCareStack: {
+      screen: HomeCareStack,
       navigationOptions: {
         headerShown: false,
       },
