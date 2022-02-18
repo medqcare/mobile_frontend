@@ -55,7 +55,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 		await searchMedicalServices()
 	}, [])
 
-	async function searchMedicalServices(){
+	async function searchMedicalServices(addPage){
 		try {
 			console.log('Application trying to find avaliable medical services')
 			const result = await getMedicalServices(type, status, page)
@@ -71,8 +71,13 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 			}
 			console.log(`Application found ${result.docs.length} medical service(s)`)
 			setLoading(false);
-			const nextPage = page + 1;
-			setPage(nextPage);
+
+			if(addPage){
+				const nextPage = page + 1;
+				setPage(nextPage);
+			}
+
+			console.log('All data fetched, no need to add page')
 		}
 		catch(error){
 			console.log(error)
@@ -95,7 +100,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 
 	function renderMedicalService({item}){
 		// const { name, clinicName, address, distance, photo, price, discount } = item
-		const { clinic, discount, itemCheck, name, price, schedule, status } = item
+		const { clinic, discount, itemCheck, name, price, schedule, status, photo } = item
 		const discountedPrice = price * (100-discount)/100
 
 		return (
@@ -115,10 +120,10 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 						<Entypo name="location" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.address}</Text> 
 					</View>
-					{/* <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
-						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance}</Text> 
-					</View> */}
+						<Text style={textStyles.greyColorWithPaddingLeftText}>Jarak Km</Text> 
+					</View>
 
 					<TouchableOpacity 
 						onPress={() => navigation.navigate('MedicalServiceDetail', { dataDetail })}
@@ -128,7 +133,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 				</View>
 
 				<View style={styles.rightContent}>
-					{/* <Image source={{uri: photo}} style={{width:60,height:60}}/> */}
+					<Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
 					<View 
 						style={{alignItems: 'flex-end'}}
 					>
@@ -191,7 +196,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 					renderItem={renderMedicalService}
 					onEndReached={() => {
 						if (medicalServices.length >= 10) {
-							searchMedicalServices();
+							searchMedicalServices(true);
 						}
 						}}
 						onEndReachedThreshold={1}
