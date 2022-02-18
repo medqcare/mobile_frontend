@@ -4,10 +4,11 @@ import {
 } from 'react-navigation-stack';
 import FindClinic from '../../screens/home/penunjang/FindClinic';
 import Payment from '../../screens/home/penunjang/Payment';
-import PenunjangList from '../../screens/home/penunjang/PenunjangList';
+import MedicalServices from '../../screens/home/penunjang/PenunjangList';
 import TransactionDetail from '../../screens/home/penunjang/TransactionDetail';
 
 import { Animated, Easing, Platform } from 'react-native';
+import MedicalServiceDetail from '../../screens/home/penunjang/MedicalServiceDetail';
 
 function fromLeft(duration = 300) {
   return {
@@ -38,12 +39,20 @@ function fromLeft(duration = 300) {
 
 export default StackPenunjang = createStackNavigator(
   {
-    PenunjangList: {
-      screen: PenunjangList,
+    MedicalServices: {
+      screen: MedicalServices,
       navigationOptions: {
         headerShown: false,
       },
     },
+
+    MedicalServiceDetail: {
+      screen: MedicalServiceDetail,
+      navigationOptions: {
+        headerShown: false,
+      }
+    },
+    
     FindClinic: {
       screen: FindClinic,
       navigationOptions: {
@@ -91,7 +100,7 @@ export default StackPenunjang = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'PenunjangList',
+    initialRouteName: 'MedicalServices',
     defaultNavigationOptions: {
       ...TransitionPresets.SlideFromRightIOS,
     },
