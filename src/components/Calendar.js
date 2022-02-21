@@ -6,6 +6,7 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
+import { checkDisabledDay } from '../helpers/disabledScheduleTime'
 
 const MONTHS = [
   "Januari",
@@ -27,7 +28,9 @@ const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 export default function Calendar({
   selectedDate = new Date(),
   onDateSelected,
-  isDateBlackList = true
+  isDateBlackList = true,
+  availableDays
+
 }) {
   const [date, setDate] = useState(new Date());
   const [month, setMonth] = useState(date.getMonth());
@@ -132,12 +135,15 @@ export default function Calendar({
     const dayName = getDayName(dayNumber);
     const stringDate = `${month + 1}/${dateNumber}/${date.getFullYear()}`;
     const objectDate = new Date(stringDate);
+    const disabled = checkDisabledDay(availableDays, dayNumber)
     let isWeekend = null
     if(!isDateBlackList){
       isWeekend = false
     } else {
       isWeekend = checkIsWeekend(dayNumber);
     }
+    let isDisabled = null
+    if(disabled || isDisabled) isDisabled = true
     return (
       <TouchableOpacity
         style={{
@@ -149,7 +155,7 @@ export default function Calendar({
           width: 46,
           height: 66,
         }}
-        disabled={isWeekend}
+        disabled={isDisabled}
         onPress={() => onPressHandler(dateNumber)}
       >
         <View
@@ -159,10 +165,10 @@ export default function Calendar({
             alignItems: "center",
           }}
         >
-          <Text style={{ color: !isWeekend ? "#DDDDDD" : "#727272" }}>
+          <Text style={{ color: !isDisabled ? "#DDDDDD" : "#727272" }}>
             {dayName}
           </Text>
-          <Text style={{ color: !isWeekend ? "#DDDDDD" : "#727272" }}>
+          <Text style={{ color: !isDisabled ? "#DDDDDD" : "#727272" }}>
             {dateNumber}
           </Text>
         </View>
