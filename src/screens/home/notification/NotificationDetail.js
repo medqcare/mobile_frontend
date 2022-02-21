@@ -27,7 +27,7 @@ const NotificationDetail = (props) => {
               marginBottom: 24,
             }}
           >
-            Pembatalan Reservation oleh Dr. Wong Chee Meen
+            {notification.title}
           </Text>
           <Text
             style={{
