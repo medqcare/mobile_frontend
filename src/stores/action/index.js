@@ -26,6 +26,9 @@ import {
   changeReminderAlarmTime,
   changeReminderStatus,
 } from './reminders';
+import {
+  getMedicalServices
+} from './medical_services'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -1173,5 +1176,9 @@ export {
   deleteDrugImageUrl,
   updateFinishStatus,
 };
+
+export {
+  getMedicalServices
+}
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };

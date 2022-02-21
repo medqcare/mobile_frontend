@@ -40,6 +40,16 @@ function checkDisabled(schedule, bookingSchedule){
     return disabled
 }
 
+function checkDisabledDay(availableDays, dayNumber){   
+    let disabled = false
+
+    const isAvailable = availableDays.includes(dayNumber.toString())
+    if(!isAvailable) disabled = true
+    
+    return disabled
+}
+
 export {
-    checkDisabled
+    checkDisabled,
+    checkDisabledDay
 }
