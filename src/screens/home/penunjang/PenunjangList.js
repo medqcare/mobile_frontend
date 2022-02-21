@@ -58,6 +58,9 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 	async function searchMedicalServices(addPage){
 		try {
 			console.log('Application trying to find avaliable medical services')
+			console.log('type:', type)
+			console.log('status:', status)
+			console.log('page:', page)
 			const result = await getMedicalServices(type, status, page)
 			setLoading(false)
 			if(result.length === 0) {
@@ -105,7 +108,6 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 
 		return (
 			<View
-				onPress={() => navigation.navigate('MedicalServiceDetail', { item })}
 				style={styles.medicalServiceCardContainer}
 			>
 				<View style={styles.leftContent}>
@@ -126,7 +128,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 					</View>
 
 					<TouchableOpacity 
-						onPress={() => navigation.navigate('MedicalServiceDetail', { dataDetail })}
+						onPress={() => navigation.navigate('MedicalServiceDetail', { item })}
 						style={styles.makeAppointmentButton}>
 						<Text style={textStyles.whiteColorText}>Buat Janji</Text>
 					</TouchableOpacity>
