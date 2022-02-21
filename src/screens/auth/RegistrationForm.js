@@ -201,7 +201,6 @@ const RegistrationForm = (props) => {
           gender: employee.gender === 'Laki-laki' ? 'Male' : 'Female',
           nik: employee.NIK ? employee.NIK : '',
           dob: employee.dob ? dob : '',
-          phoneNumber: user.phoneNumber,
         });
         setEmployee(employee);
         setIsEmployee(true);
@@ -212,6 +211,28 @@ const RegistrationForm = (props) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (userData.phoneNumber) return;
+
+    (async () => {
+      try {
+        const { token } = JSON.parse(await AsyncStorage.getItem('token'));
+        const { data: res } = await axios({
+          url: baseURL + '/api/v1/members/users',
+          method: 'GET',
+          headers: {
+            Authorization: token,
+          },
+        });
+        const { user } = res.data;
+        console.log(user)
+        setUserData({ ...userData, phoneNumber: user.phoneNumber });
+      } catch (error) {
+        console.log(error.message);
+      }
+    })();
+  }, [userData]);
 
   // Use effect for province and district
   useEffect(() => {

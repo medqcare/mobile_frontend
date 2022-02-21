@@ -525,11 +525,15 @@ function DetailDoctorPage(props) {
               const sortedSchedules = filteredSchedules.sort((a, b) => {
                 return a.scheduleTime > b.scheduleTime;
               });
-              const { lat: latUser, lng: lngUser } = props.myLocation;
-              const distanceUser = () =>
-                getDistanceFromLatLonInKm(lat, lon, latUser, lngUser).toFixed(
-                  1
-                );
+              const distanceUser = () => {
+                const { lat: latUser, lng: lngUser } = props.myLocation;
+                return getDistanceFromLatLonInKm(
+                  lat,
+                  lon,
+                  latUser,
+                  lngUser
+                ).toFixed(1);
+              };
               return (
                 <View
                   key={facilityIndex}
@@ -1594,7 +1598,7 @@ const containerStyle = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 8
+    marginBottom: 8,
   },
   detRS: {
     flex: 4,
