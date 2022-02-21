@@ -22,18 +22,20 @@ export default function Pemesanan(props) {
 
   const _getData = async () => {
     let token = await AsyncStorage.getItem('token');
+    token = JSON.parse(token).token;
     return axios({
-      url: `${baseURL}/api/v1/members/getReservation`,
-      method: 'POST',
-      headers: { Authorization: JSON.parse(token).token },
+      url: baseURL + `/api/v1/members/reservations/user?type=doctor`,
+      method: 'GET',
+      headers: {
+        Authorization: token,
+      },
     });
   };
 
   const _fetchDataAppoinment = async () => {
-    _getData().then(({ data }) => {
-      try {
-        console.log(data, 'sebelum di set ==============<<<<');
-        let datakebalik = data.data.reverse();
+    _getData()
+      .then(({ data }) => {
+        let datakebalik = data.data.reservations.reverse();
         let newAppoinment = [];
         datakebalik.map((item, index) => {
           if (item.status !== 'booked') {
@@ -42,12 +44,12 @@ export default function Pemesanan(props) {
         });
         setAppoinment(newAppoinment);
         setLoad(false);
-      } catch (error) {
+      })
+      .catch((error) => {
         setRefreshing(false);
         setLoad(false);
         console.log(error);
-      }
-    });
+      });
   };
 
   const onRefresh = React.useCallback(() => {
@@ -115,6 +117,7 @@ export default function Pemesanan(props) {
                       {item.status === 'Report Done' ? 'Telah Selesai' : ''}
                       {item.status === 'Queueing' ? 'Dalam Antrian' : ''}
                       {item.status === 'canceled' ? 'Dibatalkan' : ''}
+                      {item.status === 'registered' ? 'Dalam Antrian' : ''}
                     </Text>
                   </View>
                   <View
@@ -130,13 +133,11 @@ export default function Pemesanan(props) {
                         <View style={styles.borderImage}>
                           <Image
                             style={styles.image}
-                            source={
-                              item.doctor.doctorPhoto
-                                ? { uri: item.doctor.doctorPhoto }
-                                : {
-                                    uri: 'https://www.isteducation.com/wp-content/plugins/learnpress/assets/images/no-image.png',
-                                  }
-                            }
+                            source={{
+                              uri: item.doctor.doctorPhoto
+                                ? item.doctor.doctorPhoto
+                                : 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
+                            }}
                           />
                         </View>
                       </View>
@@ -158,7 +159,12 @@ export default function Pemesanan(props) {
                       <View style={styles.time}>
                         <Text style={styles.date}>
                           {dateWithDDMMMYYYYFormat(
-                            new Date(item.bookingSchedule.split('/').reverse().join('/'))
+                            new Date(
+                              item.bookingSchedule
+                                .split('/')
+                                .reverse()
+                                .join('/')
+                            )
                           )}
                         </Text>
                         <View style={styles.dividingPoint}></View>
@@ -181,14 +187,21 @@ export default function Pemesanan(props) {
                       {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
                       <TouchableOpacity
                         onPress={() => {
-                          const data = {
-                            doctorID: item.doctor.doctorID,
-                          };
-
-                          props.navigation.navigate('DetailDoctor', {
-                            data,
-                            back: 'Riwayat',
-                          });
+                          (async () => {
+                            try {
+                              const { data } = await axios({
+                                method: 'POST',
+                                url: `${baseURL}/api/v1/members/detailDoctor/${item.doctor.doctorID}`,
+                              });
+                              console.log(data);
+                              props.navigation.navigate('DetailDoctor', {
+                                data,
+                                back: 'Riwayat',
+                              });
+                            } catch (error) {
+                              console.log(error, 'error get Dockter');
+                            }
+                          })();
                         }}
                       >
                         <View
@@ -243,6 +256,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
   },
   image: {
     height: 50,

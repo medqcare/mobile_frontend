@@ -1,32 +1,37 @@
-import React from 'react'
-import { createAppContainer } from "react-navigation";
+import React from 'react';
+import { createAppContainer } from 'react-navigation';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { TouchableOpacity, Text, Image, View } from 'react-native';
+import HomeStack from './home';
+import LoadingStack from './switchNavigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createStackNavigator,
   TransitionPresets,
 } from 'react-navigation-stack';
-import { createBottomTabNavigator } from "react-navigation-tabs"
-import { TouchableOpacity, Text, Image, View } from 'react-native'
-import HomeStack from './home'
-import LoadingStack from './switchNavigation'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const IndexStack = createStackNavigator(
-	{
-		Home: {
-			screen: HomeStack,
-			navigationOptions: {
-				headerShown: false
-			}
-		}
-	},
-	{
-		initialRouteName: 'Home',
-		defaultNavigationOptions: {
-		  ...TransitionPresets.SlideFromRightIOS,
-		},
-	}
-)
+  {
+    Home: {
+      screen: HomeStack,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
+  },
+  {
+    initialRouteName: 'Home',
+    defaultNavigationOptions: {
+      ...TransitionPresets.SlideFromRightIOS,
+      cardStyle: {
+        backgroundColor: '#1F1F1F',
+        opacity: 1,
+      },
+    },
+  }
+);
 
+// TabNavigator
 // const TabNavigator = createBottomTabNavigator({
 //   Home: {
 //     screen: HomeStack,
@@ -49,11 +54,11 @@ const IndexStack = createStackNavigator(
 //         return (
 //           <TouchableOpacity onPress={ async () => {
 //             const token = await AsyncStorage.getItem('token')
-//             token ? 
-//             navigation.navigate('CardStack', { date: new Date(), data: 'CardStack' }) 
+//             token ?
+//             navigation.navigate('CardStack', { date: new Date(), data: 'CardStack' })
 //             : navigation.navigate('Sign', {navigateTo: 'CardStack'})
 //           }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            
+
 //             <Image source={focused ?  require('../assets/png/ic_kartu.png'): require('../assets/png/ic_kartu_inactive.png') } style={{width: 18, height: 20}} />
 //             <Text style={{ color: tintColor, fontSize: 12, marginTop: 5 }}>Kartu</Text>
 //           </TouchableOpacity>
@@ -71,7 +76,7 @@ const IndexStack = createStackNavigator(
 //             navigation.navigate('Home')
 //             navigation.navigate('Undefined', { date: new Date(), data: 'Undefined' })
 //           }} style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            
+
 //           <Image source={ focused ?  require('../assets/png/ic_chat.png') : require('../assets/png/ic_chat_inactive.png')} style={{width: 18, height: 20}} />
 //             <Text style={{  color: tintColor, fontSize: 12, marginTop: 5 }}>Chat</Text>
 //           </TouchableOpacity>
@@ -98,5 +103,4 @@ const IndexStack = createStackNavigator(
 //   initialRouteName: "Home",
 // })
 
-
-export default createAppContainer(IndexStack)
+export default createAppContainer(IndexStack);

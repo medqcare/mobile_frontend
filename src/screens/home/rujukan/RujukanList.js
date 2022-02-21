@@ -41,8 +41,8 @@ function RujukanList(props) {
     _id: props.userData._id,
     imageUrl: props.userData.imageUrl,
   });
-  const [types, setTypes] = useState(['rujukan', 'surat sakit']);
-  const [typeSelected, setTypeSelected] = useState('rujukan');
+  const [types, setTypes] = useState(['semua', 'rujukan', 'surat sakit']);
+  const [typeSelected, setTypeSelected] = useState('semua');
   const [searchIsFocus, setIsFocusSearch] = useState(false);
 
   useEffect(() => {
@@ -63,25 +63,23 @@ function RujukanList(props) {
       try {
         const tokenString = await AsyncStorage.getItem('token');
         const { token } = JSON.parse(tokenString);
-        let type = 'rujukan,surat sakit';
+        const type =
+          typeSelected === 'semua' ? 'rujukan,surat sakit' : typeSelected;
         const { data: response } = await getDocumentByPatient(
           token,
           patient._id,
           type
         );
         const { data: docs } = response;
-        const defaultDocs = docs.filter(
-          (element) => element.type === 'rujukan'
-        );
         setDocs(docs);
-        setDocsFiltered(defaultDocs);
+        setDocsFiltered(docs);
       } catch (error) {
         console.log(error.message, 'this is error from rujukan');
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [patient]);
+  }, [patient, typeSelected]);
 
   const addDocumentOptions = [
     {
@@ -207,9 +205,10 @@ function RujukanList(props) {
                 return;
               }
               setIsFocusSearch(true);
-              const filteredBySearch = docs.filter((doc) =>
-                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
-              );
+              var regexp = new RegExp(text, 'gi');
+              const filteredBySearch = docs.filter((doc) => {
+                return doc.name.match(regexp) !== null;
+              });
               setDocsFiltered(filteredBySearch);
             }}
           />
@@ -241,13 +240,7 @@ function RujukanList(props) {
             items={types}
             itemSelected={typeSelected}
             setItemSelected={setTypeSelected}
-            onItemSelected={(item) => {
-              setTypeSelected(item);
-              const newFilteredDocs = docs.filter(
-                (element) => element.type === item
-              );
-              setDocsFiltered(newFilteredDocs);
-            }}
+            onItemSelected={(item) => setTypeSelected(item)}
           />
         </View>
       )}
@@ -320,7 +313,14 @@ function RujukanList(props) {
               </View>
             </>
           ) : (
-            <View style={{ display: "flex", height: "80%", alignItems: 'center', justifyContent: 'center'}}>
+            <View
+              style={{
+                display: 'flex',
+                height: '80%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
               <Text style={{ color: '#fff' }}>
                 Tidak ada surat {typeSelected}
               </Text>

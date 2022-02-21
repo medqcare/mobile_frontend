@@ -5,6 +5,7 @@ import {
 import medicalStats from '../../screens/home/medicalStats/MedicalStats';
 import DetailResumeMedis from '../../screens/home/medicalStats/DetailResumeMedis';
 import ScanMedres from '../../screens/home/medicalStats/ScanMedres';
+import VerifyPassword from '../../screens/home/medicalStats/VerifyPassword';
 
 // import MedresList from '../../screens/home/medicalStats/MedicalStats'
 // import DetailMedres from '../../components/home/medicalStats/detailMedicalStats'
@@ -32,9 +33,14 @@ export default StackMedres = createStackNavigator(
         headerShown: false,
       },
     },
+    VerifyPassword: {
+      screen: VerifyPassword,
+      navigationOptions: {
+        headerShown: false,
+      },
+    },
   },
   {
-    initialRouteName: 'MedResList',
     defaultNavigationOptions: {
       ...TransitionPresets.SlideFromRightIOS,
     },

@@ -27,7 +27,6 @@ import { heightPercentageToDP } from 'react-native-responsive-screen';
 const dimHeight = Dimensions.get('window').height;
 
 function MedicalResume(props) {
-  console.log(props.userData._id);
   const [dataMedRes, setDataMedres] = useState([]);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
@@ -264,7 +263,7 @@ function MedicalResume(props) {
                   onPress={() => {
                     setModalKonfirmasi(false);
                     // setModalQR(true);
-                    props.navigation.navigate('ScannerShareMedres', {
+                    props.navigation.navigate('VerifyPassword', {
                       patientID: patient.patient.patientID,
                     });
                   }}

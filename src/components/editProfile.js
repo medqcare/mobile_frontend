@@ -687,6 +687,24 @@ const editProfile = (props) => {
 			)} */}
         </View>
 
+        <View style={{ paddingHorizontal: 12}}>
+            <View style={style.input}>
+              <TextInput
+                autoCapitalize={'sentences'}
+                style={style.inputText}
+                autoFocus={false}
+                placeholder={'Detail Alamat'}
+                placeholderTextColor="#8b8b8b"
+                onChangeText={(text) => {
+                  const { location } = userData;
+                  const newLocation = { ...location, address: text };
+                  setUserData({ ...userData, location: newLocation });
+                }}
+                value={userData.location.address}
+              />
+            </View>
+          </View>
+
         <View style={style.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
@@ -719,7 +737,8 @@ const style = StyleSheet.create({
 
   inputBottomContainer: {
     paddingTop: 10,
-    paddingBottom: 20,
+    // paddingBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 10,
   },
 

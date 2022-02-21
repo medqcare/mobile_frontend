@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   StyleSheet,
   Image,
   BackHandler,
@@ -16,6 +15,7 @@ import {
 import { resetPasswordPhone } from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import GreyHeader from '../../../components/headers/GreyHeader';
+import formatPhoneNumber from '../../../helpers/formatPhoneNumber';
 
 const resetPasswdPhone = (props) => {
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -23,38 +23,47 @@ const resetPasswdPhone = (props) => {
     return true;
   });
 
-  const [load, setLoad] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState(null);
+  const [confirm, setConfirm] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const validation = () => {
-    setLoad(true);
+    setLoading(true);
     const isNumber = +phoneNumber;
     if (phoneNumber === null) {
       ToastAndroid.show(
         'Mohon untuk mengisi nomor terlebih dahulu.',
         ToastAndroid.LONG
       );
-      setLoad(false);
+      setLoading(false);
     } else if (!isNumber) {
       ToastAndroid.show(
         'Mohon mengisi nomor dengan format yang benar',
         ToastAndroid.LONG
       );
-      setLoad(false);
+      setLoading(false);
     } else {
       Finalvalidation();
     }
   };
 
-  function Finalvalidation() {
-    setLoad(false);
-
-    console.log('final validation');
-    props.resetPasswordPhone(
-      phoneNumber,
-      props.navigation.navigate,
-      'InputSecretCodeOTP'
-    );
+  async function Finalvalidation() {
+    try {
+      const code = formatPhoneNumber(phoneNumber);
+      props.navigation.navigate('InputSecretCodeOTP', {
+        verificationId: 'hello',
+        phoneNumber: code,
+        onSuccess: () => {
+          console.log(true);
+        },
+        back: 'Home',
+      });
+    } catch (error) {
+      console.log(error);
+      ToastAndroid.show('Gagal mengirim kode verifikasi, silahkan coba lagi');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -103,9 +112,12 @@ const resetPasswdPhone = (props) => {
             onChangeText={setPhoneNumber}
           />
         </View>
-        <TouchableOpacity style={style.button} onPress={() => validation()}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={() => validation(phoneNumber)}
+        >
           <View>
-            {load ? (
+            {loading ? (
               <ActivityIndicator size={'small'} color={'#FFF'} />
             ) : (
               <Text style={{ fontSize: 16, color: '#00FFEC' }}>Kirim Kode</Text>

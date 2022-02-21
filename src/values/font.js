@@ -1,0 +1,7 @@
+export const INTER_200 = 'Inter-ExtraLight'
+export const INTER_300 = 'Inter-Light'
+export const INTER_400 = 'Inter-Regular'
+export const INTER_500 = 'Inter-Medium'
+export const INTER_600 = 'Inter-SemiBold'
+export const INTER_700 = 'Inter-Bold'
+export const INTER_800 = 'Inter-ExtraBold'

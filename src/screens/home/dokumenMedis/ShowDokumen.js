@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
-import { WebView } from "react-native-webview";
-import Header from "../../../components/headers/GradientHeader";
-import { connect } from "react-redux";
-import PDFReader from "rn-pdf-reader-js";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, BackHandler } from 'react-native';
+import { WebView } from 'react-native-webview';
+import Header from '../../../components/headers/GradientHeader';
+import { connect } from 'react-redux';
+import PDFReader from 'rn-pdf-reader-js';
 
-const dimHeight = Dimensions.get("window").height;
+const dimHeight = Dimensions.get('window').height;
 
 function ShowDocument(props) {
   const { uri, name, base64, backTo, option } = props.navigation.state.params;
-
+  console.log(backTo, 'hello world');
   const source = {};
 
   if (uri) {
@@ -18,10 +18,22 @@ function ShowDocument(props) {
     source.base64 = base64;
   }
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        props.navigation.navigate(backTo);
+        return true;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <Header
-        title={name.length > 20 ? name.slice(0, 20) + " ..." : name}
+        title={name.length > 20 ? name.slice(0, 20) + ' ...' : name}
         navigate={props.navigation.navigate}
         navigateBack={backTo}
         option={option}
@@ -34,7 +46,7 @@ function ShowDocument(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#181818",
+    backgroundColor: '#181818',
   },
 });
 

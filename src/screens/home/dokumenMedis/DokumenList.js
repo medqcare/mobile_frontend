@@ -6,12 +6,12 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   ToastAndroid,
   StatusBar,
   PermissionsAndroid,
   Image,
   TextInput,
+  BackHandler,
 } from 'react-native';
 
 import * as MediaLibrary from 'expo-media-library';
@@ -30,7 +30,6 @@ import {
   uploadDocument,
 } from '../../../stores/action';
 
-import PictureModal from '../../../components/modals/profilePictureModal';
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
 import RenameModal from '../../../components/modals/modalRename';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
@@ -38,20 +37,23 @@ import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import LottieLoader from 'lottie-react-native';
 
 import Ic_Sort from '../../../assets/svg/ic_sort';
-import Ic_Dokumen from '../../../assets/svg/ic_documen';
-import Ic_Option from '../../../assets/svg/ic_option';
 import * as DocumentPicker from 'expo-document-picker';
-import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
 import { CardDocument } from '../../../components/document/CardDocument';
 import getFullName from '../../../helpers/getFullName';
+import { ActivityIndicator } from 'react-native-paper';
+import axios from 'axios';
+import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
+  const { types: DEFAULT_TYPES, allowUploadDocument } =
+    props.navigation.state.params;
+  const { routeName: SCREEN_NAME } = props.navigation.state;
+  const DEFAULT_TYPE_SELECTED = 'semua';
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalOption, setModalOption] = useState(false);
   const [modalRename, setModalRename] = useState(false);
@@ -63,22 +65,19 @@ function DokumenList(props) {
   const [selectedKey, setSelectedKey] = useState(null);
   const [selectedUrl, setfileUrl] = useState(null);
   const [modalLoad, setModalLoad] = useState(false);
-  const [searchIsFocus, setIsFocusSearch] = useState(false);
-
-  const [types, setTypes] = useState([
-    'semua',
-    'resep',
-    'radiologi',
-    'laboratorium',
-  ]);
-  const [typeSelected, setTypeSelected] = useState('semua');
-
+  const [searchIsFocus, setSearchIsFocus] = useState(false);
+  const [search, setSearch] = useState('');
+  const [types, setTypes] = useState([DEFAULT_TYPE_SELECTED, ...DEFAULT_TYPES]);
+  const [typeSelected, setTypeSelected] = useState(DEFAULT_TYPE_SELECTED);
+  const [pageNumber, setPageNumber] = useState(1);
   const [accountOwner, setAccountOwner] = useState(props.userData);
   const [modalPatient, setModalPatient] = useState(false);
   const [family, setFamily] = useState([]);
   const [patient, setPatient] = useState({
     ...props.userData,
   });
+  const [loadingPagination, setLoadingPagination] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     let _family = {
@@ -92,38 +91,117 @@ function DokumenList(props) {
     setFamily(family.concat(temp));
   }, []);
 
-  useEffect(() => {
-    _fetchData();
-  }, [patient]);
-
-  useEffect(() => {
-    if (typeSelected !== 'semua') {
-      const filteredData = data.filter((doc) => doc.type === typeSelected);
-      setFilteredData(filteredData);
-    } else {
-      setFilteredData(data);
+  useEffect(async () => {
+    if (searchIsFocus) {
+      return;
     }
-  }, [typeSelected]);
+
+    const tokenString = await AsyncStorage.getItem('token');
+    const { token } = JSON.parse(tokenString);
+    const patientId = patient._id;
+    if (pageNumber === 1) {
+      await _fetchData();
+    } else {
+      await fetchDocumentsWithPagination(
+        token,
+        patientId,
+        typeSelected,
+        pageNumber
+      );
+    }
+  }, [patient, pageNumber, typeSelected]);
+
+  useEffect(async () => {
+    if (search === '') {
+      return;
+    }
+
+    if (searchIsFocus === false) {
+      return;
+    }
+
+    const patientId = patient._id;
+    await fetchBySearchQuery(search, patientId);
+  }, [search]);
 
   const _fetchData = async () => {
+    let type =
+      typeSelected === DEFAULT_TYPE_SELECTED
+        ? DEFAULT_TYPES.join(',')
+        : typeSelected;
+
     setLoading(true);
-    let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    let type = 'resep,radiologi,laboratorium';
-    getDocumentByPatient(token, patient._id, type)
-      .then(({ data }) => {
-        setFilteredData(data.data);
-        setData(data.data);
-      })
-      .catch((err) => {
-        ToastAndroid.show(
-          `Please check your internet connection`,
-          ToastAndroid.SHORT
-        );
-        console.log(err);
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      const tokenString = await AsyncStorage.getItem('token');
+      const { token } = JSON.parse(tokenString);
+      const patientId = patient._id;
+      const { data: response } = await getDocumentByPatient(
+        token,
+        patientId,
+        type,
+        pageNumber
+      );
+      setData(response.data);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      ToastAndroid.show(
+        `Please check your internet connection`,
+        ToastAndroid.SHORT
+      );
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchDocumentsWithPagination = async () => {
+    let type =
+      typeSelected === DEFAULT_TYPE_SELECTED
+        ? 'resep,laboratorium,radiologi'
+        : typeSelected;
+    try {
+      setLoadingPagination(true);
+      const tokenString = await AsyncStorage.getItem('token');
+      const { token } = JSON.parse(tokenString);
+      const patientId = patient._id;
+      const { data: response } = await getDocumentByPatient(
+        token,
+        patientId,
+        type,
+        pageNumber
+      );
+      const documents = response.data;
+      if (documents.length > 0) {
+        setData(data.concat(documents));
+      }
+    } catch (error) {
+      ToastAndroid.show('Gagal memuat documents', ToastAndroid.LONG);
+    } finally {
+      setLoadingPagination(false);
+    }
+  };
+
+  const fetchBySearchQuery = async (search, patientId) => {
+    let token = await AsyncStorage.getItem('token');
+    token = JSON.parse(token).token;
+
+    try {
+      setLoading(true);
+      const { data: response } = await axios({
+        method: 'GET',
+        url: baseURL + `/api/v1/members/getDocumentByPatient?search=${search}`,
+        headers: {
+          Authorization: token,
+          patientid: patientId,
+          type: DEFAULT_TYPES.join(','),
+        },
       });
+      setData(response.data);
+    } catch (error) {
+      ToastAndroid.show('Gagal memuat dokumen, silahkan coba kembali');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const upload = async (data) => {
@@ -131,13 +209,12 @@ function DokumenList(props) {
     uploadDocument(token, patient._id, data)
       .then(({ data }) => {
         console.log(data);
-        _fetchData();
+        setPageNumber(1);
+        setUploadLoading(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
-      })
-      .finally(() => {
-        setUploadLoading(false);
       });
   };
 
@@ -149,14 +226,15 @@ function DokumenList(props) {
     };
     renameDocument(token, patient._id, payload)
       .then(({ data }) => {
-        _fetchData();
+        setPageNumber(1);
+        setModalRename(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
       })
       .finally(() => {
         setModalLoad(false);
-        setModalRename(false);
       });
   };
 
@@ -169,14 +247,15 @@ function DokumenList(props) {
     deleteDocument(token, patient._id, payload)
       .then(({ data }) => {
         console.log(data);
-        _fetchData();
+        setPageNumber(1);
+        setModalDelete(false);
+        return _fetchData();
       })
       .catch((error) => {
         console.log(error);
       })
       .finally(() => {
         setModalLoad(false);
-        setModalDelete(false);
       });
   };
 
@@ -344,34 +423,53 @@ function DokumenList(props) {
     setModalOption(true);
   };
 
-  const typeStyleBehavior = (type) => ({
-    container: {
-      backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
-      borderWidth: 1,
-      borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 99,
-      alignSelf: 'flex-start',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginRight: 8,
-    },
-    text: {
-      color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
-      fontSize: 12,
-      textTransform: 'capitalize',
-    },
-  });
+  const typeStyleBehavior = (type) => {
+    return {
+      container: {
+        backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
+        borderWidth: 1,
+        borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 99,
+        alignSelf: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 8,
+      },
+      text: {
+        color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
+        fontSize: 12,
+        textTransform: 'capitalize',
+      },
+    };
+  };
 
   const renderType = ({ item }) => {
     const { container, text } = typeStyleBehavior(item);
     return (
-      <TouchableOpacity style={container} onPress={() => setTypeSelected(item)}>
+      <TouchableOpacity
+        style={container}
+        onPress={() => {
+          setTypeSelected(item);
+          setPageNumber(1);
+        }}
+      >
         <Text style={text}>{item}</Text>
       </TouchableOpacity>
     );
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        props.navigation.navigate('Home');
+        return true;
+      }
+    );
+    return () => backHandler.remove();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -382,7 +480,7 @@ function DokumenList(props) {
       />
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => props.navigation.pop()}
+          onPress={() => props.navigation.navigate('Home')}
           style={styles.arrow}
         >
           <Ionicons
@@ -401,20 +499,18 @@ function DokumenList(props) {
             placeholder="Cari Dokumen"
             placeholderTextColor="#A2A2A2"
             onFocus={() => {
-              setFilteredData([]);
-              setIsFocusSearch(true);
+              setData([]);
+              setSearchIsFocus(true);
             }}
             onChangeText={(text) => {
               if (text === '') {
-                setFilteredData(data);
-                setIsFocusSearch(false);
+                setSearchIsFocus(false);
+                setPageNumber(1);
+                _fetchData();
                 return;
               }
-              setIsFocusSearch(true);
-              const filteredBySearch = data.filter((doc) =>
-                doc.name.toLowerCase().startsWith(text.toLocaleLowerCase())
-              );
-              setFilteredData(filteredBySearch);
+              setSearchIsFocus(true);
+              setSearch(text);
             }}
           />
           <TouchableOpacity onPress={() => setModalPatient(true)}>
@@ -435,25 +531,25 @@ function DokumenList(props) {
       </View>
 
       <>
-          <View
-            style={{
-              marginVertical: 12,
-              width: '100%',
-              paddingLeft: 12,
-            }}
-          >
-            <View style={{ flexDirection: 'row' }}>
-              <FlatList
-                data={types}
-                renderItem={renderType}
-                keyExtractor={(_, index) => `${index}-type`}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-              />
-            </View>
+        <View
+          style={{
+            marginVertical: 12,
+            width: '100%',
+            paddingLeft: 12,
+          }}
+        >
+          <View style={{ flexDirection: 'row' }}>
+            <FlatList
+              data={types}
+              renderItem={renderType}
+              keyExtractor={(_, index) => `${index}-type`}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
+        </View>
         <View style={styles.docsContainer}>
-          {filteredData.length && !loading ? (
+          {data.length && !loading ? (
             <View style={styles.document}>
               <TouchableOpacity style={styles.textHeader}>
                 <Text style={styles.textItem}>Terakhir diunggah </Text>
@@ -463,7 +559,7 @@ function DokumenList(props) {
               </TouchableOpacity>
               <View>
                 <FlatList
-                  data={filteredData}
+                  data={data}
                   keyExtractor={(item) => String(item._id)}
                   renderItem={({ item }) => {
                     return (
@@ -471,10 +567,32 @@ function DokumenList(props) {
                         item={item}
                         onOptionPressedHandler={onOptionPressedHandler}
                         {...props}
-                        backTo={'ListDokumenMedis'}
+                        backTo={SCREEN_NAME}
                       />
                     );
                   }}
+                  ListFooterComponent={() => {
+                    return (
+                      <View
+                        style={{
+                          padding: 10,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          flexDirection: 'row',
+                        }}
+                      >
+                        {loadingPagination && (
+                          <ActivityIndicator color="#005EA2" size={'small'} />
+                        )}
+                      </View>
+                    );
+                  }}
+                  onEndReached={() => {
+                    if (pageNumber !== totalPages) {
+                      setPageNumber(pageNumber + 1);
+                    }
+                  }}
+                  onEndReachedThreshold={0.5}
                 />
               </View>
             </View>
@@ -500,7 +618,9 @@ function DokumenList(props) {
             </>
           )}
 
-          {!loading ? (
+          {loading === false &&
+          searchIsFocus === false &&
+          allowUploadDocument ? (
             <View
               style={{
                 alignItems: 'center',
@@ -574,7 +694,11 @@ function DokumenList(props) {
         accountOwner={accountOwner}
         family={family}
         title="Pilih Patient"
-        setSelectedValue={setPatient}
+        setSelectedValue={(patient) => {
+          setPatient(patient);
+          setPageNumber(1);
+          setLoadingPagination(false);
+        }}
         navigateTo={(screen) => props.navigation.navigate(screen)}
       />
     </View>
@@ -620,6 +744,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     color: '#A2A2A2',
+    width: '100%',
   },
   textHeader: {
     flexDirection: 'row',

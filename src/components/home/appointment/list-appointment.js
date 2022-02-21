@@ -23,12 +23,9 @@ import openMap from '../../../helpers/openMap';
 import Qrcode from '../../../assets/svg/Qrcode';
 
 const ListApointment = (props) => {
-  const [address, setAddres] = useState(false);
   const [dataPatient, setPatient] = useState(null);
   const [modal, setmodal] = useState(false);
-  const [healthFacilityData, setHealthFacilityData] = useState(null);
 
-  const [loadingLocation, setLoadingLocation] = useState(false);
   var moment = require('moment');
 
   useEffect(() => {
@@ -41,9 +38,9 @@ const ListApointment = (props) => {
     }
   }, [modal]);
 
-//   useEffect(() => {
-//     setPatient(props.data);
-//   }, []);
+  useEffect(() => {
+    setPatient(props.data);
+  }, []);
 
   const getHealthFacility = async () => {
     const { data: response } = await axios({
@@ -53,21 +50,17 @@ const ListApointment = (props) => {
     return response.data;
   };
 
-	const openMapHandler = () => {
-		(async () => {
-			try {
-				if(dataPatient.healthFacility.location){
-					const { lat, long } = dataPatient.healthFacility.location 
-					return openMap(lat, long)
-				}
-				const { location } = await getHealthFacility();
-				const [lng, lat] = location.coordinates;
-				openMap(lat, lng);
-			} catch (error) {
-				console.log(error, 'this is error from list-appointment');
-			}
-		})();
-	};
+  const openMapHandler = () => {
+    (async () => {
+      try {
+        const { location } = await getHealthFacility();
+        const [lng, lat] = location.coordinates;
+        openMap(lat, lng);
+      } catch (error) {
+        console.log(error, 'this is error from list-appointment');
+      }
+    })();
+  };
 
   const todaysDateIsMatchWithBookingSchedulesDate = (bookingSchedule) => {
     return bookingSchedule === moment().format('DD/MM/YYYY');
@@ -81,41 +74,7 @@ const ListApointment = (props) => {
       reservationData: props.data,
       isToday,
     });
-    // getHealthFacility()
-    //   .then((data) => {
-    //     console.log(data);
-    //     setmodal(false);
-    //     props.route.navigate('Scanner', {
-    //       reservationData: props.data,
-    //       healthFacility: data,
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.log(error.message);
-    //   });
   };
-
-  //   <TouchableOpacity
-  //   style={{ alignSelf: 'flex-start' }}
-  //   onPress={() => {
-  //     openMapHandler();
-  //   }}
-  // >
-  //   <View
-  //     style={{
-  //       alignItems: 'center',
-  //       height: 40,
-  //       width: 40,
-  //       borderRadius: 40,
-  //       borderColor: '#7D7D7D',
-  //       borderWidth: 1,
-  //       alignItems: 'center',
-  //       justifyContent: 'center',
-  //     }}
-  //   >
-  //     <ButtonMap />
-  //   </View>
-  // </TouchableOpacity>
 
   //function
   function socketConnection() {
@@ -141,275 +100,264 @@ const ListApointment = (props) => {
       socket.close();
     });
   }
+  return (
+    <View>
+      {dataPatient && dataPatient.status !== 'canceled' && (
+        <>
+          <View style={styles.container}>
+            <View
+              style={{
+                flexDirection: 'row',
+                backgroundColor: '#2F2F2F',
+                padding: 14,
+                borderTopStartRadius: 5,
+                borderTopEndRadius: 5,
+              }}
+            >
+              <View style={styles.borderImage}>
+                <Image
+                  style={styles.image}
+                  source={
+                    dataPatient.doctor.doctorPhoto
+                      ? { uri: dataPatient.doctor.doctorPhoto }
+                      : {
+                          uri: 'https://www.isteducation.com/wp-content/plugins/learnpress/assets/images/no-image.png',
+                        }
+                  }
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <View>
+                    <Text style={styles.name}>
+                      {dataPatient.doctor.title} {dataPatient.doctor.doctorName}{' '}
+                    </Text>
+                    <Text style={styles.poli}>
+                      {dataPatient.doctor.doctorSpecialist}
+                    </Text>
+                    <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
+                      {dataPatient.healthFacility.facilityName}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      openMapHandler();
+                    }}
+                  >
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        height: 25,
+                        width: 25,
+                        borderRadius: 40,
+                        borderColor: '#7D7D7D',
+                        borderWidth: 1,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <ButtonMap />
+                    </View>
+                  </TouchableOpacity>
+                </View>
 
-  	return (
-    	<View>
-      		{dataPatient && dataPatient.status !== 'canceled' && (
-        		<>
-          			<View style={styles.container}>
-            			<View
-							style={{
-								flexDirection: 'row',
-								backgroundColor: '#2F2F2F',
-								padding: 14,
-								borderTopStartRadius: 5,
-								borderTopEndRadius: 5,
-							}}
-            			>
-             				<View style={styles.borderImage}>
-								<Image
-								style={styles.image}
-								source={
-									dataPatient.doctor?.doctorPhoto
-									? { uri: dataPatient.doctor?.doctorPhoto }
-									: {
-										uri: 'https://www.isteducation.com/wp-content/plugins/learnpress/assets/images/no-image.png',
-										}
-								}
-								/>
-              				</View>
-              				<View style={{ flex: 1 }}>
-								<View
-									style={{
-										flexDirection: 'row',
-										alignItems: 'center',
-										justifyContent: 'space-between',
-									}}
-								>
-									<View>
-										{dataPatient.doctor ? (
-											<>
-												<Text style={styles.name}>
-													{dataPatient.doctor.title} {dataPatient.doctor.doctorName}{' '}
-												</Text>
-												<Text style={styles.poli}>
-													{dataPatient.doctor?.doctorSpecialist}
-												</Text>
-											</>
-										) : (
-											<>
-												<Text style={styles.name}>
-													{dataPatient.services.name}
-												</Text>
-											</>
+                <View style={styles.line}></View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <View>
+                    <View style={styles.time}>
+                      <Text style={{ color: '#B5B5B5' }}>Patient Name : </Text>
+                      <Text style={{ color: '#DDDDDD' }}>
+                        {dataPatient.patient.patientName}
+                      </Text>
+                    </View>
+                    <View style={styles.time}>
+                      <Text style={styles.date}>
+                        {dataPatient.bookingSchedule}
+                      </Text>
+                      <Text style={styles.date}> - </Text>
+                      <Text style={styles.clock}>
+                        {dataPatient.bookingTime}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                padding: 14,
+                backgroundColor: '#4D4D4D',
+                borderBottomStartRadius: 5,
+                borderBottomEndRadius: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  if (typeof props.onCancelReservation === 'function') {
+                    props.onCancelReservation(props.data._id);
+                  }
+                }}
+              >
+                <Text
+                  style={{ color: '#F26359', fontWeight: '100', opacity: 0.8 }}
+                >
+                  Batalkan Pesanan
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openScannerHandler}>
+                <Text
+                  style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
+                >
+                  Check-In
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </>
+      )}
 
-										)}
-										<Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
-											{dataPatient.healthFacility.facilityName}
-										</Text>
-									</View>
-									<TouchableOpacity
-										onPress={() => {
-											openMapHandler();
-										}}
-									>
-										<View
-											style={{
-												alignItems: 'center',
-												height: 25,
-												width: 25,
-												borderRadius: 40,
-												borderColor: '#7D7D7D',
-												borderWidth: 1,
-												alignItems: 'center',
-												justifyContent: 'center',
-											}}
-										>
-                      						<ButtonMap />
-										</View>
-									</TouchableOpacity>
-								</View>
-
-                				<View style={styles.line}/>
-								<View
-									style={{
-										flexDirection: 'row',
-										justifyContent: 'space-between',
-									}}
-								>
-                  					<View>
-										<View style={styles.time}>
-											<Text style={{ color: '#B5B5B5' }}>Patient Name : </Text>
-											<Text style={{ color: '#DDDDDD' }}>
-												{dataPatient.patient.patientName}
-											</Text>
-										</View>
-										<View style={styles.time}>
-											<Text style={styles.date}>
-												{dataPatient.bookingSchedule}
-											</Text>
-											<Text style={styles.date}> - </Text>
-											<Text style={styles.clock}>
-												{dataPatient.bookingTime ? dataPatient.bookingTime : 'Sepanjang Hari'}
-											</Text>
-										</View>
-                  					</View>
-                				</View>
-              				</View>
-            			</View>
-						<View
-							style={{
-								width: '100%',
-								padding: 14,
-								backgroundColor: '#4D4D4D',
-								borderBottomStartRadius: 5,
-								borderBottomEndRadius: 5,
-								flexDirection: 'row',
-								justifyContent: 'space-between',
-							}}
-						>
-							<TouchableOpacity
-								onPress={() => {
-									props.setModalDelete(true);
-									props.function();
-								}}
-							>
-								<Text
-									style={{ color: '#F26359', fontWeight: '100', opacity: 0.8 }}
-								>
-									Batalkan Pesanan
-								</Text>
-							</TouchableOpacity>
-							<TouchableOpacity onPress={openScannerHandler}>
-								<Text
-									style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
-								>
-									Check-In
-								</Text>
-							</TouchableOpacity>
-            			</View>
-          			</View>
-        		</>
-      		)}
-
-			<Modal
-				visible={modal}
-				animationType="fade"
-				transparent={true}
-				onRequestClose={() => setmodal(false)}
-			>
-			<View
-				style={{
-					backgroundColor: 'rgba(0, 0, 0, 0.8)',
-					flex: 1,
-					justifyContent: 'center',
-					padding: 20,
-				}}
-			>	
-				<View
-					style={{
-					maxHeight: '60%',
-					minHeight: '50%',
-					padding: 10,
-					borderRadius: 5,
-					backgroundColor: '#2F2F2F',
-					}}
-				>
-            		{/* {dataPatient && dataPatient.status == 'need confirmation' ? <Text>need</Text> : dataPatient.status == "cenceled" ? <Text>cenceled</Text> : <Text>booked</Text> } */}
-					{dataPatient && (
-              			<>
-                			{dataPatient.status == 'need confirmation' ? (
-								<View style={{ flex: 1, justifyContent: 'center' }}>
-									<Text
-										style={{
-											fontSize: 16,
-											color: '#B5B5B5',
-											textAlign: 'center',
-									}}
-									>
-										Please check your email for confirmation
-									</Text>
-								</View>
-							) : dataPatient.status == 'booked' &&
-                  			dataPatient.bookingSchedule !==
-                    		moment().format('DD/MM/YYYY') ? (
-								<View style={{ flex: 1, justifyContent: 'center' }}>
-									<Text
-										style={{
-											fontSize: 16,
-											color: '#B5B5B5',
-											textAlign: 'center',
-										}}
-									>
-										QR codes only appear on the day you make a doctor's
-										appointment
-									</Text>
-								</View>
-                			) : (
-								<View
-									style={{
-									flex: 1,
-									alignItems: 'center',
-									margin: 5,
-									}}
-								>
-									<View
-										style={{
-											padding: 3,
-											borderRadius: 10,
-											marginTop: 20,
-											borderColor: '#fff',
-											borderWidth: 5,
-										}}
-									>
-										<QRCode size={180} value={dataPatient._id} />
-									</View>
-									<View
-										style={{
-											alignItems: 'center',
-											marginTop: 12,
-											justifyContent: 'space-between',
-											height: '30%',
-										}}
-									>
-										<Text
-											style={{
-												color: '#B5B5B5',
-												textAlign: 'center',
-											}}
-										>
-											Show the QR to the registration section when you arrive
-											and get the queue number{' '}
-										</Text>
-										<Text
-											style={{
-												fontSize: 16,
-												color: '#B5B5B5',
-											}}
-										>
-											OR
-										</Text>
-										<TouchableOpacity onPress={openScannerHandler}>
-											<Text
-												style={{
-													fontSize: 16,
-													color: '#B5B5B5',
-												}}
-											>
-												SCAN QR CODE
-											</Text>
-										</TouchableOpacity>
-                    				</View>
-                  				</View>
-                			)}
-              			</>
-            		)}
-          		</View>
-				<View style={{ alignItems: 'center' }}>
-					<TouchableOpacity
-						style={{
-							backgroundColor: '#2F2F2F',
-							padding: 7,
-							borderRadius: 20,
-							marginTop: 10,
-						}}
-						onPress={() => setmodal(false)}
-					>
-						<Iconclose name="close" color="#FFFFFF" size={20} />
-					</TouchableOpacity>
-				</View>
-        	</View>
-      	</Modal>
+      <Modal
+        visible={modal}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setmodal(false)}
+      >
+        <View
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            flex: 1,
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <View
+            style={{
+              maxHeight: '60%',
+              minHeight: '50%',
+              padding: 10,
+              borderRadius: 5,
+              backgroundColor: '#2F2F2F',
+            }}
+          >
+            {/* {dataPatient && dataPatient.status == 'need confirmation' ? <Text>need</Text> : dataPatient.status == "cenceled" ? <Text>cenceled</Text> : <Text>booked</Text> } */}
+            {dataPatient && (
+              <>
+                {dataPatient.status == 'need confirmation' ? (
+                  <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: '#B5B5B5',
+                        textAlign: 'center',
+                      }}
+                    >
+                      Please check your email for confirmation
+                    </Text>
+                  </View>
+                ) : dataPatient.status == 'booked' &&
+                  dataPatient.bookingSchedule !==
+                    moment().format('DD/MM/YYYY') ? (
+                  <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: '#B5B5B5',
+                        textAlign: 'center',
+                      }}
+                    >
+                      QR codes only appear on the day you make a doctor's
+                      appointment
+                    </Text>
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      flex: 1,
+                      alignItems: 'center',
+                      margin: 5,
+                    }}
+                  >
+                    <View
+                      style={{
+                        padding: 3,
+                        borderRadius: 10,
+                        marginTop: 20,
+                        borderColor: '#fff',
+                        borderWidth: 5,
+                      }}
+                    >
+                      <QRCode size={180} value={dataPatient._id} />
+                    </View>
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        marginTop: 12,
+                        justifyContent: 'space-between',
+                        height: '30%',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: '#B5B5B5',
+                          textAlign: 'center',
+                        }}
+                      >
+                        Show the QR to the registration section when you arrive
+                        and get the queue number{' '}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          color: '#B5B5B5',
+                        }}
+                      >
+                        OR
+                      </Text>
+                      <TouchableOpacity onPress={openScannerHandler}>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            color: '#B5B5B5',
+                          }}
+                        >
+                          SCAN QR CODE
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </>
+            )}
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#2F2F2F',
+                padding: 7,
+                borderRadius: 20,
+                marginTop: 10,
+              }}
+              onPress={() => setmodal(false)}
+            >
+              <Iconclose name="close" color="#FFFFFF" size={20} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

@@ -69,7 +69,7 @@ const ActivityAction = ({ navigation, data }) => {
         style={style.content}
         onPress={() =>
           data
-            ? navigation.navigate('DokumenMedisStack')
+            ? navigation.navigate('DokumenMedisStack', { name: 'Hello World' })
             : navigation.navigate('Sign')
         }
       >
@@ -194,7 +194,12 @@ const ActivityAction = ({ navigation, data }) => {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={style.content} onPress={() => {}}>
+      <TouchableOpacity
+        style={style.content}
+        onPress={() => {
+          navigation.navigate('HomeCareScreen');
+        }}
+      >
         <Image
           style={style.image}
           source={require('../../../assets/png/ic_dokterNav.png')}

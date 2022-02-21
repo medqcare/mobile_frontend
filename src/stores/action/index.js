@@ -278,6 +278,121 @@ export function SignIn(userData, navigation, modalF, navigateTo) {
   };
 }
 
+export function SignInWithEmailOrPhoneNumber(
+  userData,
+  navigation,
+  modalF,
+  navigateTo
+) {
+  return (dispatch) => {
+    console.log(userData, 'Email and password of the user trying to sign in');
+    // console.log(navigation, 'ini navigationnya')
+    instance(
+      {
+        url: '/v1/members/authentication',
+        method: 'POST',
+        data: userData,
+      },
+      { timeout: 3000 }
+    )
+      .then(({ data: response }) => {
+        // console.log(data, 'ini yang pertama');
+        if (response.data.token) {
+          _storeData({ token: response.data.token });
+          return instance(
+            {
+              url: '/v1/members/dataLogged',
+              method: 'GET',
+              headers: {
+                Authorization: response.data.token,
+              },
+            },
+            { timeout: 3000 }
+          );
+        }
+      })
+      .then(async ({ data }) => {
+        // console.log(`User's data is`, data);
+        try {
+          if (data.data === null) {
+            // console.log('masuk if');
+            await dispatch({
+              type: 'GET_USER_DATA',
+              payload: data.data,
+            });
+            navigation.navigate('UserDataCompletion');
+          } else {
+            // console.log('masuk else');
+            await dispatch({
+              type: 'AFTER_SIGNIN',
+              payload: data.data,
+            });
+            // await dispatch({
+            //   type: 'SET_MY_LOCATION',
+            //   payload: {
+            //     lat: data.data.location.coordinates[1],
+            //     lng: data.data.location.coordinates[0],
+            //   },
+            // });
+            navigation.pop();
+            navigateTo
+              ? navigation.navigate(navigateTo)
+              : navigation.navigate('Home');
+          }
+        } catch (error) {
+          console.log(error, 'Ini adalah error ketika sign in');
+          modalF(error.message);
+        }
+      })
+      .catch((err) => {
+        modalF(
+          err.response
+            ? err.response.status == 401
+              ? 'Email and password not match'
+              : err.message
+            : err.message
+        );
+      });
+  };
+}
+
+export function AddNewUser(userData, navigation) {
+  return async (dispatch) => {
+    try {
+      const { data: response } = await instance({
+        url: '/v1/members/users',
+        method: 'POST',
+        data: userData,
+      });
+      const { token } = response.data;
+      await AsyncStorage.setItem('token', JSON.stringify({ token }));
+      const { data: responseDataLogged } = await instance({
+        url: '/v1/members/dataLogged',
+        method: 'GET',
+        headers: { Authorization: token },
+      });
+
+      if (!responseDataLogged.data) {
+        dispatch({
+          type: 'GET_USER_DATA',
+          payload: responseDataLogged.data,
+        });
+        navigation.navigate('UserDataCompletion', {
+          phoneNumber: userData.phoneNumber,
+        });
+      } else {
+        dispatch({
+          type: 'AFTER_SIGNIN',
+          payload: responseDataLogged.data,
+        });
+        navigation.navigate('Home');
+      }
+    } catch (error) {
+      ToastAndroid.show(error.message, ToastAndroid.LONG);
+    }
+  };
+}
+
 export function SignUp(userData, navigation, modalFailed) {
   console.log(userData.email, 'is signing up');
   return (dispatch) => {
@@ -413,7 +528,7 @@ export function SignInGoogle(token, navigation, navigateTo) {
 }
 
 export function CreatePatientAsUser(
-  dataUser,
+  payload,
   modalSuccess,
   modalFailed,
   navigateTo
@@ -424,7 +539,7 @@ export function CreatePatientAsUser(
       url: '/v1/members/createProfile',
       method: 'POST',
       headers: { Authorization: JSON.parse(token).token },
-      data: dataUser,
+      data: payload,
     })
       .then(async ({ data }) => {
         if (data.data !== null) {
@@ -432,7 +547,7 @@ export function CreatePatientAsUser(
             ToastAndroid.show(data.message, ToastAndroid.LONG);
           } else {
             try {
-              // console.log('masuk after signIn', data);
+              console.log('masuk after signIn', data);
               await dispatch({
                 type: 'GET_USER_DATA',
                 payload: data.data,
@@ -447,6 +562,7 @@ export function CreatePatientAsUser(
                 JSON.stringify(true)
               );
               navigateTo('Home', { from: 'registration' });
+              navigateTo('Home');
               dispatch(setShowInstruction(true));
             } catch (error) {
               modalFailed(error);
@@ -922,7 +1038,7 @@ export function cancelRecervation(reservationID) {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem('token');
     try {
-      let data = await instance({
+      let { data } = await instance({
         url: `/v1/members/cancelReservation`,
         method: 'PATCH',
         headers: {
@@ -932,6 +1048,7 @@ export function cancelRecervation(reservationID) {
           reservationID: reservationID,
         },
       });
+      console.log(data);
     } catch (error) {
       ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
@@ -1020,16 +1137,21 @@ export function getAlergie(patientId, token) {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(`Application is trying to find patient's allergies`)
+        console.log(`Application is trying to find patient's allergies`);
         let data = await instance({
           url: `/v1/members/alergies/${patientId}`,
           method: 'GET',
           headers: { Authorization: token },
         });
         resolve(data.data);
-        if(data.data.data.length > 1) console.log(`Application found ${data.data.data.length} allergies for the selected patient`)
-        else console.log(`Application found ${data.data.data.length} allergy for the selected patient`)
-        
+        if (data.data.data.length > 1)
+          console.log(
+            `Application found ${data.data.data.length} allergies for the selected patient`
+          );
+        else
+          console.log(
+            `Application found ${data.data.data.length} allergy for the selected patient`
+          );
       } catch (err) {
         console.log(err.response.status, 'ini kembalian data get alergie');
         reject(err.response.status);

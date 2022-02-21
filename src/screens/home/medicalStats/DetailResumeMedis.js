@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-} from "react-native";
-import { getFormattedDate } from "../../../helpers/dateFormat";
-import ButtonPrevious from "../../../assets/svg/ic_previous";
-import ButtonNext from "../../../assets/svg/ic_next";
-import BUttonClose from "../../../assets/svg/ic_close";
-import Swiper from "react-native-swiper";
-import { ActivityIndicator } from "react-native-paper";
+} from 'react-native';
+import { getFormattedDate } from '../../../helpers/dateFormat';
+import ButtonPrevious from '../../../assets/svg/ic_previous';
+import ButtonNext from '../../../assets/svg/ic_next';
+import BUttonClose from '../../../assets/svg/ic_close';
+import Swiper from 'react-native-swiper';
+import { ActivityIndicator } from 'react-native-paper';
 
 export default function DetailResumeMedis(props) {
   const { data, idx } = props.navigation.state.params;
@@ -28,7 +28,7 @@ export default function DetailResumeMedis(props) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: 'row' }}>
           <View style={{}}>
             <TouchableOpacity
               style={{ paddingRight: 10 }}
@@ -38,7 +38,7 @@ export default function DetailResumeMedis(props) {
               disabled={activePage <= 0}
             >
               <ButtonPrevious
-                color={activePage === 0 ? "#B5B5B5" : "#DDDDDD"}
+                color={activePage === 0 ? '#B5B5B5' : '#DDDDDD'}
               />
             </TouchableOpacity>
           </View>
@@ -51,7 +51,7 @@ export default function DetailResumeMedis(props) {
               disabled={activePage === lengthData - 1}
             >
               <ButtonNext
-                color={activePage === lengthData - 1 ? "#B5B5B5" : "#DDDDDD"}
+                color={activePage === lengthData - 1 ? '#B5B5B5' : '#DDDDDD'}
               />
             </TouchableOpacity>
           </View>
@@ -80,7 +80,7 @@ export default function DetailResumeMedis(props) {
       >
         {data.map((_, index) => {
           return (
-            <SafeAreaView key={`${index}-medical resume`}>
+            <SafeAreaView key={`${data[index]._id}-detail`}>
               <ScrollView>
                 {resumeMedis && (
                   <View style={styles.content}>
@@ -95,7 +95,8 @@ export default function DetailResumeMedis(props) {
                         </View>
                         <View style={styles.contentBox}>
                           <Text style={styles.textContent}>
-                            {resumeMedis.examination?.anamnesa || 'Tidak ada data'}
+                            {resumeMedis.examination?.anamnesa ||
+                              'Tidak ada data'}
                           </Text>
                         </View>
                         <View style={styles.item}>
@@ -106,7 +107,8 @@ export default function DetailResumeMedis(props) {
 
                         <View style={styles.contentBox}>
                           <Text style={styles.textContent}>
-                            {resumeMedis.examination?.physicalExam || 'Tidak ada data'}
+                            {resumeMedis.examination?.physicalExam ||
+                              'Tidak ada data'}
                           </Text>
                         </View>
                       </View>
@@ -118,21 +120,23 @@ export default function DetailResumeMedis(props) {
                         {resumeMedis.diagnoseHistory &&
                         resumeMedis.diagnoseHistory.length ? (
                           <>
-                            {resumeMedis.diagnoseHistory.map((el) => {
+                            {resumeMedis.diagnoseHistory.map((el, indexDiagnose) => {
                               return (
-                                <View style={styles.item}>
-                                    <Text style={styles.textTitle}>
-                                      {new Date(el.date).toLocaleDateString()}
-                                    </Text>
-                                    <Text style={styles.textItem}>
-                                      {el.diagnose}
-                                    </Text>
+                                <View style={styles.item} key={`${data[index]._id}-diagnose-history-${indexDiagnose}`}>
+                                  <Text style={styles.textTitle}>
+                                    {new Date(el.date).toLocaleDateString()}
+                                  </Text>
+                                  <Text style={styles.textItem}>
+                                    {el.diagnose}
+                                  </Text>
                                 </View>
                               );
                             })}
                           </>
                         ) : (
-                          <Text style={styles.textTitle}>Belum ada history</Text>
+                          <Text style={styles.textTitle}>
+                            Belum ada history
+                          </Text>
                         )}
                       </View>
                     </View>
@@ -202,7 +206,7 @@ export default function DetailResumeMedis(props) {
                                   style={{
                                     ...styles.textTitle,
                                     fontSize: 15,
-                                    color: "#DDDDDD",
+                                    color: '#DDDDDD',
                                   }}
                                 >
                                   {item.facilityDest}
@@ -224,9 +228,9 @@ export default function DetailResumeMedis(props) {
                         })
                       ) : (
                         <View style={styles.card}>
-                            <Text style={styles.textTitle}>
-                              Tidak ada pemeriksaan Laboratorium / Radiology
-                            </Text>
+                          <Text style={styles.textTitle}>
+                            Tidak ada pemeriksaan Laboratorium / Radiology
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -234,7 +238,7 @@ export default function DetailResumeMedis(props) {
                       <Text style={styles.textHeader}>DIAGNOSIS</Text>
                       <View style={styles.line} />
                       <View style={styles.card}>
-                        {resumeMedis.examination?.diagnose !== "" && (
+                        {resumeMedis.examination?.diagnose !== '' && (
                           <View style={styles.item}>
                             <Text style={styles.textTitle}>Diagnosa</Text>
                             <Text style={styles.textItem}>
@@ -242,7 +246,7 @@ export default function DetailResumeMedis(props) {
                             </Text>
                           </View>
                         )}
-                        {resumeMedis.examination?.ICD !== "" && (
+                        {resumeMedis.examination?.ICD !== '' && (
                           <View style={styles.item}>
                             <Text style={styles.textTitle}>ICD Kode</Text>
                             <Text style={styles.textItem}>
@@ -250,7 +254,7 @@ export default function DetailResumeMedis(props) {
                             </Text>
                           </View>
                         )}
-                        {resumeMedis.examination?.icdInfo !== "" && (
+                        {resumeMedis.examination?.icdInfo !== '' && (
                           <View style={styles.item}>
                             <Text style={styles.textTitle}>ICD Info</Text>
                             <Text style={styles.textItem}>
@@ -275,47 +279,47 @@ export default function DetailResumeMedis(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
-    backgroundColor: "#181818",
+    justifyContent: 'flex-start',
+    backgroundColor: '#181818',
     margin: 0,
     padding: 15,
-    paddingTop: 20
+    paddingTop: 20,
   },
   content: {
-    height: "95%",
-    backgroundColor: "#2F2F2F",
+    height: '95%',
+    backgroundColor: '#2F2F2F',
     borderRadius: 10,
     padding: 15,
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   header: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     marginVertical: 20,
   },
   contentHeader: {
     marginBottom: 10,
   },
   textHeader: {
-    color: "#FBB632",
+    color: '#FBB632',
     fontSize: 14,
   },
   line: {
-    backgroundColor: "#515151",
+    backgroundColor: '#515151',
     height: 1.5,
     marginVertical: 10,
   },
   title: {
-    color: "#DDDDDD",
+    color: '#DDDDDD',
     fontSize: 14,
   },
   card: {
     marginBottom: 10,
   },
   item: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
   contentBox: {
@@ -325,24 +329,24 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   textContent: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
   },
   textSubHeader: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
   },
   textTitle: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
     fontSize: 12,
-    width: "50%",
-    justifyContent: "flex-end",
-    textAlign: "left"
+    width: '50%',
+    justifyContent: 'flex-end',
+    textAlign: 'left',
   },
   textItem: {
-    color: "#B5B5B5",
+    color: '#B5B5B5',
     fontSize: 12,
-    width: "50%",
-    justifyContent: "flex-end",
-    textAlign: "right"
+    width: '50%',
+    justifyContent: 'flex-end',
+    textAlign: 'right',
   },
 });
