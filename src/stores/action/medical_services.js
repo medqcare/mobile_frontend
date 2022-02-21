@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { baseURL, webBaseURL } from '../../config';
-import { medicalServices } from '../reducers/keys'
+// import { medicalServices } from '../reducers/keys'
 
-const { 
-    SET_MEDICAL_SERVICES,
-    SET_ERROR_MEDICAL_SERVICES,
-    SET_LOADING_MEDICAL_SERVICES
-} = medicalServices
+// const { 
+//     SET_MEDICAL_SERVICES,
+//     SET_ERROR_MEDICAL_SERVICES,
+//     SET_LOADING_MEDICAL_SERVICES
+// } = medicalServices
 
 const webMedicalServicesInstance = axios.create({
   	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
