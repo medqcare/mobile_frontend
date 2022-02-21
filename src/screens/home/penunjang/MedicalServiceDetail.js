@@ -1,25 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  StatusBar,
-  Platform,
-  ActivityIndicator,
-  BackHandler,
-  Image
+	StyleSheet,
+	Text,
+	View,
+	Dimensions,
+	FlatList,
+	TouchableOpacity,
+	ScrollView,
+	SafeAreaView,
+	StatusBar,
+	Platform,
+	ActivityIndicator,
+	BackHandler,
+	Image,
+	ToastAndroid
 
 } from 'react-native';
 import { connect } from 'react-redux';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import {
-  heightPercentageToDP,
-  widthPercentageToDP,
+	heightPercentageToDP,
+	widthPercentageToDP,
 } from 'react-native-responsive-screen';
 import GradientHeader from '../../../components/headers/GradientHeader';
 import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
@@ -32,31 +33,89 @@ const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function MedicalServiceDetail({navigation, userData}) {
-    const { dataDetail } = navigation.state.params
-    const { 
-        name, 
-        clinicName, 
-        address, 
-        distance, 
-        photo, 
-        price, 
-        discount ,
-        description,
-        includedBenefits,
-        schedules,
-    } = dataDetail
 
-    const [bookingSchedule, setBookingSchedule] = useState(new Date())
-    const [bookingTime, setBookingTime] = useState(null)
-    const [filteredSchedules, setFilteredSchedules] = useState([])
+	
+    const { item } = navigation.state.params
 
-    function onDateSelected(date){
-        setBookingSchedule(date)
-        const numberDay = date.getDay()
-        const newSchedules = schedules.filter(el => el.scheduleDay === numberDay)
-        setFilteredSchedules(newSchedules)
-        // console.log(date)
+	const { 
+		schedule,
+		_id: id,
+		idMasterLayanan,
+		kode,
+		name,
+		itemCheck,
+		type,
+		basePrice,
+		status,
+		discount,
+		price,
+		startDate,
+		endDate,
+		clinicID,
+		createdAt,
+		updatedAt,
+		__v,
+		clinic,
+		photo,
+	} = item
+
+	// healthFacility: {
+	// 	facilityID: Schema.Types.ObjectId,
+	// 	facilityName: String,
+	// 	facilityType: String,
+	// 	facilityMainType: String,
+	// 	address: String,
+	// 	clinicIdWeb: Number,
+	// 	location: {
+	// 	  lat: Number,
+	// 	  long: Number,
+	// },
+
+	
+	const discountedPrice = price * (100-discount)/100
+
+	const [serviceDetail, setServiceDetail] = useState({
+		name,
+		id,
+		price: discountedPrice,
+		kode
+	})
+
+
+	const [healthFacility, setHealthFacility] = useState({
+		// facilityID: clinic._id,
+		facilityName: clinic.name,
+		// facilityType: 'Klinik',
+		// facilityMainType: 'Klinik',
+		address: clinic.address,
+		clinicIdWeb: clinic.id,
+		location: {
+			lat: -5.4298,
+			long: 105.17899,
+		}
+	})
+
+    const [bookingDate, setBookingDate] = useState(null)
+	const [bookingSchedule, setBookingSchedule] = useState(null)
+    function onDateSelected(selectedDate){
+        setBookingDate(selectedDate)
+		const year = selectedDate.getFullYear()
+		const Month = selectedDate.getMonth() + 1
+		const date = selectedDate.getDate()
+		setBookingSchedule(`${year}-${Month}-${date}`)
     }
+
+	function makeAppointment(){
+		if (!bookingSchedule) {
+			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+		} else {
+			userData ? navigation.push('Payment', { 
+				serviceDetail, bookingSchedule, healthFacility, clinic
+			}) : 
+				(navigation.navigate('DetailDoctor'),
+				navigation.navigate('Sign'));
+		}
+	}
 
     BackHandler.addEventListener('hardwareBackPress', () => {
 	    navigation.pop();
@@ -79,19 +138,19 @@ function MedicalServiceDetail({navigation, userData}) {
                         </View>
                         <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
                             <FontAwesome5 name="hospital-alt" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{clinicName}</Text> 
+                            <Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.name}</Text> 
                         </View>
                         <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
                             <Entypo name="location" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{address}</Text> 
+                            <Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.address}</Text> 
                         </View>
                         <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
                             <FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{distance}</Text> 
+                            <Text style={textStyles.greyColorWithPaddingLeftText}>Jarak Km</Text> 
                         </View>
                         </View>
                         <View style={styles.rightContent}>
-                            <Image source={{uri: photo}} style={{width:60,height:60}}/>
+                            <Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
                             <TouchableOpacity
                                 onPress={() => console.log('Open Maps')}
                                 style={{paddingBottom: heightPercentageToDP('0.2%'), paddingTop: heightPercentageToDP('1%'), paddingHorizontal: widthPercentageToDP('1%')}}
@@ -102,12 +161,12 @@ function MedicalServiceDetail({navigation, userData}) {
                     </View>
 
                     <View style={styles.middleContainer}>
-                        <Text style={textStyles.whiteColorText}>Deskripsi</Text>
-                        <Text style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.5%')}]}>{description}</Text>
+                        {/* <Text style={textStyles.whiteColorText}>Deskripsi</Text>
+                        <Text style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.5%')}]}>{description}</Text> */}
                         <Text style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('2%'), paddingBottom: heightPercentageToDP('1%')}]}>Paket termasuk: </Text>
-                        {includedBenefits.map((includedBenefits, includedBenefitsIndex) => {
+                        {itemCheck.map((el, itemCheckIndex) => {
                             return (
-                                <Text key={includedBenefitsIndex} style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.2%')}]}>{includedBenefitsIndex + 1}. {includedBenefits}</Text>
+                                <Text key={itemCheckIndex} style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.2%')}]}>{itemCheckIndex + 1}. {el.name}</Text>
                             )
                         })}
                     </View>
@@ -117,6 +176,7 @@ function MedicalServiceDetail({navigation, userData}) {
                             // selectedDate={}
                             onDateSelected={onDateSelected}
                             isDateBlackList={false}
+							availableDays={schedule}
                         />
                     </View>
 
@@ -145,9 +205,9 @@ function MedicalServiceDetail({navigation, userData}) {
 
                 </View>
                 <TouchableOpacity
-                    // onPress={async () => {
-                    //     buatJanji();
-                    // }}
+                    onPress={async () => {
+                        makeAppointment();
+                    }}
                     style={styles.makeAppointmentButton}
                 >
                     <View style={{ flexDirection: 'row' }}>
