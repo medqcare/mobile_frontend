@@ -6,6 +6,7 @@ import FindClinic from '../../screens/home/penunjang/FindClinic';
 import Payment from '../../screens/home/penunjang/Payment';
 import MedicalServices from '../../screens/home/penunjang/PenunjangList';
 import TransactionDetail from '../../screens/home/penunjang/TransactionDetail';
+import MakeAppointment from '../../screens/home/penunjang/BuatJanji'
 
 import { Animated, Easing, Platform } from 'react-native';
 import MedicalServiceDetail from '../../screens/home/penunjang/MedicalServiceDetail';
@@ -69,18 +70,18 @@ export default StackPenunjang = createStackNavigator(
       },
     },
     Payment: {
-      screen: Payment,
+      screen: MakeAppointment,
       navigationOptions: {
-        headerShown: true,
-        title: 'Metode Pembayaran',
-        headerStyle: {
-          backgroundColor: '#2F2F2F',
-        },
-        headerTintColor: '#DDDDDD',
-        headerTitleStyle: {
-          fontSize: 16,
-          letterSpacing: 1,
-        },
+        headerShown: false,
+        // title: 'Metode Pembayaran',
+        // headerStyle: {
+        //   backgroundColor: '#2F2F2F',
+        // },
+        // headerTintColor: '#DDDDDD',
+        // headerTitleStyle: {
+        //   fontSize: 16,
+        //   letterSpacing: 1,
+        // },
       },
     },
     TransactionDetail: {
