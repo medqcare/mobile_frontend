@@ -12,8 +12,11 @@ const webMedicalServicesInstance = axios.create({
   	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
 })
 
+const mobileMedicalServiceInstance = axios.create({
+	baseURL: `${baseURL}/api/v1/members/reservations/service`
+})
+
 export function getMedicalServices(type, status, page){
-	console.log(type, status, page)
 	return async dispatch => {
 		try {
 			// await dispatch({
@@ -34,6 +37,22 @@ export function getMedicalServices(type, status, page){
 		catch(error){
 			console.log(error)
 			console.log('error di action')
+		}
+	}
+}
+
+export function createMedicalServiceReservation(bookData, token){
+	return async dispatch => {
+		try {
+			const { data } = await mobileMedicalServiceInstance({
+				method: 'POST',
+				data: bookData,
+				headers: { Authorization: token },
+			})
+			return data
+		} catch (error) {
+			// console.log(error.response.data, 'Error in creating service reservation')
+			return error.response.data
 		}
 	}
 }
