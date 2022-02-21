@@ -11,7 +11,7 @@ import {
   ToastAndroid,
   TextInput,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { heightPercentageToDP, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   bookDoctor,
@@ -422,98 +422,148 @@ const MakeAppointment = (props) => {
 
   	return (
     	<View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-			<ScrollView>
 				<Header
 					title={'Detail Pemesanan'}
 					navigate={props.navigation.navigate}
 					navigateBack={'MedicalServiceDetail'}
 				/>
 
-				<View style={cardStyle.container}>
-					<View style={cardStyle.card}>
-						<View style={{ flex: 0.2, alignItems: 'center' }}>
-							<Image 
-								source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} 
-								style={cardStyle.image}
-							/>
-						</View>
-
-						<View style={cardStyle.detail}>
-							<Text style={{ color: '#DDDDDD', fontSize: 16 }}>
-								{serviceDetail.name}
-							</Text>
-							{/* <Text style={{ color: '#B5B5B5', fontSize: 14, marginTop: 2 }}>
-								specialist
-							</Text> */}
-							<Text style={{ color: '#DDDDDD', fontSize: 15, marginTop: 5 }}>
-								{healthFacility.facilityName}
-							</Text>
-
-							<View style={cardStyle.line} />
-
-							<View style={cardStyle.patient}>
-								<View style={{ flexDirection: 'row' }}>
-									<Text style={{ color: '#B5B5B5' }}>Pasien :</Text>
-									<Text style={{ color: '#DDDDDD', marginLeft: 5 }}>{displayName}</Text>
-								</View>
-								<View>
-									<TouchableOpacity onPress={() => setModalP(true)}>
-										<Text style={{ color: '#F37335', fontSize: 12 }}>Ubah</Text>
-									</TouchableOpacity>
-								</View>
+				<ScrollView>
+					<View style={cardStyle.container}>
+						<View style={cardStyle.card}>
+							<View style={{ flex: 0.2, alignItems: 'center' }}>
+								<Image 
+									source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} 
+									style={cardStyle.image}
+								/>
 							</View>
-							<Text style={{ color: '#B5B5B5', marginTop: 2 }}>
-								{formatDate(bookingSchedule)}
-							</Text>
-							<View style={cardStyle.patient}>
-								<Text style={{ color: '#DDDDDD', marginTop: 2 }}>Biaya Cek Lab</Text>
-								<Text style={{ color: '#DDDDDD', marginTop: 2 }}>{formatNumberToRupiah(serviceDetail.price)}</Text>
+
+							<View style={cardStyle.detail}>
+								<Text style={{ color: '#DDDDDD', fontSize: 16 }}>
+									{serviceDetail.name}
+								</Text>
+								{/* <Text style={{ color: '#B5B5B5', fontSize: 14, marginTop: 2 }}>
+									specialist
+								</Text> */}
+								<Text style={{ color: '#DDDDDD', fontSize: 15, marginTop: 5 }}>
+									{healthFacility.facilityName}
+								</Text>
+
+								<View style={cardStyle.line} />
+
+								<View style={cardStyle.patient}>
+									<View style={{ flexDirection: 'row' }}>
+										<Text style={{ color: '#B5B5B5' }}>Pasien :</Text>
+										<Text numberOfLines={2} style={{ color: '#DDDDDD', marginLeft: 5, width: '70%' }}>{displayName}</Text>
+									</View>
+									<View>
+										<TouchableOpacity onPress={() => setModalP(true)}>
+											<Text style={{ color: '#F37335', fontSize: 12 }}>Ubah</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+								<Text style={{ color: '#B5B5B5', marginTop: 2 }}>
+									{formatDate(bookingSchedule)}
+								</Text>
+								<View style={cardStyle.patient}>
+									<Text style={{ color: '#DDDDDD', marginTop: 2 }}>Biaya Cek Lab</Text>
+									<Text style={{ color: '#DDDDDD', marginTop: 2 }}>{formatNumberToRupiah(serviceDetail.price)}</Text>
+								</View>
 							</View>
 						</View>
 					</View>
-				</View>
-				<View style={cardStyle.container}>
-					<TouchableOpacity onPress={() => setModalL(true)}>
-						<View style={cardStyle.pembayaran}>
-							<Text
-								style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 14 }}
-							>
-								Pembayaran - {patient.patient.insuranceStatus}
-							</Text>
-							<View style={{ marginTop: 8 }}>
-								<ArrowDownWhite />
-							</View>
-						</View>
-					</TouchableOpacity>
-				</View>
-
-				{/* Payment Selections */}
-        		{patient.patient.insuranceStatus === 'UMUM' && (
-          			<View>
-						{/* E-Wallet */}
-						<Text style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}>
-							Dompet Digital
-						</Text>
-
-						<View style={cardStyle.dompet}>
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('gopay')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_gopay.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-										Go-Pay
-									</Text>
+					<View style={cardStyle.container}>
+						<TouchableOpacity onPress={() => setModalL(true)}>
+							<View style={cardStyle.pembayaran}>
+								<Text
+									style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 14 }}
+								>
+									Pembayaran - {patient.patient.insuranceStatus}
+								</Text>
+								<View style={{ marginTop: 8 }}>
+									<ArrowDownWhite />
 								</View>
+							</View>
+						</TouchableOpacity>
+					</View>
 
-								<TouchableOpacity onPress={() => setDompet('gopay')}>
-									{dompet === 'gopay' ? (
-										<View
+					{/* Payment Selections */}
+					{patient.patient.insuranceStatus === 'UMUM' && (
+						<View>
+							{/* E-Wallet */}
+							{/* <Text style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}>
+								Dompet Digital
+							</Text> */}
+
+							{/* <View style={cardStyle.dompet}>
+								<TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('gopay')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_gopay.png')}
+											height={20}
+											width={20}
+										/>
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+											Go-Pay
+										</Text>
+									</View>
+
+									<TouchableOpacity onPress={() => setDompet('gopay')}>
+										{dompet === 'gopay' ? (
+											<View
+												style={{
+													height: 15,
+													width: 15,
+													borderRadius: 15,
+													backgroundColor: '#1380C3',
+													alignContent: 'center',
+													alignItems: 'center',
+													justifyContent: 'center',
+												}}
+											>
+												<View
+													style={{
+													height: 7,
+													width: 7,
+													borderRadius: 7,
+													backgroundColor: '#DDDDDD',
+													}}
+												/>
+											</View>
+										) : (
+											<View
+												style={{
+													height: 15,
+													width: 15,
+													borderRadius: 15,
+													borderColor: '#DDDDDD',
+													borderWidth: 1,
+												}}
+											/>
+										)}
+									</TouchableOpacity>
+								</TouchableOpacity>
+
+								<TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('linkaja')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_linkaja.png')}
+											height={20}
+											width={20}
+										/>
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+											LinkAja
+										</Text>
+									</View>
+									<TouchableOpacity onPress={() => setDompet('linkaja')}>
+										{dompet === 'linkaja' ? (
+											<View
 											style={{
 												height: 15,
 												width: 15,
@@ -523,7 +573,7 @@ const MakeAppointment = (props) => {
 												alignItems: 'center',
 												justifyContent: 'center',
 											}}
-										>
+											>
 											<View
 												style={{
 												height: 7,
@@ -532,9 +582,57 @@ const MakeAppointment = (props) => {
 												backgroundColor: '#DDDDDD',
 												}}
 											/>
-										</View>
-									) : (
-										<View
+											</View>
+										) : (
+											<View
+												style={{
+													height: 15,
+													width: 15,
+													borderRadius: 15,
+													borderColor: '#DDDDDD',
+													borderWidth: 1,
+												}}
+											/>
+										)}
+									</TouchableOpacity>
+								</TouchableOpacity>
+
+								<TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('ovo')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_ovo.png')}
+											height={20}
+											width={20}
+										/>
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>OVO</Text>
+									</View>
+									<TouchableOpacity onPress={() => setDompet('ovo')}>
+										{dompet === 'ovo' ? (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
+											}}
+											>
+											<View
+												style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+												}}
+											/>
+											</View>
+										) : (
+											<View
 											style={{
 												height: 15,
 												width: 15,
@@ -542,49 +640,48 @@ const MakeAppointment = (props) => {
 												borderColor: '#DDDDDD',
 												borderWidth: 1,
 											}}
-										/>
-									)}
+											/>
+										)}
+									</TouchableOpacity>
 								</TouchableOpacity>
-							</TouchableOpacity>
+							</View> */}
 
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('linkaja')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_linkaja.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-										LinkAja
-									</Text>
-								</View>
-								<TouchableOpacity onPress={() => setDompet('linkaja')}>
-									{dompet === 'linkaja' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
+							<View style={cardStyle.dompet}>
+								<TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('Tunai')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<IcTunai />
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+											Tunai
+										</Text>
+									</View>
+
+									<TouchableOpacity onPress={() => setDompet('Tunai')}>
+										{dompet === 'Tunai' ? (
+											<View
 											style={{
-											height: 7,
-											width: 7,
-											borderRadius: 7,
-											backgroundColor: '#DDDDDD',
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
 											}}
-										/>
-										</View>
-									) : (
-										<View
+											>
+											<View
+												style={{
+													height: 7,
+													width: 7,
+													borderRadius: 7,
+													backgroundColor: '#DDDDDD',
+												}}
+											/>
+											</View>
+										) : (
+											<View
 											style={{
 												height: 15,
 												width: 15,
@@ -592,304 +689,207 @@ const MakeAppointment = (props) => {
 												borderColor: '#DDDDDD',
 												borderWidth: 1,
 											}}
-										/>
-									)}
+											/>
+										)}
+									</TouchableOpacity>
 								</TouchableOpacity>
-							</TouchableOpacity>
 
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('ovo')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_ovo.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>OVO</Text>
-								</View>
-								<TouchableOpacity onPress={() => setDompet('ovo')}>
-									{dompet === 'ovo' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
+								{/* <Text
+									style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
+								>
+									Transfer Bank
+								</Text> */}
+
+								{/* <TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('Mandiri')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_mandiri.png')}
+											height={20}
+											width={20}
+										/>
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+											Mandiri
+										</Text>
+									</View>
+									<TouchableOpacity onPress={() => setDompet('Mandiri')}>
+										{dompet === 'Mandiri' ? (
+											<View
 											style={{
-											height: 7,
-											width: 7,
-											borderRadius: 7,
-											backgroundColor: '#DDDDDD',
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
 											}}
+											>
+											<View
+												style={{
+													height: 7,
+													width: 7,
+													borderRadius: 7,
+													backgroundColor: '#DDDDDD',
+												}}
+											/>
+											</View>
+										) : (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												borderColor: '#DDDDDD',
+												borderWidth: 1,
+											}}
+											/>
+										)}
+									</TouchableOpacity>
+								</TouchableOpacity> */}
+
+								{/* <TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('BNI')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_BNI.png')}
+											height={20}
+											width={20}
 										/>
-										</View>
-									) : (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											borderColor: '#DDDDDD',
-											borderWidth: 1,
-										}}
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BNI</Text>
+									</View>
+
+									<TouchableOpacity onPress={() => setDompet('BNI')}>
+										{dompet === 'BNI' ? (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
+											}}
+											>
+											<View
+												style={{
+												height: 7,
+												width: 7,
+												borderRadius: 7,
+												backgroundColor: '#DDDDDD',
+												}}
+											/>
+											</View>
+										) : (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												borderColor: '#DDDDDD',
+												borderWidth: 1,
+											}}
+											/>
+										)}
+									</TouchableOpacity>
+								</TouchableOpacity> */}
+								{/* <TouchableOpacity
+									style={cardStyle.pembayaran}
+									onPress={() => setDompet('BCA')}
+								>
+									<View style={{ flexDirection: 'row', marginLeft: 15 }}>
+										<Image
+											source={require('../../../assets/png/ic_BCA.png')}
+											height={20}
+											width={20}
 										/>
-									)}
-								</TouchableOpacity>
-							</TouchableOpacity>
+										<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BCA</Text>
+									</View>
+									<TouchableOpacity onPress={() => setDompet('BCA')}>
+										{dompet === 'BCA' ? (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												backgroundColor: '#1380C3',
+												alignContent: 'center',
+												alignItems: 'center',
+												justifyContent: 'center',
+											}}
+											>
+											<View
+												style={{
+													height: 7,
+													width: 7,
+													borderRadius: 7,
+													backgroundColor: '#DDDDDD',
+												}}
+											/>
+											</View>
+										) : (
+											<View
+											style={{
+												height: 15,
+												width: 15,
+												borderRadius: 15,
+												borderColor: '#DDDDDD',
+												borderWidth: 1,
+											}}
+											/>
+										)}
+									</TouchableOpacity>
+								</TouchableOpacity> */}
+							</View>
 						</View>
+					)}
 
-            			<View style={cardStyle.dompet}>
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('Tunai')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<IcTunai />
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-										Tunai
-									</Text>
-								</View>
-
-								<TouchableOpacity onPress={() => setDompet('Tunai')}>
-									{dompet === 'Tunai' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
-											style={{
-												height: 7,
-												width: 7,
-												borderRadius: 7,
-												backgroundColor: '#DDDDDD',
-											}}
-										/>
-										</View>
-									) : (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											borderColor: '#DDDDDD',
-											borderWidth: 1,
-										}}
-										/>
-									)}
-								</TouchableOpacity>
-              				</TouchableOpacity>
-
-							<Text
-								style={{ color: '#DDDDDD', marginLeft: 15, marginVertical: 10 }}
-							>
-								Transfer Bank
-							</Text>
-
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('Mandiri')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_mandiri.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
-										Mandiri
-									</Text>
-								</View>
-								<TouchableOpacity onPress={() => setDompet('Mandiri')}>
-									{dompet === 'Mandiri' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
-											style={{
-												height: 7,
-												width: 7,
-												borderRadius: 7,
-												backgroundColor: '#DDDDDD',
-											}}
-										/>
-										</View>
-									) : (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											borderColor: '#DDDDDD',
-											borderWidth: 1,
-										}}
-										/>
-									)}
-								</TouchableOpacity>
-							</TouchableOpacity>
-
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('BNI')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_BNI.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BNI</Text>
-								</View>
-
-								<TouchableOpacity onPress={() => setDompet('BNI')}>
-									{dompet === 'BNI' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
-											style={{
-											height: 7,
-											width: 7,
-											borderRadius: 7,
-											backgroundColor: '#DDDDDD',
-											}}
-										/>
-										</View>
-									) : (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											borderColor: '#DDDDDD',
-											borderWidth: 1,
-										}}
-										/>
-									)}
-								</TouchableOpacity>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={cardStyle.pembayaran}
-								onPress={() => setDompet('BCA')}
-							>
-								<View style={{ flexDirection: 'row', marginLeft: 15 }}>
-									<Image
-										source={require('../../../assets/png/ic_BCA.png')}
-										height={20}
-										width={20}
-									/>
-									<Text style={{ color: '#DDDDDD', marginLeft: 15 }}>BCA</Text>
-								</View>
-								<TouchableOpacity onPress={() => setDompet('BCA')}>
-									{dompet === 'BCA' ? (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											backgroundColor: '#1380C3',
-											alignContent: 'center',
-											alignItems: 'center',
-											justifyContent: 'center',
-										}}
-										>
-										<View
-											style={{
-												height: 7,
-												width: 7,
-												borderRadius: 7,
-												backgroundColor: '#DDDDDD',
-											}}
-										/>
-										</View>
-									) : (
-										<View
-										style={{
-											height: 15,
-											width: 15,
-											borderRadius: 15,
-											borderColor: '#DDDDDD',
-											borderWidth: 1,
-										}}
-										/>
-									)}
-								</TouchableOpacity>
-							</TouchableOpacity>
+					{/* {patient.patient.insuranceStatus === 'BPJS' && (
+					<View
+						style={{
+						...cardStyle.container,
+						borderWidth: 1,
+						borderColor: '#545454',
+						}}
+					>
+						<View style={cardStyle.pembayaran}>
+						<TextInput
+							placeholder={'Masukkan nomor BPJS'}
+							keyboardType="number-pad"
+							placeholderTextColor={'#B5B5B5'}
+							style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+							value={bpjsNumber}
+							onChangeText={setBpjsNumber}
+						/>
 						</View>
-          			</View>
-				)}
-
-				{/* {patient.patient.insuranceStatus === 'BPJS' && (
-				<View
-					style={{
-					...cardStyle.container,
-					borderWidth: 1,
-					borderColor: '#545454',
-					}}
-				>
-					<View style={cardStyle.pembayaran}>
-					<TextInput
-						placeholder={'Masukkan nomor BPJS'}
-						keyboardType="number-pad"
-						placeholderTextColor={'#B5B5B5'}
-						style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
-						value={bpjsNumber}
-						onChangeText={setBpjsNumber}
-					/>
 					</View>
-				</View>
-				)} */}
+					)} */}
 
-				{/* {patient.patient.insuranceStatus === 'ASURANSI' && (
-				<View
-					style={{
-					...cardStyle.container,
-					borderWidth: 1,
-					borderColor: '#545454',
-					}}
-				>
-					<View style={cardStyle.pembayaran}>
-					<TextInput
-						placeholder={'Masukkan nomor Asuransi'}
-						placeholderTextColor={'#B5B5B5'}
-						style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
-						value={insuranceNumber}
-						onChangeText={setInsuranceNumber}
-					/>
+					{/* {patient.patient.insuranceStatus === 'ASURANSI' && (
+					<View
+						style={{
+						...cardStyle.container,
+						borderWidth: 1,
+						borderColor: '#545454',
+						}}
+					>
+						<View style={cardStyle.pembayaran}>
+						<TextInput
+							placeholder={'Masukkan nomor Asuransi'}
+							placeholderTextColor={'#B5B5B5'}
+							style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 16 }}
+							value={insuranceNumber}
+							onChangeText={setInsuranceNumber}
+						/>
+						</View>
 					</View>
-				</View>
-				)} */}
-      		</ScrollView>
+					)} */}
+				</ScrollView>
 
 			{isValidPayment() ? (
 				<View
@@ -1282,6 +1282,7 @@ const cardStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginRight: 15,
+	marginBottom: 4
   },
   pembayaran: {
     flexDirection: 'row',

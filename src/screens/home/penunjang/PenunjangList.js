@@ -120,7 +120,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 					</View>
 					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<Entypo name="location" size={12} color="#A5A5A5" />
-						<Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.address}</Text> 
+						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
 					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
@@ -270,7 +270,8 @@ const textStyles = StyleSheet.create({
 const styles = StyleSheet.create({
 	container: {
 		backgroundColor: '#1F1F1F',
-		height: heightPercentageToDP('100%')
+		height: dimHeight,
+		flex: 1
 	},
 
 	mapSelectionContainer: {
@@ -295,12 +296,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		paddingVertical: heightPercentageToDP('2%'),
 		borderBottomWidth: 1,
-		borderBottomColor: '#3E3D3D'
+		borderBottomColor: '#3E3D3D',
+		flex: 1
 	},
 
 	leftContent: {
-		alignItems: 'flex-start'
-
+		alignItems: 'flex-start',
+		flex: 0.5
 	}, 
 
 	makeAppointmentButton: {
@@ -312,7 +314,8 @@ const styles = StyleSheet.create({
 	},
 
 	rightContent: {
-		alignItems: 'flex-end'
+		alignItems: 'flex-end',
+		flex: 0.5
 	},
 
 	promoContainer: {
