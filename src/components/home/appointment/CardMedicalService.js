@@ -90,10 +90,6 @@ function CardMedicalService({ reservation, ...props }) {
                 <Text style={styles.textSmallGrey}>
                   {reservation.bookingSchedule}
                 </Text>
-                <Text style={styles.textSmallGrey}> - </Text>
-                <Text style={styles.textSmallGrey}>
-                  {reservation.bookingTime}
-                </Text>
               </View>
             </View>
           </View>
