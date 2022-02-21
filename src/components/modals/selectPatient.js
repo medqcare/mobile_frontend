@@ -89,7 +89,7 @@ export default function SelectPatient({
                 </View>
               );
             }}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item, index) => index}
           />
           {/* {family.map((lang, itemIndex) => {
             console.log(lang.imageUrl, 'this is image url');

@@ -26,48 +26,49 @@ function MenuNavigator({ navigation, data }) {
           Dokter
         </Text>
       </TouchableOpacity>
-      <View
-        style={{
-          backgroundColor: '#0C6292',
-          height: '80%',
-          width: 1,
-        }}
-      ></View>
-      <TouchableOpacity
-        style={style.borderIcon}
-        onPress={() => navigation.navigate('Hospital', { facility: 'Clinic' })}
-      >
-        <Image
-          navigation={navigation}
-          source={require('../../../assets/png/ic_klinik.png')}
-          style={{ width: 24, height: 24 }}
-        />
-        <Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
-          Klinik
-        </Text>
-      </TouchableOpacity>
-      <View
-        style={{
-          backgroundColor: '#0C6292',
-          height: '80%',
-          width: 1,
-          backgroundColor: '#0C6292',
-        }}
-      ></View>
-
-      <TouchableOpacity
-        style={style.borderIcon}
-        onPress={() =>
-          data
-            ? navigation.navigate('PenunjangStack')
-            : navigation.navigate('Sign')
-        }
-      >
-        <Penunjang />
-        <Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
-          Penunjang
-        </Text>
-      </TouchableOpacity>
+      	<View
+			style={{
+				backgroundColor: '#0C6292',
+				height: '80%',
+				width: 1,
+			}}
+		/>
+	  	<TouchableOpacity
+			style={style.borderIcon}
+			onPress={() =>
+				data
+					? navigation.navigate('PenunjangStack')
+					: navigation.navigate('Sign')
+			}
+      	>
+        	<Penunjang />
+			<Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
+				Penunjang
+			</Text>
+      	</TouchableOpacity>
+      
+		<View
+			style={{
+				backgroundColor: '#0C6292',
+				height: '80%',
+				width: 1,
+				backgroundColor: '#0C6292',
+			}}
+		/>
+		<TouchableOpacity
+			style={style.borderIcon}
+			onPress={() => navigation.navigate('Hospital', { facility: 'Clinic' })}
+		>
+			<Image
+				navigation={navigation}
+				source={require('../../../assets/png/ic_klinik.png')}
+				style={{ width: 24, height: 24 }}
+			/>
+			<Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
+				Klinik
+			</Text>
+		</TouchableOpacity>
+      
       <View
         style={{
           backgroundColor: '#0C6292',
