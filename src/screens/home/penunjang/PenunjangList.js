@@ -88,6 +88,17 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 		}
 	}
 
+	async function searchFunction(text){
+		if(text){
+			const lowerCase = text.toLowerCase()
+			const newMedicalServiceList = medicalServices.filter(el => el.name.toLowerCase().includes(lowerCase))
+			setMedicalServices(newMedicalServiceList)
+		}
+		else {
+			searchMedicalServices()
+		}
+	}
+
 	const onRefresh = useCallback(async () => {
 		setLoading(true)
 		setType('All');
@@ -167,11 +178,12 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 				navigateBack = "Home"
 				title = "Layanan Medis"
 				placeholder={'Cari layanan atau Lab test'}
+				searchFunction={searchFunction}
 				// option
 			/>
 
 			{/* Map Selection */}
-			<View style={styles.mapSelectionContainer}>
+			{/* <View style={styles.mapSelectionContainer}>
 				<View style={{paddingVertical: heightPercentageToDP('1%'),}}>
 					<Text style={textStyles.mapSelectionText}>Sekitar Anda</Text>
 				</View>
@@ -181,11 +193,11 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 				>
 					<Text style={textStyles.mapSelectionButtonText}>Ubah</Text>
 				</TouchableOpacity>
-			</View>
+			</View> */}
 
 			{/* Content */}
 			{loading ? (
-				<ActivityIndicator size={"small"} color={"blue"} />
+				<ActivityIndicator style={styles.noContentContainer} size={"small"} color={"blue"} />
 			) :
 			( medicalServices.length > 0 ? (
 				<FlatList
@@ -205,8 +217,8 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 				/>
 			) :
 			(
-				<View style={styles.contentContainer}>
-					<Text style={textStyles.whiteColorText}></Text>
+				<View style={styles.noContentContainer}>
+					<Text style={textStyles.whiteColorText}>Tidak ada layanan medis</Text>
 				</View>
 			)
 			)}
@@ -289,6 +301,12 @@ const styles = StyleSheet.create({
 	contentContainer: {
 		paddingBottom: heightPercentageToDP('2%'),
 		paddingHorizontal: widthPercentageToDP('4%'),
+	},
+
+	noContentContainer: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		paddingTop: 15
 	},
 	
 	medicalServiceCardContainer: {
