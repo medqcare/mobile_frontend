@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   TouchableOpacity,
   View,
   Text,
   ScrollView,
   FlatList,
-} from "react-native";
-import { checkDisabledDay } from '../helpers/disabledScheduleTime'
+} from 'react-native';
+import { checkDisabledDay } from '../helpers/disabledScheduleTime';
 
 const MONTHS = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
 ];
 
-const DAYS = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+const DAYS = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
 export default function Calendar({
   selectedDate = new Date(),
   onDateSelected,
   isDateBlackList = true,
-  availableDays
-
+  availableDays,
+  isOnlyRenderForOneMonth = false,
 }) {
   const [date, setDate] = useState(new Date());
   const [month, setMonth] = useState(date.getMonth());
@@ -115,7 +115,7 @@ export default function Calendar({
     const stringDate = `${month}/${dateNumberSelected}/${year}`;
     const newDate = new Date(stringDate);
     setLocalSelectedDate(newDate);
-    if (typeof onDateSelected === "function") {
+    if (typeof onDateSelected === 'function') {
       onDateSelected(newDate);
     }
   };
@@ -129,28 +129,38 @@ export default function Calendar({
     );
   };
 
+  const isNextMonthDisabled = () => {
+    if (isOnlyRenderForOneMonth === false) {
+      return false;
+    }
+
+    const dateNow = new Date();
+    const yearNow = dateNow.getFullYear();
+    const yearBooking = date.getFullYear();
+
+    if (yearNow === yearBooking) {
+      return dateNow.getMonth() + 1 === date.getMonth();
+    } else {
+      return yearBooking.getMonth() === 0;
+    }
+  };
+
   const renderDates = ({ item }) => {
     const dateNumber = calculateDate(item);
     const dayNumber = getDayNumber(dateNumber);
     const dayName = getDayName(dayNumber);
     const stringDate = `${month + 1}/${dateNumber}/${date.getFullYear()}`;
     const objectDate = new Date(stringDate);
-    const disabled = checkDisabledDay(availableDays, dayNumber)
-    let isWeekend = null
-    if(!isDateBlackList){
-      isWeekend = false
-    } else {
-      isWeekend = checkIsWeekend(dayNumber);
-    }
-    let isDisabled = null
-    if(disabled || isDisabled) isDisabled = true
+    const disabled = checkDisabledDay(availableDays, dayNumber);
+    let isDisabled = null;
+    if (disabled || isDisabled) isDisabled = true;
     return (
       <TouchableOpacity
         style={{
           borderRadius: 12,
-          backgroundColor: isSelectedDate(objectDate) ? "#005EA2" : "#3F3F3F",
+          backgroundColor: isSelectedDate(objectDate) ? '#005EA2' : '#3F3F3F',
           marginRight: 8,
-          alignItems: "center",
+          alignItems: 'center',
           paddingVertical: 10,
           width: 46,
           height: 66,
@@ -160,15 +170,15 @@ export default function Calendar({
       >
         <View
           style={{
-            justifyContent: "space-between",
-            height: "100%",
-            alignItems: "center",
+            justifyContent: 'space-between',
+            height: '100%',
+            alignItems: 'center',
           }}
         >
-          <Text style={{ color: !isDisabled ? "#DDDDDD" : "#727272" }}>
+          <Text style={{ color: !isDisabled ? '#DDDDDD' : '#727272' }}>
             {dayName}
           </Text>
-          <Text style={{ color: !isDisabled ? "#DDDDDD" : "#727272" }}>
+          <Text style={{ color: !isDisabled ? '#DDDDDD' : '#727272' }}>
             {dateNumber}
           </Text>
         </View>
@@ -181,10 +191,10 @@ export default function Calendar({
       {/* Choose Months */}
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
-          alignSelf: "center",
-          justifyContent: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
+          alignSelf: 'center',
+          justifyContent: 'center',
           marginBottom: 16,
         }}
       >
@@ -193,22 +203,22 @@ export default function Calendar({
             style={{
               width: 20,
               height: 20,
-              alignItems: "center",
+              alignItems: 'center',
             }}
             onPress={() => {
               setDate(date.minusMonths());
               setMonth(date.getMonth());
             }}
           >
-            <Text style={{ color: "#DDDDDD" }}>{"<"}</Text>
+            <Text style={{ color: '#DDDDDD' }}>{'<'}</Text>
           </TouchableOpacity>
         ) : null}
         <Text
           style={{
-            width: "30%",
-            textAlign: "center",
+            width: '30%',
+            textAlign: 'center',
             height: 20,
-            color: "#DDDDDD",
+            color: '#DDDDDD',
           }}
         >
           {MONTHS[month]}
@@ -217,14 +227,17 @@ export default function Calendar({
           style={{
             width: 20,
             height: 20,
-            alignItems: "center",
+            alignItems: 'center',
           }}
+          disabled={isNextMonthDisabled()}
           onPress={() => {
             setDate(date.addMonths());
             setMonth(date.getMonth());
           }}
         >
-          <Text style={{ color: "#DDDDDD" }}>{">"}</Text>
+          {isNextMonthDisabled() === false ? (
+            <Text style={{ color: '#DDDDDD' }}>{'>'}</Text>
+          ) : null}
         </TouchableOpacity>
       </View>
 
