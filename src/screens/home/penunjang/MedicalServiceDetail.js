@@ -83,15 +83,15 @@ function MedicalServiceDetail({navigation, userData}) {
 
 
 	const [healthFacility, setHealthFacility] = useState({
-		// facilityID: clinic._id,
+		facilityID: id,
 		facilityName: clinic.name,
 		// facilityType: 'Klinik',
 		// facilityMainType: 'Klinik',
 		address: clinic.address,
 		clinicIdWeb: clinic.id,
 		location: {
-			lat: -5.4298,
-			long: 105.17899,
+			lat: -6.2416152,
+			long: 106.9947997,
 		}
 	})
 
