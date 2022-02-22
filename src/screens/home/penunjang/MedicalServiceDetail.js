@@ -177,6 +177,7 @@ function MedicalServiceDetail({navigation, userData}) {
                             onDateSelected={onDateSelected}
                             isDateBlackList={false}
 							availableDays={schedule}
+                            isOnlyRenderForOneMonth={true}
                         />
                     </View>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -32,6 +32,7 @@ export default function Calendar({
   availableDays,
   isOnlyRenderForOneMonth = false,
 }) {
+  const refCalendar = useRef(null);
   const [date, setDate] = useState(new Date());
   const [month, setMonth] = useState(date.getMonth());
   const [localSelectedDate, setLocalSelectedDate] = useState(selectedDate);
@@ -208,6 +209,7 @@ export default function Calendar({
             onPress={() => {
               setDate(date.minusMonths());
               setMonth(date.getMonth());
+              refCalendar.current.scrollToOffset({ animated: true, offset: 0 });
             }}
           >
             <Text style={{ color: '#DDDDDD' }}>{'<'}</Text>
@@ -233,6 +235,8 @@ export default function Calendar({
           onPress={() => {
             setDate(date.addMonths());
             setMonth(date.getMonth());
+            console.log('hello');
+            refCalendar.current.scrollToOffset({ animated: true, offset: 0 });
           }}
         >
           {isNextMonthDisabled() === false ? (
@@ -248,6 +252,7 @@ export default function Calendar({
         renderItem={renderDates}
         keyExtractor={(item) => `${item}`}
         showsHorizontalScrollIndicator={false}
+        ref={refCalendar}
       ></FlatList>
     </View>
   );
