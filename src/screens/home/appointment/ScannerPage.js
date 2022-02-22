@@ -45,7 +45,7 @@ const Assistant_scan = (props) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        return ToastAndroid.show('Permission to access location was denied');
+        return ToastAndroid.show('Permission to access location was denied', ToastAndroid.LONG);
       }
 
       const { coords } = await Location.getCurrentPositionAsync({});
@@ -69,28 +69,28 @@ const Assistant_scan = (props) => {
     })();
   }, []);
 
-  useEffect(async () => {
-    if (isToday) {
-      setLoading(true);
-      try {
-        const { data: response } = await axios({
-          method: 'POST',
-          url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
-        });
-        console.log(reservationData)
-        console.log(response)
+	useEffect(async () => {
+		if (isToday) {
+			setLoading(true);
+			try {
+				const { data: response } = await axios({
+					method: 'POST',
+					url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
+				});
+				console.log(reservationData)
+				console.log(response)
 
-        if (response.data) {
-          setHealthFacilityData(response.data);
-        } else {  
-          setHealthFacilityData(reservationData.healthFacility)
-        } 
+				if (response.data) {
+				setHealthFacilityData(response.data);
+				} else {
+				setHealthFacilityData(reservationData.healthFacility)
+				} 
 
-      } catch (error) {
-        console.log(error.message, 'this is error from scanner check in');
-      }
-    }
-  }, []);
+			} catch (error) {
+				console.log(error.message, 'this is error from scanner check in');
+			}
+		}
+	}, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
