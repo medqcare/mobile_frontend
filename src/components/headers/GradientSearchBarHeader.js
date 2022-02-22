@@ -25,6 +25,7 @@ export default function GradientSearchBarHeader({
     title = "Enter Title Here",
     placeholder,
     option,
+    searchFunction
 }) {
     const start = {
         x: 0,
@@ -76,15 +77,15 @@ export default function GradientSearchBarHeader({
                             <View style={{width: wp('85%')}}>
                                 <SearchBar
                                     placeholder={placeholder}
-                                    onChangeText={(text) => _textChange(text)}
+                                    onChangeText={(text) => searchFunction(text)}
                                 />
                             </View>
-                            <TouchableOpacity 
+                            {/* <TouchableOpacity 
                                 onPress={() => console.log('filter')}
                                 style={{justifyContent: "center", paddingLeft: wp('2%')}}
                             >    
                                 <FilterIcon/>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                     </View>
                 </ImageBackground>
