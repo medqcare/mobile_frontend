@@ -28,11 +28,13 @@ import { MedicalServicesDummy } from './dummyData';
 import GradientSearchBarHeader from '../../../components/headers/GradientSearchBarHeader';
 import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
 import { getMedicalServices } from '../../../stores/action'
+import LottieLoader from 'lottie-react-native'
+import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServices({navigation, userData, getMedicalServices}) {
+function MedicalServices({navigation, userData, getMedicalServices, myLocation}) {
 	const [type, setType] = useState('UMUM')
 	const [status, setStatus] = useState(true)
 	const [page, setPage] = useState(1)
@@ -115,6 +117,14 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 	function renderMedicalService({item}){
 		// const { name, clinicName, address, distance, photo, price, discount } = item
 		const { clinic, discount, itemCheck, name, price, schedule, status, photo } = item
+		const location = {
+			lat: -6.2416152,
+			long: 106.9947997,
+		}
+		const { lat: userLat, lng: userLng } = myLocation
+		const distance = Math.floor(getDistanceFromLatLonInKm(location.lat, location.long, userLat, userLng))
+		
+
 		const discountedPrice = price * (100-discount)/100
 
 		return (
@@ -135,7 +145,7 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 					</View>
 					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
-						<Text style={textStyles.greyColorWithPaddingLeftText}>Jarak Km</Text> 
+						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
 					</View>
 
 					<TouchableOpacity 
@@ -197,7 +207,13 @@ function MedicalServices({navigation, userData, getMedicalServices}) {
 
 			{/* Content */}
 			{loading ? (
-				<ActivityIndicator style={styles.noContentContainer} size={"small"} color={"blue"} />
+				// <ActivityIndicator style={styles.noContentContainer} size={"small"} color={"blue"} />
+				<LottieLoader
+					source={require('../../animation/loading.json')}
+					style={styles.noContentContainer}
+					loop
+					autoPlay
+				/>
 			) :
 			( medicalServices.length > 0 ? (
 				<FlatList
