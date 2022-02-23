@@ -10,67 +10,75 @@ import {
   TouchableHighlight,
   TouchableWithoutFeedback,
 } from 'react-native'
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 
 export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeInnerKey, changeV} ){
-    return(
-        <Modal
-            isVisible={modal}
-            swipeDirection={'down'}
-            style={styles.modal}
-            animationType="slide"
-            onBackdropPress={() => setModal(false)}
-            onSwipeComplete={() => setModal(false)}
-            onRequestClose={() => setModal(false)}   
-        >
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <View style={styles.toogle}/>
-                    <Text style={styles.title}>
-                        {title}
-                    </Text>
+    return (
+      <Modal
+        isVisible={modal}
+        swipeDirection={'down'}
+        style={styles.modal}
+        animationType="slide"
+        onBackdropPress={() => setModal(false)}
+        onSwipeComplete={() => setModal(false)}
+        onRequestClose={() => setModal(false)}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.toogle} />
+            <Text style={styles.title}>{title}</Text>
+          </View>
+          <View style={styles.subtitleContainer}>
+            <Text style={styles.subtitleText}>{subtitle}</Text>
+          </View>
+          {/* <SafeAreaView> */}
+          <ScrollView
+            style={{paddingHorizontal: 12}}
+          >
+            <TouchableHighlight>
+              <TouchableWithoutFeedback>
+                <View>
+                  {selection.map((item, index) => {
+                    const label = item.name || null;
+                    const value =
+                      changeInnerKey === 'city' ? item.name : item.id;
+                    const coordinates = item.longitude
+                      ? [item.longitude, item.latitude]
+                      : null;
+                    return (
+                      // <View key={index}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectedLabel(label);
+                          setSelectedValue(
+                            value,
+                            changeKey,
+                            changeInnerKey,
+                            label,
+                            coordinates
+                          );
+                          setModal(false);
+                        }}
+                        key={index}
+                      >
+                        <View style={styles.selectionContainer}>
+                          <View style={styles.selectionTextContainer}>
+                            <Text style={styles.selectionText}> {label}</Text>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                      // </View>
+                    );
+                  })}
                 </View>
-                <View style={styles.subtitleContainer}>
-                    <Text style={styles.subtitleText}>
-                        {subtitle}
-                    </Text>
-                    <SafeAreaView>
-                        <ScrollView>
-                            <TouchableHighlight>
-                                <TouchableWithoutFeedback>
-                                    <View>
-                                        {selection.map((item,index)=> {
-                                            const label = item.name || null
-                                            const value = changeInnerKey === 'city' ? item.name : item.id
-                                            const coordinates = item.longitude? [item.longitude, item.latitude] : null
-                                            return(
-                                                <View key={index}>
-                                                    <TouchableOpacity
-                                                        onPress={() => {
-                                                            setSelectedLabel(label)
-                                                            setSelectedValue(value, changeKey, changeInnerKey, label, coordinates)
-                                                            setModal(false)
-                                                        }}
-                                                    >
-                                                        <View style={styles.selectionContainer}>
-                                                            <View style={styles.selectionTextContainer}>
-                                                                <Text style={styles.selectionText}> {label}</Text>
-                                                            </View>
-                                                        </View>
-                                                    </TouchableOpacity>
-                                                </View>
-                                            )
-                                        })}
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            </TouchableHighlight>
-                        </ScrollView>
-                    </SafeAreaView>
-                </View>
-            </View>
-        </Modal>    
-
-    )
+              </TouchableWithoutFeedback>
+            </TouchableHighlight>
+          </ScrollView>
+          {/* </SafeAreaView> */}
+        </View>
+      </Modal>
+    );
 
 }    
 
@@ -115,7 +123,7 @@ const styles = StyleSheet.create({
     },
     
     selectionContainer: {
-        marginTop:10,
+        marginVertical:10,
         borderColor: '#757575',
         borderWidth:1,
         borderRadius: 3,
