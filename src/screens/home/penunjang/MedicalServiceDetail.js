@@ -13,7 +13,8 @@ import {
 	ActivityIndicator,
 	BackHandler,
 	Image,
-	ToastAndroid
+	ToastAndroid,
+    Linking
 
 } from 'react-native';
 import { connect } from 'react-redux';
@@ -117,6 +118,21 @@ function MedicalServiceDetail({navigation, userData}) {
 		}
 	}
 
+    const openMap = (lat, lang) => {
+        const scheme = Platform.select({
+            ios: 'maps:0,0?q=',
+            android: 'geo:0,0?q=',
+        });
+
+        const latLng = `${lat},${lang}`;
+        const label = 'Custom Label';
+        const url = Platform.select({
+            ios: `${scheme}${label}@${latLng}`,
+            android: `${scheme}${latLng}(${label})`,
+        });
+        Linking.openURL(url);
+      };
+
     BackHandler.addEventListener('hardwareBackPress', () => {
 	    navigation.pop();
 		return true;
@@ -152,7 +168,10 @@ function MedicalServiceDetail({navigation, userData}) {
                         <View style={styles.rightContent}>
                             <Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
                             <TouchableOpacity
-                                onPress={() => console.log('Open Maps')}
+                                onPress={() => {
+                                    const { location } = healthFacility
+                                    openMap(location.lat, location.long)
+                                }}
                                 style={{paddingBottom: heightPercentageToDP('0.2%'), paddingTop: heightPercentageToDP('1%'), paddingHorizontal: widthPercentageToDP('1%')}}
                             >
                             <Text style={textStyles.mapSelectionButtonText}>Lihat Maps</Text>
