@@ -95,7 +95,7 @@ function HomePage(props) {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          return;
+          throw new Error('permission failed');
         }
 
         let location = await Location.getCurrentPositionAsync({});
