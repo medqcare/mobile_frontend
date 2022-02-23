@@ -67,24 +67,6 @@ function HomePage(props) {
   ]);
   const [registerToken, setRegisterToken] = useState('');
   const [fcmRegistered, setFcmRegistered] = useState(false);
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setMyLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
-      });
-      props.setCurrentLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
-      });
-    })();
-  }, []);
 
   useEffect(async () => {
     try {
@@ -100,6 +82,41 @@ function HomePage(props) {
       setload(false);
     }
   }, []);
+
+  useEffect(() => {
+
+    if (!props.userData) {
+      return
+    }
+
+    (async () => {
+      let lat = null;
+      let lng = null;
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        lat = location.coords.latitude;
+        lng = location.coords.longitude;
+      } catch (error) {
+        lat = props.userData.location.coordinates[1];
+        lng = props.userData.location.coordinates[0];
+        console.log('Error :', error.message);
+      } finally {
+        setMyLocation({
+          lat,
+          lng,
+        });
+        props.setCurrentLocation({
+          lat,
+          lng,
+        });
+      }
+    })();
+  }, [props.userData]);
 
   useEffect(async () => {
     // Update firebase token to database
