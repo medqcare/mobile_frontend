@@ -160,7 +160,7 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 					</View>
 					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<Entypo name="location" size={12} color="#A5A5A5" />
-						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: 350}]}>{clinic.address}</Text> 
+						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
 					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
