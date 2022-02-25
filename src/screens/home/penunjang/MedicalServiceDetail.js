@@ -28,12 +28,12 @@ import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
 import Calendar from '../../../components/Calendar';
 import { checkDisabled } from '../../../helpers/disabledScheduleTime';
 import BuatJanji from '../../../assets/svg/BuatJanji';
-
+import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServiceDetail({navigation, userData}) {
+function MedicalServiceDetail({navigation, userData, myLocation}) {
 
 	
     const { item } = navigation.state.params
@@ -60,27 +60,43 @@ function MedicalServiceDetail({navigation, userData}) {
 		photo,
 	} = item
 
-	// healthFacility: {
-	// 	facilityID: Schema.Types.ObjectId,
-	// 	facilityName: String,
-	// 	facilityType: String,
-	// 	facilityMainType: String,
-	// 	address: String,
-	// 	clinicIdWeb: Number,
-	// 	location: {
-	// 	  lat: Number,
-	// 	  long: Number,
-	// },
-
 	
-	const discountedPrice = price * (100-discount)/100
-
 	const [serviceDetail, setServiceDetail] = useState({
 		name,
 		id,
-		price: discountedPrice,
+		price,
 		kode
 	})
+
+    function getClinicLocation(location){
+        const defaultLocation = {
+			lat: -6.2416152,
+			long: 106.9947997,
+		}
+
+        let clinicLocation;
+
+		if(typeof location === "object"){
+			const { coordinates } = location
+			const [long, lat] = coordinates
+				clinicLocation = {
+					lat,
+					long
+				}
+		} else {
+			const parsedLocation = JSON.parse(location)
+			if(parsedLocation){
+				const { coordinates } = parsedLocation
+				const [long, lat] = coordinates
+				clinicLocation = {
+					lat,
+					long
+				}
+			} else clinicLocation = defaultLocation
+		}
+
+        return clinicLocation
+    }
 
 
 	const [healthFacility, setHealthFacility] = useState({
@@ -90,10 +106,7 @@ function MedicalServiceDetail({navigation, userData}) {
 		// facilityMainType: 'Klinik',
 		address: clinic.address,
 		clinicIdWeb: clinic.id,
-		location: {
-			lat: -6.2416152,
-			long: 106.9947997,
-		}
+		location: getClinicLocation(clinic.location)
 	})
 
     const [bookingDate, setBookingDate] = useState(null)
@@ -131,7 +144,10 @@ function MedicalServiceDetail({navigation, userData}) {
             android: `${scheme}${latLng}(${label})`,
         });
         Linking.openURL(url);
-      };
+    };
+
+    const { lat: userLat, lng: userLng } = myLocation
+    const distance = Math.floor(getDistanceFromLatLonInKm(healthFacility.location.lat, healthFacility.location.long, userLat, userLng))
 
     BackHandler.addEventListener('hardwareBackPress', () => {
 	    navigation.pop();
@@ -158,11 +174,11 @@ function MedicalServiceDetail({navigation, userData}) {
                         </View>
                         <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
                             <Entypo name="location" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.address}</Text> 
+                            <Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
                         </View>
                         <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
                             <FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>Jarak Km</Text> 
+                            <Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
                         </View>
                         </View>
                         <View style={styles.rightContent}>

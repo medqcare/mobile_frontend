@@ -116,17 +116,36 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 
 	function renderMedicalService({item}){
 		// const { name, clinicName, address, distance, photo, price, discount } = item
-		const { clinic, discount, itemCheck, name, price, schedule, status, photo } = item
-		const location = {
+		const { clinic, discount, itemCheck, name, basePrice, price, schedule, status, photo } = item
+		const defaultLocation = {
 			lat: -6.2416152,
 			long: 106.9947997,
 		}
+
+		let clinicLocation;
+
+		if(typeof clinic.location === "object"){
+			const { coordinates } = clinic.location
+			const [long, lat] = coordinates
+				clinicLocation = {
+					lat,
+					long
+				}
+		} else {
+			const parsedLocation = JSON.parse(clinic.location)
+			if(parsedLocation){
+				const { coordinates } = parsedLocation
+				const [long, lat] = coordinates
+				clinicLocation = {
+					lat,
+					long
+				}
+			} else clinicLocation = defaultLocation
+		}
+
 		const { lat: userLat, lng: userLng } = myLocation
-		const distance = Math.floor(getDistanceFromLatLonInKm(location.lat, location.long, userLat, userLng))
+		const distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
 		
-
-		const discountedPrice = price * (100-discount)/100
-
 		return (
 			<View
 				style={styles.medicalServiceCardContainer}
@@ -167,9 +186,9 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 						): null} 
 						<Text style={[textStyles.greyColorText]}>Biaya Mulai Dari</Text>
 						<View style={{flexDirection: 'row'}}>
-							<Text style={ discount ? textStyles.strikedThroughPrice : textStyles.greyColorText}>{formatNumberToRupiah(price)}</Text>
+							<Text style={ discount ? textStyles.strikedThroughPrice : textStyles.greyColorText}>{formatNumberToRupiah(basePrice)}</Text>
 							{discount ? (
-								<Text style={textStyles.discountedPrice}>{formatNumberToRupiah(discountedPrice)}</Text>
+								<Text style={textStyles.discountedPrice}>{formatNumberToRupiah(price)}</Text>
 							) : null}
 						</View>
 					</View>
