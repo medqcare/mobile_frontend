@@ -168,7 +168,11 @@ const buatJanji = (props) => {
         return props.bookDoctor(dataSend, JSON.parse(token).token);
       })
       .then((data) => {
+        console.log(data, 'response rsv')
         if (data.message == 'already reserve for that patient') {
+          setLoad(false);
+          ToastAndroid.show(data.message, ToastAndroid.LONG);
+        } else if (data.status === 'fail') {
           setLoad(false);
           ToastAndroid.show(data.message, ToastAndroid.LONG);
         } else {

@@ -946,7 +946,7 @@ export function bookDoctor(bookData, token) {
           headers: { Authorization: token },
         });
         // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
-        resolve({ message: data.data.message });
+        resolve({ message: data.data.message, status: data.data.status });
       } catch (error) {
         console.log(error);
         reject(error);
