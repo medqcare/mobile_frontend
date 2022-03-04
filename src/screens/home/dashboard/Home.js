@@ -15,7 +15,7 @@ import {
   BackHandler,
   ToastAndroid,
 } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import {
   setCurrentLocation,
@@ -53,6 +53,7 @@ import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
+  const { userData, isLoading, error } = props.userData
   const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
@@ -85,7 +86,7 @@ function HomePage(props) {
 
   useEffect(() => {
 
-    if (!props.userData) {
+    if (!userData) {
       return
     }
 
@@ -102,8 +103,8 @@ function HomePage(props) {
         lat = location.coords.latitude;
         lng = location.coords.longitude;
       } catch (error) {
-        lat = props.userData.location.coordinates[1];
-        lng = props.userData.location.coordinates[0];
+        lat = userData.location.coordinates[1];
+        lng = userData.location.coordinates[0];
         console.log('Error :', error.message);
       } finally {
         setMyLocation({
@@ -116,7 +117,7 @@ function HomePage(props) {
         });
       }
     })();
-  }, [props.userData]);
+  }, [userData]);
 
   useEffect(async () => {
     // Update firebase token to database
@@ -132,11 +133,11 @@ function HomePage(props) {
       return;
     }
 
-    if (!props.userData) {
+    if (!userData) {
       return;
     }
 
-    const { firebaseNotificationToken, _id: userID } = props.userData.userID;
+    const { firebaseNotificationToken, _id: userID } = userData.userID;
     if (firebaseNotificationToken === registerToken) {
       return;
     }
@@ -156,7 +157,7 @@ function HomePage(props) {
     } catch (error) {
       console.log(error.message, 'error update token');
     }
-  }, [registerToken, props.userData]);
+  }, [registerToken, userData]);
 
   const onRegister = (token) => {
     setRegisterToken(token.token);
@@ -221,7 +222,7 @@ function HomePage(props) {
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
-                  {props.userData && (
+                  {userData && (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -251,8 +252,8 @@ function HomePage(props) {
                           <Image
                             style={style.profilePicture}
                             source={{
-                              uri: props.userData?.imageUrl
-                                ? props.userData?.imageUrl
+                              uri: userData?.imageUrl
+                                ? userData?.imageUrl
                                 : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                             }}
                           />
@@ -277,11 +278,11 @@ function HomePage(props) {
             <View style={{ marginBottom: hp('2%') }}>
               <MenuNavigator
                 navigation={props.navigation}
-                data={props.userData}
+                data={userData}
               />
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {props.userData && (
+              {userData && (
                 <View style={{ marginBottom: hp('4%') }}>
                   <Text
                     style={[
@@ -299,7 +300,7 @@ function HomePage(props) {
               <View style={{ marginBottom: hp('4%') }}>
                 <ActivityAction
                   navigation={props.navigation}
-                  data={props.userData}
+                  data={userData}
                 />
               </View>
               <View style={{ marginBottom: hp('2%') }}>
@@ -315,13 +316,13 @@ function HomePage(props) {
           </View>
         </>
       )}
-      <InstructionModal
+      {/* <InstructionModal
         visible={props.showInstruction}
         onFinishOrSkip={() => {
           // setModalInstruction(false);
           props.setShowInstruction(false);
         }}
-      />
+      /> */}
     </View>
   );
 }
