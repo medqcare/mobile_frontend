@@ -1,5 +1,9 @@
 import axios from 'axios';
 import {
+  signIn,
+  signUp
+} from './entry'
+import {
   getDocumentByPatient,
   uploadDocument,
   renameDocument,
@@ -1282,6 +1286,11 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export { 
+  signIn,
+  signUp
 }
 
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
