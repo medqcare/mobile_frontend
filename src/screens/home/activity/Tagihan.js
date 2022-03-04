@@ -53,7 +53,7 @@ function Tagihan(props) {
             'X-Secret': 123456,
           },
         });
-
+        console.log(response)
         const { transaction } = response.data;
         setTransaction(transaction);
       } catch (error) {
