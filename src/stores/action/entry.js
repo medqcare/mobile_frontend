@@ -43,12 +43,14 @@ export function signIn(userData, navigation, modalF, navigateTo){
             console.log(userData, 'Email and password of the user trying to sign in');
 
             const { data } = await instance({
-                url: 'signin',
+                url: 'authentication',
                 method: 'POST',
                 data: userData
             })
 
-            const { token, message } = data
+            const { token, message } = data.data
+
+            console.log(data)
 
             if(token){
                 await storeToken({ token })
