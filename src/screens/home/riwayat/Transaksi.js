@@ -16,6 +16,7 @@ import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import LottieLoader from 'lottie-react-native';
 import getPaymentMethod from '../../../helpers/getPaymentMethod';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import { WHITE_PRIMARY } from '../../../values/color';
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
@@ -118,28 +119,47 @@ export default function Transaksi(props) {
                       alignItems: 'center',
                     }}
                   >
-                    <View style={{}}>
-                      <View style={styles.borderImage}>
-                        <Image
-                          style={styles.image}
-                          source={{
-                            uri: item.doctor.doctorPhoto
-                              ? item.doctor.doctorPhoto
-                              : DEFAULT_IMAGE_URL,
-                          }}
-                        />
-                      </View>
-                    </View>
-                    {item.doctor.doctorID ? (
-                      <View style={{ marginLeft: dimHeight * 0.02 }}>
-                        <Text style={styles.name}>
-                          {item.doctor.title} {item.doctor.doctorName}
-                        </Text>
-                        <Text style={styles.textcontent}>
-                          Spesialis {item.doctor.doctorSpecialist}
-                        </Text>
-                      </View>
-                    ) : null}
+                    {item.doctor ? (
+                      <>
+                        <View style={{}}>
+                          <View style={styles.borderImage}>
+                            <Image
+                              style={styles.image}
+                              source={{
+                                uri: item.doctor.doctorPhoto
+                                  ? item.doctor.doctorPhoto
+                                  : DEFAULT_IMAGE_URL,
+                              }}
+                            />
+                          </View>
+                        </View>
+                        <View style={{ marginLeft: dimHeight * 0.02 }}>
+                          <Text style={styles.name}>
+                            {item.doctor.title} {item.doctor.doctorName}
+                          </Text>
+                          <Text style={styles.textcontent}>
+                            Spesialis {item.doctor.doctorSpecialist}
+                          </Text>
+                        </View>
+                      </>
+                    ) : (
+                      <>
+                        <>
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                color: WHITE_PRIMARY,
+                                textTransform: 'capitalize',
+                              }}
+                            >
+                              Pembayaran Layanan Medis{' '}
+                              {item.healthFacility.facilityName}
+                            </Text>
+                          </View>
+                        </>
+                      </>
+                    )}
                   </View>
                   <View style={styles.line} />
                   <View>
@@ -261,6 +281,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#B5B5B5',
     marginBottom: 4,
+    textTransform: "capitalize"
   },
   time: {
     flexDirection: 'row',
