@@ -24,7 +24,7 @@ export default StackDokumenMedis = createStackNavigator(
   {
     initialRouteName: 'ListDokumenMedis',
     initialRouteParams: {
-      types: ['resep', 'radiologi', 'laboratorium'],
+      types: ['resep', 'radiologi', 'laboratorium', "layanan medis"],
       allowUploadDocument: true,
     },
     defaultNavigationOptions: {

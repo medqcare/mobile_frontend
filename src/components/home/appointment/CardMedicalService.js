@@ -50,7 +50,7 @@ function CardMedicalService({ reservation, ...props }) {
                 {reservation.services.name}
               </Text>
               <Text style={styles.textGreyServiceInfo}>
-                Klinik Meranti Corrie
+                {reservation.healthFacility.facilityName}
               </Text>
               {/* <Text style={styles.textGreyServiceInfo}>
               Jl. Meranti Utara III Blok D 98
