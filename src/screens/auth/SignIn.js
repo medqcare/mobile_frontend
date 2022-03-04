@@ -24,11 +24,12 @@ import * as Google from 'expo-google-app-auth';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { SignInWithEmailOrPhoneNumber } from '../../stores/action';
+import { SignInWithEmailOrPhoneNumber, signIn } from '../../stores/action';
 import formatPhoneNumber from '../../helpers/formatPhoneNumber';
 
 const mapDispatchToProps = {
   SignInWithEmailOrPhoneNumber,
+  signIn,
 };
 const mapStateToProps = (state) => {
   return state;
@@ -69,7 +70,7 @@ const SignInScreen = (props) => {
       : null;
     console.log(navigateTo);
     setload(true);
-    props.SignInWithEmailOrPhoneNumber(
+    props.signIn(
       payload,
       props.navigation,
       modalFalse,
