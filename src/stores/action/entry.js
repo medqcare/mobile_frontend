@@ -50,8 +50,6 @@ export function signIn(userData, navigation, modalF, navigateTo){
 
             const { token, message } = data.data
 
-            console.log(data)
-
             if(token){
                 await storeToken({ token })
                 const { data: userData } = await instance({
