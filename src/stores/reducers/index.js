@@ -10,14 +10,14 @@ import userLocationReducer from "./userLocation";
 
 
 const reducer = combineReducers({
-	allergies: allergiesReducer,
-	doctors: doctorReducer,
-	drugs: drugReducer,
-	showInstruction: showInstructionReducer,
-	userData: userDataReducer,
-	userLocation: userLocationReducer,
-	todayActivity: todayActivityReducer,
-	entryReducer: entryReducer
+	allergiesReducer,
+	doctorReducer,
+	drugReducer,
+	showInstructionReducer,
+	userDataReducer,
+	userLocationReducer,
+	todayActivityReducer,
+	entryReducer
 })
 
 export default reducer
