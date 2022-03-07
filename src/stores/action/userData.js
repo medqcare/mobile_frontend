@@ -154,6 +154,89 @@ export function updateProfileData(updateData, navigate, navigateTo, userData){
 
 }
 
+export function createNewFamily(newPatientData, navigation, navigateTo, userData){
+    return async (dispatch) => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+            const token = await getToken()
+            const { data: result } = await instance({
+                method: 'POST',
+                url: 'addFamily',
+                data: newPatientData,
+                headers: {
+                    Authorization: token
+                }
+            })
+            const { message, data , error} = result
+            const alreadyRegistered = 'NIK sudah didaftarkan'
+            const cantAddTwice = 'cannot add same family twice'
+            const unauthorizedNIK = `NIK tidak boleh sama dengan pemilik akun`
+            const errorMessage = 'NIK sudah terdaftar, Berhasi menambahkan data sebelumnya'
+            const successMessage = 'Berhasil menambahkan keluarga'
+
+            if(data === cantAddTwice){
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+                ToastAndroid.show(alreadyRegistered, ToastAndroid.SHORT)
+                // if(data === cantAddTwice){
+                    
+                // } else {
+                //     const newUserData = {
+                //         ...userData,
+                //         family: userData.family.concat(newPatientData)
+                //     }
+
+                //     await dispatch({
+                //         type: SET_USER_DATA,
+                //         payload: newUserData
+                //     })
+
+                //     navigation.navigate('FamilyList');
+
+                //     ToastAndroid.show(errorMessage, ToastAndroid.LONG);
+                // }
+            } else if(message === 'Family NIK same as Parent NIK') {
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+                ToastAndroid.show(unauthorizedNIK, ToastAndroid.SHORT);
+            } else {
+                console.log('Successfully added family member');
+                console.log('Navigating back to family list...');
+
+                const newUserData = {
+                    ...userData,
+                    family: userData.family.concat(newPatientData)
+                }
+
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA,
+                    payload: newUserData
+                })
+
+                navigation.navigate('FamilyList');
+
+                ToastAndroid.show(successMessage, ToastAndroid.SHORT)
+            }
+            
+        } catch (error) {
+            console.log(error, 'Error found when adding a new family')
+            ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG)
+        }
+    }
+}
+
 export function deleteUserData(navigation){
     return async (dispatch) => {
         try {

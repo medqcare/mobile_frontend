@@ -41,7 +41,7 @@ const familyList = (props) => {
   const [message, setMessage] = useState(''); //untuk pesan dimodal
   const [load, setLoad] = useState(false);
 
-  const families = props.userData.family;
+  const families = props.userDataReducer.userData.family;
 
   function iconProps(gender, props) {
     const name = gender === 'Female' ? 'md-female' : 'md-male';
