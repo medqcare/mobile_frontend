@@ -38,214 +38,228 @@ import capitalFirst from '../helpers/capitalFirst';
 import DatePickerIcon from '../assets/svg/DatePickerIcon';
 import DatePicker from '@react-native-community/datetimepicker';
 import nikValidation from '../helpers/validationNIK';
-const editProfile = (props) => {
-  const dateOfBirthDay = new Date(props.userData.dob);
-  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
-  const [dateForShowingToUser, setDateForShowingToUser] = useState(
-    dateWithDDMMMYYYYFormat(dateOfBirthDay)
-  );
-  const [userData, setUserData] = useState({
-    photo: props.userData.photo || '',
-    nik: props.userData.nik.toString(),
-    firstName: props.userData.firstName,
-    lastName: props.userData.lastName,
-    gender: props.userData.gender || 'Male',
-    dob: dateOfBirthDay,
-    bloodType: props.userData.bloodType || 'A',
-    resus: props.userData.resus || '+',
-    phoneNumber: props.userData.phoneNumber,
-    location: props.userData.location,
-    insuranceStatus: props.userData.insuranceStatus || 'UMUM',
-  });
+const editProfile = ({navigation, userDataReducer}) => {
+  	const { userData } = userDataReducer
+	const { 
+		photo, 
+		nik, 
+		firstName, 
+		lastName, 
+		gender, 
+		dob, 
+		bloodType, 
+		resus, 
+		phoneNumber, 
+		location, 
+		insuranceStatus 
+	} = userData
+	const dateOfBirthDay = new Date(dob);
+	const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+	const [showDatePicker, setShowDatePicker] = useState(false);
+	const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+	const [dateForShowingToUser, setDateForShowingToUser] = useState(
+		dateWithDDMMMYYYYFormat(dateOfBirthDay)
+	);
+	const [currentUserData, setCurrentUserData] = useState({
+		photo: photo || '',
+		nik: nik.toString(),
+		firstName,
+		lastName,
+		gender: gender || 'Male',
+		dob: dateOfBirthDay,
+		bloodType: bloodType || 'A',
+		resus: resus || '+',
+		phoneNumber: phoneNumber,
+		location,
+		insuranceStatus: insuranceStatus || 'UMUM',
+	});
 
-  // Region
-  const region = require('../assets/Region/province');
+	// Region
+	const region = require('../assets/Region/province');
 
-  // Province; 34 provinces
-  const [province, setProvince] = useState(region.province);
-  const [provinceModal, setProvinceModal] = useState(false);
-  const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
-    userData.location.province
-  );
-  const provinceSelection = province;
+	// Province; 34 provinces
+	const [province, setProvince] = useState(region.province);
+	const [provinceModal, setProvinceModal] = useState(false);
+	const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
+		currentUserData.location.province
+	);
+	const provinceSelection = province;
 
-  // District
-  const provinceObject = province.filter((el) => {
-    return el.name === selectedProvinceLabel;
-  });
-  const provinceId = provinceObject[0].id;
-  const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
-  const [districtModal, setDistrictModal] = useState(false);
-  const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
-    userData.location.city
-  );
+	// District
+	const provinceObject = province.filter((el) => {
+		return el.name === selectedProvinceLabel;
+	});
+	const provinceId = provinceObject[0].id;
+	const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
+	const [districtModal, setDistrictModal] = useState(false);
+	const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
+		userData.location.city
+	);
 
-  // Loading animation for submit button
-  const [load, setLoad] = useState(false);
+	// Loading animation for submit button
+	const [load, setLoad] = useState(false);
 
-  const [modalF, setModalF] = useState(false);
-  const [modalS, setModalS] = useState(false);
-  const [valid, setValid] = useState(false);
+	const [modalF, setModalF] = useState(false);
+	const [modalS, setModalS] = useState(false);
+	const [valid, setValid] = useState(false);
 
-  // Gender radio
-  var radio_props = [
-    { label: 'Laki-laki', value: 'Male' },
-    { label: 'Perempuan', value: 'Female' },
-  ];
+	// Gender radio
+	var radio_props = [
+		{ label: 'Laki-laki', value: 'Male' },
+		{ label: 'Perempuan', value: 'Female' },
+	];
 
-  // Bloodtype
-  const [bloodTypeModal, setBloodTypeModal] = useState(false);
-  const bloodTypeSelection = ['A', 'AB', 'B', 'O'];
-  const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
-    userData.bloodType
-  );
+	// Bloodtype
+	const [bloodTypeModal, setBloodTypeModal] = useState(false);
+	const bloodTypeSelection = ['A', 'AB', 'B', 'O'];
+	const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
+		currentUserData.bloodType
+	);
 
-  // Rhesus type
-  const [rhesusTypeModal, setRhesusModal] = useState(false);
-  const rhesusTypeSelection = ['+', '-'];
-  const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(
-    userData.resus
-  );
+	// Rhesus type
+	const [rhesusTypeModal, setRhesusModal] = useState(false);
+	const rhesusTypeSelection = ['+', '-'];
+	const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(
+		currentUserData.resus
+	);
 
-  // Insurance status
-  const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
-  const insuranceStatusSelection = [
-    {
-      label: 'Umum',
-      value: 'UMUM',
-    },
-    {
-      label: 'BPJS',
-      value: 'BPJS',
-    },
-    {
-      label: 'Asuransi',
-      value: 'ASURANSI',
-    },
-  ];
-  const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
-    capitalFirst(userData.insuranceStatus)
-  );
+	// Insurance status
+	const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
+	const insuranceStatusSelection = [
+		{
+		label: 'Umum',
+		value: 'UMUM',
+		},
+		{
+		label: 'BPJS',
+		value: 'BPJS',
+		},
+		{
+		label: 'Asuransi',
+		value: 'ASURANSI',
+		},
+	];
+	const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
+		capitalFirst(currentUserData.insuranceStatus)
+	);
 
-  useEffect(() => {
-    if (province.length && district.length) {
-    }
-  }, [district, selectedDistrictLabel, userData]);
+	useEffect(() => {
+		if (province.length && district.length) {
+		}
+	}, [district, selectedDistrictLabel, currentUserData]);
 
   // Function for change data
-  function setSelectedValue(
-    value,
-    changeKey,
-    changeInnerKey,
-    name,
-    coordinatesKey
-  ) {
-    if (changeKey === 'location') {
-      const firstIndex = region.kabupatenkota(value)[0];
-      coordinatesKey = coordinatesKey
-        ? coordinatesKey
-        : [firstIndex.longitude, firstIndex.latitude];
-      if (changeInnerKey === 'province') {
-        setDistrict(region.kabupatenkota(value));
-        setSelectedDistrictLabel(firstIndex.name);
-        setUserData({
-          ...userData,
-          [changeKey]: {
-            ...userData[changeKey],
-            [changeInnerKey]: name,
-            city: firstIndex.name,
-            coordinates: [coordinatesKey[0], coordinatesKey[1]],
-          },
-        });
-      } else {
-        setSelectedDistrictLabel(name);
-        setUserData({
-          ...userData,
-          [changeKey]: {
-            ...userData[changeKey],
-            [changeInnerKey]: name,
-            coordinates: [coordinatesKey[0], coordinatesKey[1]],
-          },
-        });
-      }
-    } else {
-      setUserData({
-        ...userData,
-        [changeKey]: value,
-      });
-    }
-  }
+	function setSelectedValue(
+		value,
+		changeKey,
+		changeInnerKey,
+		name,
+		coordinatesKey
+	) {
+		if (changeKey === 'location') {
+		const firstIndex = region.kabupatenkota(value)[0];
+		coordinatesKey = coordinatesKey
+			? coordinatesKey
+			: [firstIndex.longitude, firstIndex.latitude];
+		if (changeInnerKey === 'province') {
+			setDistrict(region.kabupatenkota(value));
+			setSelectedDistrictLabel(firstIndex.name);
+			setCurrentUserData({
+			...userData,
+			[changeKey]: {
+				...userData[changeKey],
+				[changeInnerKey]: name,
+				city: firstIndex.name,
+				coordinates: [coordinatesKey[0], coordinatesKey[1]],
+			},
+			});
+		} else {
+			setSelectedDistrictLabel(name);
+			setCurrentUserData({
+			...userData,
+			[changeKey]: {
+				...userData[changeKey],
+				[changeInnerKey]: name,
+				coordinates: [coordinatesKey[0], coordinatesKey[1]],
+			},
+			});
+		}
+		} else {
+		setCurrentUserData({
+			...userData,
+			[changeKey]: value,
+		});
+		}
+	}
 
-  // Function for validation
-  function validation() {
-    if (!nikValidation(userData.nik)) {
-      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
-      return;
-    }
+	// Function for validation
+	function validation() {
+		if (!nikValidation(userData.nik)) {
+			ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+		return;
+		}
 
-    if (
-      !nikValidation(userData.nik) ||
-      userData.firstName == '' ||
-      userData.firstName == null ||
-      userData.dob == null ||
-      userData.phoneNumber == null ||
-      isErrorPhoneNumber
-    ) {
-      setValid(true);
-      setModalF(true);
-    } else {
-      setValid(false);
-      _filterdataSend();
-    }
-  }
+		if (
+			!nikValidation(userData.nik) ||
+			userData.firstName == '' ||
+			userData.firstName == null ||
+			userData.dob == null ||
+			userData.phoneNumber == null ||
+			isErrorPhoneNumber
+		) {
+			setValid(true);
+			setModalF(true);
+		} else {
+			setValid(false);
+			_filterdataSend();
+		}
+	}
 
-  // Function for data preparation
-  const _filterdataSend = () => {
-    let dataSend;
-    // Methode
-    Object.filter = (obj, predicate) =>
-      Object.keys(obj)
-        .filter((key) => predicate(obj[key]))
-        .reduce((res, key) => ((res[key] = obj[key]), res), {});
-    dataSend = Object.filter(userData, (value) => value !== null);
-    dataSend = Object.filter(dataSend, (value) => value !== undefined);
-    dataSend = Object.filter(dataSend, (value) => value !== '');
-    sendData(dataSend);
-  };
+	// Function for data preparation
+	const _filterdataSend = () => {
+		let dataSend;
+		// Methode
+		Object.filter = (obj, predicate) =>
+		Object.keys(obj)
+			.filter((key) => predicate(obj[key]))
+			.reduce((res, key) => ((res[key] = obj[key]), res), {});
+		dataSend = Object.filter(userData, (value) => value !== null);
+		dataSend = Object.filter(dataSend, (value) => value !== undefined);
+		dataSend = Object.filter(dataSend, (value) => value !== '');
+		sendData(dataSend);
+	};
 
-  // Function for sending data to server
-  async function sendData(data) {
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    props
-      .edit_profile(data, props.userData._id, JSON.parse(token).token)
-      .then((backData) => {
-        setLoad(false);
-        setModalS(true);
-        props.navigation.navigate('ProfileDetail');
-      })
-      .catch((err) => {
-        setLoad(false);
-        console.log(err);
-      });
-  }
+	// Function for sending data to server
+	async function sendData(data) {
+		setLoad(true);
+		let token = await AsyncStorage.getItem('token');
+		props
+		.edit_profile(data, userData._id, JSON.parse(token).token)
+		.then((backData) => {
+			setLoad(false);
+			setModalS(true);
+			navigation.navigate('ProfileDetail');
+		})
+		.catch((err) => {
+			setLoad(false);
+			console.log(err);
+		});
+	}
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    props.navigation.pop();
-    return true;
-  });
+	BackHandler.addEventListener('hardwareBackPress', () => {
+		navigation.pop();
+		return true;
+	});
 
-  const onChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (event.type === 'dismissed') {
-      return;
-    }
-    setChosenDate(selectedDate);
-    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
-    setUserData({ ...userData, dob: selectedDate });
-  };
+	const onChange = (event, selectedDate) => {
+		setShowDatePicker(false);
+		if (event.type === 'dismissed') {
+		return;
+		}
+		setChosenDate(selectedDate);
+		setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+		setCurrentUserData({ ...userData, dob: selectedDate });
+	};
 
   return (
     <KeyboardAvoidingView
@@ -254,7 +268,7 @@ const editProfile = (props) => {
       enabled
     >
       <GradientHeader
-        navigate={props.navigation.navigate}
+        navigate={navigation.navigate}
         navigateBack={'ProfileDetail'}
         title="Ubah Data"
       />
@@ -272,15 +286,15 @@ const editProfile = (props) => {
               placeholder={'NIK'}
               keyboardType={'numeric'}
               placeholderTextColor="#8b8b8b"
-              onChangeText={(text) => setUserData({ ...userData, nik: text })}
-              value={userData.nik}
+              onChangeText={(text) => setCurrentUserData({ ...currentUserData, nik: text })}
+              value={currentUserData.nik}
             />
           </View>
         </View>
         {/* NIK Error */}
-        {userData.nik !== null &&
-          userData.nik.length > 0 &&
-          userData.nik.length !== 16 && (
+        {currentUserData.nik !== null &&
+          currentUserData.nik.length > 0 &&
+          currentUserData.nik.length !== 16 && (
             <Text style={{ color: 'red' }}>
               NIK must contain at 16 characters
             </Text>
@@ -288,7 +302,7 @@ const editProfile = (props) => {
 
         {/* First name error */}
         <View style={{ flexDirection: 'row' }}>
-          {!userData.firstName && valid && (
+          {!currentUserData.firstName && valid && (
             <Text
               style={{
                 color: 'red',
@@ -312,9 +326,9 @@ const editProfile = (props) => {
               placeholder={'Nama Depan'}
               placeholderTextColor="#8b8b8b"
               onChangeText={(text) =>
-                setUserData({ ...userData, firstName: text })
+                setCurrentUserData({ ...currentUserData, firstName: text })
               }
-              value={userData.firstName}
+              value={currentUserData.firstName}
             />
           </View>
         </View>
@@ -329,9 +343,9 @@ const editProfile = (props) => {
               placeholder={'Nama Belakang'}
               placeholderTextColor="#8b8b8b"
               onChangeText={(text) =>
-                setUserData({ ...userData, lastName: text })
+                setCurrentUserData({ ...currentUserData, lastName: text })
               }
-              value={userData.lastName}
+              value={currentUserData.lastName}
             />
           </View>
         </View>
@@ -348,9 +362,9 @@ const editProfile = (props) => {
           >
             <RadioForm
               radio_props={radio_props}
-              initial={userData.gender === 'Male' ? 0 : 1}
+              initial={currentUserData.gender === 'Male' ? 0 : 1}
               onPress={(value) => {
-                setUserData({ ...userData, gender: value });
+                setCurrentUserData({ ...currentUserData, gender: value });
               }}
               formHorizontal={true}
               labelHorizontal={true}
@@ -364,7 +378,7 @@ const editProfile = (props) => {
 
         {/* DOB error */}
         <View style={{ flexDirection: 'row' }}>
-          {!userData.dob && valid && (
+          {!currentUserData.dob && valid && (
             <Text
               style={{
                 color: 'red',
@@ -429,7 +443,7 @@ const editProfile = (props) => {
                 },
               }}
               onDateChange={(date) => {
-                setUserData({ ...userData, dob: date });
+                setCurrentUserData({ ...currentUserData, dob: date });
               }}
             /> */}
           </View>
@@ -449,9 +463,9 @@ const editProfile = (props) => {
                 text.length > 13
                   ? setIsErrorPhoneNumber(true)
                   : setIsErrorPhoneNumber(false);
-                setUserData({ ...userData, phoneNumber: text });
+                setCurrentUserData({ ...currentUserData, phoneNumber: text });
               }}
-              value={userData.phoneNumber}
+              value={currentUserData.phoneNumber}
             />
           </View>
           {isErrorPhoneNumber && (
@@ -487,12 +501,12 @@ const editProfile = (props) => {
             <Image source={require('../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           {/* <Picker
-								selectedValue={userData.resus}
+								selectedValue={currentUserData.resus}
 								placeholderTextColor="#DDDDDD"
 								style={style.inputText}
 								mode={'dropdown'}                                                                                                                                                                                                           
 								onValueChange={(itemValue, itemIndex) => {
-									setUserData({ ...userData, resus: itemValue });
+									setCurrentUserData({ ...currentUserData, resus: itemValue });
 								}}>
 								<Picker.Item label="Rhesus" value="Rhesus" key={0} text-color={'red'} />
 								<Picker.Item label="-" value="-" key={1}  />
@@ -514,12 +528,12 @@ const editProfile = (props) => {
         {/* <View style={style.inputMiddleContainer}>
 						<View style={style.input}>
 							<Picker
-								selectedValue={userData.statusFamily}
+								selectedValue={currentUserData.statusFamily}
 								style={{ color: '#DDDDDD', height: 45, width: '100%' }}
 								placeholderTextColor="#8b8b8b"
 								mode={'dropdown'}
 								onValueChange={(itemValue, itemIndex) => {
-									setUserData({ ...userData, statusFamily: itemValue });
+									setCurrentUserData({ ...currentUserData, statusFamily: itemValue });
 								}}>
 								<Picker.Item label="Hubungan Keluarga" color="#DDDDDD" value="Status type" key={0}/>
 								<Picker.Item label="Adik" value="Adik" key={1}/>
@@ -551,12 +565,12 @@ const editProfile = (props) => {
 
           {/* <Picker
 								mode="dropdown"
-								selectedValue={userData.InsuranceStatus}
+								selectedValue={currentUserData.InsuranceStatus}
 								// style={style.inputText}
 								style={{ height: 45, color: '#DDDDDD' }}
 								placeholderTextColor="#DDDDDD"
 								onValueChange={(itemValue, itemIndex) => {
-									setUserData({ ...userData, InsuranceStatus: itemValue })
+									setCurrentUserData({ ...currentUserData, InsuranceStatus: itemValue })
 								}}>
 								<Picker.Item label={'Umum'} value={'UMUM'} key={0} />
 								<Picker.Item label={'BPJS'} value={'BPJS'} key={0} />
@@ -597,13 +611,13 @@ const editProfile = (props) => {
           {/* {province.length > 0 ? (
 				<View style={style.input}>
 				<Picker
-					selectedValue={userData.location.province}
+					selectedValue={currentUserData.location.province}
 					style={style.inputText}
 					onValueChange={(itemValue, itemIndex) => {
-					setUserData({
-						...userData,
+					setCurrentUserData({
+						...currentUserData,
 						location: { 
-							...userData.location, 
+							...currentUserData.location, 
 							province: itemValue,
 							city: region.kabupatenkota(province[itemIndex].id)[0].name,
 							coordinates: [
@@ -654,13 +668,13 @@ const editProfile = (props) => {
           {/* {district.length > 0 ? (
 				<View style={style.input}>
 				<Picker
-					selectedValue={userData.location.city}
+					selectedValue={currentUserData.location.city}
 					style={style.inputText}
 					onValueChange={(itemValue, itemIndex) => {
-					setUserData({
-						...userData,
+					setCurrentUserData({
+						...currentUserData,
 						location: {
-						...userData.location,
+						...currentUserData.location,
 						city: itemValue,
 						coordinates: [
 							district[itemIndex].longitude,
@@ -696,11 +710,11 @@ const editProfile = (props) => {
                 placeholder={'Detail Alamat'}
                 placeholderTextColor="#8b8b8b"
                 onChangeText={(text) => {
-                  const { location } = userData;
+                  const { location } = currentUserData;
                   const newLocation = { ...location, address: text };
-                  setUserData({ ...userData, location: newLocation });
+                  setCurrentUserData({ ...currentUserData, location: newLocation });
                 }}
-                value={userData.location.address}
+                value={currentUserData.location.address}
               />
             </View>
           </View>
