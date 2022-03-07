@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   Dimensions,
-  PermissionsAndroid
+  PermissionsAndroid,
 } from 'react-native';
 
 import * as FileSystem from 'expo-file-system';
@@ -16,6 +16,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 import { formatNumberToRupiah } from '../../helpers/formatRupiah';
 import getPaymentMethod from '../../helpers/getPaymentMethod';
+import { WHITE_PRIMARY } from '../../values/color';
 const dimHeight = Dimensions.get('window').height;
 
 export default function CardDetailTransaction({ transaction, props }) {
@@ -45,21 +46,21 @@ export default function CardDetailTransaction({ transaction, props }) {
   const transactionStatus = getTransactionStatus(transaction.status);
 
   const gantiBahasa = (item) => {
-    let result = item
+    let result = item;
     switch (item) {
-      case "Doctor Price":
-        result = "Biaya Konsultasi"
-        break
-    
-      case "Prescription Price":
-        result = "Harga Obat"
-        break
+      case 'Doctor Price':
+        result = 'Biaya Konsultasi';
+        break;
+
+      case 'Prescription Price':
+        result = 'Harga Obat';
+        break;
 
       default:
-        break
+        break;
     }
-    return result
-  }
+    return result;
+  };
 
   const checkPermission = async () => {
     const result = await PermissionsAndroid.check(
@@ -82,50 +83,88 @@ export default function CardDetailTransaction({ transaction, props }) {
         await askPermission();
       }
 
-      let fileUri = FileSystem.documentDirectory + "struk.pdf";
+      let fileUri = FileSystem.documentDirectory + 'struk.pdf';
       const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
       await Sharing.shareAsync(uri);
     })();
   };
-  
 
   return (
     <View style={styles.container}>
       <View
         style={{ backgroundColor: '#2F2F2F', padding: 10, borderRadius: 5 }}
       >
-        <View style={{ flexDirection: 'row' }}>
-          <View style={{}}>
-            <View style={styles.borderImage}>
-              <Image
-                style={styles.image}
-                source={{
-                  uri: 'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90',
-                }}
-              />
+        {transaction.doctor ? (
+          <>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{}}>
+                <View style={styles.borderImage}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
+                    }}
+                  />
+                </View>
+              </View>
+              <View style={{ marginLeft: dimHeight * 0.01 }}>
+                <Text style={styles.name}>
+                  {transaction.doctor.title} {transaction.doctor.doctorName}
+                </Text>
+                <Text style={styles.textcontent}>
+                  Spesialis {transaction.doctor.doctorSpecialist}
+                </Text>
+                <View style={styles.time}>
+                  <Text style={styles.textcontent}>
+                    {dateWithDDMMMYYYYFormat(
+                      new Date(
+                        transaction.bookingSchedule
+                          .split('/')
+                          .reverse()
+                          .join('/')
+                      )
+                    )}
+                  </Text>
+                  <View style={styles.dividingPoint}></View>
+                  <Text style={styles.textcontent}>
+                    {transaction.bookingTime}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-          <View style={{ marginLeft: dimHeight * 0.01 }}>
-            <Text style={styles.name}>
-              {transaction.doctor.title} {transaction.doctor.doctorName}
-            </Text>
-            <Text style={styles.textcontent}>
-              Spesialis {transaction.doctor.doctorSpecialist}
-            </Text>
-            <View style={styles.time}>
-              <Text style={styles.textcontent}>
-                {dateWithDDMMMYYYYFormat(
-                  new Date(
-                    transaction.bookingSchedule.split('/').reverse().join('/')
-                  )
-                )}
-              </Text>
-              <View style={styles.dividingPoint}></View>
-              <Text style={styles.textcontent}>{transaction.bookingTime}</Text>
+            <View style={styles.line} />
+          </>
+        ) : (
+          <>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ marginLeft: dimHeight * 0.01 }}>
+                <Text
+                  style={{
+                    textTransform: 'capitalize',
+                    fontSize: 18,
+                    color: WHITE_PRIMARY,
+                  }}
+                >
+                  Tagihan Layanan Medis{' '}
+                  {transaction.healthFacility.facilityName}
+                </Text>
+                <View style={styles.time}>
+                  <Text style={styles.textcontent}>
+                    {dateWithDDMMMYYYYFormat(
+                      new Date(
+                        transaction.bookingSchedule
+                          .split('/')
+                          .reverse()
+                          .join('/')
+                      )
+                    )}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-        <View style={styles.line} />
+            <View style={styles.line} />
+          </>
+        )}
 
         <FlatList
           data={transaction.items}
@@ -140,7 +179,9 @@ export default function CardDetailTransaction({ transaction, props }) {
                   marginBottom: dimHeight * 0.01,
                 }}
               >
-                <Text style={styles.textcontent}>{gantiBahasa(item.itemName)}</Text>
+                <Text style={styles.textcontent}>
+                  {gantiBahasa(item.itemName)}
+                </Text>
                 <Text style={styles.textcontent}>
                   {formatNumberToRupiah(item.itemPrice)}
                 </Text>
@@ -209,22 +250,28 @@ export default function CardDetailTransaction({ transaction, props }) {
             >
               {formatNumberToRupiah(transaction.amount)}
             </Text>
-            {
-              transaction.status === "success" && transaction.file.url !== '' && 
-              <TouchableOpacity style={{marginTop: 15}} onPress={() => {
-                props.navigation.navigate('ShowDokumen', {
-                  uri: transaction.file.url,
-                  name: "Struk Pembayaran",
-                  backTo: "DetailTransaction",
-                  option: {
-                    name: "share",
-                    action: () => shareFile(transaction.file.url)
-                  }
-                })
-              }}>
-                <Text style={{color: "#F37335", fontSize: 11, textAlign: "right"}}>LIHAT STRUK</Text>
+            {transaction.status === 'success' && transaction.file.url !== '' && (
+              <TouchableOpacity
+                style={{ marginTop: 15 }}
+                onPress={() => {
+                  props.navigation.navigate('ShowDokumen', {
+                    uri: transaction.file.url,
+                    name: 'Struk Pembayaran',
+                    backTo: 'DetailTransaction',
+                    option: {
+                      name: 'share',
+                      action: () => shareFile(transaction.file.url),
+                    },
+                  });
+                }}
+              >
+                <Text
+                  style={{ color: '#F37335', fontSize: 11, textAlign: 'right' }}
+                >
+                  LIHAT STRUK
+                </Text>
               </TouchableOpacity>
-            }
+            )}
           </View>
         </View>
       </View>
@@ -268,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#B5B5B5',
     marginTop: 5,
+    textTransform: "capitalize"
   },
   time: {
     flexDirection: 'row',
