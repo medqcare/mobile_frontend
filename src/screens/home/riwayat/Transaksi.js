@@ -20,7 +20,7 @@ import { WHITE_PRIMARY } from '../../../values/color';
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
-  "'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90'";
+  'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg';
 
 export default function Transaksi(props) {
   const [transactions, setTransactions] = useState([]);
@@ -153,8 +153,7 @@ export default function Transaksi(props) {
                                 textTransform: 'capitalize',
                               }}
                             >
-                              Pembayaran Layanan Medis{' '}
-                              {item.healthFacility.facilityName}
+                              Layanan Medis {item.services.name}
                             </Text>
                           </View>
                         </>
@@ -168,7 +167,9 @@ export default function Transaksi(props) {
                     </Text>
                     <View style={styles.time}>
                       <Text style={styles.textcontent}>{schedule}</Text>
-                      <View style={styles.dividingPoint}></View>
+                      {item.bookingTime && (
+                        <View style={styles.dividingPoint}></View>
+                      )}
                       <Text style={styles.textcontent}>{item.bookingTime}</Text>
                     </View>
                     <Text style={styles.textcontent}>

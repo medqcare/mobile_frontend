@@ -102,7 +102,7 @@ export default function CardDetailTransaction({ transaction, props }) {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: 'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90',
+                      uri: 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
                     }}
                   />
                 </View>
