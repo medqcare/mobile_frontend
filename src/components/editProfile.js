@@ -21,7 +21,7 @@ import {
 
 // Radio Form
 import RadioForm from 'react-native-simple-radio-button';
-import { edit_profile, setLoading } from '../stores/action';
+import { edit_profile, setLoading, updateProfileData } from '../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Modal
@@ -38,8 +38,8 @@ import capitalFirst from '../helpers/capitalFirst';
 import DatePickerIcon from '../assets/svg/DatePickerIcon';
 import DatePicker from '@react-native-community/datetimepicker';
 import nikValidation from '../helpers/validationNIK';
-const editProfile = ({navigation, userDataReducer}) => {
-  	const { userData } = userDataReducer
+const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
+  	const { userData, isLoading } = userDataReducer
 	const { 
 		photo, 
 		nik, 
@@ -127,16 +127,16 @@ const editProfile = ({navigation, userDataReducer}) => {
 	const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
 	const insuranceStatusSelection = [
 		{
-		label: 'Umum',
-		value: 'UMUM',
+			label: 'Umum',
+			value: 'UMUM',
 		},
 		{
-		label: 'BPJS',
-		value: 'BPJS',
+			label: 'BPJS',
+			value: 'BPJS',
 		},
 		{
-		label: 'Asuransi',
-		value: 'ASURANSI',
+			label: 'Asuransi',
+			value: 'ASURANSI',
 		},
 	];
 	const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
@@ -165,7 +165,7 @@ const editProfile = ({navigation, userDataReducer}) => {
 			setDistrict(region.kabupatenkota(value));
 			setSelectedDistrictLabel(firstIndex.name);
 			setCurrentUserData({
-			...userData,
+			...currentUserData,
 			[changeKey]: {
 				...userData[changeKey],
 				[changeInnerKey]: name,
@@ -176,9 +176,9 @@ const editProfile = ({navigation, userDataReducer}) => {
 		} else {
 			setSelectedDistrictLabel(name);
 			setCurrentUserData({
-			...userData,
+			...currentUserData,
 			[changeKey]: {
-				...userData[changeKey],
+				...currentUserData[changeKey],
 				[changeInnerKey]: name,
 				coordinates: [coordinatesKey[0], coordinatesKey[1]],
 			},
@@ -186,7 +186,7 @@ const editProfile = ({navigation, userDataReducer}) => {
 		}
 		} else {
 		setCurrentUserData({
-			...userData,
+			...currentUserData,
 			[changeKey]: value,
 		});
 		}
@@ -194,24 +194,24 @@ const editProfile = ({navigation, userDataReducer}) => {
 
 	// Function for validation
 	function validation() {
-		if (!nikValidation(userData.nik)) {
+		if (!nikValidation(currentUserData.nik)) {
 			ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
 		return;
 		}
 
 		if (
-			!nikValidation(userData.nik) ||
-			userData.firstName == '' ||
-			userData.firstName == null ||
-			userData.dob == null ||
-			userData.phoneNumber == null ||
+			!nikValidation(currentUserData.nik) ||
+			currentUserData.firstName == '' ||
+			currentUserData.firstName == null ||
+			currentUserData.dob == null ||
+			currentUserData.phoneNumber == null ||
 			isErrorPhoneNumber
 		) {
 			setValid(true);
 			setModalF(true);
 		} else {
 			setValid(false);
-			_filterdataSend();
+			sendData();
 		}
 	}
 
@@ -223,27 +223,29 @@ const editProfile = ({navigation, userDataReducer}) => {
 		Object.keys(obj)
 			.filter((key) => predicate(obj[key]))
 			.reduce((res, key) => ((res[key] = obj[key]), res), {});
-		dataSend = Object.filter(userData, (value) => value !== null);
+		dataSend = Object.filter(currentUserData, (value) => value !== null);
 		dataSend = Object.filter(dataSend, (value) => value !== undefined);
 		dataSend = Object.filter(dataSend, (value) => value !== '');
 		sendData(dataSend);
 	};
 
+
 	// Function for sending data to server
 	async function sendData(data) {
-		setLoad(true);
-		let token = await AsyncStorage.getItem('token');
-		props
-		.edit_profile(data, userData._id, JSON.parse(token).token)
-		.then((backData) => {
-			setLoad(false);
-			setModalS(true);
-			navigation.navigate('ProfileDetail');
-		})
-		.catch((err) => {
-			setLoad(false);
-			console.log(err);
-		});
+		try {
+			await updateProfileData(currentUserData, navigation.navigate, 'ProfileDetail', userData)
+		} catch (error) {
+			console.log(error)
+		}
+		// setLoad(true);
+		// .then((backData) => {
+		// 	setLoad(false);
+		// 	setModalS(true);
+		// })
+		// .catch((err) => {
+		// 	setLoad(false);
+		// 	console.log(err);
+		// });
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
@@ -342,9 +344,9 @@ const editProfile = ({navigation, userDataReducer}) => {
               autoFocus={false}
               placeholder={'Nama Belakang'}
               placeholderTextColor="#8b8b8b"
-              onChangeText={(text) =>
+              onChangeText={(text) => {
                 setCurrentUserData({ ...currentUserData, lastName: text })
-              }
+              }}
               value={currentUserData.lastName}
             />
           </View>
@@ -726,7 +728,7 @@ const editProfile = ({navigation, userDataReducer}) => {
             }}
             style={container.button}
           >
-            {load ? (
+            {isLoading ? (
               <ActivityIndicator size={'small'} color="#FFF" />
             ) : (
               <Text style={{ fontSize: 18, color: '#FFF' }}>Simpan Data</Text>
@@ -909,6 +911,7 @@ const textStyles = StyleSheet.create({
 
 const mapDispatchToProps = {
   edit_profile,
+  updateProfileData,
   setLoading,
 };
 
