@@ -68,6 +68,10 @@ export function getLoggedData(navigation){
 export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, userData) {
     return async (dispatch) => {
         try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
             console.log('Application is trying to upload the image...')
             console.log(fileToUpload)
             const token = await getToken()
@@ -76,10 +80,11 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
                 url: 'updateAvatar',
                 data: fileToUpload,
                 headers: {
-                Accept: 'application/json',
-                authorization: token,
-                id: patientId,
-                'content-type': 'multipart/form-data',
+                    Accept: 'application/json',
+                    authorization: token,
+                    id: 
+                    patientId,
+                    'content-type': 'multipart/form-data',
                 },
             })
 
@@ -91,6 +96,11 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
             await dispatch({
                 type: SET_USER_DATA,
                 payload: userData
+            })
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
             })
 
             ToastAndroid.show(message, ToastAndroid.SHORT);
