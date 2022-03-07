@@ -153,6 +153,32 @@ export function updateProfileData(updateData, navigate, navigateTo, userData){
 
 }
 
+export function changeAccountPassword(email, password, navigate, navigateTo){
+    return async (dispatch) => {
+        try {
+            console.log('Application is sending request to change password...');
+            const { data } = await instance({
+                method: 'POST',
+                url: `changePassword`,
+                data: {
+                  email,
+                  password,
+                },
+            });
+            if (data.message) {
+                console.log(data.message);
+                ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                // await AsyncStorage.removeItem('secretCode');
+                navigate(navigateTo);
+              } else {
+                ToastAndroid.show(data.error, ToastAndroid.SHORT);
+              }
+        } catch(error) {
+            console.log(error)
+        }
+    }
+}
+
 export function createNewFamily(newPatientData, navigation, navigateTo, userData){
     return async (dispatch) => {
         try {

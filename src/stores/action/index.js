@@ -34,6 +34,7 @@ import {
   getLoggedData,
   updateProfilePicture,
   updateProfileData,
+  changeAccountPassword,
   createNewFamily,
   deleteFamilyData,
   deleteUserData,
@@ -1324,4 +1325,4 @@ export {
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, updateProfileData, createNewFamily, deleteFamilyData, deleteUserData }
+export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, deleteUserData }
