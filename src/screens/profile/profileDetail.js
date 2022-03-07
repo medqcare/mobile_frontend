@@ -21,9 +21,10 @@ import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 const mapStateToProps = state => {
     return state
 }
-function ProfileDetail({ navigation, userData }){
-    const nik = userData.nik
-    const email = secureEmail(userData.userID.email)
+function ProfileDetail({ navigation, userDataReducer }){
+    const { userData } = userDataReducer
+    const { nik, userID, dob, location } = userData;
+    const email = secureEmail(userID.email)
     const bloodType = userData.bloodType + ' ' + userData.resus
     function genderIndonesian(string){
         if(string === 'Male'){
@@ -33,9 +34,9 @@ function ProfileDetail({ navigation, userData }){
         }
     }
     const gender = genderIndonesian(userData.gender)
-    const tglLahir = dateWithDDMMMYYYYFormat(new Date(userData.dob))
+    const tglLahir = dateWithDDMMMYYYYFormat(new Date(dob))
     const payment = userData.payment || 'Umum'
-    const address = `${capitalFirst(userData.location.city)}, ${capitalFirst(userData.location.province)}` 
+    const address = `${capitalFirst(location.city)}, ${capitalFirst(location.province)}` 
 
     return(
         <ScrollView style={styles.container} contentContainerStyle={{alignItems: 'center'}}>
