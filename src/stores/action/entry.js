@@ -43,8 +43,8 @@ export function signIn(userData, navigation, modalF, navigateTo){
             console.log(userData, 'Email and password of the user trying to sign in');
 
             const { data } = await instance({
-                url: 'authentication',
                 method: 'POST',
+                url: 'authentication',
                 data: userData
             })
 
@@ -53,8 +53,8 @@ export function signIn(userData, navigation, modalF, navigateTo){
             if(token){
                 await storeToken({ token })
                 const { data: userData } = await instance({
-                    url: 'dataLogged',
                     method: 'GET',
+                    url: 'dataLogged',
                     headers: {
                         Authorization: token
                     }
