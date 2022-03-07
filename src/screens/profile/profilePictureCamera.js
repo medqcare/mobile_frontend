@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage } from '../../stores/action'
+import { uploadImage, updateProfilePicture } from '../../stores/action'
 
 import createFormData from '../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
@@ -20,10 +20,11 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage
+	uploadImage,
+    updateProfilePicture
 };
 
-function ProfilePictureCamera({navigation, uploadImage}){
+function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
     const { destination, userData } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
@@ -67,13 +68,13 @@ function ProfilePictureCamera({navigation, uploadImage}){
 
     const saveImage = async() => {
         setLoad(true)
-        let token = await AsyncStorage.getItem('token')
-        token = JSON.parse(token).token
+        // let token = await AsyncStorage.getItem('token')
+        // token = JSON.parse(token).token
         const id = userData._id
 
         console.log('Application is sending data to store/action...')
 
-        await uploadImage(id, imageToUpload, token, navigation.navigate, destination)
+        await updateProfilePicture(id, imageToUpload, navigation.navigate, destination, userData)
         setLoad(false)
     }
 

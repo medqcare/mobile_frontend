@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage } from '../../stores/action'
+import { uploadImage, updateProfilePicture } from '../../stores/action'
 
 import createFormData from '../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
@@ -21,10 +21,11 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage
+	uploadImage,
+    updateProfilePicture
 };
 
-function ProfilePictureGallery({navigation, uploadImage}){
+function ProfilePictureGallery({navigation, uploadImage, updateProfilePicture }){
     const { destination, userData } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
@@ -74,7 +75,7 @@ function ProfilePictureGallery({navigation, uploadImage}){
         
         console.log('Application is sending data to store/action...')
         
-        await uploadImage(id, imageToUpload, token, navigation.navigate, destination)
+        await updateProfilePicture(id, imageToUpload, navigation.navigate, destination, userData)
         setLoad(false)
     }
 

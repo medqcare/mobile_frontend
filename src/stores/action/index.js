@@ -31,6 +31,11 @@ import {
   changeReminderStatus,
 } from './reminders';
 import {
+  getLoggedData,
+  updateProfilePicture,
+  deleteUserData,
+} from './userData'
+import {
   getMedicalServices,
   createMedicalServiceReservation,
 } from './medical_services'
@@ -1315,3 +1320,5 @@ export {
 }
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
+
+export { getLoggedData, updateProfilePicture, deleteUserData }
