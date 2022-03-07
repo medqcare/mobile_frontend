@@ -3,7 +3,6 @@ import keys from '../keys';
 import getToken from '../../helpers/localStorage/token';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
-import { useSelector } from 'react-redux';
 
 const { 
     SET_USER_DATA,
@@ -216,13 +215,13 @@ export function createNewFamily(newPatientData, navigation, navigateTo, userData
                 }
 
                 await dispatch({
-                    type: SET_USER_DATA_LOADING,
-                    payload: false
+                    type: SET_USER_DATA,
+                    payload: newUserData
                 })
 
                 await dispatch({
-                    type: SET_USER_DATA,
-                    payload: newUserData
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
                 })
 
                 navigation.navigate('FamilyList');
@@ -233,6 +232,48 @@ export function createNewFamily(newPatientData, navigation, navigateTo, userData
         } catch (error) {
             console.log(error, 'Error found when adding a new family')
             ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG)
+        }
+    }
+}
+
+export function deleteFamilyData(userData, patientId){
+    return async (dispatch) => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PUT',
+                url: 'deleteFamily',
+                headers: {
+                    Authorization: token
+                }, 
+                data: {
+                    patientId
+                }
+            })
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+            const newFamilyList = userData.family.filter(el => el._id !== patientId)
+            const newUserData = {
+                ...userData,
+                family: newFamilyList
+            }
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: newUserData
+            })
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
+        } catch (error) {
+            console.log(error)
         }
     }
 }
