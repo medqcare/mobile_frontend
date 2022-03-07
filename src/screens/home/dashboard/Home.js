@@ -25,6 +25,7 @@ import {
   getDrugs,
   getReminders,
   setShowInstruction,
+  getLoggedData,
 } from '../../../stores/action';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
@@ -53,7 +54,7 @@ import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
-  const { userData, isLoading, error } = props.userData
+  const { userData, isLoading, error } = props.userDataReducer
   const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
@@ -71,13 +72,14 @@ function HomePage(props) {
 
   useEffect(async () => {
     try {
-      const tokenString = await AsyncStorage.getItem('token');
-      if (!tokenString) {
-        setload(false);
-        return;
-      }
-      const { token } = JSON.parse(tokenString);
-      await props.GetUser(token, props.navigation);
+      // const tokenString = await AsyncStorage.getItem('token');
+      // if (!tokenString) {
+      //   setload(false);
+      //   return;
+      // }
+      // const { token } = JSON.parse(tokenString);
+      // await props.GetUser(token, props.navigation);
+      await props.getLoggedData(props.navigation)
     } catch (error) {
     } finally {
       setload(false);
@@ -183,7 +185,7 @@ function HomePage(props) {
         translucent={true}
         backgroundColor={'transparent'}
       />
-      {load ? (
+      {isLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
           autoPlay
@@ -420,6 +422,7 @@ const mapDispatchToProps = {
   getDrugs,
   getReminders,
   setShowInstruction,
+  getLoggedData,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
