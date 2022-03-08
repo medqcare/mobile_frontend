@@ -37,7 +37,7 @@ const mapDispatchToProps = {
 };
 
 const profileInfo = (props) => {
-  const { userData } = useSelector(state => state.userDataReducer)
+  const { data: userData } = props
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [fullImageModal, setFullImageModal] = useState(false);
 
