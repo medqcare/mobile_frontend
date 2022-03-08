@@ -20,9 +20,9 @@ import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 
 
 function FamilyDetail(props){
-    const { data: userData } = props.navigation.state.params
-    const nik = userData.nik
-    const bloodType = userData.bloodType + ' ' + userData.resus
+    const { data: familyDetailData } = props.navigation.state.params
+    const nik = familyDetailData.nik
+    const bloodType = familyDetailData.bloodType + ' ' + familyDetailData.resus
     function genderIndonesian(string){
         if(string === 'Male'){
             return 'Laki-laki'
@@ -30,10 +30,10 @@ function FamilyDetail(props){
             return 'Perempuan'
         }
     }
-    const gender = genderIndonesian(userData.gender)
-    const tglLahir = dateWithDDMMMYYYYFormat(new Date(userData.dob))
-    const payment = userData.payment || 'Umum'
-    const address = `${capitalFirst(userData.location.city)}, ${capitalFirst(userData.location.province)}` 
+    const gender = genderIndonesian(familyDetailData.gender)
+    const tglLahir = dateWithDDMMMYYYYFormat(new Date(familyDetailData.dob))
+    const payment = familyDetailData.payment || 'Umum'
+    const address = `${capitalFirst(familyDetailData.location.city)}, ${capitalFirst(familyDetailData.location.province)}` 
 
     return(
         <ScrollView style={styles.container} contentContainerStyle={{alignItems: 'center'}}>
@@ -41,11 +41,11 @@ function FamilyDetail(props){
                 navigate={props.navigation.navigate}
                 navigateBack={'FamilyList'}
                 navigateTo={'EditFamilyForm'}
-                params={{data: userData}}
+                params={{data: familyDetailData}}
                 title='Profil Keluarga'
                 edit={true}
             />
-            <ProfileInfo navigation={props.navigation} destination='FamilyDetail' data={userData}/>
+            <ProfileInfo navigation={props.navigation} destination='FamilyDetail' data={familyDetailData}/>
             <View style={{paddingVertical: 15}}>
                 <View style={styles.profileDetail}>
                     <View style={styles.upperDetail}>
