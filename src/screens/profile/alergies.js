@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setAlergie, getAlergie, deleteAlergie } from "../../stores/action";
+import { setAlergie, getAlergie, deleteAlergie, getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
 import { connect } from "react-redux";
 import LottieLoader from "lottie-react-native";
 import SelectPatient from "../../components/modals/selectPatient";
@@ -24,11 +24,13 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 const Allergies = (props) => {
-  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const { userData } = props.userDataReducer
+  const { allergies: reducerAllergies, isLoading, error } = props.allergiesReducer
+  const [accountOwner, setAccountOwner] = useState(userData);
   const [displayName, setDisplayName] = useState(
-    props.userData.lastName
-      ? props.userData.firstName + " " + props.userData.lastName
-      : props.userData.firstName
+    userData.lastName
+      ? userData.firstName + " " + userData.lastName
+      : userData.firstName
   );
 
   const [Load, setLoad] = useState(false);
@@ -66,8 +68,8 @@ const Allergies = (props) => {
   }
 
   function getFamily() {
-    const temp = [props.userData];
-    props.userData.family.forEach((el) => {
+    const temp = [userData];
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setIduser(temp[0]);
@@ -120,6 +122,8 @@ const Allergies = (props) => {
         const index = keySelection.indexOf("");
         if (index !== -1) keySelection.splice(index, 1);
         setSelectionType(keySelection);
+		console.log(keySelection)
+		console.log(index)
 
         if (temp.OBAT.length === 0) delete temp.OBAT;
         if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
@@ -461,6 +465,9 @@ const mapDispatchToProps = {
   setAlergie,
   getAlergie,
   deleteAlergie,
+  getPatientAllergies, 
+  createAllergy, 
+  deleteSelectedAllergy
 };
 
 const mapStateToProps = (state) => {
