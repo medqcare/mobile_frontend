@@ -1,6 +1,7 @@
 import keys from "../keys";
 const { 
     SET_ALLERGIES,
+    SET_NEED_INFO,
     SET_ALLERGIES_LOADING,
     SET_ALLERGIES_ERROR,
     DELETE_ALLERGIES
@@ -8,8 +9,9 @@ const {
 
 const initState = {
     allergies: [],
+    needInfo: false,
     isLoading: false,
-    error: null
+    error: null,
 }
 
 function allergiesReducer(state = initState, action){
@@ -18,6 +20,8 @@ function allergiesReducer(state = initState, action){
     switch (type) {
         case SET_ALLERGIES:
             return  {...state, allergies : payload }
+        case SET_NEED_INFO:
+            return { ...state, needInfo: payload}
         case SET_ALLERGIES_LOADING:
             return { ...state, isLoading: payload }
         case SET_ALLERGIES_ERROR:
