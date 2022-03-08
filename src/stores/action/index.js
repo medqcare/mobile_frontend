@@ -1,5 +1,10 @@
 import axios from 'axios';
 import {
+  getPatientAllergies,
+  createAllergy,
+  deleteSelectedAllergy
+} from './allergies'
+import {
   signIn,
   signUp
 } from './entry'
@@ -1295,6 +1300,12 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export {
+  getPatientAllergies,
+  createAllergy,
+  deleteSelectedAllergy
 }
 
 export { 
