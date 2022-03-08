@@ -3,7 +3,6 @@ import keys from '../keys';
 import getToken from '../../helpers/localStorage/token';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
-import { useSelector } from 'react-redux';
 
 const { 
     SET_USER_DATA,
@@ -68,6 +67,10 @@ export function getLoggedData(navigation){
 export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, userData) {
     return async (dispatch) => {
         try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
             console.log('Application is trying to upload the image...')
             console.log(fileToUpload)
             const token = await getToken()
@@ -76,10 +79,11 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
                 url: 'updateAvatar',
                 data: fileToUpload,
                 headers: {
-                Accept: 'application/json',
-                authorization: token,
-                id: patientId,
-                'content-type': 'multipart/form-data',
+                    Accept: 'application/json',
+                    authorization: token,
+                    id: 
+                    patientId,
+                    'content-type': 'multipart/form-data',
                 },
             })
 
@@ -93,10 +97,209 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
                 payload: userData
             })
 
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
             ToastAndroid.show(message, ToastAndroid.SHORT);
             navigateTo(destination);
         } catch (error) {
             console.log(error.response || error, 'Error found when trying to upload avatar');
+        }
+    }
+}
+
+export function updateProfileData(updateData, navigate, navigateTo, userData){
+    console.log('Sending data to server...')
+    return async (dispatch) => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+            const { _id } = userData 
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `editProfile/${_id}`,
+                headers: {
+                    Authorization: token
+                },
+                data: updateData
+            })
+            const newUserData = {
+                ...userData,
+                ...updateData
+            }
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: newUserData
+            })
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+
+            navigate(navigateTo)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+}
+
+export function changeAccountPassword(email, password, navigate, navigateTo){
+    return async (dispatch) => {
+        try {
+            console.log('Application is sending request to change password...');
+            const { data } = await instance({
+                method: 'POST',
+                url: `changePassword`,
+                data: {
+                  email,
+                  password,
+                },
+            });
+            if (data.message) {
+                console.log(data.message);
+                ToastAndroid.show(data.message, ToastAndroid.SHORT);
+                // await AsyncStorage.removeItem('secretCode');
+                navigate(navigateTo);
+              } else {
+                ToastAndroid.show(data.error, ToastAndroid.SHORT);
+              }
+        } catch(error) {
+            console.log(error)
+        }
+    }
+}
+
+export function createNewFamily(newPatientData, navigation, navigateTo, userData){
+    return async (dispatch) => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+            const token = await getToken()
+            const { data: result } = await instance({
+                method: 'POST',
+                url: 'addFamily',
+                data: newPatientData,
+                headers: {
+                    Authorization: token
+                }
+            })
+            const { message, data , error} = result
+            const alreadyRegistered = 'NIK sudah didaftarkan'
+            const cantAddTwice = 'cannot add same family twice'
+            const unauthorizedNIK = `NIK tidak boleh sama dengan pemilik akun`
+            const errorMessage = 'NIK sudah terdaftar, Berhasi menambahkan data sebelumnya'
+            const successMessage = 'Berhasil menambahkan keluarga'
+
+            if(data === cantAddTwice){
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+                ToastAndroid.show(alreadyRegistered, ToastAndroid.SHORT)
+                // if(data === cantAddTwice){
+                    
+                // } else {
+                //     const newUserData = {
+                //         ...userData,
+                //         family: userData.family.concat(newPatientData)
+                //     }
+
+                //     await dispatch({
+                //         type: SET_USER_DATA,
+                //         payload: newUserData
+                //     })
+
+                //     navigation.navigate('FamilyList');
+
+                //     ToastAndroid.show(errorMessage, ToastAndroid.LONG);
+                // }
+            } else if(message === 'Family NIK same as Parent NIK') {
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+                ToastAndroid.show(unauthorizedNIK, ToastAndroid.SHORT);
+            } else {
+                console.log('Successfully added family member');
+                console.log('Navigating back to family list...');
+
+                const newUserData = {
+                    ...userData,
+                    family: userData.family.concat(newPatientData)
+                }
+
+                await dispatch({
+                    type: SET_USER_DATA,
+                    payload: newUserData
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+
+                navigation.navigate('FamilyList');
+
+                ToastAndroid.show(successMessage, ToastAndroid.SHORT)
+            }
+            
+        } catch (error) {
+            console.log(error, 'Error found when adding a new family')
+            ToastAndroid.show(`${error.response.data.errors[0]}`, ToastAndroid.LONG)
+        }
+    }
+}
+
+export function deleteFamilyData(userData, patientId){
+    return async (dispatch) => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PUT',
+                url: 'deleteFamily',
+                headers: {
+                    Authorization: token
+                }, 
+                data: {
+                    patientId
+                }
+            })
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+            const newFamilyList = userData.family.filter(el => el._id !== patientId)
+            const newUserData = {
+                ...userData,
+                family: newFamilyList
+            }
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: newUserData
+            })
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
+        } catch (error) {
+            console.log(error)
         }
     }
 }

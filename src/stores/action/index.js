@@ -33,6 +33,10 @@ import {
 import {
   getLoggedData,
   updateProfilePicture,
+  updateProfileData,
+  changeAccountPassword,
+  createNewFamily,
+  deleteFamilyData,
   deleteUserData,
 } from './userData'
 import {
@@ -1321,4 +1325,4 @@ export {
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, deleteUserData }
+export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, deleteUserData }

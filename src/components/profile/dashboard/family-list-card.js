@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //function
 import { properAge } from '../../../helpers/getAge';
-import { deleteFamily, GetUser } from '../../../stores/action';
+import { deleteFamily, deleteFamilyData , GetUser } from '../../../stores/action';
 
 //component
 import ConfirmationModal from '../../modals/ConfirmationModal';
@@ -23,6 +23,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const mapDispatchToProps = {
   deleteFamily,
+  deleteFamilyData,
   GetUser,
 };
 
@@ -40,8 +41,10 @@ const familyList = (props) => {
   const [modalF, setModalF] = useState(false); //untuk modal failed
   const [message, setMessage] = useState(''); //untuk pesan dimodal
   const [load, setLoad] = useState(false);
+  const [familyID, setFamilyID] = useState(null)
 
-  const families = props.userData.family;
+  const { isLoading, userData } = props.userDataReducer
+  const families = userData.family;
 
   function iconProps(gender, props) {
     const name = gender === 'Female' ? 'md-female' : 'md-male';
@@ -58,76 +61,77 @@ const familyList = (props) => {
     return fullName;
   }
 
-  return families.map((family, index) => {
-    return (
-      // Family box
-      <TouchableOpacity
-        // onPress={() => props.navigateTo('EditFamilyForm', { data: family })}
-        onPress={() => props.navigateTo('FamilyDetail', { data: family })}
-        key={index}
-        onLongPress={async () => {
-          setTimeout(() => {
-            setModalW(true);
-          }, 100);
-          setVisible(false);
+  return (
+    <>
+      <ConfirmationModal
+        load={isLoading}
+        modal={modalW}
+        warning={'Yakin ingin menghapus anggota keluarga?'}
+        optionLeftText={'BATAL'}
+        optionRightText={'HAPUS'}
+        optionLeftFunction={() => setModalW(false)}
+        optionRightFunction={async () => {
+          await props.deleteFamilyData(userData, familyID,);
+          setModalW(false)
         }}
-        style={styles.container}
-      >
-        {/* Profile Picture */}
-        <View style={styles.imageContainer}>
-          <Image            
-            source={{
-              uri: family.imageUrl
-                ? `${family.imageUrl}`
-                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+      />
+      {families.map((family, index) => {
+        return (
+          // Family box
+          <TouchableOpacity
+            // onPress={() => props.navigateTo('EditFamilyForm', { data: family })}
+            onPress={() => props.navigateTo('FamilyDetail', { data: family })}
+            key={index}
+            onLongPress={async () => {
+              setFamilyID(family._id)
+              setTimeout(() => {
+                setModalW(true);
+              }, 100);
+              setVisible(false);
             }}
-            style={styles.image}
-          />
-        </View>
-        <Text style={styles.fullNameText} numberOfLines={2}>
-          {fullName(family.firstName, family.lastName)}
-        </Text>
+            style={styles.container}
+          >
+            {/* Profile Picture */}
+            <View style={styles.imageContainer}>
+              <Image            
+                source={{
+                  uri: family.imageUrl
+                    ? `${family.imageUrl}`
+                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                }}
+                style={styles.image}
+              />
+            </View>
+            <Text style={styles.fullNameText} numberOfLines={2}>
+              {fullName(family.firstName, family.lastName)}
+            </Text>
 
-        {/* Age */}
-        <Text style={styles.ageText}>{properAge(family.dob)}</Text>
+            {/* Age */}
+            <Text style={styles.ageText}>{properAge(family.dob)}</Text>
 
-        {/* Gender Logo */}
-        <View style={styles.genderLogoContainer}>
-          <Icon
-            name={iconProps(family.gender, 'name')}
-            style={{
-              backgroundColor: iconProps(family.gender),
-              borderRadius: 50,
-              padding: 4,
-            }}
-            size={10}
-            color={'white'}
-          />
-        </View>
+            {/* Gender Logo */}
+            <View style={styles.genderLogoContainer}>
+              <Icon
+                name={iconProps(family.gender, 'name')}
+                style={{
+                  backgroundColor: iconProps(family.gender),
+                  borderRadius: 50,
+                  padding: 4,
+                }}
+                size={10}
+                color={'white'}
+              />
+            </View>
 
-        {/* <View style={styles.bottomContainer}>Name</View> */}
+            {/* <View style={styles.bottomContainer}>Name</View> */}
 
-        <ConfirmationModal
-          load={load}
-          modal={modalW}
-          warning={'Yakin ingin menghapus anggota keluarga?'}
-          optionLeftText={'BATAL'}
-          optionRightText={'HAPUS'}
-          optionLeftFunction={() => setModalW(false)}
-          optionRightFunction={async () => {
-            setLoad(true);
-            let token = await AsyncStorage.getItem('token');
-            await props.deleteFamily(family._id, JSON.parse(token));
-            setModalW(false);
-            setLoad(false);
-          }}
-          load={load}
-        />
+            {isDelete ? (setDelete(false), setModalW(true)) : null}
+          </TouchableOpacity>
+        );
+      })}
 
-        {isDelete ? (setDelete(false), setModalW(true)) : null}
-      </TouchableOpacity>
-    );
-  });
+    </>
+  )
 };
 
 const styles = StyleSheet.create({

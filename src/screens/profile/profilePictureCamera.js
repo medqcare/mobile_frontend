@@ -8,7 +8,7 @@ import {
     Image,
     ActivityIndicator,
 } from 'react-native'
-import { connect } from 'react-redux'
+import { connect, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { uploadImage, updateProfilePicture } from '../../stores/action'
 
@@ -25,13 +25,14 @@ const mapDispatchToProps = {
 };
 
 function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
-    const { destination, userData } = navigation.state.params
+    const { userData, isLoading } = useSelector(state => state.userDataReducer)
+    const { destination } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
 
     // Load
-    const [load, setLoad] = useState(false)
+    // const [load, setLoad] = useState(false)
 
     // Use effect for asking permission
     useEffect(() => {
@@ -67,7 +68,7 @@ function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
     }
 
     const saveImage = async() => {
-        setLoad(true)
+        // setLoad(true)
         // let token = await AsyncStorage.getItem('token')
         // token = JSON.parse(token).token
         const id = userData._id
@@ -75,7 +76,7 @@ function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
         console.log('Application is sending data to store/action...')
 
         await updateProfilePicture(id, imageToUpload, navigation.navigate, destination, userData)
-        setLoad(false)
+        // setLoad(false)
     }
 
     return (
@@ -100,9 +101,9 @@ function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => saveImage()}
-                    disabled={load}
+                    disabled={isLoading}
                     >
-                        {load ? (
+                        {isLoading ? (
                             <ActivityIndicator size={"small"} color="#FFF" />
                             ) : (
                                 <Text style={styles.text}>Simpan</Text>
