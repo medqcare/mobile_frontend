@@ -1,43 +1,82 @@
 import axios from 'axios';
-import { baseURL, webBaseURL } from '../../config';
-// import { medicalServices } from '../reducers/keys'
+import { baseURL, webBaseURL, instance, webInstace } from '../../config'
+import keys from '../keys';
 
-// const { 
-//     SET_MEDICAL_SERVICES,
-//     SET_ERROR_MEDICAL_SERVICES,
-//     SET_LOADING_MEDICAL_SERVICES
-// } = medicalServices
+const { 
+    SET_MEDICAL_SERVICES,
+    SET_MEDICAL_SERVICES_CURRENTPAGE,
+    SET_MEDICAL_SERVICES_TYPE,
+    SET_MEDICAL_SERVICES_STATUS,
+    SET_MEDICAL_SERVICES_LOADING,
+    SET_MEDICAL_SERVICES_ERROR,
+} = keys.medicalServicesKeys
 
-const webMedicalServicesInstance = axios.create({
-  	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
-})
+// const webMedicalServicesInstance = axios.create({
+//   	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
+// })
 
 const mobileMedicalServiceInstance = axios.create({
 	baseURL: `${baseURL}/api/v1/members/reservations/service`
 })
 
-export function getMedicalServices(type, status, page){
+export function getMedicalServices(type, status, page, medicalServices, addPage){
 	return async dispatch => {
 		try {
-			// await dispatch({
-            //     type: SET_LOADING_MEDICAL_SERVICES,
-            //     payload: true
-            // })
-			const { data } = await webMedicalServicesInstance({
-				method: 'GET',
-				url: `?type=${type}&status=${status}&page=${page}`,
+			console.log('Application trying to find avaliable medical services')
+			console.log('type:', type)
+			console.log('status:', status)
+			console.log('page:', page)
+			await dispatch({
+				type: SET_MEDICAL_SERVICES_LOADING,
+				payload: true
 			})
-			// await dispatch({
-            //     type: SET_LOADING_MEDICAL_SERVICES,
-            //     payload: false
-            // })
-			if(data) return data.data
-			return []
+			const { data } = await webInstace({
+				method: 'GET',
+				url: `assesments/services/getPagination?type=${type}&status=${status}&page=${page}`,
+			})
+			if(data.data) {
+				if(data.data.docs.length === 0){
+					console.log(`Application didn't find any available services`)
+				}
+				if(page == 1){
+					await dispatch({
+						type: SET_MEDICAL_SERVICES,
+						payload: data.data.docs
+					})
+				} else {
+					await dispatch({
+						type: SET_MEDICAL_SERVICES,
+						payload: [...medicalServices, ...data.data.docs]
+					})
+				}
+				console.log(`Application found ${data.data.docs.length} medical service(s)`)
+
+				if(addPage){
+					const nextPage = page + 1;
+					await dispatch({
+						type: SET_MEDICAL_SERVICES_CURRENTPAGE,
+						payload: nextPage
+					})
+				}
+				console.log('All data fetched, no need to add page')
+				
+			}
 		}
 		catch(error){
 			console.log(error)
 			console.log('error di action')
 		}
+	}
+}
+
+export function searchMedicalServicesByName(searchQuery, medicalServices){
+	if(text){
+		const lowerCase = text.toLowerCase()
+		const newMedicalServiceList = medicalServices.filter(el => el.name.toLowerCase().includes(lowerCase))
+		setMedicalServices(newMedicalServiceList)
+	}
+	else {
+		getMedicalServices()
 	}
 }
 
@@ -56,6 +95,7 @@ export function createMedicalServiceReservation(bookData, token){
 		}
 	}
 }
+
 
 
   
