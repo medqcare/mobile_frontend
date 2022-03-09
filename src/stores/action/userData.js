@@ -36,8 +36,6 @@ export function getLoggedData(navigation){
                 headers: { Authorization: token}
             })
 
-            console.log(data)
-
             if(data.data) {
                 console.log('Application Found dataLogged');
                 // await AsyncStorage.setItem('userData', JSON.stringify(data.data));
@@ -65,6 +63,10 @@ export function getLoggedData(navigation){
                 `Please check your internet connection`,
                 ToastAndroid.LONG
             );
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
             console.log('Error found in function getLoggedData ==>', error.message);
         }
     }

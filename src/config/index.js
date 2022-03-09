@@ -9,9 +9,13 @@ const instance = axios.create({
       'x-secret': 123456 
     }
 });
+const webInstace = axios.create({
+    baseURL: `${webBaseURL}/api/v1/`,
+});
 
-module.exports = {
-  baseURL,
-  webBaseURL,
-  instance
+export  {
+	baseURL,
+	webBaseURL,
+	instance,
+	webInstace
 };

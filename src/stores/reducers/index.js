@@ -7,6 +7,7 @@ import entryReducer from "./entry";
 import showInstructionReducer from "./showInstruction";
 import userDataReducer from "./userData";
 import userLocationReducer from "./userLocation";
+import medicalServicesReducer from "./medicalServices";
 
 
 const reducer = combineReducers({
@@ -17,7 +18,8 @@ const reducer = combineReducers({
 	userDataReducer,
 	userLocationReducer,
 	todayActivityReducer,
-	entryReducer
+	entryReducer,
+	medicalServicesReducer
 })
 
 export default reducer
