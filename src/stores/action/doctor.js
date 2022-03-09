@@ -1,6 +1,8 @@
 import { instance } from '../../config';
 import keys from '../keys';
 import getToken from '../../helpers/localStorage/token';
+import withZero from '../../helpers/withZero';
+import { ToastAndroid } from 'react-native';
 
 const { 
     SET_DOCTORS,
@@ -154,6 +156,63 @@ export function searchDoctorByName(currentPage, searchQuery, location, specialis
                 type: SET_DOCTORS_ERROR,
                 payload: error.message
             })
+        }
+    }
+}
+
+export function makeReservation(reservationData, setModal){
+    return async (dispatch) => {
+        try {
+            console.log('Application is trying to create reservation')
+            await dispatch({
+                type: SET_DOCTORS_LOADING,
+                payload: true
+            })
+
+            const date = new Date(reservationData.bookingSchedule)
+            const month = withZero(date.getMonth() + 1)
+            const day = withZero(date.getDate())
+            const year = date.getFullYear()
+            reservationData.bookingSchedule = `${day}/${month}/${year}`
+
+            const token = await getToken()
+
+            const { data } = await instance({
+                method: 'POST',
+                url: 'makeReservation',
+                data: reservationData,
+                headers: {
+                    Authorization: token
+                }
+            })
+
+            if(data.message === 'already reserve for that patient'){
+                ToastAndroid.show(data.message, ToastAndroid.LONG);
+            } 
+            else if(data.message === 'fail'){
+                ToastAndroid.show(data.message, ToastAndroid.LONG);
+            } else {
+                setModal(true)
+            }
+
+            await dispatch({
+                type: SET_DOCTORS_LOADING,
+                payload: false
+            })
+        } catch(error){
+            if(error?.response?.data){
+                console.log(error.response.data)
+                await dispatch({
+                    type: SET_DOCTORS_ERROR,
+                    payload: error.response.data
+                })
+            } else {
+                console.log(error.message)
+                await dispatch({
+                    type: SET_DOCTORS_ERROR,
+                    payload: error.message
+                })
+            }
         }
     }
 }

@@ -2,7 +2,8 @@ import axios from 'axios';
 import {
   searchAllDoctors,
   searchDoctorBySpecialist,
-  searchDoctorByName
+  searchDoctorByName,
+  makeReservation
 } from './doctor'
 import {
   signIn,
@@ -963,7 +964,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message, status: data.data.status });
       } catch (error) {
         console.log(error);
@@ -1305,7 +1306,8 @@ export function setShowInstruction(payload) {
 export {
   searchAllDoctors,
   searchDoctorBySpecialist,
-  searchDoctorByName
+  searchDoctorByName,
+  makeReservation,
 }
 
 export { 
