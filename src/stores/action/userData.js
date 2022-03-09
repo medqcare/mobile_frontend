@@ -59,6 +59,10 @@ export function getLoggedData(navigation){
                 `Please check your internet connection`,
                 ToastAndroid.LONG
             );
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
             console.log('Error found in function getLoggedData ==>', error.message);
         }
     }
