@@ -36,6 +36,7 @@ const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
 function DetailDoctorPage(props) {
+  const { userData, isLoading, error } = props.userDataReducer
   const calendarRef = useRef(null);
   const months = [
     'Januari',
@@ -213,14 +214,14 @@ function DetailDoctorPage(props) {
 
   useEffect(() => {
     findFavorite();
-  }, [props.userData]);
+  }, [userData]);
 
   const findFavorite = () => {
-    // console.log(props.userData)
-    if (props.userData && dataDoctor) {
-      // console.log(props.userData.doctorFavorites.length, '+++++++++')
-      if (props.userData.doctorFavorites.length > 0) {
-        props.userData.doctorFavorites.find(function (value, index) {
+    // console.log(userData)
+    if (userData && dataDoctor) {
+      // console.log(userData.doctorFavorites.length, '+++++++++')
+      if (userData.doctorFavorites.length > 0) {
+        userData.doctorFavorites.find(function (value, index) {
           // console.log(index, '=', value)
           if (value._id == dataDoctor._id) {
             setThisFavorite(true);
@@ -236,11 +237,11 @@ function DetailDoctorPage(props) {
   const changeTapLove = async () => {
     if (!thisFavorite) {
       let dataNew = {
-        ...props.userData,
-        doctorFavorites: props.userData.doctorFavorites.concat(dataDoctor),
+        ...userData,
+        doctorFavorites: userData.doctorFavorites.concat(dataDoctor),
       };
       props.addDoctorFavorite(dataNew);
-      console.log('Lol', props.userData.doctorFavorites.length);
+      console.log('Lol', userData.doctorFavorites.length);
       await AsyncStorage.setItem(
         'doctorFavorite',
         JSON.stringify(dataNew.doctorFavorites)
@@ -255,11 +256,11 @@ function DetailDoctorPage(props) {
           });
         }
         var result = arrayRemove(
-          props.userData.doctorFavorites,
+          userData.doctorFavorites,
           dataDoctor._id
         );
         // console.log(result, 'ini sisa nya')
-        let dataSend = { ...props.userData, doctorFavorites: result };
+        let dataSend = { ...userData, doctorFavorites: result };
         props.addDoctorFavorite(dataSend);
         await AsyncStorage.setItem(
           'doctorFavorite',
@@ -274,7 +275,7 @@ function DetailDoctorPage(props) {
     if (bookingTime === '') {
       ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
     } else {
-      props.userData
+      userData
         ? props.navigation.push('BuatJanji', { doctorData: dataDoctor })
         : (props.navigation.navigate('DetailDoctor'),
           props.navigation.navigate('Sign'));
@@ -433,7 +434,7 @@ function DetailDoctorPage(props) {
                 </Text>
               </View>
             </TouchableOpacity>
-            {props.userData && (
+            {userData && (
               <TouchableOpacity
                 onPress={() => {
                   changeTapLove();

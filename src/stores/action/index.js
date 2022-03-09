@@ -1,5 +1,11 @@
 import axios from 'axios';
 import {
+  searchAllDoctors,
+  searchDoctorBySpecialist,
+  searchDoctorByName,
+  makeReservation
+} from './doctor'
+import {
   signIn,
   signUp
 } from './entry'
@@ -958,7 +964,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message, status: data.data.status });
       } catch (error) {
         console.log(error);
@@ -1295,6 +1301,13 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export {
+  searchAllDoctors,
+  searchDoctorBySpecialist,
+  searchDoctorByName,
+  makeReservation,
 }
 
 export { 

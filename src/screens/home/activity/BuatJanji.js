@@ -19,6 +19,7 @@ import {
   createPatientFacility,
   setLoading,
   getAlergie,
+  makeReservation
 } from '../../../stores/action';
 
 import ArrowDownWhite from '../../../assets/svg/ArrowDownWhite';
@@ -41,6 +42,7 @@ const mapDispatchToProps = {
   createPatientFacility,
   setLoading,
   getAlergie,
+  makeReservation
 };
 
 const mapStateToProps = (state) => {
@@ -48,8 +50,8 @@ const mapStateToProps = (state) => {
 };
 
 const buatJanji = (props) => {
+  const { userData, isLoading, error } = props.userDataReducer
   const { doctorData: datadoctor } = props.navigation.state.params;
-  console.log(datadoctor);
   const {
     healthFacility,
     bookingSchedule,
@@ -78,8 +80,8 @@ const buatJanji = (props) => {
     'Saturday',
   ];
   const [book, setBook] = useState({
-    userID: props.userData.userID._id,
-    email: props.userData.userID.email,
+    userID: userData.userID._id,
+    email: userData.userID.email,
     healthFacility,
     doctor: {
       doctorID: datadoctor._id,
@@ -152,41 +154,43 @@ const buatJanji = (props) => {
   const [modalL, setModalL] = useState(false);
 
   const [dompet, setDompet] = useState('Tunai');
-  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [accountOwner, setAccountOwner] = useState(userData);
   const [displayName, setDisplayName] = useState(
-    props.userData.lastName
-      ? props.userData.firstName + ' ' + props.userData.lastName
-      : props.userData.firstName
+    userData.lastName
+      ? userData.firstName + ' ' + userData.lastName
+      : userData.firstName
   );
 
   async function gobookDoctor(dataSend, dataCreate) {
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    props
-      .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-      .then((data, status) => {
-        return props.bookDoctor(dataSend, JSON.parse(token).token);
-      })
-      .then((data) => {
-        console.log(data, 'response rsv')
-        if (data.message == 'already reserve for that patient') {
-          setLoad(false);
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-        } else if (data.status === 'fail') {
-          setLoad(false);
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-        } else {
-          setLoad(false);
-          setModal(true);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        setMessageF(error);
-        setModalf(true);
-        // alert('Something Wrong', error)
-        console.log(error, 'loh kok error weehhh');
-      });
+    props.makeReservation(dataSend, setModal)
+    // setLoad(true);
+    // let token = await AsyncStorage.getItem('token');
+    // props
+    //   .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
+    //   .then((data, status) => {
+    //     return props.bookDoctor(dataSend, JSON.parse(token).token);
+    //   })
+    //   .then((data) => {
+    //       setLoad(false);
+    //     console.log(data, 'response rsv')
+    //     if (data.message == 'already reserve for that patient') {
+    //       setLoad(false);
+    //       ToastAndroid.show(data.message, ToastAndroid.LONG);
+    //     } else if (data.status === 'fail') {
+    //       setLoad(false);
+    //       ToastAndroid.show(data.message, ToastAndroid.LONG);
+    //     } else {
+    //       setLoad(false);
+    //       setModal(true);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setLoad(false);
+    //     setMessageF(error);
+    //     setModalf(true);
+    //     // alert('Something Wrong', error)
+    //     console.log(error, 'loh kok error weehhh');
+    //   });
   }
 
   useEffect(() => {
@@ -280,7 +284,7 @@ const buatJanji = (props) => {
         patient: {
           ...patient2,
           mobilePhone: !patient2.mobilePhone
-            ? props.userData.phoneNumber
+            ? userData.phoneNumber
             : patient2.mobilePhone,
           patientTitle: getTitle(patient2),
           paymentMethod: dompet,
@@ -308,11 +312,11 @@ const buatJanji = (props) => {
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach((el) => {
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));
@@ -1012,7 +1016,6 @@ const buatJanji = (props) => {
         setModalP={setModalP}
         patient={patient}
         setPatient={setPatient}
-        family={family}
         navigateTo={props.navigation.navigate}
       />
       {
