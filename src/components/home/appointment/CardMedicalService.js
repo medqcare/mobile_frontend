@@ -37,6 +37,7 @@ function CardMedicalService({ reservation, ...props }) {
     });
   };
 
+
   return (
     <View>
       <View style={styles.topWrapper}>
@@ -65,7 +66,7 @@ function CardMedicalService({ reservation, ...props }) {
               <TouchableOpacity
                 style={styles.openMap}
                 onPress={() => {
-                  openMap(long, lat);
+                  openMap(lat, long);
                 }}
               >
                 <ButtonMap />

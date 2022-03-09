@@ -21,8 +21,8 @@ import LottieLoader from 'lottie-react-native';
 import CardMedicalService from '../../../components/home/appointment/CardMedicalService';
 import DeleteAppointmentModal from '../../../components/modals/DeleteAppointmentModal';
 
-function SelectType({ types = ['Type'], onTypeSelected }) {
-  const [typeSelected, setTypeSelected] = useState(types[0]);
+function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
+  const [typeSelected, setTypeSelected] = useState(defaultType);
   const typeStyleBehavior = (type) => {
     return {
       container: {
@@ -76,14 +76,19 @@ function SelectType({ types = ['Type'], onTypeSelected }) {
 }
 
 const Appointment = (props) => {
+  const paramOrderType = props.navigation.getParam('orderType');
+  console.log(props.navigation.state, "state")
+  console.log(paramOrderType, "param")
   const [reservations, setReservations] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [reservationID, setReservationID] = useState();
   const [Load, setLoad] = useState(true);
   const [types, setTypes] = useState(['Konsultasi Dokter', 'Layanan Medis']);
-  const [typeSelected, setTypeSelected] = useState(types[0]);
+  const [typeSelected, setTypeSelected] = useState(
+    paramOrderType ? paramOrderType : types[0]
+  );
   const [showModalDelete, setShowModalDelete] = useState(false);
-
+  console.log(typeSelected)
   useEffect(() => {
     (async () => {
       setLoad(true);
@@ -163,7 +168,7 @@ const Appointment = (props) => {
     if (orderType === 'service') {
       return (
         <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
-          <CardMedicalService reservation={item} {...props}/>
+          <CardMedicalService reservation={item} {...props} />
         </View>
       );
     }
@@ -181,6 +186,7 @@ const Appointment = (props) => {
           onTypeSelected={(item) => {
             setTypeSelected(item);
           }}
+          defaultType={typeSelected}
         />
       </View>
       {Load ? (

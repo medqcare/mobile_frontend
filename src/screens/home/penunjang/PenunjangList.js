@@ -151,18 +151,18 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 				style={styles.medicalServiceCardContainer}
 			>
 				<View style={styles.leftContent}>
-					<View>
+					<View style={{marginBottom: 4}}>
 						<Text style={textStyles.nameColor}>{name}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome5 name="hospital-alt" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.name}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<Entypo name="location" size={12} color="#A5A5A5" />
 						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
 					</View>
@@ -289,13 +289,14 @@ const textStyles = StyleSheet.create({
 	
 	greyColorWithPaddingLeftText: {
 		color: '#A5A5A5',
-		paddingLeft: widthPercentageToDP('1%')
+		paddingLeft: 12,
 	},
 	
 	nameColor: {
 		color: '#DDDDDD',
 		fontWeight: '400',
-		fontSize: 16
+		fontSize: 16,
+		textTransform: 'capitalize'
 	},
 
 	promoText: {
@@ -350,7 +351,7 @@ const styles = StyleSheet.create({
 		paddingVertical: heightPercentageToDP('2%'),
 		borderBottomWidth: 1,
 		borderBottomColor: '#3E3D3D',
-		flex: 1
+		flex: 1,
 	},
 
 	leftContent: {

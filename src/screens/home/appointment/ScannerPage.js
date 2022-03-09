@@ -45,7 +45,10 @@ const Assistant_scan = (props) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        return ToastAndroid.show('Permission to access location was denied', ToastAndroid.LONG);
+        return ToastAndroid.show(
+          'Permission to access location was denied',
+          ToastAndroid.LONG
+        );
       }
 
       const { coords } = await Location.getCurrentPositionAsync({});
@@ -69,28 +72,27 @@ const Assistant_scan = (props) => {
     })();
   }, []);
 
-	useEffect(async () => {
-		if (isToday) {
-			setLoading(true);
-			try {
-				const { data: response } = await axios({
-					method: 'POST',
-					url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
-				});
-				console.log(reservationData)
-				console.log(response)
+  useEffect(async () => {
+    if (isToday) {
+      setLoading(true);
+      try {
+        const { data: response } = await axios({
+          method: 'POST',
+          url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
+        });
+        console.log(reservationData, 'rsv');
+        console.log(response, 'res');
 
-				if (response.data) {
-				setHealthFacilityData(response.data);
-				} else {
-				setHealthFacilityData(reservationData.healthFacility)
-				} 
-
-			} catch (error) {
-				console.log(error.message, 'this is error from scanner check in');
-			}
-		}
-	}, []);
+        if (response.data) {
+          setHealthFacilityData(response.data);
+        } else {
+          setHealthFacilityData(reservationData.healthFacility);
+        }
+      } catch (error) {
+        console.log(error.message, 'this is error from scanner check in');
+      }
+    }
+  }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
@@ -141,11 +143,11 @@ const Assistant_scan = (props) => {
     const { clinicIdWeb } = reservationData.healthFacility;
     const { location } = healthFacilityData;
 
-    let { lat, long: lng } = location
+    let { lat, long: lng } = location;
 
     if (location.length) {
-      lng = location.coordinates[0]
-      lat = location.coordinates[1]
+      lng = location.coordinates[0];
+      lat = location.coordinates[1];
     }
     const { latitude, longitude } = userLocation;
     const distance = getDistanceFromLatLonInKm(latitude, longitude, lat, lng);
@@ -176,7 +178,6 @@ const Assistant_scan = (props) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-
 
   if (!isToday) {
     return (

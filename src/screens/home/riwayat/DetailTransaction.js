@@ -23,13 +23,13 @@ export default function DetailTransaction(props) {
         navigate={props.navigation.navigate}
         navigateBack="Riwayat"
       />
-      <View style={{ padding: 12 }}>
-        {transaction.services ? (
-          <CardDetailTransactionService transaction={transaction} {...props}/>
-        ) : (
-          <CardDetailTransaction transaction={transaction} props={props} />
-        )}
-      </View>
+      {transaction.services ? (
+        <View style={{ padding: 12 }}>
+          <CardDetailTransactionService transaction={transaction} {...props} />
+        </View>
+      ) : (
+        <CardDetailTransaction transaction={transaction} props={props} />
+      )}
     </View>
   );
 }
