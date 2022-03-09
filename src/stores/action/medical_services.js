@@ -1,5 +1,7 @@
 import axios from 'axios';
+import { ToastAndroid } from 'react-native';
 import { baseURL, webBaseURL, instance, webInstace } from '../../config'
+import getToken from '../../helpers/localStorage/token';
 import keys from '../keys';
 
 const { 
@@ -69,29 +71,35 @@ export function getMedicalServices(type, status, page, medicalServices, addPage)
 	}
 }
 
-export function searchMedicalServicesByName(searchQuery, medicalServices){
-	if(text){
-		const lowerCase = text.toLowerCase()
-		const newMedicalServiceList = medicalServices.filter(el => el.name.toLowerCase().includes(lowerCase))
-		setMedicalServices(newMedicalServiceList)
-	}
-	else {
-		getMedicalServices()
-	}
-}
-
-export function createMedicalServiceReservation(bookData, token){
+export function createMedicalServiceReservation(bookData, setModal){
 	return async dispatch => {
 		try {
+			await dispatch({
+				type: SET_MEDICAL_SERVICES_LOADING,
+				payload: true
+			})
+			console.log('Application is trying to make medical service reservation')
+			const token = await getToken()
 			const { data } = await mobileMedicalServiceInstance({
 				method: 'POST',
 				data: bookData,
 				headers: { Authorization: token },
 			})
-			return data
+
+			setModal(true)
+			
+			await dispatch({
+				type: SET_MEDICAL_SERVICES_LOADING,
+				payload: false
+			})
 		} catch (error) {
-			// console.log(error.response.data, 'Error in creating service reservation')
-			return error.response.data
+			if(error.response.data.message === 'patient already reserve for this service'){
+				await dispatch({
+					type: SET_MEDICAL_SERVICES_ERROR,
+					payload: error.response.data.message
+				})
+				ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
+			}
 		}
 	}
 }

@@ -33,7 +33,7 @@ import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServiceDetail({navigation, userData, myLocation}) {
+function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}) {
 
 	
     const { item } = navigation.state.params
@@ -60,7 +60,6 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
 		photo,
 	} = item
 
-	
 	const [serviceDetail, setServiceDetail] = useState({
 		name,
 		id,
@@ -123,7 +122,7 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
 		if (!bookingSchedule) {
 			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
 		} else {
-			userData ? navigation.push('Payment', { 
+			userDataReducer.userData ? navigation.push('Payment', { 
 				serviceDetail, bookingSchedule, healthFacility, clinic
 			}) : 
 				(navigation.navigate('DetailDoctor'),
@@ -146,7 +145,7 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
         Linking.openURL(url);
     };
 
-    const { lat: userLat, lng: userLng } = myLocation
+    const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
     const distance = Math.floor(getDistanceFromLatLonInKm(healthFacility.location.lat, healthFacility.location.long, userLat, userLng))
 
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -322,12 +321,14 @@ const styles = StyleSheet.create({
     },
 
     leftContent: {
-		alignItems: 'flex-start'
+		alignItems: 'flex-start',
+        flex: 0.5
 
 	}, 
 
     rightContent: {
         alignItems: 'flex-end',
+        flex: 0.5
 	}, 
 
     middleContainer: {
