@@ -11,9 +11,9 @@ const {
 
 const initState = {
     medicalServices: [],
-    currentPage: 0,
-    type: '',
-    status: 'Active',
+    currentPage: 1,
+    type: 'UMUM',
+    status: true,
     isLoading: false,
     error: null
 }
