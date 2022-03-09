@@ -20,7 +20,10 @@ export function getLoggedData(navigation){
             })
             const token = await getToken()
             if(!token){
-                return null
+                return await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
             }
             console.log(token);
             console.log('Above is the token that is already in AsyncStorage');
