@@ -6,6 +6,7 @@ import doctorKeys from "./doctors";
 import allergyKeys from "./allergies";
 import activityKeys from "./activity";
 import entryKeys from "./entry";
+import medicalServicesKeys from "./medicalServices";
 
 const keys = {
     userDataKeys,
@@ -15,7 +16,8 @@ const keys = {
     doctorKeys,
     allergyKeys,
     activityKeys,
-    entryKeys
+    entryKeys,
+    medicalServicesKeys
 }
 
 export default keys
