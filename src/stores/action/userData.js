@@ -36,8 +36,6 @@ export function getLoggedData(navigation){
                 headers: { Authorization: token}
             })
 
-            console.log(data)
-
             if(data.data) {
                 console.log('Application Found dataLogged');
                 // await AsyncStorage.setItem('userData', JSON.stringify(data.data));
