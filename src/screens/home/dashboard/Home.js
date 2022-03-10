@@ -91,11 +91,9 @@ function HomePage(props) {
   }, []);
 
   useEffect(() => {
-
-    if (!userData) {
-      return
-    }
-
+    // if (!userData) {
+    //   return
+    // }
     (async () => {
       let lat = null;
       let lng = null;
