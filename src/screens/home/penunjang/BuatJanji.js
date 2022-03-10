@@ -941,7 +941,7 @@ const MakeAppointment = (props) => {
 							onAnimationFinish={() => {
 								console.log('tets')
 								setModal(false);
-								props.navigation.navigate('Appointment');
+								props.navigation.navigate('Appointment', { orderType: "Layanan Medis" });
 
 							}}
 						/>

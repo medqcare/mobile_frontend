@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 let baseURL = 'https://api-medqcare.applimetis.id';
-let webBaseURL = 'https://api-qcareweb.applimetis.id'
+let webBaseURL = 'https://api-mitralab.medqcare.id'; // URL for postgres drug database
 
 const instance = axios.create({
     baseURL: `${baseURL}/api/v1/members/`,

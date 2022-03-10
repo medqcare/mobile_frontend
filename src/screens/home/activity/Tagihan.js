@@ -16,6 +16,7 @@ import { baseURL } from '../../../config';
 import LottieLoader from 'lottie-react-native';
 import PatientBoard from '../../../components/PatientBoard';
 import SelectPatient from '../../../components/modals/selectPatient';
+import CardDetailTransactionService from '../../../components/transaction/CardDetailTransactionService';
 
 const dimHeight = Dimensions.get('window').height;
 
@@ -53,7 +54,7 @@ function Tagihan(props) {
             'X-Secret': 123456,
           },
         });
-
+        console.log(response);
         const { transaction } = response.data;
         setTransaction(transaction);
       } catch (error) {
@@ -95,7 +96,15 @@ function Tagihan(props) {
             </View>
 
             {transaction?._id ? (
-              <CardDetailTransaction transaction={transaction} />
+              <>
+                {transaction.services ? (
+                  <View style={{padding: 12}}>
+                    <CardDetailTransactionService transaction={transaction} />
+                  </View>
+                ) : (
+                  <CardDetailTransaction transaction={transaction} />
+                )}
+              </>
             ) : (
               <View
                 style={{
