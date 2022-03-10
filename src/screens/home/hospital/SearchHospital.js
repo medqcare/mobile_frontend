@@ -47,37 +47,11 @@ function SearchDoctorPage(props) {
 	const [loader, setLoad] = useState(false);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [show, setShow] = useState([]);
-	const [showLoading, setLoading] = useState(true);
 	const [search, setSearch] = useState([]);
 
 	useEffect(async () => {
-		// await fetchHospitalPagination();
 		await props.searchAllClinics(userLocation, setShow)
 	}, []);
-
-	const fetchHospitalPagination = async () => {
-		try {
-			let { data } = await axios(
-				{
-				method: 'POST',
-				url: `${baseURL}/api/v1/members/searchFacility`,
-				data: {
-					lat: userLocation ? userLocation.lat : -6.268809,
-					lon: userLocation ? userLocation.lng : 106.974705,
-					maxDistance: 1000000000,
-				},
-				},
-				{ timeout: 4000 }
-			);
-			setShow(data.data);
-			setLoading(false);
-			// let nextPage = currentPage + 1;
-			// setCurrentPage(nextPage);
-		} catch (error) {
-			setLoading(false);
-			console.log(error, 'error');
-		}
-	};
 
 	const _textChange = async (facility) => {
 		try {
