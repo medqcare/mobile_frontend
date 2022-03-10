@@ -67,8 +67,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 
 	async function searchMedicalServices(addPage){
 		try {
-			await getMedicalServices(type, status, currentPage, medicalServicesR, addPage)
-			setMedicalServices(medicalServicesR)
+			await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices)
 		}
 		catch(error){
 			console.log(error)
