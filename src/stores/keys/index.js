@@ -8,6 +8,7 @@ import activityKeys from "./activity";
 import entryKeys from "./entry";
 import medicalServicesKeys from "./medicalServices";
 import clinicKeys from "./clinic";
+import appointmentsKeys from "./appointments";
 
 const keys = {
     userDataKeys,
@@ -19,7 +20,8 @@ const keys = {
     activityKeys,
     entryKeys,
     medicalServicesKeys,
-    clinicKeys
+    clinicKeys,
+    appointmentsKeys
 }
 
 export default keys

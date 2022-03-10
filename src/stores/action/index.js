@@ -1,5 +1,9 @@
 import axios from 'axios';
 import {
+  searchAllReservations,
+  cancelSelectedReservation
+} from './appointment'
+import {
   searchAllClinics,
   searchClinicByName
 } from './clinic'
@@ -1305,6 +1309,11 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export {
+  searchAllReservations,
+  cancelSelectedReservation
 }
 
 export {
