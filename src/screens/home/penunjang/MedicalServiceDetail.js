@@ -125,7 +125,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
 			userDataReducer.userData ? navigation.push('Payment', { 
 				serviceDetail, bookingSchedule, healthFacility, clinic
 			}) : 
-				(navigation.navigate('DetailDoctor'),
+				(navigation.navigate('Home'),
 				navigation.navigate('Sign'));
 		}
 	}
