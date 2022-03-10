@@ -17,7 +17,7 @@ const mapStateToProps = (state) => {
   return state;
 };
 
-function CardHospital({ data, myLocation }) {
+function CardHospital({ data, userLocationReducer }) {
   // console.log(data, 'ini datanya --')
   return (
     <View>
@@ -78,8 +78,8 @@ function CardHospital({ data, myLocation }) {
                 ? latLongToKM(
                     data.location.coordinates[1],
                     data.location.coordinates[0],
-                    myLocation.lat,
-                    myLocation.lng
+                    userLocationReducer.userLocation.lat,
+                    userLocationReducer.userLocation.lng
                   ).toFixed(1)
                 : ''}
             </Text>

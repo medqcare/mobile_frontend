@@ -1,5 +1,9 @@
 import axios from 'axios';
 import {
+  searchAllClinics,
+  searchClinicByName
+} from './clinic'
+import {
   searchAllDoctors,
   searchDoctorBySpecialist,
   searchDoctorByName,
@@ -1301,6 +1305,11 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export {
+  searchAllClinics,
+  searchClinicByName
 }
 
 export {
