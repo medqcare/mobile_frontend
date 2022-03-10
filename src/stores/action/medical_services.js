@@ -21,7 +21,7 @@ const mobileMedicalServiceInstance = axios.create({
 	baseURL: `${baseURL}/api/v1/members/reservations/service`
 })
 
-export function getMedicalServices(type, status, page, medicalServices, addPage){
+export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices){
 	return async dispatch => {
 		try {
 			console.log('Application trying to find avaliable medical services')
@@ -41,6 +41,7 @@ export function getMedicalServices(type, status, page, medicalServices, addPage)
 					console.log(`Application didn't find any available services`)
 				}
 				if(page == 1){
+					await setMedicalServices(data.data.docs)
 					await dispatch({
 						type: SET_MEDICAL_SERVICES,
 						payload: data.data.docs
