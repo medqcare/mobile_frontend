@@ -84,7 +84,6 @@ function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
 const Appointment = (props) => {
   const dispatch = useDispatch()
   const { doctorAppointments, medicalServiceAppointments, orderType, isLoading, error } = props.appointmentsReducer
-  const paramOrderType = props.navigation.getParam('orderType');
   // console.log(props.navigation.state, "state")
   // console.log(paramOrderType, "param")
   const [reservations, setReservations] = useState([]);
@@ -92,9 +91,7 @@ const Appointment = (props) => {
   const [reservationID, setReservationID] = useState();
   const [Load, setLoad] = useState(true);
   const [types, setTypes] = useState(['Konsultasi Dokter', 'Layanan Medis']);
-  const [typeSelected, setTypeSelected] = useState(
-    paramOrderType ? paramOrderType : types[0]
-  );
+  const [typeSelected, setTypeSelected] = useState(orderType);
   const [showModalDelete, setShowModalDelete] = useState(false);
   useEffect(() => {
     (async () => {
@@ -155,12 +152,23 @@ const Appointment = (props) => {
 		)
 	};
 
+	function setOrderType(){
+		dispatch({
+			type: SET_APPOINTMENT_ORDER_TYPE,
+			payload: 'Konsultasi Dokter'
+		})
+	}
+
   BackHandler.addEventListener('hardwareBackPress', () => {
+    setOrderType()
     return props.navigation.navigate('Home');
   });
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-      <Header title={'Daftar Janji'} navigate={props.navigation.navigate} />
+      <Header 
+	  	title={'Daftar Janji'} 
+		navigate={props.navigation.navigate} 
+		/>
       <View style={{ marginVertical: 14, paddingLeft: 12 }}>
         <SelectType
           types={types}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -36,6 +36,11 @@ import Modal from 'react-native-modal';
 
 import SelectPatient from '../../../components/modals/selectPatient';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
+import keys from '../../../stores/keys';
+
+const {
+    SET_APPOINTMENT_ORDER_TYPE,
+} = keys.appointmentsKeys
 
 const mapDispatchToProps = {
 	bookDoctor,
@@ -51,6 +56,7 @@ const mapStateToProps = (state) => {
 };
 
 const MakeAppointment = (props) => {
+	const dispatch = useDispatch()
 	const { serviceDetail, bookingSchedule, healthFacility, clinic } = props.navigation.state.params
 	const { userData } = props.userDataReducer
 	const { medicalService, isLoading, error } = props.medicalServicesReducer
@@ -938,10 +944,13 @@ const MakeAppointment = (props) => {
 							autoPlay
 							speed={0.7}
 							loop={false}
-							onAnimationFinish={() => {
-								console.log('tets')
+							onAnimationFinish={ () => {
 								setModal(false);
-								props.navigation.navigate('Appointment', { orderType: "Layanan Medis" });
+								dispatch({
+									type: SET_APPOINTMENT_ORDER_TYPE,
+									payload: "Layanan Medis"
+								})
+								props.navigation.navigate('Appointment');
 
 							}}
 						/>
