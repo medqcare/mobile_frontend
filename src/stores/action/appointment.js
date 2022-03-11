@@ -57,7 +57,7 @@ export function searchAllReservations(status, type){
     }
 }
 
-export function cancelSelectedReservation(reservationID){
+export function cancelSelectedReservation(reservationID, appointmentList, keyToDispatch){
     return async (dispatch) => {
         try {
             const token = await getToken()
@@ -71,6 +71,13 @@ export function cancelSelectedReservation(reservationID){
                     reservationID
                 }
             })
+
+            const newAppointmentList = appointmentList.filter(el => el._id !== reservationID)
+            await dispatch({
+                type: keyToDispatch,
+                payload: newAppointmentList
+            })
+            
             console.log(data)
         } catch (error) {
             ToastAndroid.show(error.message, ToastAndroid.SHORT)

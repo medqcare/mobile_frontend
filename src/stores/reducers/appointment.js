@@ -23,6 +23,10 @@ function appointmentsReducer(state = initState, action){
         case SET_APPOINTMENTS:
             const { doctorAppointments, medicalServiceAppointments } = payload
             return { ...state, doctorAppointments, medicalServiceAppointments, isLoading: false, error: null }
+        case SET_DOCTOR_APPOINTMENTS:
+            return { ...state, doctorAppointments: payload }
+        case SET_MEDICAL_SERVICE_APPOINTMENTS:
+            return { ...state, medicalServiceAppointments: payload }
         case SET_APPOINTMENT_ORDER_TYPE:
             return { ...state, orderType: payload }
         case SET_APPOINTMENTS_LOADING:

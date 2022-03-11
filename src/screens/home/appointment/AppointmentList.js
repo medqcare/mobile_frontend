@@ -23,8 +23,10 @@ import DeleteAppointmentModal from '../../../components/modals/DeleteAppointment
 import keys from '../../../stores/keys';
 
 const {
-	SET_APPOINTMENTS_LOADING,
-  	SET_APPOINTMENT_ORDER_TYPE
+  SET_DOCTOR_APPOINTMENTS,
+  SET_MEDICAL_SERVICE_APPOINTMENTS,
+  SET_APPOINTMENTS_LOADING,
+  SET_APPOINTMENT_ORDER_TYPE
 } = keys.appointmentsKeys
 
 function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
@@ -93,6 +95,10 @@ const Appointment = (props) => {
   const [types, setTypes] = useState(['Konsultasi Dokter', 'Layanan Medis']);
   const [typeSelected, setTypeSelected] = useState(orderType);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [cancelReservationData, setCancelReservationData] = useState({
+    appointmentList: null,
+    keyToDispatch: null
+  })
   useEffect(() => {
     (async () => {
       try {
@@ -115,7 +121,20 @@ const Appointment = (props) => {
 				data={item}
 				route={props.navigation}
 				setModalDelete={setShowModalDelete}
-				onCancelReservation={(id) => {
+				onCancelReservation={(id, orderType) => {
+          if(orderType ==='doctor'){
+            setCancelReservationData({
+              appointmentList: doctorAppointments,
+              keyToDispatch: SET_DOCTOR_APPOINTMENTS,
+              
+            })
+          } else {
+            setCancelReservationData({
+              appointmentList: medicalServiceAppointments,
+              keyToDispatch: SET_MEDICAL_SERVICE_APPOINTMENTS,
+              
+            })
+          }
 					setReservationID(id);
 					setShowModalDelete(true);
 				}}
@@ -200,10 +219,13 @@ const Appointment = (props) => {
         isVisible={showModalDelete}
         setIsVisible={setShowModalDelete}
         onButtonCancelPress={() => {
-          props.cancelRecervation(reservationID);
+          // props.cancelRecervation(reservationID);
+          const { appointmentList, keyToDispatch } = cancelReservationData
+          props.cancelSelectedReservation(reservationID,  appointmentList, keyToDispatch)
           onRefresh();
           setShowModalDelete(false);
         }}
+
       />
     </View>
   );
