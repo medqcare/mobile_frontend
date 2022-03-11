@@ -103,7 +103,6 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
 
 	const [bookingSchedule, setBookingSchedule] = useState(null)
     function onDateSelected(selectedDate){
-        setBookingDate(selectedDate)
 		const year = selectedDate.getFullYear()
 		const Month = selectedDate.getMonth() + 1
 		const date = selectedDate.getDate()
