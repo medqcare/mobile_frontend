@@ -53,6 +53,8 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
 		photo,
 	} = item
 
+    const [bookingDate, setBookingDate] = useState(null)
+
 	const [serviceDetail, setServiceDetail] = useState({
 		name,
 		id,
