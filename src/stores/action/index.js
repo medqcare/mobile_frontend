@@ -51,6 +51,8 @@ import {
   changeAccountPassword,
   createNewFamily,
   deleteFamilyData,
+  addFavoriteDoctor,
+  removeFavoriteDoctor,
   deleteUserData,
 } from './userData'
 import {
@@ -79,14 +81,14 @@ const _storeData = async (data) => {
   }
 };
 
-export function addDoctorFavorite(data) {
-  // console.log(data, 'ini di action')
-  return async (dispatch) => {
-    await dispatch({
-      type: 'AFTER_SIGNIN',
-      payload: data,
-    });
-  };
+// export function addDoctorFavorite(data) {
+//   // console.log(data, 'ini di action')
+//   return async (dispatch) => {
+//     await dispatch({
+//       type: 'AFTER_SIGNIN',
+//       payload: data,
+//     });
+//   };
 
   // return async dispatch => {
   //   try {
@@ -100,7 +102,7 @@ export function addDoctorFavorite(data) {
   //     console.log(error);
   //   }
   // }
-}
+// }
 
 export function changeLogin(status) {
   return (dispatch) => {
@@ -1356,4 +1358,4 @@ export {
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, deleteUserData }
+export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
