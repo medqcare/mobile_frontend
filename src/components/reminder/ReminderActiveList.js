@@ -31,9 +31,9 @@ import * as Calendar from 'expo-calendar';
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, setFinishedDrugs, selectedPatient, updateFinishStatusFunction, }) {
-    const [load, setLoad] = useState(true)
-    const [content, setContent] = useState(null)
+function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction, }) {
+    const { activeDrugs, finishedDrugs, isLoading } = props.drugReducer
+    const [content, setContent] = useState(activeDrugs)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
     const [loadToggle, setLoadToggle] = useState(false)
@@ -250,35 +250,33 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
         showMode('time');
     };
 
-    useEffect(() => {
-        if(activeDrugs.length > 0){
-            setContent(activeDrugs)
-            setLoad(false)
-        } else {
-            setContent([])
-            setLoad(false)
-        }
-    }, [activeDrugs])
+    // useEffect(() => {
+    //     if(activeDrugs.length > 0){
+    //         setContent(activeDrugs)
+    //         setLoad(false)
+    //     } else {
+    //         setContent([])
+    //         setLoad(false)
+    //     }
+    // }, [activeDrugs])
 
     const toggleSwitch = async (index, section) => {
         try {
             setLoadToggle(true)
             const { reminders, reminder, etiquette } = section
             const etiquetteLength = etiquette.length
-            const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const drugID = section._id
             const drugName = section.drugName
-            const change = await props.changeAlarmBoolean(drugID, token)
-            ToastAndroid.show(change, ToastAndroid.SHORT)
+            await props.changeAlarmBoolean(drugID)
 
-            if(reminder){
-                const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            if(reminder && foundAlarmIDs){
 
                 const toBeDeleted = []
                 const notDeleted = []
-                for(let i = 0; i < alarmIDs.length; i++){
-                    if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
-                    else notDeleted.push(alarmIDs[i])
+                for(let i = 0; i < foundAlarmIDs.length; i++){
+                    if(foundAlarmIDs[i].drugID === drugID) toBeDeleted.push(foundAlarmIDs[i])
+                    else notDeleted.push(foundAlarmIDs[i])
                 }
 
                 for(let i = 0; i < toBeDeleted.length; i ++){
@@ -291,7 +289,6 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                 else await AsyncStorage.setItem('alarmIDs', stringified)
 
             } else {
-                const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
                 let alarmIDs = []
                 
                 if(foundAlarmIDs){
@@ -397,20 +394,14 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
 
     async function updateFinishStatus(section){
         try {
-            const token = JSON.parse(await AsyncStorage.getItem('token')).token
+            // const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const drugID = section._id
-            const updated = await updateFinishStatusFunction(drugID, token)
-            ToastAndroid.show(updated, ToastAndroid.SHORT)
-            
-            const newActiveList = activeDrugs.filter(el => el._id !== drugID)
             const finishedDrug = {
                 ...section,
                 finishedAt : new Date(),
                 isFinished : true
             }
-            const newFinishedList = [...finishedDrugs, finishedDrug]
-            setActiveDrugs(newActiveList)
-            setFinishedDrugs(newFinishedList)
+            await updateFinishStatusFunction(drugID, activeDrugs, finishedDrug, finishedDrugs)
         } catch (error) {
             console.log(error)
         }
@@ -433,7 +424,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                         animation={'wobble'}>
                             <TouchableOpacity
                             style={styles.detailContainer}
-                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section, activeDrugs: activeDrugs, setActiveDrugs: setActiveDrugs})}
+                                onPress={() => props.navigation.navigate('DrugDetail', { drugDetail: section })}
                             >
                                 <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
@@ -587,8 +578,8 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
     };
   
     return (
-        load ? <ActivityIndicator color="blue" size={'small'}/> :
-        content.length > 0 ? 
+        isLoading ? <ActivityIndicator color="blue" size={'small'}/> :
+        content?.length > 0 ? 
         <>
             <Accordion
                 activeSections={activeSections}

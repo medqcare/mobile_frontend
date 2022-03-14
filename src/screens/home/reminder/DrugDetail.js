@@ -27,9 +27,9 @@ const dimension = Dimensions.get('window')
 const dimHeight = dimension.height
 const dimWidth = dimension.width
 
-function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, }){
-    const  { drugDetail, activeDrugs, setActiveDrugs } = navigation.state.params
-
+function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, drugReducer }){
+    const { drugDetail } = navigation.state.params
+    const { activeDrugs } = drugReducer
     const { reminders, notes, imageUrl, etiquette, dose, type, description, quantityTotal, drugQuantity, drugName } = drugDetail
     const [drugImage, setDrugImage] = useState(imageUrl)
     const [confirmationModal, setConfirmationModal] = useState(false)
@@ -111,16 +111,7 @@ function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, 
         try {
             if(displayNotes !== notes){
                 const drugID = drugDetail._id;
-                const token = JSON.parse(await AsyncStorage.getItem('token')).token
-                const { message, data} = await changeDrugNotes(drugID, token, displayNotes)
-                const newActiveDrugs = activeDrugs.map(el => {
-                    if(el._id === drugDetail._id){
-                        el.notes = data
-                    }
-                    return el
-                })
-                setActiveDrugs(newActiveDrugs)
-                ToastAndroid.show(message, ToastAndroid.SHORT)
+                await changeDrugNotes(drugID, displayNotes, activeDrugs)
             }
         } catch (error) {
             console.log(error)
@@ -131,9 +122,7 @@ function DrugDetail({navigation, userData, changeDrugNotes, deleteDrugImageUrl, 
         try {
             setLoad(true);
             const drugID = drugDetail._id;
-            let token = await AsyncStorage.getItem('token');
-            token = JSON.parse(token).token;
-            await deleteDrugImageUrl(drugID, token);
+            await deleteDrugImageUrl(drugID, activeDrugs);
             setLoad(false);
             setConfirmationModal(false);
             setDrugImage('')
