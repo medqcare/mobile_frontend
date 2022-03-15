@@ -87,39 +87,43 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
 			} else clinicLocation = defaultLocation
 		}
 
-        return clinicLocation
+        return clinicLocation;
     }
 
+    const [healthFacility, setHealthFacility] = useState({
+        facilityID: id,
+        facilityName: clinic.name,
+        // facilityType: 'Klinik',
+        // facilityMainType: 'Klinik',
+        address: clinic.address,
+        clinicIdWeb: clinic.id,
+        location: getClinicLocation(clinic.location),
+    });
 
-	const [healthFacility, setHealthFacility] = useState({
-		facilityID: id,
-		facilityName: clinic.name,
-		// facilityType: 'Klinik',
-		// facilityMainType: 'Klinik',
-		address: clinic.address,
-		clinicIdWeb: clinic.id,
-		location: getClinicLocation(clinic.location)
-	})
-
-	const [bookingSchedule, setBookingSchedule] = useState(null)
-    function onDateSelected(selectedDate){
-		const year = selectedDate.getFullYear()
-		const Month = selectedDate.getMonth() + 1
-		const date = selectedDate.getDate()
-		setBookingSchedule(`${year}-${Month}-${date}`)
+    const [bookingDate, setBookingDate] = useState(null);
+    const [bookingSchedule, setBookingSchedule] = useState(null);
+    function onDateSelected(selectedDate) {
+        setBookingDate(selectedDate);
+        const year = selectedDate.getFullYear();
+        const Month = selectedDate.getMonth() + 1;
+        const date = selectedDate.getDate();
+        setBookingSchedule(`${year}-${Month}-${date}`);
     }
 
-	function makeAppointment(){
-		if (!bookingSchedule) {
-			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
-		} else {
-			userDataReducer.userData ? navigation.push('Payment', { 
-				serviceDetail, bookingSchedule, healthFacility, clinic
-			}) : 
-				(navigation.navigate('Home'),
-				navigation.navigate('Sign'));
-		}
-	}
+    function makeAppointment() {
+        if (!bookingSchedule) {
+            ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+        } else {
+            userDataReducer.userData
+                ? navigation.push('Payment', {
+                    serviceDetail,
+                    bookingSchedule,
+                    healthFacility,
+                    clinic,
+                })
+                : navigation.navigate('SignIn')
+        }
+    }
 
     const openMap = (lat, lang) => {
         const scheme = Platform.select({
@@ -298,7 +302,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
             </View>
         </View>
     )
-}
+    }
 
 const textStyles = StyleSheet.create({
 	mapSelectionText: {
