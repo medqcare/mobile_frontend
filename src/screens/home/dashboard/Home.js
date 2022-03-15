@@ -9,11 +9,7 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-  TextInput,
-  Platform,
-  Alert,
   BackHandler,
-  ToastAndroid,
 } from 'react-native';
 import { connect } from 'react-redux';
 import * as Location from 'expo-location';
@@ -26,6 +22,7 @@ import {
   getReminders,
   setShowInstruction,
 } from '../../../stores/action';
+import { FontAwesome } from '@expo/vector-icons';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
@@ -35,9 +32,7 @@ import SearchBar from '../../../components/headers/SearchBar';
 import NewNotificationBell from '../../../assets/svg/home-blue/lonceng';
 import NoNotificationBell from '../../../assets/svg/NoNotificationBell';
 import LottieLoader from 'lottie-react-native';
-import notificationTrigger from '../../../helpers/notificationTrigger';
 import ActivityAction from '../../../components/home/dashboard/activity-action';
-import { getSelectedDate } from '../../../helpers/todaysDate';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -49,7 +44,6 @@ import _checkLogin from '../../../helpers/getToken';
 import getToken from '../../../helpers/localStorage/token';
 import axios from 'axios';
 import { baseURL } from '../../../config';
-// import PushNotification from 'react-native-push-notification';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
@@ -67,6 +61,25 @@ function HomePage(props) {
   ]);
   const [registerToken, setRegisterToken] = useState('');
   const [fcmRegistered, setFcmRegistered] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          throw new Error('permission failed');
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        props.setCurrentLocation({
+          lat: location.coords.latitude,
+          lng: location.coords.longitude,
+        });
+      } catch (error) {
+        console.log('Error Get Location', error.message);
+      }
+    })();
+  }, []);
 
   useEffect(async () => {
     try {
@@ -211,6 +224,8 @@ function HomePage(props) {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingBottom: 2
                   }}
                 >
                   <Image
@@ -221,14 +236,15 @@ function HomePage(props) {
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
-                  {props.userData && (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
+                  {/* {props.userData && ( */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {props.userData && (
                       <TouchableOpacity
                         style={{ marginTop: 1 }}
                         onPress={() => {
@@ -241,25 +257,32 @@ function HomePage(props) {
                           <NoNotificationBell />
                         )}
                       </TouchableOpacity>
+                    )}
 
-                      <TouchableOpacity
-                        onPress={() => {
-                          props.navigation.navigate('ProfileStack');
-                        }}
-                      >
-                        <View style={{ marginLeft: 10 }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        props.userData ? props.navigation.navigate('ProfileStack') : props.navigation.navigate('SignIn')
+                      }}
+                    >
+                      <View style={{ marginLeft: 10 }}>
+                        {props.userData?.imageUrl ? (
                           <Image
                             style={style.profilePicture}
                             source={{
-                              uri: props.userData?.imageUrl
-                                ? props.userData?.imageUrl
-                                : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
+                              uri: props.userData.imageUrl
                             }}
                           />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  )}
+                        ) : (
+                          <FontAwesome
+                            name="user-circle"
+                            size={23}
+                            color="white"
+                          />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                  {/* )} */}
                 </View>
                 <SearchBar
                   placeholder={'cari dokter atau spesialis'}
