@@ -27,13 +27,26 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Calendar from 'expo-calendar';
+import { useDispatch } from "react-redux";
+import keys from "../../stores/keys";
+
+const { 
+    SET_DRUGS,
+    SET_ACTIVE_DRUGS,
+    SET_FINISHED_DRUGS,
+    SET_DRUGS_LOADING,
+    SET_DRUGS_ERROR,
+    DELETE_DRUGS
+} = keys.drugKeys
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction, }) {
     const { activeDrugs, finishedDrugs, isLoading } = props.drugReducer
+    const dispatch = useDispatch()
     const [content, setContent] = useState(activeDrugs)
+    const [load, setLoad] = useState(false)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
     const [loadToggle, setLoadToggle] = useState(false)
@@ -185,20 +198,23 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
             setShow(Platform.OS === 'ios');
             setDate(currentDate);
 
-            const newReminders= content[currentIndex].reminders.map(el => {
+            const newReminders= activeDrugs[currentIndex].reminders.map(el => {
                 if(el._id === currentReminderID){
                     el.alarmTime = currentDate
                 }
                 return el
             })
 
-            const newContent = content.map((el, idx) => {
-                if(el._id === content[currentIndex]._id){
+            const newContent = activeDrugs.map((el, idx) => {
+                if(el._id === activeDrugs[currentIndex]._id){
                     el.reminders = newReminders
                 }
                 return el
             })
-
+            dispatch({
+                type: SET_ACTIVE_DRUGS,
+                payload: newContent
+            })
             setContent(newContent)
             ToastAndroid.show('Successfully updated alarm time', ToastAndroid.SHORT)
 
@@ -209,7 +225,7 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
             const minutes = currentDate.getMinutes()
 
             if(currentIndexDrugAlarmIDs.length === 0){
-                const currentIndexReminder = content[currentIndex].reminders
+                const currentIndexReminder = activeDrugs[currentIndex].reminders
                 for(let i = 0; i < currentIndexReminder.length; i++){
                     if(currentIndexReminder[i].etiquetteIndex === alarmIndex){
                         const alarmTime = new Date(currentIndexReminder[i].alarmTime)
@@ -251,14 +267,39 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
     };
 
     // useEffect(() => {
-    //     if(activeDrugs.length > 0){
-    //         setContent(activeDrugs)
+    //     setLoad(true)
+    //     let unMounted = false
+
+    //     if(!unMounted){
+    //         if(activeDrugs.length > 0){
+    //             setContent(activeDrugs)
+    //             setLoad(false)
+    //         } else {
+    //             setContent([])
+    //             setLoad(false)
+    //         }
+    //     }
+
+    //     return () => {
     //         setLoad(false)
-    //     } else {
-    //         setContent([])
-    //         setLoad(false)
+    //         unMounted = true
     //     }
     // }, [activeDrugs])
+
+    useEffect(() => {
+        setLoad(true)
+        let unMounted = false
+
+        if(!unMounted){
+            setLoad(false)
+        }
+
+        return () => {
+            setLoad(false)
+            unMounted = true
+        }
+
+    }, [])
 
     const toggleSwitch = async (index, section) => {
         try {
@@ -308,12 +349,16 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
             }
 
            
-            const newArray = content.map((el, idx) => {
+            const newArray = activeDrugs.map((el, idx) => {
                 const newObject = {
                     ...el,
                     reminder: index === idx ? !el.reminder : el.reminder
                 }
                 return newObject
+            })
+            dispatch({
+                type: SET_ACTIVE_DRUGS,
+                payload: newArray
             })
             setContent(newArray)
             setLoadToggle(false)
@@ -357,7 +402,7 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
         const token = JSON.parse(await AsyncStorage.getItem('token')).token
         await props.changeReminderStatus(status, reminderID, token)
 
-        const newReminders= content[_].reminders.map(el => {
+        const newReminders= activeDrugs[_].reminders.map(el => {
             if(el._id === reminderID){
                 el.status = status
                 el.statusChangedAt = new Date()
@@ -365,13 +410,16 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
             return el
         })
 
-        const newContent = content.map((el, idx) => {
-            if(el._id === content[_]._id){
+        const newContent = activeDrugs.map((el, idx) => {
+            if(el._id === activeDrugs[_]._id){
                 el.reminders = newReminders
             }
             return el
         })
-
+        dispatch({
+            type: SET_ACTIVE_DRUGS,
+            payload: newContent
+        })
         setContent(newContent)
         if(status){
             const newLoad = loadChangeStatusTrue.map((el, idx) => {
@@ -578,12 +626,12 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
     };
   
     return (
-        isLoading ? <ActivityIndicator color="blue" size={'small'}/> :
-        content?.length > 0 ? 
+        load ? <ActivityIndicator color="blue" size={'small'}/> :
+        activeDrugs?.length > 0 ? 
         <>
             <Accordion
                 activeSections={activeSections}
-                sections={content}
+                sections={activeDrugs}
                 touchableComponent={TouchableWithoutFeedback}
                 expandMultiple={true}
                 renderHeader={renderHeader}
