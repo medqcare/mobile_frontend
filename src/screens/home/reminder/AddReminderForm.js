@@ -32,6 +32,7 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function AddReminderForm(props) {
+	const { activeDrugs, webDrugs, isLoading } = props.drugReducer
 
 	useEffect(() => {
 		LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
@@ -43,8 +44,6 @@ function AddReminderForm(props) {
 		  "name": "Drug Name",
 		},
 	]
-
-	const { activeDrugs, setActiveDrugs, allDrugs } = props.navigation.state.params
 
 	const [errorDrugData, setErrorDrugData] = useState({
 		itemName: false,
@@ -63,7 +62,7 @@ function AddReminderForm(props) {
 		drugQuantity: 1,
 		quantityTotal: 1,
 		expiredDate: new Date(),
-		patientID: props.userData._id
+		patientID: props.userDataReducer.userData._id
 	})
 
 	const [selectedItem, setSelectedItem] = useState(null)
@@ -215,11 +214,7 @@ function AddReminderForm(props) {
 		try {
 			const { dose, drugQuantity, etiquette, information, quantityTotal, patientID } = drugData
 			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID && drugData.itemName){
-				const token = JSON.parse(await AsyncStorage.getItem('token')).token
-				const newDrug = await props.createNewDrugFromUser(drugData, token)
-				const newDrugs = [...activeDrugs, newDrug]
-				setActiveDrugs(newDrugs)
-	
+				await props.createNewDrugFromUser(drugData, activeDrugs)
 				props.navigation.pop()			
 			} else {
 				setErrorDrugData({
@@ -234,9 +229,9 @@ function AddReminderForm(props) {
 		} catch (error) {
 			console.log(error)
 		}
-
 	}
 
+	// console.log(Object.keys(webDrugs[0]));
   	return (
 		<View style={styles.container}>
 			<GreyHeader
@@ -263,7 +258,7 @@ function AddReminderForm(props) {
 							itemStyle={styles.itemStyle}
 							itemTextStyle={{ color: '#222' }}
 							itemsContainerStyle={{ maxHeight: 150 }}
-							items={allDrugs}
+							items={webDrugs}
 							resetValue={true}
 							textInputProps={
 							{
@@ -381,12 +376,13 @@ function AddReminderForm(props) {
 				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
 						onPress={() => createDrug()}
+						disabled={isLoading}
 						style={styles.button}
 					>
-						{load ? (
-						<ActivityIndicator size={"small"} color="#FFF" />
-						) : (
-						<Text style={styles.buttonText}>Simpan Pengingat</Text>
+						{isLoading ? (
+							<ActivityIndicator size={"small"} color="#FFF" />
+							) : (
+							<Text style={styles.buttonText}>Simpan Pengingat</Text>
 						)}
 					</TouchableOpacity>
 				</View>
