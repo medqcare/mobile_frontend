@@ -240,7 +240,7 @@ function HomePage(props) {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingBottom: 2
+                    paddingBottom: 2,
                   }}
                 >
                   <Image
@@ -251,7 +251,7 @@ function HomePage(props) {
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
-                  {userData && (
+                  <View style={{flexDirection: 'row'}}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -259,44 +259,47 @@ function HomePage(props) {
                         justifyContent: 'center',
                       }}
                     >
+                      {userData && (
+                        <TouchableOpacity
+                          style={{ marginTop: 1 }}
+                          onPress={() => {
+                            props.navigation.navigate('NotificationStack');
+                          }}
+                        >
+                          {null ? (
+                            <NewNotificationBell />
+                          ) : (
+                            <NoNotificationBell />
+                          )}
+                        </TouchableOpacity>
+                      )}
+                    </View>
+
                       <TouchableOpacity
-                        style={{ marginTop: 1 }}
                         onPress={() => {
-                          props.navigation.navigate('NotificationStack');
+                          userData ? props.navigation.navigate('ProfileStack') : props.navigation.navigate('SignIn')
                         }}
                       >
-                        {null ? (
-                          <NewNotificationBell />
-                        ) : (
-                          <NoNotificationBell />
-                        )}
+                        <View style={{ marginLeft: 10 }}>
+                          {userData?.imageUrl ? (
+                            <Image
+                              style={style.profilePicture}
+                              source={{
+                                uri: userData.imageUrl
+                              }}
+                            />
+                          ) : (
+                            <FontAwesome
+                              name="user-circle"
+                              size={23}
+                              color="white"
+                            />
+                          )}
+                        </View>
                       </TouchableOpacity>
-					          </View>
-                    )}
-
-                    <TouchableOpacity
-                      onPress={() => {
-                        userData ? props.navigation.navigate('ProfileStack') : props.navigation.navigate('SignIn')
-                      }}
-                    >
-                      <View style={{ marginLeft: 10 }}>
-                        {userData?.imageUrl ? (
-                          <Image
-                            style={style.profilePicture}
-                            source={{
-                              uri: props.userData.imageUrl
-                            }}
-                          />
-                        ) : (
-                          <FontAwesome
-                            name="user-circle"
-                            size={23}
-                            color="white"
-                          />
-                        )}
-                      </View>
-                    </TouchableOpacity>
+                    </View>
                   </View>
+                  
                 <SearchBar
                   placeholder={'cari dokter atau spesialis'}
                   onFocus={() =>
