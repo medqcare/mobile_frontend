@@ -46,6 +46,14 @@ function AddReminderForm(props) {
 
 	const { activeDrugs, setActiveDrugs, allDrugs } = props.navigation.state.params
 
+	const [errorDrugData, setErrorDrugData] = useState({
+		itemName: false,
+		dose: false,
+		drugQuantity: false,
+		ettquetteLength: false,
+		quantityTotal: false,
+	})
+
 	const [drugData, setDrugData] = useState({
 		dose: '',
 		duration: '',
@@ -101,7 +109,7 @@ function AddReminderForm(props) {
 		const currentDate = selectedDate || date;
 		const hours = currentDate.getHours()
 		const minutes = currentDate.getMinutes()
-		const formattedDate = getFormattedDate(currentDate)
+		const formattedDate = getFormattedDate(currentDate, true)
 		const fullDateFormat = fullMonthFormat(formattedDate)
 		setShow(Platform.OS === 'ios');
 		setDate(currentDate);
@@ -122,11 +130,23 @@ function AddReminderForm(props) {
 	};
 
 	const [load, setLoad] = useState(false)
-
 	
-
 	async function getDrugsByName(text){
 		try {
+			if(!text){
+				setSelectedItem({
+					name: ''
+				})
+				return setDrugData({
+					dose: drugData.dose,
+					duration: drugData.duration,
+					notes: drugData.notes,
+					etiquette: drugData.etiquette,
+					information: drugData.information,
+					drugQuantity: drugData.drugQuantity,
+					quantityTotal: drugData.quantityTotal,
+				})
+			}
 			setSelectedItem({
 				name: text
 			})
@@ -173,9 +193,15 @@ function AddReminderForm(props) {
 	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
 			style={[{paddingLeft: index === 0 ? 0 : dimWidth * 0.009838, justifyContent: "space-between"}]}
-			onPress={() => addEttiquete(value, index, 'etiquette')}
+			onPress={() => {
+				setErrorDrugData({
+					...errorDrugData,
+					ettquetteLength: false
+				})
+				addEttiquete(value, index, 'etiquette')}
+			}
 		>
-			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
+			<View style={errorDrugData.ettquetteLength ? styles.errorSelectedFlatListInput : (selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput)}>
 				<Text style={styles.inputText}>{value}</Text>
 			</View>
 		</TouchableOpacity>
@@ -188,7 +214,7 @@ function AddReminderForm(props) {
 	async function createDrug(){
 		try {
 			const { dose, drugQuantity, etiquette, information, quantityTotal, patientID } = drugData
-			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID){
+			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID && drugData.itemName){
 				const token = JSON.parse(await AsyncStorage.getItem('token')).token
 				const newDrug = await props.createNewDrugFromUser(drugData, token)
 				const newDrugs = [...activeDrugs, newDrug]
@@ -196,6 +222,13 @@ function AddReminderForm(props) {
 	
 				props.navigation.pop()			
 			} else {
+				setErrorDrugData({
+					itemName: drugData.itemName ? false : true,
+					dose: dose ? false: true,
+					drugQuantity: drugQuantity ?  false: true,
+					ettquetteLength: etiquette.length > 0 ? false: true,
+					quantityTotal: quantityTotal ? false: true,
+				})
 				ToastAndroid.show('Mohon melengkapi semua data terlebih dahulu', ToastAndroid.SHORT)
 			}
 		} catch (error) {
@@ -240,6 +273,7 @@ function AddReminderForm(props) {
 								value: selectedItem ? selectedItem.name : '',
 								style: {
 									...styles.input,
+									borderColor: errorDrugData.itemName ? 'rgba(174, 45, 45, 1)' : 'rgba(84, 84, 84, 1)',
 									color: 'white'
 								},
 								onTextChange: text => getDrugsByName(text)
@@ -283,7 +317,7 @@ function AddReminderForm(props) {
 
 						{/* Dose */}
 						<Label text={'Dosis (Jumlah obat sekali makan)'}/>
-						<View style={styles.input}>
+						<View style={errorDrugData.dose ? styles.errorInput : styles.input}>
 							<TextInput
 								style={styles.inputText}
 								autoCapitalize={'none'}
@@ -409,6 +443,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
 
+	errorInput: {
+		height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(174, 45, 45, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center'
+	},
+
 	itemStyle: {
 		padding: 10,
 		marginTop: 2,
@@ -429,6 +473,17 @@ const styles = StyleSheet.create({
 		alignItems: "center",
     },
 	
+	errorSelectedFlatListInput: {
+        height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
+        borderWidth: 2,
+		borderColor: 'rgba(174, 45, 45, 1)',
+        borderRadius: 3,
+		backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+    },
+
 	selectedFlatListInput: {
         height: dimHeight * 0.06128,
 		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
