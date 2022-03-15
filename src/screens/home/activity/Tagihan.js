@@ -4,10 +4,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
-  StatusBar,
-  TouchableOpacity,
   StyleSheet,
   Dimensions,
+  BackHandler
 } from 'react-native';
 import { connect } from 'react-redux';
 import Header from '../../../components/headers/GradientHeader';
@@ -69,8 +68,12 @@ function Tagihan(props) {
     setPatient({ ...data });
   };
 
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    return props.navigation.pop();
+  });
+
   return (
-    <>
+    <View style={{flex: 1}}>
       <Header
         title="Detail Transaksi"
         navigate={props.navigation.navigate}
@@ -128,7 +131,7 @@ function Tagihan(props) {
           </>
         )}
       </View>
-    </>
+    </View>
   );
 }
 

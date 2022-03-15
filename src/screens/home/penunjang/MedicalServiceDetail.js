@@ -127,7 +127,7 @@ function MedicalServiceDetail({ navigation, userData, myLocation }) {
             healthFacility,
             clinic,
           })
-        : (navigation.navigate('DetailDoctor'), navigation.navigate('Sign'));
+        : navigation.navigate('SignIn')
     }
   }
 

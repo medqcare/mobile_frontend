@@ -197,7 +197,7 @@ const ActivityAction = ({ navigation, data }) => {
       <TouchableOpacity
         style={style.content}
         onPress={() => {
-          navigation.navigate('HomeCareScreen');
+          navigation.navigate('HomeCareStack');
         }}
       >
         <Image
