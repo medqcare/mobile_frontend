@@ -36,7 +36,7 @@ function MenuNavigator({ navigation, data }) {
 	  	<TouchableOpacity
 			style={style.borderIcon}
 			onPress={() =>
-					navigation.navigate('PenunjangStack')
+        navigation.navigate('PenunjangStack')
 			}
       	>
         	<Penunjang />

@@ -12,8 +12,6 @@ import {
   StyleSheet,
   ToastAndroid,
   ScrollView,
-  StatusBar,
-  Platform,
 } from 'react-native';
 import { connect, useDispatch } from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
@@ -30,10 +28,8 @@ import { baseURL } from '../../../config';
 import { specialistName } from '../../../assets/specialist/specialist';
 import SearchBar from '../../../components/headers/SearchBar';
 
-import Shortby from '../../../components/modals/doctors/modalSortBy';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 import { heightPercentageToDP } from 'react-native-responsive-screen';
-import { ActivityIndicator } from 'react-native-paper';
 import LottieLoader from 'lottie-react-native';
 
 function SearchDoctorPage(props) {

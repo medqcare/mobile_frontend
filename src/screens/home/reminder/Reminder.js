@@ -5,6 +5,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  BackHandler
 } from "react-native";
 import { connect } from "react-redux";
 import { getDrugs, searchAllDrugs, changeAlarmBoolean, updateFinishStatus, getReminders, changeReminderAlarmTime, changeReminderStatus } from '../../../stores/action'
@@ -15,7 +16,6 @@ import ReminderAddButton from '../../../assets/svg/ReminderAddButton'
 import { ScrollView } from "react-native-gesture-handler";
 import Swiper from 'react-native-swiper'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator } from "react-native-paper";
 import LottieLoader from 'lottie-react-native';
 
 const dimHeight = Dimensions.get("window").height;
@@ -62,6 +62,11 @@ function Reminder(props) {
 	const widthAdd = (dimWidth * 0.06945)
     const heightAdd = (dimHeight * 0.03677)
 	const [index, setIndex] = useState(0)
+	
+	BackHandler.addEventListener('hardwareBackPress', () => {
+    	return props.navigation.pop();
+  	});
+
   	return (
 		<View style={styles.container}>
 			<Header
