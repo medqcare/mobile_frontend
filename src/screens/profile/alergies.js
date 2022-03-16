@@ -39,7 +39,6 @@ const Allergies = (props) => {
 
   const [allergies, setAlergies] = useState([]);
   const [idUser, setIduser] = useState({ firstName: null, _id: null });
-  const [family, setFamily] = useState([]);
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
 
@@ -65,15 +64,6 @@ const Allergies = (props) => {
         ToastAndroid.LONG
       );
     }
-  }
-
-  function getFamily() {
-    const temp = [userData];
-    userData.family.forEach((el) => {
-      temp.push(el);
-    });
-    setIduser(temp[0]);
-    setFamily(temp);
   }
 
   BackHandler.addEventListener("hardwareBackPress", () => {
@@ -139,10 +129,6 @@ const Allergies = (props) => {
   }
 
   useEffect(() => {
-    getFamily();
-  }, []);
-
-  useEffect(() => {
     if (idUser._id) {
       _fetchDataAlergi();
     }
@@ -180,7 +166,7 @@ const Allergies = (props) => {
           modal={modalPatient}
           setModal={setModalPatient}
           accountOwner={accountOwner}
-          family={family}
+          family={[userData, ...userData.family]}
           title="Alergi siapa yang ingin anda lihat?"
           setSelectedValue={setSelectedValue}
           navigateTo={props.navigation.navigate}
