@@ -12,7 +12,7 @@ import {
   Dimensions,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setAlergie, getAlergie, deleteAlergie } from "../../stores/action";
+import { setAlergie, getAlergie, deleteAlergie, getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
 import { connect } from "react-redux";
 import LottieLoader from "lottie-react-native";
 import SelectPatient from "../../components/modals/selectPatient";
@@ -24,134 +24,87 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 const Allergies = (props) => {
-  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const { userData } = props.userDataReducer
+  const { allergies, isLoading, needInfo: needInfoReducer, error } = props.allergiesReducer
+  const [accountOwner, setAccountOwner] = useState(userData);
   const [displayName, setDisplayName] = useState(
-    props.userData.lastName
-      ? props.userData.firstName + " " + props.userData.lastName
-      : props.userData.firstName
+    userData.lastName
+      ? userData.firstName + " " + userData.lastName
+      : userData.firstName
   );
 
   const [Load, setLoad] = useState(false);
   const [inputAlergies, setInputAlergies] = useState("");
   const [needInfo, setNeedInfo] = useState(false)
 
-  const [allergies, setAlergies] = useState([]);
-  const [idUser, setIduser] = useState({ firstName: null, _id: null });
-  const [family, setFamily] = useState([]);
+//   const [allergies, setAlergies] = useState([]);
+  const [idUser, setIduser] = useState({ firstName: userData.firstName, _id: userData._id });
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
 
-  const [selectionType, setSelectionType] = useState([])
+  const [selectionType, setSelectionType] = useState(['OBAT', 'CUACA', 'MAKANAN'])
 
-  async function addAlergies(type) {
-    let token = await AsyncStorage.getItem("token");
-    if (inputAlergies && type) {
-      setModalAllergyTypes(false);
-      props
-        .setAlergie(
-          idUser._id,
-          { alergie: inputAlergies, alergieType: type },
-          JSON.parse(token).token
-        )
-        .then((backData) => {
-          _fetchDataAlergi();
-          setInputAlergies("");
-        });
-    } else {
-      ToastAndroid.show(
-        "please fill in allergy and type of allergy",
-        ToastAndroid.LONG
-      );
-    }
-  }
+	async function addAlergies(type) {
+		try {
+			if (inputAlergies && type) {
+				setModalAllergyTypes(false);
 
-  function getFamily() {
-    const temp = [props.userData];
-    props.userData.family.forEach((el) => {
-      temp.push(el);
-    });
-    setIduser(temp[0]);
-    setFamily(temp);
-  }
+				const patientID = idUser._id
+				const allergy = { 
+					alergie: inputAlergies, 
+					alergieType: type
+				}
 
-  BackHandler.addEventListener("hardwareBackPress", () => {
-    return props.navigation.pop();
-  });
+				await props.createAllergy(patientID, allergy, allergies, setInputAlergies)
+			}
+			else {
+				ToastAndroid.show(
+					"please fill in allergy and type of allergy",
+					ToastAndroid.LONG
+				);
+		   }
+		} catch (error) {
+			console.log(error)
+		}
+	
+	}
+  
+  	async function _fetchDataAlergi() {
+		try {
+			setNeedInfo(false)
+			setLoad(true);
+			const patientID = idUser._id
+			await props.getPatientAllergies(patientID)
+			setLoad(false)
 
-  async function _fetchDataAlergi() {
-    setNeedInfo(false)
-    setAlergies([]);
-    setLoad(true);
-    let token = await AsyncStorage.getItem("token");
-    let temp = {
-      OBAT: [],
-      MAKANAN: [],
-      CUACA: [],
-    };
-    props
-      .getAlergie(idUser._id, JSON.parse(token).token)
-      .then((allAlergi) => {
-        for (let i = 0; i < allAlergi.data.length; i++) {
-          const item = allAlergi.data[i];
-          if (item.status == "Active") {
-            if (!temp[item.alergieType.toUpperCase()]) {
-              temp[item.alergieType.toUpperCase()] = [];
-            }
-            temp[item.alergieType.toUpperCase()].push({
-              id: item._id,
-              alergi: item.alergie,
-              createBy: item.createBy,
-            });
-          }
-        }
-
-        let fromPatient = false
-        let fromDokter = false
-        allAlergi.data.map(el => {
-          if(el.status === 'Active'){
-            if(el.createBy === 'Patient'){ fromPatient = true}
-            if(el.createBy === 'Dokter'){ fromDokter = true}
-          }
-        })
-
-        if(fromDokter && fromPatient){setNeedInfo(true)}
-
-        const keySelection = Object.keys(temp);
-        const index = keySelection.indexOf("");
-        if (index !== -1) keySelection.splice(index, 1);
-        setSelectionType(keySelection);
-
-        if (temp.OBAT.length === 0) delete temp.OBAT;
-        if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
-        if (temp.CUACA.length === 0) delete temp.CUACA;
-
-        setAlergies(temp);
-        setLoad(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoad(false);
-      });
-  }
-
-  useEffect(() => {
-    getFamily();
-  }, []);
+		} catch (error) {
+			setLoad(false)
+			console.log(error)
+		}
+  	}
 
   useEffect(() => {
     if (idUser._id) {
       _fetchDataAlergi();
+    } else {
+      console.log('_id is undefined')
     }
   }, [idUser, props.navigation.state.params]);
 
-  function setSelectedValue(data) {
-    const fullName = data.lastName
-      ? data.firstName + " " + data.lastName
-      : data.firstName;
-    const _id = data._id;
-    setDisplayName(fullName);
-    setIduser({ fullName, _id });
-  }
+//   console.log(selectionType)
+
+	function setSelectedValue(data) {
+		const fullName = data.lastName
+		? data.firstName + " " + data.lastName
+		: data.firstName;
+		const _id = data._id;
+		setDisplayName(fullName);
+		setIduser({ fullName, _id });
+	}
+
+	BackHandler.addEventListener("hardwareBackPress", () => {
+		return props.navigation.pop();
+	});
 
   return (
     <View style={styles.container}>
@@ -176,13 +129,13 @@ const Allergies = (props) => {
           modal={modalPatient}
           setModal={setModalPatient}
           accountOwner={accountOwner}
-          family={family}
+          family={[userData, ...userData.family]}
           title="Alergi siapa yang ingin anda lihat?"
           setSelectedValue={setSelectedValue}
           navigateTo={props.navigation.navigate}
         />
       </View>
-      {Load ? (
+      {isLoading ? (
         <View style={{ flex: 1, width: "100%", backgroundColor: "#1F1F1F" }}>
           <LottieLoader
             source={require("../animation/loading.json")}
@@ -197,7 +150,7 @@ const Allergies = (props) => {
             // Allergy Box
             <View style={{ height: dimHeight * 0.7 }}>
               {
-                needInfo && 
+                needInfoReducer && 
               <View style={styles.boxDetail}>
                 <View style={styles.itemBoxDetail}>
                   <View style={styles.boxDokter} />
@@ -259,7 +212,7 @@ const Allergies = (props) => {
               }}
               style={styles.button}
             >
-              {Load ? (
+              {isLoading ? (
                 <ActivityIndicator size={"small"} color="#FFF" />
               ) : (
                 <View
@@ -461,6 +414,9 @@ const mapDispatchToProps = {
   setAlergie,
   getAlergie,
   deleteAlergie,
+  getPatientAllergies, 
+  createAllergy, 
+  deleteSelectedAllergy
 };
 
 const mapStateToProps = (state) => {

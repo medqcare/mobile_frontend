@@ -25,7 +25,7 @@ function Reminder(props) {
 	const swiper = useRef(null)
 
 	const { userData, isLoading, error } = props.userDataReducer
-	const { activeDrugs, finishedDrugs, isLoading: drugLoading, error: drugError } = props.drugReducer
+	const { activeDrugs, finishedDrugs, webDrugs, isLoading: drugLoading, isLoadingWebDrug, error: drugError } = props.drugReducer
 	
 	// const [userData, setUserData] = useState(props.userData)
 	const [selectedPatient, setSelectedPatient] = useState(userData)
@@ -41,10 +41,9 @@ function Reminder(props) {
 	const [loadSearchAllDrugs, setLoadSearchAllDrugs] = useState(true)
 
 
-	// useEffect( async () => {
-	// 	await props.searchAllDrugs()
-	// 	setLoadSearchAllDrugs(false)
-	// }, [])
+	useEffect( async () => {
+		await props.searchAllDrugs()
+	}, [])
 
 	useEffect( async () => {
 		try {
@@ -104,8 +103,8 @@ function Reminder(props) {
 				</View>
 				<TouchableOpacity 
 					style={styles.optionAdd}
-					disabled={drugLoading}
-					onPress={() => props.navigation.navigate('AddReminderForm', {setActiveDrugs : setActiveDrugs, activeDrugs: activeDrugs, allDrugs: allDrugs})}
+					disabled={isLoadingWebDrug}
+					onPress={() => props.navigation.navigate('AddReminderForm')}
 				>
 					<ReminderAddButton width={widthAdd} height={heightAdd}/>
 				</TouchableOpacity>

@@ -17,6 +17,8 @@ import {
   getAlergie,
   deleteAlergie,
   editAlergi,
+  editSelectedAllergy,
+  deleteSelectedAllergy,
 } from "../../stores/action";
 import { connect } from "react-redux";
 import SelectModalAllergies from "../../components/modals/modalPickerAllergies";
@@ -31,6 +33,7 @@ const dimWidth = Dimensions.get("window").width;
 
 const EditAllergies = (props) => {
   const { data, selected, selectionType } = props.navigation.state.params;
+  const { allergies } = props.allergiesReducer
 
   const [Load, setLoad] = useState(false);
   const [inputAlergies, setInputAlergies] = useState("");
@@ -97,18 +100,20 @@ const EditAllergies = (props) => {
   }
 
   async function deleteAlergi(id) {
-    let token = await AsyncStorage.getItem("token");
-    return props.deleteAlergie(id, JSON.parse(token).token);
+    // let token = await AsyncStorage.getItem("token");
+    // return props.deleteAlergie(id, JSON.parse(token).token);
+    return props.deleteSelectedAllergy(id, allergies, selected)
   }
 
   async function editAlergi(item) {
-    let token = await AsyncStorage.getItem("token");
-    return props.editAlergi(
-      item.id,
-      item.alergi,
-      item.type,
-      JSON.parse(token).token
-    );
+    // let token = await AsyncStorage.getItem("token");
+    // return props.editAlergi(
+    //   item.id,
+    //   item.alergi,
+    //   item.type,
+    //   JSON.parse(token).token
+    // );
+    return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
   }
 
   async function actionAsync() {
@@ -492,6 +497,8 @@ const mapDispatchToProps = {
   getAlergie,
   deleteAlergie,
   editAlergi,
+  editSelectedAllergy,
+  deleteSelectedAllergy
 };
 
 const mapStateToProps = (state) => {
