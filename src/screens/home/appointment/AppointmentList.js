@@ -100,7 +100,7 @@ const Appointment = (props) => {
         const { data: res } = await axios({
           url:
             baseURL +
-            `/api/v1/members/reservations/user?status=booked&type=${type}`,
+            `/api/v1/members/reservations/user?status=booked&type=${type}&active=true`,
           method: 'GET',
           headers: {
             Authorization: token,
@@ -126,7 +126,7 @@ const Appointment = (props) => {
       const { data: res } = await axios({
         url:
           baseURL +
-          `/api/v1/members/reservations/user?status=booked&type=${type}`,
+          `/api/v1/members/reservations/user?status=booked&type=${type}&active=true`,
         method: 'GET',
         headers: {
           Authorization: token,
