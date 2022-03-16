@@ -4,7 +4,7 @@ import {
   createAllergy,
   deleteSelectedAllergy
 } from './allergies'
-export {
+import {
   searchAllReservations,
   cancelSelectedReservation
 } from './appointment'
