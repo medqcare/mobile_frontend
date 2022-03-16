@@ -25,7 +25,7 @@ const dimWidth = Dimensions.get("window").width;
 
 const Allergies = (props) => {
   const { userData } = props.userDataReducer
-  const { allergies: reducerAllergies, isLoading, error } = props.allergiesReducer
+  const { allergies, isLoading, needInfo: needInfoReducer, error } = props.allergiesReducer
   const [accountOwner, setAccountOwner] = useState(userData);
   const [displayName, setDisplayName] = useState(
     userData.lastName
@@ -37,111 +37,74 @@ const Allergies = (props) => {
   const [inputAlergies, setInputAlergies] = useState("");
   const [needInfo, setNeedInfo] = useState(false)
 
-  const [allergies, setAlergies] = useState([]);
-  const [idUser, setIduser] = useState({ firstName: null, _id: null });
+//   const [allergies, setAlergies] = useState([]);
+  const [idUser, setIduser] = useState({ firstName: userData.firstName, _id: userData._id });
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
 
-  const [selectionType, setSelectionType] = useState([])
+  const [selectionType, setSelectionType] = useState(['OBAT', 'CUACA', 'MAKANAN'])
 
-  async function addAlergies(type) {
-    let token = await AsyncStorage.getItem("token");
-    if (inputAlergies && type) {
-      setModalAllergyTypes(false);
-      props
-        .setAlergie(
-          idUser._id,
-          { alergie: inputAlergies, alergieType: type },
-          JSON.parse(token).token
-        )
-        .then((backData) => {
-          _fetchDataAlergi();
-          setInputAlergies("");
-        });
-    } else {
-      ToastAndroid.show(
-        "please fill in allergy and type of allergy",
-        ToastAndroid.LONG
-      );
-    }
-  }
+	async function addAlergies(type) {
+		try {
+			if (inputAlergies && type) {
+				setModalAllergyTypes(false);
 
-  BackHandler.addEventListener("hardwareBackPress", () => {
-    return props.navigation.pop();
-  });
+				const patientID = idUser._id
+				const allergy = { 
+					alergie: inputAlergies, 
+					alergieType: type
+				}
 
-  async function _fetchDataAlergi() {
-    setNeedInfo(false)
-    setAlergies([]);
-    setLoad(true);
-    let token = await AsyncStorage.getItem("token");
-    let temp = {
-      OBAT: [],
-      MAKANAN: [],
-      CUACA: [],
-    };
-    props
-      .getAlergie(idUser._id, JSON.parse(token).token)
-      .then((allAlergi) => {
-        for (let i = 0; i < allAlergi.data.length; i++) {
-          const item = allAlergi.data[i];
-          if (item.status == "Active") {
-            if (!temp[item.alergieType.toUpperCase()]) {
-              temp[item.alergieType.toUpperCase()] = [];
-            }
-            temp[item.alergieType.toUpperCase()].push({
-              id: item._id,
-              alergi: item.alergie,
-              createBy: item.createBy,
-            });
-          }
-        }
+				await props.createAllergy(patientID, allergy, allergies, setInputAlergies)
+			}
+			else {
+				ToastAndroid.show(
+					"please fill in allergy and type of allergy",
+					ToastAndroid.LONG
+				);
+		   }
+		} catch (error) {
+			console.log(error)
+		}
+	
+	}
+  
+  	async function _fetchDataAlergi() {
+		try {
+			setNeedInfo(false)
+			setLoad(true);
+			const patientID = idUser._id
+			await props.getPatientAllergies(patientID)
+			setLoad(false)
 
-        let fromPatient = false
-        let fromDokter = false
-        allAlergi.data.map(el => {
-          if(el.status === 'Active'){
-            if(el.createBy === 'Patient'){ fromPatient = true}
-            if(el.createBy === 'Dokter'){ fromDokter = true}
-          }
-        })
-
-        if(fromDokter && fromPatient){setNeedInfo(true)}
-
-        const keySelection = Object.keys(temp);
-        const index = keySelection.indexOf("");
-        if (index !== -1) keySelection.splice(index, 1);
-        setSelectionType(keySelection);
-		console.log(keySelection)
-		console.log(index)
-
-        if (temp.OBAT.length === 0) delete temp.OBAT;
-        if (temp.MAKANAN.length === 0) delete temp.MAKANAN;
-        if (temp.CUACA.length === 0) delete temp.CUACA;
-
-        setAlergies(temp);
-        setLoad(false);
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoad(false);
-      });
-  }
+		} catch (error) {
+			setLoad(false)
+			console.log(error)
+		}
+  	}
 
   useEffect(() => {
     if (idUser._id) {
       _fetchDataAlergi();
+    } else {
+      console.log('_id is undefined')
     }
   }, [idUser, props.navigation.state.params]);
 
-  function setSelectedValue(data) {
-    const fullName = data.lastName
-      ? data.firstName + " " + data.lastName
-      : data.firstName;
-    const _id = data._id;
-    setDisplayName(fullName);
-    setIduser({ fullName, _id });
-  }
+//   console.log(selectionType)
+
+	function setSelectedValue(data) {
+		const fullName = data.lastName
+		? data.firstName + " " + data.lastName
+		: data.firstName;
+		const _id = data._id;
+		setDisplayName(fullName);
+		setIduser({ fullName, _id });
+	}
+
+	BackHandler.addEventListener("hardwareBackPress", () => {
+		return props.navigation.pop();
+	});
 
   return (
     <View style={styles.container}>
@@ -172,7 +135,7 @@ const Allergies = (props) => {
           navigateTo={props.navigation.navigate}
         />
       </View>
-      {Load ? (
+      {isLoading ? (
         <View style={{ flex: 1, width: "100%", backgroundColor: "#1F1F1F" }}>
           <LottieLoader
             source={require("../animation/loading.json")}
@@ -187,7 +150,7 @@ const Allergies = (props) => {
             // Allergy Box
             <View style={{ height: dimHeight * 0.7 }}>
               {
-                needInfo && 
+                needInfoReducer && 
               <View style={styles.boxDetail}>
                 <View style={styles.itemBoxDetail}>
                   <View style={styles.boxDokter} />
@@ -249,7 +212,7 @@ const Allergies = (props) => {
               }}
               style={styles.button}
             >
-              {Load ? (
+              {isLoading ? (
                 <ActivityIndicator size={"small"} color="#FFF" />
               ) : (
                 <View
