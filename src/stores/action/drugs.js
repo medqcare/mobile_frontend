@@ -6,10 +6,13 @@ import { ToastAndroid } from 'react-native';
 
 const { 
     SET_DRUGS,
+    SET_WEB_DRUGS,
     SET_ACTIVE_DRUGS,
     SET_FINISHED_DRUGS,
     SET_DRUGS_LOADING,
+    SET_WEB_DRUGS_LOADING,
     SET_DRUGS_ERROR,
+    SET_WEB_DRUGS_ERROR,
     DELETE_DRUGS
 } = keys.drugKeys
 
@@ -87,24 +90,51 @@ export function searchDrugByName(query){
 export function searchAllDrugs(){
     return async dispatch => {
         try {
+            console.log('Application is trying to find all drugs from web')
+            await dispatch({
+                type: SET_WEB_DRUGS_LOADING,
+                payload: true
+            })
             let { data } = await webDrugInstance({
                 method: 'GET',
                 url: `/listdrugs`,
             })
-            await dispatch({
-                type: 'SEARCH_ALL_DRUGS',
-                payload: data.data
+
+            console.log(`Application found ${data.data.length} drugs from web`)
+
+            const revised = data.data.map(el => {
+                el.name = el.itemName
+                return el
             })
-            return data.data
+
+            await dispatch({
+                type: SET_WEB_DRUGS,
+                payload: revised
+            })
+
+            await dispatch({
+                type: SET_WEB_DRUGS_LOADING,
+                payload: false
+            })
         } catch (error) {
-            console.log(error.message)
+            await dispatch({
+                type: SET_WEB_DRUGS_ERROR,
+                payload: error.message
+            })
+            console.log(error, 'error at web drugs')
         }
     }
 }
 
-export function createNewDrugFromUser(newDrug, token){
+export function createNewDrugFromUser(newDrug, activeDrugs){
     return async dispatch => {
         try {
+            await dispatch({
+                type: SET_DRUGS_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
             let { data } = await drugInstance({
                 method: 'POST',
                 url: `/createNewDrugFromUser`,
@@ -113,7 +143,18 @@ export function createNewDrugFromUser(newDrug, token){
                 },
                 data: newDrug
             })
-            return data.data
+
+            const newActiveDrugs = [...activeDrugs, data.data]
+
+            await dispatch({
+                type: SET_ACTIVE_DRUGS,
+                payload: newActiveDrugs
+            })
+
+            await dispatch({
+                type: SET_DRUGS_LOADING,
+                payload: false
+            })
         } catch (error) {
             console.log(error.message, 'error at create new Drug')
         }
