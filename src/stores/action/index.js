@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   getPatientAllergies,
   createAllergy,
+  editSelectedAllergy,
   deleteSelectedAllergy
 } from './allergies'
 import {
@@ -1321,6 +1322,7 @@ export function setShowInstruction(payload) {
 export {
   getPatientAllergies,
   createAllergy,
+  editSelectedAllergy,
   deleteSelectedAllergy
 }
 
