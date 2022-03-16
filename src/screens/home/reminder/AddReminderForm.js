@@ -32,6 +32,7 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function AddReminderForm(props) {
+	const { activeDrugs, webDrugs, isLoading } = props.drugReducer
 
 	useEffect(() => {
 		LogBox.ignoreLogs(["VirtualizedLists should never be nested"])
@@ -44,7 +45,13 @@ function AddReminderForm(props) {
 		},
 	]
 
-	const { activeDrugs, setActiveDrugs, allDrugs } = props.navigation.state.params
+	const [errorDrugData, setErrorDrugData] = useState({
+		itemName: false,
+		dose: false,
+		drugQuantity: false,
+		ettquetteLength: false,
+		quantityTotal: false,
+	})
 
 	const [drugData, setDrugData] = useState({
 		dose: '',
@@ -55,7 +62,7 @@ function AddReminderForm(props) {
 		drugQuantity: 1,
 		quantityTotal: 1,
 		expiredDate: new Date(),
-		patientID: props.userData._id
+		patientID: props.userDataReducer.userData._id
 	})
 
 	const [selectedItem, setSelectedItem] = useState(null)
@@ -101,7 +108,7 @@ function AddReminderForm(props) {
 		const currentDate = selectedDate || date;
 		const hours = currentDate.getHours()
 		const minutes = currentDate.getMinutes()
-		const formattedDate = getFormattedDate(currentDate)
+		const formattedDate = getFormattedDate(currentDate, true)
 		const fullDateFormat = fullMonthFormat(formattedDate)
 		setShow(Platform.OS === 'ios');
 		setDate(currentDate);
@@ -122,11 +129,23 @@ function AddReminderForm(props) {
 	};
 
 	const [load, setLoad] = useState(false)
-
 	
-
 	async function getDrugsByName(text){
 		try {
+			if(!text){
+				setSelectedItem({
+					name: ''
+				})
+				return setDrugData({
+					dose: drugData.dose,
+					duration: drugData.duration,
+					notes: drugData.notes,
+					etiquette: drugData.etiquette,
+					information: drugData.information,
+					drugQuantity: drugData.drugQuantity,
+					quantityTotal: drugData.quantityTotal,
+				})
+			}
 			setSelectedItem({
 				name: text
 			})
@@ -173,9 +192,15 @@ function AddReminderForm(props) {
 	const EttiqueteItem = ({ value, selected, index, id}) => (
 		<TouchableOpacity 
 			style={[{paddingLeft: index === 0 ? 0 : dimWidth * 0.009838, justifyContent: "space-between"}]}
-			onPress={() => addEttiquete(value, index, 'etiquette')}
+			onPress={() => {
+				setErrorDrugData({
+					...errorDrugData,
+					ettquetteLength: false
+				})
+				addEttiquete(value, index, 'etiquette')}
+			}
 		>
-			<View style={selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput}>
+			<View style={errorDrugData.ettquetteLength ? styles.errorSelectedFlatListInput : (selected ? styles.selectedFlatListInput : styles.unselectedFlatListInput)}>
 				<Text style={styles.inputText}>{value}</Text>
 			</View>
 		</TouchableOpacity>
@@ -188,22 +213,25 @@ function AddReminderForm(props) {
 	async function createDrug(){
 		try {
 			const { dose, drugQuantity, etiquette, information, quantityTotal, patientID } = drugData
-			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID){
-				const token = JSON.parse(await AsyncStorage.getItem('token')).token
-				const newDrug = await props.createNewDrugFromUser(drugData, token)
-				const newDrugs = [...activeDrugs, newDrug]
-				setActiveDrugs(newDrugs)
-	
+			if(dose && drugQuantity && etiquette.length > 0 && information && quantityTotal && patientID && drugData.itemName){
+				await props.createNewDrugFromUser(drugData, activeDrugs)
 				props.navigation.pop()			
 			} else {
+				setErrorDrugData({
+					itemName: drugData.itemName ? false : true,
+					dose: dose ? false: true,
+					drugQuantity: drugQuantity ?  false: true,
+					ettquetteLength: etiquette.length > 0 ? false: true,
+					quantityTotal: quantityTotal ? false: true,
+				})
 				ToastAndroid.show('Mohon melengkapi semua data terlebih dahulu', ToastAndroid.SHORT)
 			}
 		} catch (error) {
 			console.log(error)
 		}
-
 	}
 
+	// console.log(Object.keys(webDrugs[0]));
   	return (
 		<View style={styles.container}>
 			<GreyHeader
@@ -230,7 +258,7 @@ function AddReminderForm(props) {
 							itemStyle={styles.itemStyle}
 							itemTextStyle={{ color: '#222' }}
 							itemsContainerStyle={{ maxHeight: 150 }}
-							items={allDrugs}
+							items={webDrugs}
 							resetValue={true}
 							textInputProps={
 							{
@@ -240,6 +268,7 @@ function AddReminderForm(props) {
 								value: selectedItem ? selectedItem.name : '',
 								style: {
 									...styles.input,
+									borderColor: errorDrugData.itemName ? 'rgba(174, 45, 45, 1)' : 'rgba(84, 84, 84, 1)',
 									color: 'white'
 								},
 								onTextChange: text => getDrugsByName(text)
@@ -283,7 +312,7 @@ function AddReminderForm(props) {
 
 						{/* Dose */}
 						<Label text={'Dosis (Jumlah obat sekali makan)'}/>
-						<View style={styles.input}>
+						<View style={errorDrugData.dose ? styles.errorInput : styles.input}>
 							<TextInput
 								style={styles.inputText}
 								autoCapitalize={'none'}
@@ -347,12 +376,13 @@ function AddReminderForm(props) {
 				<View style={styles.buttonContainer}>	
 					<TouchableOpacity
 						onPress={() => createDrug()}
+						disabled={isLoading}
 						style={styles.button}
 					>
-						{load ? (
-						<ActivityIndicator size={"small"} color="#FFF" />
-						) : (
-						<Text style={styles.buttonText}>Simpan Pengingat</Text>
+						{isLoading ? (
+							<ActivityIndicator size={"small"} color="#FFF" />
+							) : (
+							<Text style={styles.buttonText}>Simpan Pengingat</Text>
 						)}
 					</TouchableOpacity>
 				</View>
@@ -409,6 +439,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
 
+	errorInput: {
+		height: dimHeight * 0.06128,
+        borderWidth: 2,
+		borderColor: 'rgba(174, 45, 45, 1)',
+        paddingHorizontal: dimWidth * 0.04,
+        borderRadius: 3,
+        backgroundColor: '#1F1F1F',
+        justifyContent: 'center'
+	},
+
 	itemStyle: {
 		padding: 10,
 		marginTop: 2,
@@ -429,6 +469,17 @@ const styles = StyleSheet.create({
 		alignItems: "center",
     },
 	
+	errorSelectedFlatListInput: {
+        height: dimHeight * 0.06128,
+		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),
+        borderWidth: 2,
+		borderColor: 'rgba(174, 45, 45, 1)',
+        borderRadius: 3,
+		backgroundColor: '#1F1F1F',
+        justifyContent: 'center',
+		alignItems: "center",
+    },
+
 	selectedFlatListInput: {
         height: dimHeight * 0.06128,
 		width: dimWidth * 0.9 * 0.25 - (dimWidth * 0.009838),

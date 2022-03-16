@@ -4,6 +4,20 @@ import {
   createAllergy,
   deleteSelectedAllergy
 } from './allergies'
+export {
+  searchAllReservations,
+  cancelSelectedReservation
+} from './appointment'
+import {
+  searchAllClinics,
+  searchClinicByName
+} from './clinic'
+import {
+  searchAllDoctors,
+  searchDoctorBySpecialist,
+  searchDoctorByName,
+  makeReservation
+} from './doctor'
 import {
   signIn,
   signUp
@@ -42,6 +56,8 @@ import {
   changeAccountPassword,
   createNewFamily,
   deleteFamilyData,
+  addFavoriteDoctor,
+  removeFavoriteDoctor,
   deleteUserData,
 } from './userData'
 import {
@@ -70,14 +86,14 @@ const _storeData = async (data) => {
   }
 };
 
-export function addDoctorFavorite(data) {
-  // console.log(data, 'ini di action')
-  return async (dispatch) => {
-    await dispatch({
-      type: 'AFTER_SIGNIN',
-      payload: data,
-    });
-  };
+// export function addDoctorFavorite(data) {
+//   // console.log(data, 'ini di action')
+//   return async (dispatch) => {
+//     await dispatch({
+//       type: 'AFTER_SIGNIN',
+//       payload: data,
+//     });
+//   };
 
   // return async dispatch => {
   //   try {
@@ -91,7 +107,7 @@ export function addDoctorFavorite(data) {
   //     console.log(error);
   //   }
   // }
-}
+// }
 
 export function changeLogin(status) {
   return (dispatch) => {
@@ -963,7 +979,7 @@ export function bookDoctor(bookData, token) {
           data: bookData,
           headers: { Authorization: token },
         });
-        // console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
+        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
         resolve({ message: data.data.message, status: data.data.status });
       } catch (error) {
         console.log(error);
@@ -1308,6 +1324,23 @@ export {
   deleteSelectedAllergy
 }
 
+export {
+  searchAllReservations,
+  cancelSelectedReservation
+}
+
+export {
+  searchAllClinics,
+  searchClinicByName
+}
+
+export {
+  searchAllDoctors,
+  searchDoctorBySpecialist,
+  searchDoctorByName,
+  makeReservation,
+}
+
 export { 
   signIn,
   signUp
@@ -1336,4 +1369,4 @@ export {
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, deleteUserData }
+export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }

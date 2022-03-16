@@ -6,10 +6,9 @@ import {
 	Text,
 	View,
 	Dimensions,
-	Image,
 	TouchableOpacity,
 	ScrollView,
-	ActivityIndicator
+	BackHandler
 } from "react-native";
 import { connect } from "react-redux";
 import Header from "../../../components/headers/GradientHeader";
@@ -91,7 +90,10 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 		setDisplayName(fullName)
 		setPatientID(data._id)
 	}
-	
+
+	BackHandler.addEventListener('hardwareBackPress', () => {
+    	return navigation.pop();
+  	});
   
 	return (
 		<View style={styles.container}>
@@ -153,10 +155,10 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<PrescriptionTodaysList props={userData, navigation} prescriptions={todaysPrescriptions}/>
+						<PrescriptionTodaysList prescriptions={todaysPrescriptions}/>
 					</ScrollView>
 					<ScrollView>
-						<PrescriptionHistory props={userData, navigation} prescriptions={prescriptionHistory}/>
+						<PrescriptionHistory prescriptions={prescriptionHistory}/>
 					</ScrollView>
 				</Swiper>
 			}

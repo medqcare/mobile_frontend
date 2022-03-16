@@ -7,7 +7,9 @@ import entryReducer from "./entry";
 import showInstructionReducer from "./showInstruction";
 import userDataReducer from "./userData";
 import userLocationReducer from "./userLocation";
-
+import medicalServicesReducer from "./medicalServices";
+import clinicReducer from "./clinic";
+import appointmentsReducer from "./appointment";
 
 const reducer = combineReducers({
 	allergiesReducer,
@@ -17,7 +19,10 @@ const reducer = combineReducers({
 	userDataReducer,
 	userLocationReducer,
 	todayActivityReducer,
-	entryReducer
+	entryReducer,
+	medicalServicesReducer,
+	clinicReducer,
+	appointmentsReducer
 })
 
 export default reducer

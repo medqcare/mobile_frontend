@@ -16,10 +16,11 @@ import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import LottieLoader from 'lottie-react-native';
 import getPaymentMethod from '../../../helpers/getPaymentMethod';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import { WHITE_PRIMARY } from '../../../values/color';
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
-  "'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90'";
+  'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg';
 
 export default function Transaksi(props) {
   const [transactions, setTransactions] = useState([]);
@@ -118,28 +119,46 @@ export default function Transaksi(props) {
                       alignItems: 'center',
                     }}
                   >
-                    <View style={{}}>
-                      <View style={styles.borderImage}>
-                        <Image
-                          style={styles.image}
-                          source={{
-                            uri: item.doctor.doctorPhoto
-                              ? item.doctor.doctorPhoto
-                              : DEFAULT_IMAGE_URL,
-                          }}
-                        />
-                      </View>
-                    </View>
-                    {item.doctor.doctorID ? (
-                      <View style={{ marginLeft: dimHeight * 0.02 }}>
-                        <Text style={styles.name}>
-                          {item.doctor.title} {item.doctor.doctorName}
-                        </Text>
-                        <Text style={styles.textcontent}>
-                          Spesialis {item.doctor.doctorSpecialist}
-                        </Text>
-                      </View>
-                    ) : null}
+                    {item.doctor ? (
+                      <>
+                        <View style={{}}>
+                          <View style={styles.borderImage}>
+                            <Image
+                              style={styles.image}
+                              source={{
+                                uri: item.doctor.doctorPhoto
+                                  ? item.doctor.doctorPhoto
+                                  : DEFAULT_IMAGE_URL,
+                              }}
+                            />
+                          </View>
+                        </View>
+                        <View style={{ marginLeft: dimHeight * 0.02 }}>
+                          <Text style={styles.name}>
+                            {item.doctor.title} {item.doctor.doctorName}
+                          </Text>
+                          <Text style={styles.textcontent}>
+                            Spesialis {item.doctor.doctorSpecialist}
+                          </Text>
+                        </View>
+                      </>
+                    ) : (
+                      <>
+                        <>
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: 16,
+                                color: WHITE_PRIMARY,
+                                textTransform: 'capitalize',
+                              }}
+                            >
+                              Layanan Medis {item.services.name}
+                            </Text>
+                          </View>
+                        </>
+                      </>
+                    )}
                   </View>
                   <View style={styles.line} />
                   <View>
@@ -148,7 +167,9 @@ export default function Transaksi(props) {
                     </Text>
                     <View style={styles.time}>
                       <Text style={styles.textcontent}>{schedule}</Text>
-                      <View style={styles.dividingPoint}></View>
+                      {item.bookingTime && (
+                        <View style={styles.dividingPoint}></View>
+                      )}
                       <Text style={styles.textcontent}>{item.bookingTime}</Text>
                     </View>
                     <Text style={styles.textcontent}>
@@ -261,6 +282,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#B5B5B5',
     marginBottom: 4,
+    textTransform: "capitalize"
   },
   time: {
     flexDirection: 'row',

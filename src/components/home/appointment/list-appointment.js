@@ -208,7 +208,7 @@ const ListApointment = (props) => {
               <TouchableOpacity
                 onPress={() => {
                   if (typeof props.onCancelReservation === 'function') {
-                    props.onCancelReservation(props.data._id);
+                    props.onCancelReservation(props.data._id, props.data.orderType);
                   }
                 }}
               >

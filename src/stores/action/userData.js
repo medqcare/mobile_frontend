@@ -18,9 +18,13 @@ export function getLoggedData(navigation){
                 type: SET_USER_DATA_LOADING,
                 payload: true
             })
+            
             const token = await getToken()
             if(!token){
-                return null
+                return await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
             }
             console.log(token);
             console.log('Above is the token that is already in AsyncStorage');
@@ -59,6 +63,10 @@ export function getLoggedData(navigation){
                 `Please check your internet connection`,
                 ToastAndroid.LONG
             );
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
             console.log('Error found in function getLoggedData ==>', error.message);
         }
     }
@@ -300,6 +308,58 @@ export function deleteFamilyData(userData, patientId){
 
         } catch (error) {
             console.log(error)
+        }
+    }
+}
+
+export function addFavoriteDoctor(patientID, doctorData, changedStatus, setThisFavorite){
+    return async dispatch => {
+        try {
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `addFavoriteDoctor/${patientID}`,
+                headers: {
+                    Authorization: token
+                },
+                data: {
+                    favoriteDoctor: doctorData
+                }
+            })
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: data.data
+            })
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+            setThisFavorite(changedStatus)
+        } catch (error) {
+            console.log(error.response.data)
+        }
+    }
+}
+
+export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite){
+    return async dispatch => {
+        try {
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `removeFavoriteDoctor/${patientID}`,
+                headers: {
+                    Authorization: token
+                },
+                data: {
+                    doctorID
+                }
+            })
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: data.data
+            })
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+            setThisFavorite(changedStatus)
+        } catch (error) {
+            console.log(error.response.data)
         }
     }
 }

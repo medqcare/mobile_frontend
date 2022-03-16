@@ -37,6 +37,7 @@ function CardMedicalService({ reservation, ...props }) {
     });
   };
 
+
   return (
     <View>
       <View style={styles.topWrapper}>
@@ -50,7 +51,7 @@ function CardMedicalService({ reservation, ...props }) {
                 {reservation.services.name}
               </Text>
               <Text style={styles.textGreyServiceInfo}>
-                Klinik Meranti Corrie
+                {reservation.healthFacility.facilityName}
               </Text>
               {/* <Text style={styles.textGreyServiceInfo}>
               Jl. Meranti Utara III Blok D 98
@@ -65,7 +66,7 @@ function CardMedicalService({ reservation, ...props }) {
               <TouchableOpacity
                 style={styles.openMap}
                 onPress={() => {
-                  openMap(long, lat);
+                  openMap(lat, long);
                 }}
               >
                 <ButtonMap />

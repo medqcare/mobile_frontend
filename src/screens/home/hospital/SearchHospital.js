@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import CardHospital from '../../../components/home/hospital/card-hospital';
-import { getDataHospital } from '../../../stores/action';
+import { getDataHospital, searchAllClinics, searchClinicByName } from '../../../stores/action';
 import SearchBar from '../../../components/headers/SearchBar';
 
 import axios from 'axios';
@@ -41,77 +41,29 @@ import LottieLoader from 'lottie-react-native';
  */
 
 function SearchDoctorPage(props) {
-  // console.log(props.navigation.state.params.facility,'ini params')
-  let mainFac = props.navigation.state.params.facility;
-  const [loader, setLoad] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [location, setLocation] = useState(props.myLocation);
-  const [show, setShow] = useState([]);
-  const [showLoading, setLoading] = useState(true);
-  const [search, setSearch] = useState([]);
+	const { userLocation, isLoading, error } = props.userLocationReducer
+	const { clinics, isLoading: clinicLoading, error: clinicError } = props.clinicReducer
+	let mainFac = props.navigation.state.params.facility;
+	const [loader, setLoad] = useState(false);
+	const [currentPage, setCurrentPage] = useState(0);
+	const [show, setShow] = useState([]);
+	const [search, setSearch] = useState([]);
 
-  useEffect(() => {
-    fetchHospitalPagination();
-  }, []);
+	useEffect(async () => {
+		await props.searchAllClinics(userLocation, setShow)
+	}, []);
 
-  const fetchHospitalPagination = async () => {
-    try {
-      let { data } = await axios(
-        {
-          method: 'POST',
-          url: `${baseURL}/api/v1/members/searchFacility`,
-          data: {
-            lat: location ? location.lat : -6.268809,
-            lon: location ? location.lng : 106.974705,
-            maxDistance: 1000000000,
-          },
-        },
-        { timeout: 4000 }
-      );
-      setShow(data.data);
-      setLoading(false);
-      // let nextPage = currentPage + 1;
-      // setCurrentPage(nextPage);
-    } catch (error) {
-      setLoading(false);
-      console.log(error, 'error');
-    }
-  };
-
-  const _textChange = async (facility) => {
-    setLoading(true);
-    setShow([]);
-    try {
-      let { data, status } = await axios.get(
-        `${baseURL}/api/v1/members/facilityByName?facilityName=${facility}&facilityMainType=Clinic`,
-        { timeout: 4000 }
-      );
-      if (status == 204) {
-        setLoading(false);
-      } else {
-        data.data.sort((a, b) => {
-          let distanceA = latLongToKM(
-            a.location.coordinates[1],
-            a.location.coordinates[0],
-            location.lat,
-            location.lng
-          ).toFixed(1);
-          let distanceB = latLongToKM(
-            b.location.coordinates[1],
-            b.location.coordinates[0],
-            location.lat,
-            location.lng
-          ).toFixed(1);
-          return distanceA - distanceB;
-        });
-        setShow(data.data);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      ToastAndroid.show(error.message, ToastAndroid.LONG);
-    }
-  };
+	const _textChange = async (facility) => {
+		try {
+			if(!facility){
+				await props.searchAllClinics(userLocation, setShow)
+			} else {
+				await props.searchClinicByName(facility, 'Clinic', userLocation, setShow)
+			}
+		} catch (error) {
+			console.log(error.message, '_textChange error');
+		}
+	};
 
   const onRefresh = React.useCallback(() => {
     fetchHospitalPagination();
@@ -159,7 +111,7 @@ function SearchDoctorPage(props) {
       </View>
 
       <View style={{ flex: 4.8, backgroundColor: '#121212' }}>
-        {showLoading ? (
+        {clinicLoading ? (
           <LottieLoader
             source={require('../../animation/loading.json')}
             loop
@@ -293,6 +245,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getDataHospital,
+  searchAllClinics,
+  searchClinicByName,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchDoctorPage);

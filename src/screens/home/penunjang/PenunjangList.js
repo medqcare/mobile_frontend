@@ -17,7 +17,7 @@ import {
 
 } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import {
   heightPercentageToDP,
@@ -30,17 +30,25 @@ import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
 import { getMedicalServices } from '../../../stores/action'
 import LottieLoader from 'lottie-react-native'
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
+import keys from '../../../stores/keys';
+
+const { 
+    SET_MEDICAL_SERVICES,
+    SET_MEDICAL_SERVICES_CURRENTPAGE,
+    SET_MEDICAL_SERVICES_TYPE,
+    SET_MEDICAL_SERVICES_STATUS,
+    SET_MEDICAL_SERVICES_LOADING,
+    SET_MEDICAL_SERVICES_ERROR,
+} = keys.medicalServicesKeys
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServices({navigation, userData, getMedicalServices, myLocation}) {
-	const [type, setType] = useState('UMUM')
-	const [status, setStatus] = useState(true)
-	const [page, setPage] = useState(1)
-	const [loading, setLoading] = useState(true)
+function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
+	const dispatch = useDispatch()
+	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
-	const [medicalServices, setMedicalServices] = useState([])
+	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
 
 	// "docs",
 	// "totalDocs",
@@ -59,30 +67,7 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 
 	async function searchMedicalServices(addPage){
 		try {
-			console.log('Application trying to find avaliable medical services')
-			console.log('type:', type)
-			console.log('status:', status)
-			console.log('page:', page)
-			const result = await getMedicalServices(type, status, page)
-			setLoading(false)
-			if(result.length === 0) {
-				console.log(`Application didn't find any available services`)
-				return setMedicalServices([])
-			}
-			if (page == 1) {
-				setMedicalServices(result.docs)
-			} else {
-				setMedicalServices(medicalServices.concat(result.docs));
-			}
-			console.log(`Application found ${result.docs.length} medical service(s)`)
-			setLoading(false);
-
-			if(addPage){
-				const nextPage = page + 1;
-				setPage(nextPage);
-			}
-
-			console.log('All data fetched, no need to add page')
+			await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices)
 		}
 		catch(error){
 			console.log(error)
@@ -93,18 +78,25 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 	async function searchFunction(text){
 		if(text){
 			const lowerCase = text.toLowerCase()
-			const newMedicalServiceList = medicalServices.filter(el => el.name.toLowerCase().includes(lowerCase))
+			const newMedicalServiceList = medicalServicesR.filter(el => el.name.toLowerCase().includes(lowerCase))
 			setMedicalServices(newMedicalServiceList)
 		}
 		else {
-			searchMedicalServices()
+			setMedicalServices(medicalServicesR)
 		}
 	}
 
 	const onRefresh = useCallback(async () => {
-		setLoading(true)
 		setType('All');
+		dispatch({
+			type: SET_MEDICAL_SERVICES_TYPE,
+			payload: 'All'
+		})
 		setStatus(true);
+		dispatch({
+			type: SET_MEDICAL_SERVICES_STATUS,
+			payload: true
+		})
 		setPage(1)
 		searchMedicalServices();
 	}, [refreshLoading]);
@@ -142,27 +134,24 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 				}
 			} else clinicLocation = defaultLocation
 		}
-
-		const { lat: userLat, lng: userLng } = myLocation
+		const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
 		const distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
 		
 		return (
-			<View
-				style={styles.medicalServiceCardContainer}
-			>
+			<View style={styles.medicalServiceCardContainer}>
 				<View style={styles.leftContent}>
-					<View>
+					<View style={{marginBottom: 4}}>
 						<Text style={textStyles.nameColor}>{name}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome5 name="hospital-alt" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.name}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<Entypo name="location" size={12} color="#A5A5A5" />
 						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
-					<View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
+					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
 					</View>
@@ -225,7 +214,7 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 			</View> */}
 
 			{/* Content */}
-			{loading ? (
+			{isLoading ? (
 				// <ActivityIndicator style={styles.noContentContainer} size={"small"} color={"blue"} />
 				<LottieLoader
 					source={require('../../animation/loading.json')}
@@ -289,13 +278,14 @@ const textStyles = StyleSheet.create({
 	
 	greyColorWithPaddingLeftText: {
 		color: '#A5A5A5',
-		paddingLeft: widthPercentageToDP('1%')
+		paddingLeft: 12,
 	},
 	
 	nameColor: {
 		color: '#DDDDDD',
 		fontWeight: '400',
-		fontSize: 16
+		fontSize: 16,
+		textTransform: 'capitalize'
 	},
 
 	promoText: {
@@ -350,7 +340,7 @@ const styles = StyleSheet.create({
 		paddingVertical: heightPercentageToDP('2%'),
 		borderBottomWidth: 1,
 		borderBottomColor: '#3E3D3D',
-		flex: 1
+		flex: 1,
 	},
 
 	leftContent: {

@@ -16,7 +16,8 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderFinishedList({props, drugs}) {
-    const data = drugs.length > 0 ? drugs : null
+    const { finishedDrugs, isLoading, error } = props.drugReducer
+    const data = finishedDrugs?.length > 0 ? finishedDrugs : null
   
     return (
         data ? (  

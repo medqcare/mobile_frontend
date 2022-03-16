@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -36,6 +36,11 @@ import Modal from 'react-native-modal';
 
 import SelectPatient from '../../../components/modals/selectPatient';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
+import keys from '../../../stores/keys';
+
+const {
+    SET_APPOINTMENT_ORDER_TYPE,
+} = keys.appointmentsKeys
 
 const mapDispatchToProps = {
 	bookDoctor,
@@ -51,13 +56,15 @@ const mapStateToProps = (state) => {
 };
 
 const MakeAppointment = (props) => {
+	const dispatch = useDispatch()
 	const { serviceDetail, bookingSchedule, healthFacility, clinic } = props.navigation.state.params
+	const { userData } = props.userDataReducer
+	const { medicalService, isLoading, error } = props.medicalServicesReducer
 	const photo = ''
 
-	const { email, _id } = props.userData.userID
+	const { email, _id } = userData.userID
 	const [insuranceNumber, setInsuranceNumber] = useState(null);
 	const [bpjsNumber, setBpjsNumber] = useState(null);
-	let datadoctor = props.navigation.getParam('data');
 	const [getDay, setGetDay] = useState('');
 	let dayChoose = null;
 	const [time, setTime] = useState([]);
@@ -140,26 +147,17 @@ const MakeAppointment = (props) => {
 	const [modalL, setModalL] = useState(false);
 
 	const [dompet, setDompet] = useState('Tunai');
-	const [accountOwner, setAccountOwner] = useState(props.userData);
+	const [accountOwner, setAccountOwner] = useState(userData);
 	const [displayName, setDisplayName] = useState(
-		props.userData.lastName
-		? props.userData.firstName + ' ' + props.userData.lastName
-		: props.userData.firstName
+		userData.lastName
+		? userData.firstName + ' ' + userData.lastName
+		: userData.firstName
 	);
 
 	async function gobookDoctor(dataSend, dataCreate) {
 		try {
 			setLoad(true);
-			const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-			const result = await props.createMedicalServiceReservation(dataSend, token)
-			if(result.status === 'success'){
-				setModal(true)
-			}
-			else {
-				if (result.message === 'patient already reserve for this service'){
-					ToastAndroid.show(result.message, ToastAndroid.LONG);
-				}
-			}
+			await props.createMedicalServiceReservation(dataSend, setModal)
 			
 		} catch (error) {
 			console.log(error, 'error in BuatJanji.js service')
@@ -280,7 +278,7 @@ const MakeAppointment = (props) => {
 				patient: {
 				...patient2,
 				mobilePhone: !patient2.mobilePhone
-					? props.userData.phoneNumber
+					? userData.phoneNumber
 					: patient2.mobilePhone,
 				patientTitle: getTitle(patient2),
 				paymentMethod: dompet,
@@ -309,11 +307,11 @@ const MakeAppointment = (props) => {
 
 	useEffect(() => {
 		let _family = {
-			...props.userData,
+			...userData,
 		};
 		delete _family.family;
 		const temp = [_family];
-		props.userData.family.forEach((el) => {
+		userData.family.forEach((el) => {
 			temp.push(el);
 		});
 		setFamily(family.concat(temp));
@@ -905,7 +903,7 @@ const MakeAppointment = (props) => {
 						onPress={() => validation()}
 						style={viewStyle.button}
 					>
-						{load ? (
+						{isLoading ? (
 							<ActivityIndicator size={'small'} color={'#FFF'} />
 						) : (
 							<View style={{ flexDirection: 'row' }}>
@@ -946,9 +944,12 @@ const MakeAppointment = (props) => {
 							autoPlay
 							speed={0.7}
 							loop={false}
-							onAnimationFinish={() => {
-								console.log('tets')
+							onAnimationFinish={ () => {
 								setModal(false);
+								dispatch({
+									type: SET_APPOINTMENT_ORDER_TYPE,
+									payload: "Layanan Medis"
+								})
 								props.navigation.navigate('Appointment');
 
 							}}
@@ -994,7 +995,6 @@ const MakeAppointment = (props) => {
 				setModalP={setModalP}
 				patient={patient}
 				setPatient={setPatient}
-				family={family}
 				navigateTo={props.navigation.navigate}
 			/>
 			{/* modal Pilih Insurance */}
