@@ -1,5 +1,11 @@
 import axios from 'axios';
 import {
+  getPatientAllergies,
+  createAllergy,
+  editSelectedAllergy,
+  deleteSelectedAllergy
+} from './allergies'
+import {
   searchAllReservations,
   cancelSelectedReservation
 } from './appointment'
@@ -1311,6 +1317,13 @@ export function setShowInstruction(payload) {
     type: 'SHOW_INSTRUCTION',
     payload: payload,
   };
+}
+
+export {
+  getPatientAllergies,
+  createAllergy,
+  editSelectedAllergy,
+  deleteSelectedAllergy
 }
 
 export {
