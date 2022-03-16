@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseURL, webBaseURL } from '../../config';
+import { baseURL } from '../../config';
 // import { medicalServices } from '../reducers/keys'
 
 // const { 
@@ -7,10 +7,6 @@ import { baseURL, webBaseURL } from '../../config';
 //     SET_ERROR_MEDICAL_SERVICES,
 //     SET_LOADING_MEDICAL_SERVICES
 // } = medicalServices
-
-const webMedicalServicesInstance = axios.create({
-  	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
-})
 
 const mobileMedicalServiceInstance = axios.create({
 	baseURL: `${baseURL}/api/v1/members/reservations/service`
@@ -23,9 +19,9 @@ export function getMedicalServices(type, status, page){
             //     type: SET_LOADING_MEDICAL_SERVICES,
             //     payload: true
             // })
-			const { data } = await webMedicalServicesInstance({
+			const { data } = await axios({
 				method: 'GET',
-				url: `?type=${type}&status=${status}&page=${page}`,
+				url: `${baseURL}/api/v1/members/medical/services?type=${type}&status=${status}&page=${page}`,
 			})
 			// await dispatch({
             //     type: SET_LOADING_MEDICAL_SERVICES,
