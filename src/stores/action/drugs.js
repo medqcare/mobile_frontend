@@ -44,12 +44,18 @@ export function getDrugs(patientID){
                 if(revised[i].isFinished) finishedDrugs.push(revised[i])
                 else activeDrugs.push(revised[i])
             }
+            const datedFinishedDrugs = finishedDrugs.map(el => {
+                el.finishedAt = new Date(el.finishedAt)
+                return el
+            })
+
+            datedFinishedDrugs.sort((a, b) => b.finishedAt - a.finishedAt)
 
             await dispatch({
                 type: SET_DRUGS,
                 payload: {
                     activeDrugs,
-                    finishedDrugs
+                    finishedDrugs: datedFinishedDrugs
                 }
             })
         } catch (error) {

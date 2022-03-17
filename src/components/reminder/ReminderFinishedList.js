@@ -11,20 +11,18 @@ import { connect } from "react-redux";
 import { fullMonthFormat, getFormattedDate } from "../../helpers/dateFormat";
 import { AntDesign } from '@expo/vector-icons';
 
-
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderFinishedList({props, drugs}) {
     const { finishedDrugs, isLoading, error } = props.drugReducer
     const data = finishedDrugs?.length > 0 ? finishedDrugs : null
-    if(data) data.sort((a, b) => b.finishedAt - a.finishedAt)
-  
+    
     return (
         data ? (  
             data.map((el, index) => {
                 const localDate = el.finishedAt.toLocaleString('id-ID')
-                const formattedDate = getFormattedDate(localDate)
+                const formattedDate = getFormattedDate(localDate, true)
                 const displayDate = fullMonthFormat(formattedDate)
                 return (
                     <View style={styles.eachDrugContainer} key={index}>
