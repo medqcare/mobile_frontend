@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ToastAndroid } from 'react-native';
-import { baseURL, webBaseURL, instance, webInstace } from '../../config'
+import { instance } from '../../config'
 import getToken from '../../helpers/localStorage/token';
 import keys from '../keys';
 
@@ -13,14 +13,6 @@ const {
     SET_MEDICAL_SERVICES_ERROR,
 } = keys.medicalServicesKeys
 
-// const webMedicalServicesInstance = axios.create({
-//   	baseURL: `${webBaseURL}/api/v1/assesments/services/getPagination`,
-// })
-
-const mobileMedicalServiceInstance = axios.create({
-	baseURL: `${baseURL}/api/v1/members/reservations/service`
-})
-
 export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices){
 	return async dispatch => {
 		try {
@@ -32,9 +24,9 @@ export function getMedicalServices(type, status, page, medicalServices, addPage,
 				type: SET_MEDICAL_SERVICES_LOADING,
 				payload: true
 			})
-			const { data } = await webInstace({
+			const { data } = await instance({
 				method: 'GET',
-				url: `assesments/services/getPagination?type=${type}&status=${status}&page=${page}`,
+				url: `medical/services?type=${type}&status=${status}&page=${page}`,
 			})
 			if(data.data) {
 				if(data.data.docs.length === 0){
@@ -81,8 +73,9 @@ export function createMedicalServiceReservation(bookData, setModal){
 			})
 			console.log('Application is trying to make medical service reservation')
 			const token = await getToken()
-			const { data } = await mobileMedicalServiceInstance({
+			const { data } = await instance({
 				method: 'POST',
+				url: `reservations/service`,
 				data: bookData,
 				headers: { Authorization: token },
 			})

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { baseURL, webBaseURL, instance } from '../../config';
+import { instance } from '../../config';
 import keys from '../keys';
 import getToken from '../../helpers/localStorage/token';
 import { ToastAndroid } from 'react-native';
@@ -16,21 +16,6 @@ const {
     DELETE_DRUGS
 } = keys.drugKeys
 
-const drugInstance = axios.create({
-  baseURL: `${baseURL}/api/v1/members`,
-  headers: {
-    'x-secret': 123456 
-  }
-});
-
-const webDrugInstance = axios.create({
-    baseURL: `${webBaseURL}/api/v1/drug/materials/`,
-    headers: {
-        'x-secret': 123456,
-        'Service': 'drugList'
-    }
-})
-
 export function getDrugs(patientID){
     return async dispatch => {
         try {
@@ -40,7 +25,7 @@ export function getDrugs(patientID){
             })
 
             const token = await getToken()
-            let { data } = await drugInstance({
+            let { data } = await instance({
                 method: 'GET',
                 url: `/getAllDrugs/${patientID}`,
                 headers: {
@@ -76,9 +61,9 @@ export function getDrugs(patientID){
 export function searchDrugByName(query){
     return async dispatch => {
         try {
-            let { data } = await webDrugInstance({
+            let { data } = await instance({
                 method: 'GET',
-                url: `/listdrugs?name=${query}`,
+                url: `/drugs?name=${query}`,
             })
             return data.data
         } catch (error) {
@@ -95,9 +80,9 @@ export function searchAllDrugs(){
                 type: SET_WEB_DRUGS_LOADING,
                 payload: true
             })
-            let { data } = await webDrugInstance({
+            let { data } = await instance({
                 method: 'GET',
-                url: `/listdrugs`,
+                url: `/drugs`,
             })
 
             console.log(`Application found ${data.data.length} drugs from web`)
@@ -135,7 +120,7 @@ export function createNewDrugFromUser(newDrug, activeDrugs){
             })
 
             const token = await getToken()
-            let { data } = await drugInstance({
+            let { data } = await instance({
                 method: 'POST',
                 url: `/createNewDrugFromUser`,
                 headers: {
@@ -289,7 +274,7 @@ export function updateFinishStatus(drugID, activeDrugs, finishedDrug, finishedDr
                 payload: true
             })
             const token = await getToken()
-            let { data } = await drugInstance({
+            let { data } = await instance({
                 method: 'PATCH',
                 url: `/updateFinishStatus/${drugID}`,
                 headers: {
