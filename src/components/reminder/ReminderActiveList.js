@@ -29,6 +29,7 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Calendar from 'expo-calendar';
 import { useDispatch } from "react-redux";
 import keys from "../../stores/keys";
+import ConfirmationModal from "../modals/ConfirmationModal";
 
 const { 
     SET_DRUGS,
@@ -47,6 +48,9 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
     const dispatch = useDispatch()
     const [content, setContent] = useState(activeDrugs)
     const [load, setLoad] = useState(false)
+    const [confirmationModalLoad, setConfirmationModalLoad] = useState(false)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+    const [selectedSection, setSelectedSection] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
     const [loadToggle, setLoadToggle] = useState(false)
@@ -442,14 +446,17 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
 
     async function updateFinishStatus(section){
         try {
-            // const token = JSON.parse(await AsyncStorage.getItem('token')).token
-            const drugID = section._id
+            const drugID = selectedSection._id
             const finishedDrug = {
-                ...section,
+                ...selectedSection,
                 finishedAt : new Date(),
                 isFinished : true
             }
+
             await updateFinishStatusFunction(drugID, activeDrugs, finishedDrug, finishedDrugs)
+
+            setConfirmationModal(false);
+            setConfirmationModalLoad(false)
         } catch (error) {
             console.log(error)
         }
@@ -613,7 +620,10 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback 
-                                onPress={() => updateFinishStatus(section)}    
+                                onPress={() => {
+                                    setSelectedSection(section)
+                                    setConfirmationModal(true)
+                                }}    
                             >
                                 <View style={{flexDirection: "row", alignItems: "center"}}>
                                     <Text style={styles.finishText}>Selesaikan obat</Text>
@@ -650,6 +660,18 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
                     onChange={onChange}
                 />
             )}
+
+            <ConfirmationModal
+                load={confirmationModalLoad}
+                modal={confirmationModal}
+                warning={'Anda akan menghapus obat dari list obat aktif. Pastikan semua obat sudah anda tandai sebagai diminum atau terlewat'}
+                optionLeftText={'BATAL'}
+                optionRightText={'SELESAIKAN'}
+                optionLeftFunction={() => setConfirmationModal(false)}
+                optionRightFunction={async () => {
+                    updateFinishStatus()
+                }}
+            />
         </>
         : (
             <View style={styles.noDataContainer}>
