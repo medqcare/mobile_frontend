@@ -27,12 +27,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Calendar from 'expo-calendar';
+import ConfirmationModal from "../modals/ConfirmationModal";
+
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, setFinishedDrugs, selectedPatient, updateFinishStatusFunction, }) {
     const [load, setLoad] = useState(true)
+    const [confirmationModalLoad, setConfirmationModalLoad] = useState(false)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+    const [selectedSection, setSelectedSection] = useState(null)
     const [content, setContent] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
@@ -395,22 +400,25 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
         }
     }
 
-    async function updateFinishStatus(section){
+    async function updateFinishStatus(){
         try {
+            setConfirmationModalLoad(true)
             const token = JSON.parse(await AsyncStorage.getItem('token')).token
-            const drugID = section._id
+            const drugID = selectedSection._id
             const updated = await updateFinishStatusFunction(drugID, token)
             ToastAndroid.show(updated, ToastAndroid.SHORT)
             
             const newActiveList = activeDrugs.filter(el => el._id !== drugID)
             const finishedDrug = {
-                ...section,
+                ...selectedSection,
                 finishedAt : new Date(),
                 isFinished : true
             }
             const newFinishedList = [...finishedDrugs, finishedDrug]
             setActiveDrugs(newActiveList)
             setFinishedDrugs(newFinishedList)
+            setConfirmationModal(false);
+            setConfirmationModalLoad(false)
         } catch (error) {
             console.log(error)
         }
@@ -574,7 +582,10 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback 
-                                onPress={() => updateFinishStatus(section)}    
+                                onPress={() => {
+                                    setSelectedSection(section)
+                                    setConfirmationModal(true)
+                                }}    
                             >
                                 <View style={{flexDirection: "row", alignItems: "center"}}>
                                     <Text style={styles.finishText}>Selesaikan obat</Text>
@@ -611,6 +622,17 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                     onChange={onChange}
                 />
             )}
+            <ConfirmationModal
+                load={confirmationModalLoad}
+                modal={confirmationModal}
+                warning={'Anda akan menghapus obat dari list obat aktif. Pastikan semua obat sudah anda tandai sebagai diminum atau terlewat'}
+                optionLeftText={'BATAL'}
+                optionRightText={'SELESAIKAN'}
+                optionLeftFunction={() => setConfirmationModal(false)}
+                optionRightFunction={async () => {
+                    updateFinishStatus()
+                }}
+            />
         </>
         : (
             <View style={styles.noDataContainer}>

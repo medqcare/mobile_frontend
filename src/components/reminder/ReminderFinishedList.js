@@ -17,6 +17,7 @@ const dimWidth = Dimensions.get("window").width;
 
 function ReminderFinishedList({props, drugs}) {
     const data = drugs.length > 0 ? drugs : null
+    if(data) data.sort((a, b) => b.finishedAt - a.finishedAt)
   
     return (
         data ? (  
