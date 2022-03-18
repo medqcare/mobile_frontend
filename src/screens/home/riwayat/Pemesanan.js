@@ -33,23 +33,26 @@ export default function Pemesanan(props) {
   };
 
   const _fetchDataAppoinment = async () => {
-    _getData()
-      .then(({ data }) => {
-        let datakebalik = data.data.reservations.reverse();
-        let newAppoinment = [];
-        datakebalik.map((item, index) => {
-          if (item.status !== 'booked') {
-            newAppoinment.push(item);
+    try {
+      const { data: response } = await _getData();
+      const { reservations } = response?.data;
+      setAppoinment(
+        reservations.filter(({ status, isExpired }) => {
+          if (status !== 'booked') {
+            return true;
           }
-        });
-        setAppoinment(newAppoinment);
-        setLoad(false);
-      })
-      .catch((error) => {
-        setRefreshing(false);
-        setLoad(false);
-        console.log(error);
-      });
+
+          if (status === 'booked' && isExpired) {
+            return true;
+          }
+        })
+      );
+    } catch (error) {
+      console.log(error);
+      setRefreshing(false);
+    } finally {
+      setLoad(false);
+    }
   };
 
   const onRefresh = React.useCallback(() => {
@@ -118,6 +121,7 @@ export default function Pemesanan(props) {
                       {item.status === 'Queueing' ? 'Dalam Antrian' : ''}
                       {item.status === 'canceled' ? 'Dibatalkan' : ''}
                       {item.status === 'registered' ? 'Dalam Antrian' : ''}
+                      {item.isExpired ? 'Kadaluwarsa' : ''}
                     </Text>
                   </View>
                   <View
