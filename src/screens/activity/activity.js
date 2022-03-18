@@ -27,6 +27,7 @@ const activity = (props) => {
   const [bookingID, setBookingID] = useState(null);
   const [reservationID, setReservationID] = useState(null);
   const [currentQueue, setCurrentQueue] = useState('enol');
+  const { queueNumber, isLoading } = props.queueReducer
 
   useEffect(() => {
     checkAsync();
@@ -40,8 +41,9 @@ const activity = (props) => {
       // let queueID = props.queueId ? props.queueId : await AsyncStorage.getItem(`${reservationID}`)
       // let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
       let savedData = props.data;
-      let queueID = props.queueId;
-      let getCurrentQueue = await props.getCurrentQueueingNumber(queueID);
+      // let queueID = props.queueId;
+      let queueID = JSON.parse(props.queueId)
+      // let getCurrentQueue = await props.getCurrentQueueingNumber(queueID);
 
       console.log(savedData);
 
@@ -50,7 +52,7 @@ const activity = (props) => {
         setqueueID(queueID);
         setBookingID(bookingID);
         setReservationID(reservationID);
-        setCurrentQueue(getCurrentQueue);
+        // setCurrentQueue(getCurrentQueue);
         setScannedData(savedData);
       } else {
         setFlag(false);
@@ -113,7 +115,7 @@ const activity = (props) => {
           <ActiveActivity
             data={scannedData}
             queueId={queueID}
-            currentQueue={currentQueue}
+            currentQueue={queueNumber}
           />
         </View>
       )}
