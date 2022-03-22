@@ -4,21 +4,10 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   BackHandler,
   Image,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ArrowBack from '../../assets/svg/ArrowBack';
-
-import Icon from 'react-native-vector-icons/Ionicons';
-
-import Icon5 from 'react-native-vector-icons/FontAwesome5';
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info';
 
@@ -53,7 +42,11 @@ const profile = (props) => {
         navigateTo={'Home'}
         title="Profil Saya"
       />
-      <ProfileInfo navigation={props.navigation} destination="ProfileStack" data={props.userData}/>
+      <ProfileInfo
+        navigation={props.navigation}
+        destination="ProfileStack"
+        data={props.userData}
+      />
       <View style={{ flex: 1, backgroundColor: '#1F1F1F', width: '100%' }}>
         <View style={styles.menu}>
           <TouchableOpacity
