@@ -35,6 +35,13 @@ const profile = (props) => {
     props.logout(props.navigation);
   };
 
+  const onVerifyPasswordSuccessful = () => {
+    props.navigation.navigate('ChangePasswordForm', {
+      email,
+      destination: 'ProfileStack',
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <GreyHeader
@@ -82,9 +89,8 @@ const profile = (props) => {
           <TouchableOpacity
             style={styles.bottomMenu}
             onPress={() =>
-              props.navigation.navigate('ChangePasswordForm', {
-                email,
-                destination: 'ProfileStack',
+              props.navigation.navigate('VerifyPassword', {
+                onSuccess: onVerifyPasswordSuccessful,
               })
             }
           >
