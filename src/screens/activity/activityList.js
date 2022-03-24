@@ -21,12 +21,15 @@ import LottieLoader from 'lottie-react-native';
 import {
   getTodayRegistration,
   getCurrentQueueingNumber,
+  getTodaysRegistration,
 } from '../../stores/action';
 
 const activityList = (props) => {
   const [dateRef, setDateRef] = useState(null);
   const [refresh, setRefresh] = useState(true);
   const [registrationData, setRegistrationData] = useState(null);
+  const { userData } = props.userDataReducer
+  const { queues, isLoading, error } = props.queuesReducer
 
   useEffect(() => {
     fetchdata();
@@ -34,16 +37,22 @@ const activityList = (props) => {
 
   async function fetchdata() {
     try {
-      await props
-        .getTodayRegistration(props.userData.userID._id)
-        .then(({ data }) => {
-          setRefresh(false);
-          setRegistrationData(data);
-          if (!dateRef) {
-            setDateRef(new Date());
-          }
-        })
-        .catch((error) => console.log(error));
+      const userID = userData.userID._id
+      await props.getTodaysRegistration(userID)
+      setRefresh(false)
+      if(!dateRef) {
+        setDateRef(new Date())
+      }
+      // await props
+      //   .getTodayRegistration(props.userData.userID._id)
+      //   .then(({ data }) => {
+      //     setRefresh(false);
+      //     setRegistrationData(data);
+      //     if (!dateRef) {
+      //       setDateRef(new Date());
+      //     }
+      //   })
+      //   .catch((error) => console.log(error));
     } catch (error) {
       console.log(error);
     }
@@ -81,7 +90,7 @@ const activityList = (props) => {
         ) : (
           <View>
             <>
-              {!props.todayActivity?.length && (
+              {!queues?.length && (
                 <View
                   style={{
                     justifyContent: 'center',
@@ -94,9 +103,9 @@ const activityList = (props) => {
                   </Text>
                 </View>
               )}
-              {props.todayActivity && (
+              {queues && (
                 <FlatList
-                  data={props.todayActivity}
+                  data={queues}
                   showsVerticalScrollIndicator={false}
                   renderItem={({ item: el }) => {
                     return (
@@ -128,6 +137,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   getTodayRegistration,
   getCurrentQueueingNumber,
+  getTodaysRegistration,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(activityList);
 

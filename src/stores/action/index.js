@@ -20,6 +20,17 @@ import {
   makeReservation
 } from './doctor'
 import {
+  getDrugs,
+  searchAllDrugs,
+  searchDrugByName,
+  createNewDrugFromUser,
+  changeDrugNotes,
+  changeAlarmBoolean,
+  updateDrugImageUrl,
+  deleteDrugImageUrl,
+  updateFinishStatus,
+} from './drugs';
+import {
   signIn,
   signUp
 } from './entry'
@@ -35,16 +46,9 @@ import {
   getPrescriptionHistory,
 } from './prescription';
 import {
-  getDrugs,
-  searchAllDrugs,
-  searchDrugByName,
-  createNewDrugFromUser,
-  changeDrugNotes,
-  changeAlarmBoolean,
-  updateDrugImageUrl,
-  deleteDrugImageUrl,
-  updateFinishStatus,
-} from './drugs';
+  getTodaysRegistration,
+  fetchCurrentQueueingNumber,
+} from './queues'
 import {
   getReminders,
   changeReminderAlarmTime,
@@ -1343,15 +1347,6 @@ export {
   makeReservation,
 }
 
-export { 
-  signIn,
-  signUp
-}
-
-export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
-
-export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
-
 export {
   getDrugs,
   searchAllDrugs,
@@ -1363,6 +1358,17 @@ export {
   deleteDrugImageUrl,
   updateFinishStatus,
 };
+
+export { 
+  signIn,
+  signUp
+}
+
+export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
+
+export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
+
+export { getTodaysRegistration, fetchCurrentQueueingNumber, }
 
 export {
   getMedicalServices,

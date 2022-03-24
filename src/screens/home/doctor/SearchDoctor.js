@@ -124,7 +124,10 @@ function SearchDoctorPage(props) {
   }, [loader]);
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-	  console.log('ke teken back')
+    dispatch({
+      type: SET_CURRENT_PAGE,
+      payload: 0
+    })
     // dispatch({
     //   type: DELETE_DOCTORS
     // })
@@ -146,6 +149,10 @@ function SearchDoctorPage(props) {
         >
           <View style={{ marginHorizontal: 20, flex: 1 }}>
             <TouchableOpacity onPress={() => {
+               dispatch({
+                type: SET_CURRENT_PAGE,
+                payload: 0
+              })
             //   dispatch({
             //     type: DELETE_DOCTORS
             //   })
