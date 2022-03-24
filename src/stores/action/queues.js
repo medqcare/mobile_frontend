@@ -50,6 +50,8 @@ export function getTodaysRegistration(userID){
 export function fetchCurrentQueueingNumber(queueID) {
     return async dispatch => {
         try {
+            console.log(`Application is trying to fetch current queueing number`);
+
             await dispatch({
                 type: SET_QUEUES_LOADING,
                 payload: true
@@ -58,19 +60,26 @@ export function fetchCurrentQueueingNumber(queueID) {
             const token = await getToken()
             const { data } = await instance({
                 method: 'POST',
-                url: `getQueueId`,
+                url: `getQueueById`,
                 headers: {
                     Authorization: token
                 },
                 data: {
-                    queueID
+                    queueID: JSON.parse(queueID)
                 }
             })
 
-            await dispatch({
-                type: SET_QUEUES_NUMBER,
-                payload: data.data.currentQueueingNumber
-            })
+            if(data.data) {
+            console.log(`Current queueing number is ${data.data.currentQueueingNumber} for queueID ${queueID}`);
+
+                await dispatch({
+                    type: SET_QUEUES_NUMBER,
+                    payload: data.data.currentQueueingNumber
+                })
+            }
+            else {
+                throw { error: data }
+            }
         } catch (error) {
             console.log(error)
         }
