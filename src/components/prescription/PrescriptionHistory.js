@@ -27,9 +27,9 @@ import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function PrescriptionTodaysList({props, prescriptions }) {
-    const [load, setLoad] = useState(false)
-    const [content, setContent] = useState(prescriptions)
+function PrescriptionTodaysList({props }) {
+    const { prescriptionHistory, isLoading, error } = props.prescriptionsReducer
+    const [content, setContent] = useState(prescriptionHistory)
 
     const [activeSections, setActiveSections] = useState([]);
     const setSections = (sections, isClose, index) => {
@@ -180,7 +180,7 @@ function PrescriptionTodaysList({props, prescriptions }) {
     };
   
     return (
-        load ? <ActivityIndicator color="blue" size={'small'}/> :
+        // isLoading ? <ActivityIndicator color="blue" size={'small'}/> :
         content.length > 0 ? 
             <Accordion
                 activeSections={activeSections}

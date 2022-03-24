@@ -10,7 +10,7 @@ import {
 	ScrollView,
 	BackHandler
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import Header from "../../../components/headers/GradientHeader";
 import { 
 	getAllPrescriptions,
@@ -22,30 +22,50 @@ import PrescriptionTodaysList from '../../../components/prescription/Prescriptio
 import PrescriptionHistory from '../../../components/prescription/PrescriptionHistory'
 import Swiper from 'react-native-swiper'
 import LottieLoader from 'lottie-react-native';
+import keys from "../../../stores/keys";
+
+const {
+    SET_PRESCRIPTIONS_LOADING,
+} = keys.prescrptionKeys
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height;
 const dimWidth = dimension.width;
 
-function Prescription({navigation, userData, getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory }) {
+function Prescription(props) {
+	const { userData, isLoading: userDataLoading, error: userDataError } = props.userDataReducer
+	const { activePrescriptions, prescriptionHistory, isLoading, error } = props.prescriptionsReducer
+	const dispatch = useDispatch()
 	const [load, setLoad] = useState(true)
-	const [todaysPrescriptions, setTodaysPrescriptions] = useState(null)
-	const [prescriptionHistory, setPrescriptionHistory] = useState(null)
+	// const [todaysPrescriptions, setTodaysPrescriptions] = useState(null)
+	// const [prescriptionHistory, setPrescriptionHistory] = useState(null)
 	const [patientID, setPatientID] = useState(userData._id)
 	const swiper = useRef(null)
 
 	useEffect(async () => {
 		try {
 			setLoad(true)
-			const token = JSON.parse(await AsyncStorage.getItem('token')).token
-
-			await getAllPrescriptions(patientID, token)
-			const today = await getTodaysPrescriptions(patientID, token)
-			setTodaysPrescriptions(today)
-
-			const history = await getPrescriptionHistory(patientID, token)
-			setPrescriptionHistory(history)
 			
+            dispatch({
+                type: SET_PRESCRIPTIONS_LOADING,
+                payload: true
+            })
+			// const token = JSON.parse(await AsyncStorage.getItem('token')).token
+
+			// await getAllPrescriptions(patientID, token)
+			// const today = await getTodaysPrescriptions(patientID, token)
+			// setTodaysPrescriptions(today)
+
+			// const history = await getPrescriptionHistory(patientID, token)
+			// setPrescriptionHistory(history)
+
+			await props.getTodaysPrescriptions(patientID)
+			await props.getPrescriptionHistory(patientID)
+
+			dispatch({
+                type: SET_PRESCRIPTIONS_LOADING,
+                payload: false
+            })
 			setLoad(false)
 		} catch (error) {
 			console.log(error)
@@ -92,12 +112,12 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
-    	return navigation.pop();
+    	return props.navigation.pop();
   	});
   
 	return (
 		<View style={styles.container}>
-			<Header title="Resep Obat" navigate={navigation.navigate} />
+			<Header title="Resep Obat" navigate={props.navigation.navigate} />
 			
 			<View style={styles.boxContainer}>
 				<TouchableOpacity
@@ -114,7 +134,7 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					family={family}
 					title="Siapa yang ingin anda check?"
 					setSelectedValue={setSelectedValue}
-					navigateTo={navigation.navigate}
+					navigateTo={props.navigation.navigate}
 				/>
 			</View>
 
@@ -141,12 +161,12 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 			</View>
 
 			<View style={styles.content}>
-			{load ? 
+			{/* {load ? 
 				<LottieLoader
-				source={require('../../animation/loading.json')}
+				// source={require('../../animation/loading.json')}
 				autoPlay
 				loop
-			  /> :
+			  /> : */}
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
@@ -155,13 +175,13 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<PrescriptionTodaysList prescriptions={todaysPrescriptions}/>
+						<PrescriptionTodaysList props={props}/>
 					</ScrollView>
 					<ScrollView>
-						<PrescriptionHistory prescriptions={prescriptionHistory}/>
+						<PrescriptionHistory props={props}/>
 					</ScrollView>
 				</Swiper>
-			}
+			{/* } */}
 			</View>
 		</View>
 	);
