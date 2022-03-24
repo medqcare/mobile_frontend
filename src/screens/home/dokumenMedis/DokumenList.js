@@ -52,6 +52,8 @@ function DokumenList(props) {
   const { types: DEFAULT_TYPES, allowUploadDocument } =
     props.navigation.state.params;
   const { routeName: SCREEN_NAME } = props.navigation.state;
+  const { userData } = props.userDataReducer
+  const { medicalDocuments, totalPages, isLoading, error } = props.medicalDocumentsReducer
   const DEFAULT_TYPE_SELECTED = 'semua';
   const [data, setData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
@@ -70,22 +72,22 @@ function DokumenList(props) {
   const [types, setTypes] = useState([DEFAULT_TYPE_SELECTED, ...DEFAULT_TYPES]);
   const [typeSelected, setTypeSelected] = useState(DEFAULT_TYPE_SELECTED);
   const [pageNumber, setPageNumber] = useState(1);
-  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [accountOwner, setAccountOwner] = useState(userData);
   const [modalPatient, setModalPatient] = useState(false);
   const [family, setFamily] = useState([]);
   const [patient, setPatient] = useState({
-    ...props.userData,
+    ...userData,
   });
   const [loadingPagination, setLoadingPagination] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
+  // const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach((el) => {
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));
@@ -132,23 +134,24 @@ function DokumenList(props) {
 
     setLoading(true);
     try {
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
-      const patientId = patient._id;
-      const { data: response } = await getDocumentByPatient(
-        token,
-        patientId,
-        type,
-        pageNumber
-      );
-      setData(response.data);
-      setTotalPages(response.totalPages);
+      // const tokenString = await AsyncStorage.getItem('token');
+      // const { token } = JSON.parse(tokenString);
+      const patientID = patient._id;
+      await props.getDocumentByPatient(patientID, type, pageNumber)
+      // const { data: response } = await getDocumentByPatient(
+        // token,
+        // patientId,
+        // type,
+        // pageNumber
+      // );
+      // setData(medicalDocuments);
+      // setTotalPages(response.totalPages);
     } catch (error) {
       ToastAndroid.show(
         `Please check your internet connection`,
         ToastAndroid.SHORT
       );
-      console.log(err);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +167,7 @@ function DokumenList(props) {
       const tokenString = await AsyncStorage.getItem('token');
       const { token } = JSON.parse(tokenString);
       const patientId = patient._id;
-      const { data: response } = await getDocumentByPatient(
+      const { data: response } = await props.getDocumentByPatient(
         token,
         patientId,
         type,
@@ -182,21 +185,9 @@ function DokumenList(props) {
   };
 
   const fetchBySearchQuery = async (search, patientId) => {
-    let token = await AsyncStorage.getItem('token');
-    token = JSON.parse(token).token;
-
     try {
-      setLoading(true);
-      const { data: response } = await axios({
-        method: 'GET',
-        url: baseURL + `/api/v1/members/getDocumentByPatient?search=${search}`,
-        headers: {
-          Authorization: token,
-          patientid: patientId,
-          type: DEFAULT_TYPES.join(','),
-        },
-      });
-      setData(response.data);
+      const defaultTypes = DEFAULT_TYPES.join(',')
+      await props.getDocumentByPatient(patientId, null, null, search, defaultTypes)
     } catch (error) {
       ToastAndroid.show('Gagal memuat dokumen, silahkan coba kembali');
     } finally {
@@ -549,7 +540,7 @@ function DokumenList(props) {
           </View>
         </View>
         <View style={styles.docsContainer}>
-          {data.length && !loading ? (
+          {medicalDocuments.length && !loading ? (
             <View style={styles.document}>
               <TouchableOpacity style={styles.textHeader}>
                 <Text style={styles.textItem}>Terakhir diunggah </Text>
@@ -559,7 +550,7 @@ function DokumenList(props) {
               </TouchableOpacity>
               <View>
                 <FlatList
-                  data={data}
+                  data={medicalDocuments}
                   keyExtractor={(item) => String(item._id)}
                   renderItem={({ item }) => {
                     return (
@@ -803,6 +794,11 @@ const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  deleteDocument,
+  getDocumentByPatient,
+  renameDocument,
+  uploadDocument,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(DokumenList);
