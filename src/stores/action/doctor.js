@@ -124,7 +124,7 @@ export function searchDoctorByName(currentPage, searchQuery, location, specialis
             const lng = location?.lng
             const { data } = await instance({
                 method: 'POST',
-                url: `searchDoctor?page=${currentPage}`,
+                url: `searchDoctor?page=0`,
                 data: {
                     lat: lat ? lat : -6.268809,
                     lon: lng ? lng : 106.974705,
