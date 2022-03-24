@@ -17,17 +17,18 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import IcDokter from '../../assets/svg/ic_dokter';
 
 //function
-import { getCurrentQueueingNumber } from '../../stores/action/index';
+import { getCurrentQueueingNumber, fetchCurrentQueueingNumber, } from '../../stores/action/index';
 import getAge from '../../helpers/getAge';
 
 const activity = (props) => {
+  // console.log(Object.keys(props))
   const [flag, setFlag] = useState(null);
   const [scannedData, setScannedData] = useState(null);
   const [queueID, setqueueID] = useState(null);
   const [bookingID, setBookingID] = useState(null);
   const [reservationID, setReservationID] = useState(null);
   const [currentQueue, setCurrentQueue] = useState('enol');
-  const { queueNumber, isLoading } = props.queueReducer
+  const { queueNumber, isLoading } = props.queuesReducer
 
   useEffect(() => {
     checkAsync();
@@ -42,10 +43,10 @@ const activity = (props) => {
       // let savedData = await AsyncStorage.getItem(`flag-async-"${bookingID}"-"${reservationID}"`)
       let savedData = props.data;
       // let queueID = props.queueId;
-      let queueID = JSON.parse(props.queueId)
-      // let getCurrentQueue = await props.getCurrentQueueingNumber(queueID);
+      let queueID = props.queueId
+      let getCurrentQueue = await props.fetchCurrentQueueingNumber(queueID);
 
-      console.log(savedData);
+      // console.log(savedData);
 
       if (savedData) {
         setFlag(true);
@@ -150,6 +151,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   getCurrentQueueingNumber,
+  fetchCurrentQueueingNumber,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(activity);

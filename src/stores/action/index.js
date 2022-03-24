@@ -46,7 +46,8 @@ import {
   getPrescriptionHistory,
 } from './prescription';
 import {
-  getTodaysRegistration
+  getTodaysRegistration,
+  fetchCurrentQueueingNumber,
 } from './queues'
 import {
   getReminders,
@@ -1367,7 +1368,7 @@ export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
 export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
 
-export { getTodaysRegistration }
+export { getTodaysRegistration, fetchCurrentQueueingNumber, }
 
 export {
   getMedicalServices,
