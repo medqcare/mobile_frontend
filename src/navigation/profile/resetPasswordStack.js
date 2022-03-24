@@ -11,6 +11,9 @@ import ResetPassworddPhone from '../../screens/profile/resetpassword/resetPasswo
 import InputSecretCode from '../../screens/profile/resetpassword/InputSecretCode';
 import ChangePasswordForm from '../../screens/profile/resetpassword/ChangePasswordForm';
 import InputSecretCodeOTP from '../../screens/profile/resetpassword/InputSecretCodeOTP';
+import ForgotPassword from '../../screens/auth/ForgotPassword';
+import { BLACK_PRIMARY, WHITE_PRIMARY } from '../../values/color';
+import ChangePassword from '../../screens/auth/ChangePassword';
 
 const resetPasswordStack = createStackNavigator(
   {
@@ -27,9 +30,15 @@ const resetPasswordStack = createStackNavigator(
       },
     },
     ResetPassword: {
-      screen: ResetPasswordd,
+      // screen: ResetPasswordd,
+      screen: ForgotPassword,
       navigationOptions: {
-        headerShown: false,
+        headerShown: true,
+        title: '',
+        headerStyle: {
+          backgroundColor: BLACK_PRIMARY,
+        },
+        headerTintColor: WHITE_PRIMARY,
       },
     },
     ResetPasswordEmail: {
@@ -60,6 +69,17 @@ const resetPasswordStack = createStackNavigator(
       screen: ChangePasswordForm,
       navigationOptions: {
         headerShown: false,
+      },
+    },
+    ChangePassword: {
+      screen: ChangePassword,
+      navigationOptions: {
+        headerShown: true,
+        title: '',
+        headerStyle: {
+          backgroundColor: BLACK_PRIMARY,
+        },
+        headerTintColor: WHITE_PRIMARY,
       },
     },
   },
