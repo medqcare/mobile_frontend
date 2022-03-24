@@ -23,13 +23,14 @@ import { getSelectedDate } from "../../helpers/todaysDate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fullMonthFormat } from '../../helpers/dateFormat'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import LottieLoader from 'lottie-react-native';
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function PrescriptionTodaysList({props, prescriptions }) {
-    const [load, setLoad] = useState(false)
-    const [content, setContent] = useState(prescriptions)
+function PrescriptionTodaysList({props }) {
+    const { activePrescriptions, isLoading, error } = props.prescriptionsReducer
+    const [content, setContent] = useState(activePrescriptions)
 
     const [activeSections, setActiveSections] = useState([]);
     const setSections = (sections, isClose, index) => {
@@ -178,7 +179,12 @@ function PrescriptionTodaysList({props, prescriptions }) {
     };
   
     return (
-        load ? <ActivityIndicator color="blue" size={'small'}/> :
+        // isLoading ? 
+        //     <LottieLoader
+        //         source={require('../../screens/animation/loading.json')}
+        //         autoPlay
+        //         loop
+        //     /> :
         content?.length > 0 ? 
             <Accordion
                 activeSections={activeSections}
