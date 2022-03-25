@@ -1,7 +1,7 @@
 import keys from "../keys";
 const {
     SET_SIGNIN_LOADING,
-    SET_SINGIN_ERROR,
+    SET_SIGNIN_ERROR,
     SET_SIGNUP_LOADING,
     SET_SIGNUP_ERROR,
 } = keys.entryKeys
@@ -26,7 +26,7 @@ function entryReducer(state = initState, action){
     switch (type) {
         case SET_SIGNIN_LOADING:
             return { ...signIn, isLoading: payload }
-        case SET_SINGIN_ERROR:
+        case SET_SIGNIN_ERROR:
             return { ...signIn, isLoading: payload }
         case SET_SIGNUP_LOADING:
             return { ...signUp, isLoading: payload }

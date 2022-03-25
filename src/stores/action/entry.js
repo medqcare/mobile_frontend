@@ -11,7 +11,7 @@ const {
 
 const {
     SET_SIGNIN_LOADING,
-    SET_SINGIN_ERROR,
+    SET_SIGNIN_ERROR,
     SET_SIGNUP_LOADING,
     SET_SIGNUP_ERROR,
 } = keys.entryKeys
@@ -92,22 +92,26 @@ export function signIn(userData, navigation, modalF, navigateTo){
             
         } catch (error) {
             const { response, message } = error
-            console.log(response, 'This is the response')
+            if(response.data?.message){
+                console.log(response.data.message, 'This is the response')
+            }
             console.log(message, 'This is the error message')
 
             if(response){
                 if(response.status == 401) {
-                    await dispatch({
-                        type: SET_SINGIN_ERROR,
+                    modalF('Email and password not match')
+                    return await dispatch({
+                        type: SET_SIGNIN_ERROR,
                         payload: 'Email and password not match'
                     })
-                    modalF('Email and password not match')
                 }
-                else modalF(message)
+                else {
+                    return modalF(message)
+                }
             } else modalF(message)
 
             await dispatch({
-                type: SET_SINGIN_ERROR,
+                type: SET_SIGNIN_ERROR,
                 payload: message
             })
         }
