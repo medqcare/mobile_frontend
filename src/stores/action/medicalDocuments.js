@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ToastAndroid } from 'react-native';
-import { baseURL, instance } from '../../config';
+import { instance } from '../../config';
 import getToken from '../../helpers/localStorage/token';
 
 import keys from '../keys';
@@ -11,10 +11,6 @@ const {
     SET_MEDICAL_DOCUMENTS_LOADING,
     SET_MEDICAL_DOCUMENTS_ERROR,
 } = keys.medicalDocumentKeys
-
-// const instance = axios.create({
-//   baseURL: `${baseURL}/api/v1`,
-// });
 
 export function getDocumentByPatient(patientID, stringTypeSeparateByComma, page, search, defaultTypes) {
 	return async dispatch => {
