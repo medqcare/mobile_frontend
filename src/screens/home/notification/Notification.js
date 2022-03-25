@@ -18,6 +18,7 @@ import { baseURL } from '../../../config';
 import NotificationCard from '../../../components/home/NotificationCard';
 import LottieLoader from 'lottie-react-native';
 import { ActivityIndicator } from 'react-native-paper';
+import { setUserData } from '../../../stores/action';
 
 const dimension = Dimensions.get('window');
 const dimHeight = dimension.height;
@@ -76,6 +77,12 @@ function Notification({ navigation, ...props }) {
       console.log(error, 'this is error when button close pressed');
     } finally {
       setLoadingActionClose(false);
+      const { countNotification: currentTotalNotification } = props.userData;
+      const payload = {
+        ...props.userData,
+        countNotification: currentTotalNotification - 1
+      };
+      props.setUserData(payload)
     }
   };
 
@@ -215,6 +222,8 @@ const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setUserData
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notification);
