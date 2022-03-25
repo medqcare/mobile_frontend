@@ -29,7 +29,7 @@ import {
 import {
   getMedicalServices,
   createMedicalServiceReservation,
-} from './medical_services'
+} from './medical_services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
 import { baseURL } from '../../config';
@@ -773,8 +773,19 @@ export function logout(navigation) {
     try {
       await navigation.pop();
       await navigation.navigate('Sign');
-      await AsyncStorage.removeItem('docterFavorite');
+      const token = await AsyncStorage.getItem('token');
       await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('docterFavorite');
+      await axios({
+        url: `${baseURL}/api/v1/members/firebase/token`,
+        method: 'PATCH',
+        headers: {
+          Authorization: JSON.parse(token).token,
+        },
+        data: {
+          token: '',
+        },
+      });
       await dispatch({
         type: 'GET_USER_DATA',
         payload: null,
@@ -1284,6 +1295,13 @@ export function setShowInstruction(payload) {
   };
 }
 
+export function setUserData(payload) {
+  return {
+    type: 'GET_USER_DATA',
+    payload: payload,
+  };
+}
+
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
 export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
@@ -1300,9 +1318,6 @@ export {
   updateFinishStatus,
 };
 
-export {
-  getMedicalServices,
-  createMedicalServiceReservation,
-}
+export { getMedicalServices, createMedicalServiceReservation };
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };

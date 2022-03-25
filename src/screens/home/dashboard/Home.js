@@ -148,7 +148,6 @@ function HomePage(props) {
     if (!props.userData) {
       return;
     }
-
     const { firebaseNotificationToken, _id: userID } = props.userData.userID;
     if (firebaseNotificationToken === registerToken) {
       return;
@@ -251,7 +250,7 @@ function HomePage(props) {
                           props.navigation.navigate('NotificationStack');
                         }}
                       >
-                        {null ? (
+                        {props.userData.countNotification ? (
                           <NewNotificationBell />
                         ) : (
                           <NoNotificationBell />
