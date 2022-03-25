@@ -61,7 +61,6 @@ function DokumenList(props) {
   const [modalRename, setModalRename] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [uploadLoading, setUploadLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [selectedKey, setSelectedKey] = useState(null);
@@ -132,29 +131,16 @@ function DokumenList(props) {
         ? DEFAULT_TYPES.join(',')
         : typeSelected;
 
-    setLoading(true);
     try {
-      // const tokenString = await AsyncStorage.getItem('token');
-      // const { token } = JSON.parse(tokenString);
       const patientID = patient._id;
       await props.getDocumentByPatient(patientID, type, pageNumber)
-      // const { data: response } = await getDocumentByPatient(
-        // token,
-        // patientId,
-        // type,
-        // pageNumber
-      // );
-      // setData(medicalDocuments);
-      // setTotalPages(response.totalPages);
     } catch (error) {
       ToastAndroid.show(
         `Please check your internet connection`,
         ToastAndroid.SHORT
       );
       console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const fetchDocumentsWithPagination = async () => {
@@ -190,64 +176,50 @@ function DokumenList(props) {
       await props.getDocumentByPatient(patientId, null, null, search, defaultTypes)
     } catch (error) {
       ToastAndroid.show('Gagal memuat dokumen, silahkan coba kembali');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
-  const upload = async (data) => {
-    let token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    uploadDocument(token, patient._id, data)
-      .then(({ data }) => {
-        console.log(data);
-        setPageNumber(1);
-        setUploadLoading(false);
-        return _fetchData();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const upload = async (document) => {
+    const patientID = patient._id
+    await props.uploadDocument(patientID, document, medicalDocuments)
+    setPageNumber(1)
+    setUploadLoading(false)
   };
 
   const renameAction = async (newName) => {
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    const payload = {
-      documentid: selectedId,
-      name: newName,
-    };
-    renameDocument(token, patient._id, payload)
-      .then(({ data }) => {
-        setPageNumber(1);
-        setModalRename(false);
-        return _fetchData();
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setModalLoad(false);
-      });
+    try {
+      const payload = {
+        documentid: selectedId,
+        name: newName
+      }
+      const patientID = patient._id
+
+      await props.renameDocument(patientID, payload, medicalDocuments)
+
+      setPageNumber(1)
+      setModalRename(false)
+
+    } catch (error) {
+      console.log(error) 
+    }
   };
 
   const deleteAction = async () => {
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    const payload = {
-      documentid: selectedId,
-      key: selectedKey,
-    };
-    deleteDocument(token, patient._id, payload)
-      .then(({ data }) => {
-        console.log(data);
-        setPageNumber(1);
-        setModalDelete(false);
-        return _fetchData();
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setModalLoad(false);
-      });
+    try {
+      const patientID = patient._id
+      const payload = {
+        documentid: selectedId,
+        key: selectedKey
+      }
+
+      await props.deleteDocument(patientID, payload, medicalDocuments)
+
+      setPageNumber(1);
+      setModalLoad(false);
+      setModalDelete(false);
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const addDocumentOptions = [
@@ -540,7 +512,7 @@ function DokumenList(props) {
           </View>
         </View>
         <View style={styles.docsContainer}>
-          {medicalDocuments.length && !loading ? (
+          {medicalDocuments.length && !isLoading ? (
             <View style={styles.document}>
               <TouchableOpacity style={styles.textHeader}>
                 <Text style={styles.textItem}>Terakhir diunggah </Text>
@@ -589,7 +561,7 @@ function DokumenList(props) {
             </View>
           ) : (
             <>
-              {loading ? (
+              {isLoading ? (
                 <LottieLoader
                   source={require('../../animation/loading.json')}
                   autoPlay
@@ -609,7 +581,7 @@ function DokumenList(props) {
             </>
           )}
 
-          {loading === false &&
+          {isLoading === false &&
           searchIsFocus === false &&
           allowUploadDocument ? (
             <View

@@ -69,7 +69,7 @@ export function getDocumentByPatient(patientID, stringTypeSeparateByComma, page,
 				console.log(`Application found ${data.data.length} medical document(s)`)
 	
 				console.log(`Application found in total of ${data.totalPages} page(s)`) 
-	
+
 				await dispatch({
 					type: SET_MEDICAL_DOCUMENTS,
 					payload: data.data
@@ -92,18 +92,26 @@ export function getDocumentByPatient(patientID, stringTypeSeparateByComma, page,
 	}
 }
 
-export function uploadDocument(token, patientid, data) {
+export function uploadDocument(patientID, document, medicalDocuments) {
 	return async dispatch => {
 		try {
-			return instance({
-				url: 'addDokumen',
+			const token = await getToken()
+			const { data } = await instance({
 				method: 'POST',
+				url: 'addDokumen',
 				headers: {
-				  Authorization: token,
-				  patientid,
+					Authorization: token,
+					patientid: patientID
 				},
-				data,
-			});
+				data: document,
+			})
+
+			const newMedicalDocumentsList = [...medicalDocuments, data.data]
+
+			await dispatch({
+				type: SET_MEDICAL_DOCUMENTS,
+				payload: newMedicalDocumentsList
+			})
 		} catch (error) {
 			console.log(error)
 			await dispatch({
@@ -114,18 +122,32 @@ export function uploadDocument(token, patientid, data) {
 	}
 }
 
-export function renameDocument(token, patientid, data) {
+export function renameDocument(patientID, payload, medicalDocuments) {
 	return async dispatch => {
 		try {
-			return instance({
-				url: 'renameDocument',
+			const token = await getToken()
+			const { data } = await instance({
 				method: 'PATCH',
+				url: 'renameDocument',
 				headers: {
-				  Authorization: token,
-				  patientid,
+					Authorization: token,
+					patientid: patientID
 				},
-				data,
-			});
+				data: payload
+			})
+
+			const newMedicalDocumentsList = medicalDocuments.map(el => {
+				if(el._id === payload.documentid){
+					el.name = payload.name
+				}
+
+				return el
+			})
+
+			await dispatch({
+				type: SET_MEDICAL_DOCUMENTS,
+				payload: newMedicalDocumentsList
+			})
 		} catch (error) {
 			console.log(error)
 			await dispatch({
@@ -136,18 +158,26 @@ export function renameDocument(token, patientid, data) {
 	}
 }
 
-export function deleteDocument(token, patientid, data) {
+export function deleteDocument(patientID, payload, medicalDocuments) {
 	return async dispatch => {
 		try {
-			return instance({
-				url: 'deleteDocument',
+			const token = await getToken()
+			const { data } = await instance({
 				method: 'DELETE',
+				url: `deleteDocument`,
 				headers: {
-				  Authorization: token,
-				  patientid,
+					Authorization: token,
+					patientid: patientID,
 				},
-				data,
-			});
+				data: payload
+			})
+
+			const newMedicalDocumentsList = medicalDocuments.filter(el => el._id !== payload.documentid)
+
+			await dispatch({
+				type: SET_MEDICAL_DOCUMENTS,
+				payload: newMedicalDocumentsList
+			})
 		} catch (error) {
 			console.log(error)
 			await dispatch({
