@@ -39,7 +39,7 @@ import {
   uploadDocument,
   renameDocument,
   deleteDocument,
-} from './medical_resume';
+} from './medicalDocuments';
 import {
   getAllPrescriptions,
   getTodaysPrescriptions,
