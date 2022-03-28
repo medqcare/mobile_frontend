@@ -243,14 +243,9 @@ export function createNewFamily(newPatientData, navigation, navigateTo, userData
                 console.log('Successfully added family member');
                 console.log('Navigating back to family list...');
 
-                const newUserData = {
-                    ...userData,
-                    family: userData.family.concat(newPatientData)
-                }
-
                 await dispatch({
                     type: SET_USER_DATA,
-                    payload: newUserData
+                    payload: data
                 })
 
                 await dispatch({
