@@ -180,7 +180,6 @@ function PrescriptionTodaysList({props }) {
     };
   
     return (
-        // isLoading ? <ActivityIndicator color="blue" size={'small'}/> :
         content.length > 0 ? 
             <Accordion
                 activeSections={activeSections}

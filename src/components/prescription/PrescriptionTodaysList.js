@@ -179,12 +179,6 @@ function PrescriptionTodaysList({props }) {
     };
   
     return (
-        // isLoading ? 
-        //     <LottieLoader
-        //         source={require('../../screens/animation/loading.json')}
-        //         autoPlay
-        //         loop
-        //     /> :
         content?.length > 0 ? 
             <Accordion
                 activeSections={activeSections}
