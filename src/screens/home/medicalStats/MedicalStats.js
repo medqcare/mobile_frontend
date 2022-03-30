@@ -118,6 +118,12 @@ function MedicalResume(props) {
     });
   };
 
+  const onSuccessVerifyPasswordHandler = () => {
+    props.navigation.navigate('ScannerShareMedres', {
+      patientID: patient.patient.patientID,
+    });
+  };
+
   return (
     <View style={{ backgroundColor: '#1F1F1F', flex: 1 }}>
       <Header title={'Resume Medis'} navigate={props.navigation.navigate} />
@@ -265,6 +271,7 @@ function MedicalResume(props) {
                     // setModalQR(true);
                     props.navigation.navigate('VerifyPassword', {
                       patientID: patient.patient.patientID,
+                      onSuccess: onSuccessVerifyPasswordHandler,
                     });
                   }}
                 >

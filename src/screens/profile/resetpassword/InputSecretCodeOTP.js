@@ -20,6 +20,8 @@ import {
   useBlurOnFulfill,
 } from 'react-native-confirmation-code-field';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
+import { ActivityIndicator } from 'react-native-paper';
+import { ORANGE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
 
 const InputSecretCodeOTP = (props) => {
   const CELL_COUNT = 6;
@@ -28,11 +30,11 @@ const InputSecretCodeOTP = (props) => {
     back = 'Home',
     onSuccess,
   } = props.navigation.state.params;
-
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
   const [secretCode, setSecretCode] = useState('');
   const [timer, setTimer] = useState(30);
   const [verificationId, setVerificationId] = useState('');
+  const [loadingResendCode, setLoadingResenCode] = useState(false);
 
   useEffect(() => {
     if (timer === 0) {
@@ -50,8 +52,7 @@ const InputSecretCodeOTP = (props) => {
         );
         setVerificationId(verificationId);
       } catch (error) {
-        console.log(error.message);
-        ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG)
+        ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG);
       }
     })();
 
@@ -71,22 +72,28 @@ const InputSecretCodeOTP = (props) => {
        */
       await onSuccess();
     } catch (error) {
-      console.log(error);
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
     }
   }
 
   const resendCodeHandler = () => {
     (async () => {
+      setLoadingResenCode(true);
       try {
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
-        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG)
+        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG);
         setVerificationId(verificationId);
-        setTimer(120)
+        setTimer(timer * 2);
       } catch (error) {
-        ToastAndroid.show('Yeah :)', ToastAndroid.LONG);
+        console.log(error.message, '>>>>>');
+        ToastAndroid.show(
+          'Gagal mengirim ulang kode, silahkan coba lagi nanti',
+          ToastAndroid.LONG
+        );
+      } finally {
+        setLoadingResenCode(false);
       }
     })();
   };
@@ -152,22 +159,32 @@ const InputSecretCodeOTP = (props) => {
             disabled={timer > 0}
             onPress={() => resendCodeHandler()}
           >
-            <Text
-              style={{
-                color: '#DDDDDD',
-                fontSize: 16,
-              }}
-            >
-              {timer === 0 ? (
-                'Kirim Ulang Kode'
-              ) : (
-                <>
+            <>
+              {timer === 0 && loadingResendCode === false ? (
+                <View>
+                  <Text style={{ color: ORANGE_PRIMARY }}>
+                    Kirim Ulang Kode
+                  </Text>
+                </View>
+              ) : null}
+
+              {timer === 0 && loadingResendCode === true ? (
+                <ActivityIndicator size={'small'} color={WHITE_PRIMARY} />
+              ) : null}
+
+              {timer > 0 && !loadingResendCode ? (
+                <Text
+                  style={{
+                    color: WHITE_PRIMARY,
+                    fontSize: 16,
+                  }}
+                >
                   <Text>Kirim ulang kode dalam </Text>
-                  <Text style={{ color: '#FBB632' }}>{`${timer} `}</Text>
+                  <Text style={{ color: ORANGE_PRIMARY }}>{`${timer} `}</Text>
                   <Text>detik</Text>
-                </>
-              )}
-            </Text>
+                </Text>
+              ) : null}
+            </>
           </TouchableOpacity>
         </View>
       </View>
@@ -276,7 +293,7 @@ const style = StyleSheet.create({
     width: '95%',
     height: 60,
     marginTop: '5%',
-    marginBottom: 10,
+    marginBottom: 8,
     backgroundColor: 'rgba(31, 198, 188, 0.3)',
     borderRadius: 50,
     justifyContent: 'center',

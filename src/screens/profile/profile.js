@@ -7,13 +7,7 @@ import {
   BackHandler,
   Image,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ArrowBack from '../../assets/svg/ArrowBack';
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info';
 
@@ -43,6 +37,13 @@ const profile = (props) => {
   const logoutButton = async () => {
     props.logout(props.navigation);
     props.deleteUserData(props.navigation)
+  };
+
+  const onVerifyPasswordSuccessful = () => {
+    props.navigation.navigate('ChangePasswordForm', {
+      email,
+      destination: 'ProfileStack',
+    });
   };
 
   return (
@@ -88,9 +89,8 @@ const profile = (props) => {
           <TouchableOpacity
             style={styles.bottomMenu}
             onPress={() =>
-              props.navigation.navigate('ChangePasswordForm', {
-                email,
-                destination: 'ProfileStack',
+              props.navigation.navigate('VerifyPassword', {
+                onSuccess: onVerifyPasswordSuccessful,
               })
             }
           >

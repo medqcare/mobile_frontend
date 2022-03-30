@@ -21,11 +21,7 @@ import FullImageModal from '../../modals/FullImageModal';
 import {
   readDirectoryAsync,
   cacheDirectory,
-  deleteAsync,
-  documentDirectory,
   getInfoAsync,
-  readAsStringAsync,
-  getContentUriAsync,
 } from 'expo-file-system';
 
 const mapStateToProps = (state) => {

@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Linking,
+  BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
 import { GetUser } from '../../../stores/action'
@@ -28,8 +29,6 @@ function DetailHospitalPage(props) {
   const [medicalVisible, setMedicalVisible] = useState(false)
   const [doctorVisible, setDoctorVisible] = useState(false)
 
-  
-  console.log(dataHospital, 'ini datanyaaaa')
   const _openMap = (lat, lang) => {
     const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${lat},${lang}`;
@@ -41,27 +40,11 @@ function DetailHospitalPage(props) {
     Linking.openURL(url);
   }
 
-  // const _registerHospital = async () => {
-  //   // console.log('ini selected', selectedFamily)
-  //   let data = await AsyncStorage.getItem('token')
-  //   let token = JSON.parse(data).token
-  //   try {
-  //     let response = await axios({
-  //       method: 'PATCH',
-  //       url: `${baseURL}/api/users/addHospital/${dataHospital._id}`,
-  //       data: {
-  //         userID: selectedFamily
-  //       },
-  //       headers: { token: token }
-  //     })
-  //     if (response.data) {
-  //       props.GetUser(token, props.navigation)
-  //       props.navigation.navigate('Home')
-  //     }
-  //   } catch (error) {
-  //     console.log(error)
-  //   }
-  // }
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    props.navigation.pop()
+    return true
+  })
+
 
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
