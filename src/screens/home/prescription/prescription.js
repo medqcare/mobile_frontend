@@ -147,12 +147,12 @@ function Prescription(props) {
 			</View>
 
 			<View style={styles.content}>
-			{isLoading ? 
+			{/* {isLoading ? 
 				<LottieLoader
 					source={require('../../animation/loading.json')}
 					autoPlay
 					loop
-				/> :
+				/> : */}
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
@@ -167,7 +167,7 @@ function Prescription(props) {
 						<PrescriptionHistory props={props}/>
 					</ScrollView>
 				</Swiper>
-			}
+			{/* } */}
 			</View>
 		</View>
 	);
