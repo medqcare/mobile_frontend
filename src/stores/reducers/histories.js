@@ -29,11 +29,11 @@ function historiesReducer(state = initState, action){
         case SET_ORDER_HISTORY_ERROR:
             return { ...state, orderIsLoading: false, orderError: payload }
 
-        case SET_ORDER_HISTORY:
+        case SET_TRANSACTION_HISTORY:
             return { ...state, transactionHistory: payload, transactionIsLoading: false, transactionError: null }
-        case SET_ORDER_HISTORY_LOADING:
+        case SET_TRANSACTION_HISTORY_LOADING:
             return { ...state, transactionIsLoading: payload }
-        case SET_ORDER_HISTORY_ERROR:
+        case SET_TRANSACTION_HISTORY_ERROR:
             return { ...state, transactionIsLoading: false, transactionError: payload }
         default:
             return state;
