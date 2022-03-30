@@ -13,6 +13,7 @@ import appointmentsReducer from "./appointment";
 import queuesReducer from "./queues";
 import prescriptionsReducer from "./prescriptions";
 import medicalDocumentsReducer from "./medicalDocuments";
+import transactionsReducer from "./transactions";
 
 const reducer = combineReducers({
 	allergiesReducer,
@@ -28,7 +29,8 @@ const reducer = combineReducers({
 	appointmentsReducer,
 	queuesReducer,
 	prescriptionsReducer,
-	medicalDocumentsReducer
+	medicalDocumentsReducer,
+	transactionsReducer
 })
 
 export default reducer

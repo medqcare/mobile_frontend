@@ -12,6 +12,7 @@ import appointmentsKeys from "./appointments";
 import queueKeys from "./queues";
 import prescrptionKeys from "./prescriptions";
 import medicalDocumentKeys from './medicalDocuments'
+import transactionKeys from "./transactions";
 
 const keys = {
     userDataKeys,
@@ -27,7 +28,8 @@ const keys = {
     appointmentsKeys,
     queueKeys,
     prescrptionKeys,
-    medicalDocumentKeys
+    medicalDocumentKeys,
+    transactionKeys,
 }
 
 export default keys
