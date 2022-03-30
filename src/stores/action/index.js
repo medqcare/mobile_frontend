@@ -51,6 +51,9 @@ import {
   getPrescriptionHistory,
 } from './prescription';
 import {
+  getAllOrderHistory
+} from './histories'
+import {
   getTodaysRegistration,
   fetchCurrentQueueingNumber,
 } from './queues'
@@ -1379,6 +1382,8 @@ export {
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
 
 export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
+
+export { getAllOrderHistory }
 
 export { getTodaysRegistration, fetchCurrentQueueingNumber, }
 
