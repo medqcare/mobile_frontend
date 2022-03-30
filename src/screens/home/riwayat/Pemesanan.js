@@ -14,42 +14,21 @@ import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieLoader from 'lottie-react-native';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import { getAllOrderHistory } from '../../../stores/action'
 
-export default function Pemesanan(props) {
+function Pemesanan(props) {
+  const { orderHistory, orderIsLoading } = props.historiesReducer
   const [appoinment, setAppoinment] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [Load, setLoad] = useState(false);
 
-  const _getData = async () => {
-    let token = await AsyncStorage.getItem('token');
-    token = JSON.parse(token).token;
-    return axios({
-      url: baseURL + `/api/v1/members/reservations/user?type=doctor`,
-      method: 'GET',
-      headers: {
-        Authorization: token,
-      },
-    });
-  };
-
   const _fetchDataAppoinment = async () => {
-    _getData()
-      .then(({ data }) => {
-        let datakebalik = data.data.reservations.reverse();
-        let newAppoinment = [];
-        datakebalik.map((item, index) => {
-          if (item.status !== 'booked') {
-            newAppoinment.push(item);
-          }
-        });
-        setAppoinment(newAppoinment);
-        setLoad(false);
-      })
-      .catch((error) => {
-        setRefreshing(false);
-        setLoad(false);
-        console.log(error);
-      });
+    try {
+      await props.getAllOrderHistory()
+    } catch (error) {
+      setRefreshing(false);
+      console.log(error);
+    }
   };
 
   const onRefresh = React.useCallback(() => {
@@ -59,23 +38,22 @@ export default function Pemesanan(props) {
   }, [refreshing]);
 
   useEffect(() => {
-    setLoad(true);
     _fetchDataAppoinment();
   }, []);
 
   useEffect(() => {
-    if (appoinment) {
-      appoinment.sort(function (a, b) {
+    if (orderHistory) {
+      orderHistory.sort(function (a, b) {
         var dateA = new Date(a.bookingSchedule);
         var dateB = new Date(b.bookingSchedule);
         return dateA - dateB;
       });
     }
-  }, [appoinment]);
+  }, [orderHistory]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181818', marginHorizontal: 5 }}>
-      {Load ? (
+      {orderIsLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
           autoPlay
@@ -83,9 +61,9 @@ export default function Pemesanan(props) {
         />
       ) : (
         <>
-          {appoinment.length ? (
+          {orderHistory.length ? (
             <FlatList
-              data={appoinment}
+              data={orderHistory}
               keyExtractor={(item) => item._id}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -328,3 +306,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
+
+const mapStateToProps = (state) => {
+  return state;
+};
+
+const mapDispatchToProps = {
+  getAllOrderHistory
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Pemesanan);
+
