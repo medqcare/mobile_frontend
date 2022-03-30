@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
@@ -17,42 +18,36 @@ import LottieLoader from 'lottie-react-native';
 import getPaymentMethod from '../../../helpers/getPaymentMethod';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
 import { WHITE_PRIMARY } from '../../../values/color';
+import { getAllTransactionHistory } from '../../../stores/action'
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
   'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg';
 
-export default function Transaksi(props) {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+function Transaksi(props) {
+  const { userData, } = props.userDataReducer
+  const [refreshing, setRefreshing] = useState(false);
+  const { transactionHistory, transactionIsLoading } = props.historiesReducer
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchTransactionHistory();
+    setRefreshing(false);
+  }, [refreshing]);
+
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const stringToken = await AsyncStorage.getItem('token');
-        const { token } = JSON.parse(stringToken);
-        const patientId = props.userData._id;
-        const patientIDs = props.userData.family
-          .map((e) => e._id)
-          .concat(patientId);
-        const { data: response } = await axios({
-          method: 'GET',
-          url: baseURL + `/api/v1/members/transactions/${patientId}`,
-          headers: {
-            authorization: token,
-            'X-Secret': 123456,
-            ids: patientIDs.join(','),
-          },
-        });
-        const { transactions } = response.data;
-        setTransactions(transactions);
-      } catch (error) {
-        console.log(error, 'this is error from axios on transaction screen');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    fetchTransactionHistory()
+  }, [])
+
+  async function fetchTransactionHistory(){
+    const patientID = userData._id
+    const IDs = userData.family
+      .map((e) => e._id)
+      .concat(patientID)
+      .join(',')
+
+    await props.getAllTransactionHistory(patientID, IDs)
+  }
 
   const getTransactionStatus = (status) => {
     switch (status) {
@@ -70,7 +65,7 @@ export default function Transaksi(props) {
     }
   };
 
-  if (loading) {
+  if (transactionIsLoading) {
     return (
       <LottieLoader
         source={require('../../animation/loading.json')}
@@ -82,11 +77,14 @@ export default function Transaksi(props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181818' }}>
-      {transactions.length !== 0 ? (
+      {transactionHistory.length !== 0 ? (
         <View style={{ paddingHorizontal: 16 }}>
           <FlatList
-            data={transactions}
+            data={transactionHistory}
             keyExtractor={(item) => `${item._id}`}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+            }
             renderItem={({ item }) => {
               const status = getTransactionStatus(item.status);
               const scheduleDate = item.bookingSchedule
@@ -302,3 +300,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
+
+const mapStateToProps = (state) => {
+  return state;
+};
+
+const mapDispatchToProps = {
+  getAllTransactionHistory
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Transaksi);
