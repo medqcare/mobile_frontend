@@ -12,6 +12,9 @@ import {
   cancelSelectedReservation
 } from './appointment'
 import {
+  getAllTransactions
+} from './transactions'
+import {
   searchAllClinics,
   searchClinicByName
 } from './clinic'
@@ -1337,6 +1340,11 @@ export {
   setHealthFacility,
   checkIn,
   cancelSelectedReservation
+}
+
+
+export {
+  getAllTransactions
 }
 
 export {
