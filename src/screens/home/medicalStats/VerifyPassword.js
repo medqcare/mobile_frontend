@@ -21,14 +21,14 @@ function VerifyPassword(props) {
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
   const [loading, setLoading] = useState(false);
+
   const onSubmitHandler = async () => {
     try {
       setLoading(true);
       const tokenString = await AsyncStorage.getItem('token');
       const { token } = JSON.parse(tokenString);
       const { email } = props.userData.userID;
-      console.log(token, email);
-      await axios({
+      const { data } = await axios({
         url: baseURL + '/api/v1/members/verify/password',
         method: 'POST',
         headers: {
@@ -39,13 +39,12 @@ function VerifyPassword(props) {
           email,
         },
       });
-      const patientID = props.navigation.getParam('patientID');
-      console.log('This is patient ID (Verify): ', patientID)
-
-      ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG)
-      props.navigation.navigate('ScannerShareMedres', {
-        patientID
-      });
+      console.log(data);
+      const onSuccess = props.navigation.getParam('onSuccess');
+      if (typeof onSuccess === 'function') {
+        ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG);
+        onSuccess();
+      }
     } catch (error) {
       ToastAndroid.show(
         'Verifikasi gagal, silahkan coba lagi',
@@ -53,6 +52,7 @@ function VerifyPassword(props) {
       );
     } finally {
       setLoading(false);
+      setPassword('');
     }
   };
 
@@ -79,6 +79,7 @@ function VerifyPassword(props) {
             style={styles.inputPassword}
             autoCapitalize="none"
             onChangeText={setPassword}
+            value={password}
           />
           <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -101,7 +102,7 @@ function VerifyPassword(props) {
             {loading ? (
               <ActivityIndicator color={'#DDDDDD'} size={'small'} />
             ) : (
-              <Text style={styles.buttonPrimaryText}>Bagikan</Text>
+              <Text style={styles.buttonPrimaryText}>Verifikasi</Text>
             )}
           </TouchableOpacity>
         </View>

@@ -23,7 +23,7 @@ export function searchAllReservations(status, type){
             const token = await getToken()
             const { data } = await instance({
                 method: 'GET',
-                url: `reservations/user?status=${status}`,
+                url: `reservations/user?status=${status}&active=true`,
                 headers: {
                     Authorization: token
                 }

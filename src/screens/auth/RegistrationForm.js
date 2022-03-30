@@ -188,6 +188,7 @@ const RegistrationForm = (props) => {
         });
         const user = response.user;
         const employee = response.data;
+        console.log(employee.gender, ">>>>> gender employee ku")
         const splittedNameBySpace = employee.name.split(' ');
         const [firstName, ...rest] = splittedNameBySpace;
         const lastName = rest.join(' ');
@@ -198,7 +199,7 @@ const RegistrationForm = (props) => {
           ...userData,
           firstName,
           lastName,
-          gender: employee.gender === 'Laki-laki' ? 'Male' : 'Female',
+          gender: employee.gender.toLowerCase() === gender_radio[0].label.toLowerCase() ? 'Male' : 'Female',
           nik: employee.NIK ? employee.NIK : '',
           dob: employee.dob ? dob : '',
         });

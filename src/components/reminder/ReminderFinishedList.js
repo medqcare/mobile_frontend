@@ -16,8 +16,16 @@ const dimWidth = Dimensions.get("window").width;
 
 function ReminderFinishedList({props, drugs}) {
     const { finishedDrugs, isLoading, error } = props.drugReducer
-    const data = finishedDrugs?.length > 0 ? finishedDrugs : null
     
+    const data = finishedDrugs.length > 0 ? finishedDrugs.map(el => {
+        el.finishedAt = new Date(el.finishedAt)
+        return el
+    }) : null
+
+    if(data) {
+        data.sort((a, b) => b.finishedAt - a.finishedAt)
+    }
+  
     return (
         data ? (  
             data.map((el, index) => {

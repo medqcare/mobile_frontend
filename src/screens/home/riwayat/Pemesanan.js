@@ -96,6 +96,7 @@ function Pemesanan(props) {
                       {item.status === 'Queueing' ? 'Dalam Antrian' : ''}
                       {item.status === 'canceled' ? 'Dibatalkan' : ''}
                       {item.status === 'registered' ? 'Dalam Antrian' : ''}
+                      {item.isExpired && item.status === 'booked' ? 'Kadaluwarsa' : ''}
                     </Text>
                   </View>
                   <View

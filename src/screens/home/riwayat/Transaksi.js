@@ -96,7 +96,6 @@ function Transaksi(props) {
                 <TouchableOpacity
                   style={{
                     backgroundColor: '#2F2F2F',
-                    // padding: 10,
                     paddingHorizontal: 10,
                     paddingVertical: 12,
                     borderRadius: 5,
@@ -113,13 +112,12 @@ function Transaksi(props) {
                   <View
                     style={{
                       flexDirection: 'row',
-                      // paddingVertical: 6,
                       alignItems: 'center',
                     }}
                   >
-                    {item.doctor ? (
+                    {item.doctor !== undefined ? (
                       <>
-                        <View style={{}}>
+                        <View>
                           <View style={styles.borderImage}>
                             <Image
                               style={styles.image}
@@ -142,19 +140,17 @@ function Transaksi(props) {
                       </>
                     ) : (
                       <>
-                        <>
-                          <View>
-                            <Text
-                              style={{
-                                fontSize: 16,
-                                color: WHITE_PRIMARY,
-                                textTransform: 'capitalize',
-                              }}
-                            >
-                              Layanan Medis {item.services.name}
-                            </Text>
-                          </View>
-                        </>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: WHITE_PRIMARY,
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            Layanan Medis {item.services.name}
+                          </Text>
+                        </View>
                       </>
                     )}
                   </View>
@@ -165,13 +161,17 @@ function Transaksi(props) {
                     </Text>
                     <View style={styles.time}>
                       <Text style={styles.textcontent}>{schedule}</Text>
-                      {item.bookingTime && (
-                        <View style={styles.dividingPoint}></View>
-                      )}
-                      <Text style={styles.textcontent}>{item.bookingTime}</Text>
+                      {item.bookingTime ? (
+                        <>
+                          <View style={styles.dividingPoint}></View>
+                          <Text style={styles.textcontent}>
+                            {item.bookingTime}
+                          </Text>
+                        </>
+                      ) : null}
                     </View>
                     <Text style={styles.textcontent}>
-                      Nama Pasien:{' '}
+                      { 'Nama Pasien: '}
                       <Text style={{ color: '#DDDDDD' }}>
                         {item.patient.patientName}
                       </Text>
@@ -230,7 +230,6 @@ function Transaksi(props) {
                     </View>
                   </View>
                 </TouchableOpacity>
-                // </View>
               );
             }}
           />
@@ -280,7 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#B5B5B5',
     marginBottom: 4,
-    textTransform: "capitalize"
+    textTransform: 'capitalize',
   },
   time: {
     flexDirection: 'row',

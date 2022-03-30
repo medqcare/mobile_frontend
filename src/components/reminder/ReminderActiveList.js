@@ -444,7 +444,7 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
         }
     }
 
-    async function updateFinishStatus(section){
+    async function updateFinishStatus(){
         try {
             const drugID = selectedSection._id
             const finishedDrug = {
@@ -660,7 +660,6 @@ function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction,
                     onChange={onChange}
                 />
             )}
-
             <ConfirmationModal
                 load={confirmationModalLoad}
                 modal={confirmationModal}
