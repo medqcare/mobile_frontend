@@ -59,6 +59,8 @@ function MedicalServiceDetail({ navigation, userData, myLocation }) {
     photo,
   } = item;
 
+  console.log(item, "hehehe ada item")
+
   const [serviceDetail, setServiceDetail] = useState({
     name,
     id,
@@ -97,7 +99,7 @@ function MedicalServiceDetail({ navigation, userData, myLocation }) {
   }
 
   const [healthFacility, setHealthFacility] = useState({
-    facilityID: id,
+    facilityID: clinic.idClinicMobile,
     facilityName: clinic.name,
     // facilityType: 'Klinik',
     // facilityMainType: 'Klinik',
