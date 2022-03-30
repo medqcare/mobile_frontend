@@ -7,6 +7,8 @@ import {
 } from './allergies'
 import {
   searchAllReservations,
+  setHealthFacility,
+  checkIn,
   cancelSelectedReservation
 } from './appointment'
 import {
@@ -1328,6 +1330,8 @@ export {
 
 export {
   searchAllReservations,
+  setHealthFacility,
+  checkIn,
   cancelSelectedReservation
 }
 
