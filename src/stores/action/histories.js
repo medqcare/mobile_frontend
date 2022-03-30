@@ -54,3 +54,40 @@ export function getAllOrderHistory(){
         }
     }
 }
+
+export function getAllTransactionHistory(patientID, IDs){
+    return async dispatch => {
+        try {
+            console.log(`Application is trying to find patient's transaction history`)
+
+            await dispatch({
+                type: SET_TRANSACTION_HISTORY_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'GET',
+                url: `transactions/${patientID}`,
+                headers: {
+                    Authorization: token,
+                    ids: IDs
+                }
+            })
+
+            const { transactions } = data.data
+            console.log(`Application found ${transactions.length} transaction(s)`)
+            
+            await dispatch({
+                type: SET_TRANSACTION_HISTORY,
+                payload: transactions
+            })
+        } catch (error) {
+            console.log(error.message)
+            await dispatch({
+                type: SET_TRANSACTION_HISTORY_ERROR,
+                payload: error.message
+            })
+        }
+    }
+}
