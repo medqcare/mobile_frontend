@@ -62,7 +62,7 @@ export function getTodaysPrescriptions(patientID){
 
             return data.data
         } catch (error) {
-            console.log(error) 
+            console.log(error, 'Active Prescriptions') 
         }
     }
 }
@@ -89,7 +89,7 @@ export function getPrescriptionHistory(patientID){
 
             return data.data
         } catch (error) {
-            console.log(error) 
+            console.log(error, 'History prescriptions') 
 
             await dispatch({
                 type: SET_PRESCRIPTIONS_ERROR,

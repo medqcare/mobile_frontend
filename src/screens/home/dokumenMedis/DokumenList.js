@@ -18,10 +18,13 @@ import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
+import keys from '../../../stores/keys';
+const { SET_MEDICAL_DOCUMENTS } = keys.medicalDocumentKeys
+
 import { Ionicons } from '@expo/vector-icons';
 import SearchIcon from '../../../assets/svg/Search';
 import SelectPatient from '../../../components/modals/selectPatient';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   deleteDocument,
@@ -49,6 +52,7 @@ const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
+  const dispatch = useDispatch()
   const { types: DEFAULT_TYPES, allowUploadDocument } =
     props.navigation.state.params;
   const { routeName: SCREEN_NAME } = props.navigation.state;
@@ -433,6 +437,15 @@ function DokumenList(props) {
     );
     return () => backHandler.remove();
   }, []);
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+		props.navigation.pop();
+    dispatch({
+      type: SET_MEDICAL_DOCUMENTS,
+      payload: []
+    })
+		return true;
+	});
 
   return (
     <View style={styles.container}>

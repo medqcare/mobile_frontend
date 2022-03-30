@@ -34,25 +34,14 @@ const dimWidth = dimension.width;
 
 function Prescription(props) {
 	const { userData, isLoading: userDataLoading, error: userDataError } = props.userDataReducer
-	const { isLoading } = props.prescriptionsReducer
 	const dispatch = useDispatch()
 	const [patientID, setPatientID] = useState(userData._id)
 	const swiper = useRef(null)
 
 	useEffect(async () => {
 		try {
-            dispatch({
-                type: SET_PRESCRIPTIONS_LOADING,
-                payload: true
-            })
-
 			await props.getTodaysPrescriptions(patientID)
 			await props.getPrescriptionHistory(patientID)
-
-			dispatch({
-                type: SET_PRESCRIPTIONS_LOADING,
-                payload: false
-            })
 		} catch (error) {
 			console.log(error)
 		}

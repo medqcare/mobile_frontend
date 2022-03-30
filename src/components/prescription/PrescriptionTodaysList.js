@@ -29,10 +29,9 @@ const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
 function PrescriptionTodaysList({props }) {
-    const { activePrescriptions, isLoading, error } = props.prescriptionsReducer
-    const [content, setContent] = useState(activePrescriptions)
-
+    const { activePrescriptions, activeIsLoading, error } = props.prescriptionsReducer
     const [activeSections, setActiveSections] = useState([]);
+    
     const setSections = (sections, isClose, index) => {
         if(isClose){
             const newSections = sections.filter(el => {
@@ -179,11 +178,11 @@ function PrescriptionTodaysList({props }) {
     };
   
     return (
-        isLoading ? <ActivityIndicator color="blue" size={'small'}/> :
-        content?.length > 0 ? 
+        activeIsLoading ? <ActivityIndicator color="blue" size={'small'}/> :
+        activePrescriptions?.length > 0 ? 
             <Accordion
                 activeSections={activeSections}
-                sections={content}
+                sections={activePrescriptions}
                 touchableComponent={TouchableWithoutFeedback}
                 expandMultiple={true}
                 renderHeader={renderHeader}
