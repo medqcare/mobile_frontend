@@ -34,30 +34,17 @@ const dimWidth = dimension.width;
 
 function Prescription(props) {
 	const { userData, isLoading: userDataLoading, error: userDataError } = props.userDataReducer
-	const { activePrescriptions, prescriptionHistory, isLoading, error } = props.prescriptionsReducer
+	const { isLoading } = props.prescriptionsReducer
 	const dispatch = useDispatch()
-	const [load, setLoad] = useState(true)
-	// const [todaysPrescriptions, setTodaysPrescriptions] = useState(null)
-	// const [prescriptionHistory, setPrescriptionHistory] = useState(null)
 	const [patientID, setPatientID] = useState(userData._id)
 	const swiper = useRef(null)
 
 	useEffect(async () => {
 		try {
-			setLoad(true)
-			
             dispatch({
                 type: SET_PRESCRIPTIONS_LOADING,
                 payload: true
             })
-			// const token = JSON.parse(await AsyncStorage.getItem('token')).token
-
-			// await getAllPrescriptions(patientID, token)
-			// const today = await getTodaysPrescriptions(patientID, token)
-			// setTodaysPrescriptions(today)
-
-			// const history = await getPrescriptionHistory(patientID, token)
-			// setPrescriptionHistory(history)
 
 			await props.getTodaysPrescriptions(patientID)
 			await props.getPrescriptionHistory(patientID)
@@ -66,7 +53,6 @@ function Prescription(props) {
                 type: SET_PRESCRIPTIONS_LOADING,
                 payload: false
             })
-			setLoad(false)
 		} catch (error) {
 			console.log(error)
 		}
@@ -161,12 +147,12 @@ function Prescription(props) {
 			</View>
 
 			<View style={styles.content}>
-			{/* {load ? 
+			{isLoading ? 
 				<LottieLoader
-				// source={require('../../animation/loading.json')}
-				autoPlay
-				loop
-			  /> : */}
+					source={require('../../animation/loading.json')}
+					autoPlay
+					loop
+				/> :
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
@@ -181,7 +167,7 @@ function Prescription(props) {
 						<PrescriptionHistory props={props}/>
 					</ScrollView>
 				</Swiper>
-			{/* } */}
+			}
 			</View>
 		</View>
 	);
