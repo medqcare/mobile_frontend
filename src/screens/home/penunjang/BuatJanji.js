@@ -902,6 +902,7 @@ const MakeAppointment = (props) => {
 					<TouchableOpacity
 						onPress={() => validation()}
 						style={viewStyle.button}
+						disabled={isLoading}
 					>
 						{isLoading ? (
 							<ActivityIndicator size={'small'} color={'#FFF'} />

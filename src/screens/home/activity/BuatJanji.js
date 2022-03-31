@@ -50,7 +50,8 @@ const mapStateToProps = (state) => {
 };
 
 const buatJanji = (props) => {
-  const { userData, isLoading, error } = props.userDataReducer
+  const { userData, error } = props.userDataReducer
+  const { isLoading } = props.doctorReducer
   const { doctorData: datadoctor } = props.navigation.state.params;
   const {
     healthFacility,
@@ -163,34 +164,6 @@ const buatJanji = (props) => {
 
   async function gobookDoctor(dataSend, dataCreate) {
     props.makeReservation(dataSend, setModal)
-    // setLoad(true);
-    // let token = await AsyncStorage.getItem('token');
-    // props
-    //   .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-    //   .then((data, status) => {
-    //     return props.bookDoctor(dataSend, JSON.parse(token).token);
-    //   })
-    //   .then((data) => {
-    //       setLoad(false);
-    //     console.log(data, 'response rsv')
-    //     if (data.message == 'already reserve for that patient') {
-    //       setLoad(false);
-    //       ToastAndroid.show(data.message, ToastAndroid.LONG);
-    //     } else if (data.status === 'fail') {
-    //       setLoad(false);
-    //       ToastAndroid.show(data.message, ToastAndroid.LONG);
-    //     } else {
-    //       setLoad(false);
-    //       setModal(true);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setLoad(false);
-    //     setMessageF(error);
-    //     setModalf(true);
-    //     // alert('Something Wrong', error)
-    //     console.log(error, 'loh kok error weehhh');
-    //   });
   }
 
   useEffect(() => {
@@ -355,23 +328,6 @@ const buatJanji = (props) => {
       });
     }
   }, [modalP]);
-
-  //   function settime() {
-  //     if (getDay !== '') {
-  //       datadoctor.facility.forEach((item) => {
-  //         Object.keys(item.facilitySchedule).forEach((item2, index2) => {
-  //           if (getDay == item2) {
-  //             dayChoose = Object.values(item.facilitySchedule);
-  //             setTime(dayChoose[index2]);
-  //             // setBook({...book, bookingTime: dayChoose[index2]});
-  //           }
-  //         });
-  //       });
-  //     } else {
-  //       setTime([]);
-  //       // setBook({...book, bookingTime: null});
-  //     }
-  //   }
 
   function getJadwal() {
     datadoctor.facility.forEach((item) => {
@@ -930,8 +886,9 @@ const buatJanji = (props) => {
           <TouchableOpacity
             onPress={() => validation()}
             style={viewStyle.button}
+            disabled={isLoading}
           >
-            {load ? (
+            {isLoading ? (
               <ActivityIndicator size={'small'} color={'#FFF'} />
             ) : (
               <View style={{ flexDirection: 'row' }}>
