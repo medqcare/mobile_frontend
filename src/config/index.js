@@ -11,6 +11,6 @@ const instance = axios.create({
 });
 
 export  {
-	baseURL,
-	instance,
+    baseURL,
+    instance,
 };
