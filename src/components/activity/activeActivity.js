@@ -19,26 +19,11 @@ const activeActivity = (props) => {
 	const [currentQueueingNumber, setCurrentQueueingNumber] = useState(0)
 	const [currentQueueingNumberLoading, setCurrentQueueingNumberLoading ] = useState(false)
 
-	useEffect(async () => {
-        setCurrentQueueingNumberLoading(true)
-        let unMounted = false
-		await checkAsync()
-
-        if(!unMounted){
-            setCurrentQueueingNumberLoading(false)
-        }
-
-        return () => {
-            setCurrentQueueingNumberLoading(false)
-            unMounted = true
-        }
-
-    }, [])
-
 	async function checkAsync(){
 		try {
+        	setCurrentQueueingNumberLoading(true)
 			await props.fetchCurrentQueueingNumber(queueID, setCurrentQueueingNumber);
-
+            setCurrentQueueingNumberLoading(false)
 		} catch (error) {
 			console.log(error);
 		}
@@ -46,8 +31,10 @@ const activeActivity = (props) => {
 
 	useEffect(() => {
 		let socketer = socketers();
+		checkAsync()
 
 		return () => {
+			setCurrentQueueingNumberLoading(false)
 			socketer.close();
 			console.log('Socket turned off');
 		};

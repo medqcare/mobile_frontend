@@ -17,7 +17,6 @@ function queuesReducer(state = initState, action){
     switch (type) {
         case SET_QUEUES:
             return { ...state, queues: payload, isLoading: false, error: null }
-        
         case SET_QUEUES_LOADING:
             return { ...state, isLoading: payload }
         case SET_QUEUES_ERROR:
