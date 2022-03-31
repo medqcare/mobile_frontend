@@ -4,7 +4,6 @@ import keys from "../keys";
 
 const {
     SET_QUEUES,
-    SET_QUEUES_NUMBER,
     SET_QUEUES_LOADING,
     SET_QUEUES_ERROR,
 } = keys.queueKeys
@@ -41,22 +40,19 @@ export function getTodaysRegistration(userID){
             })
             
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
+            await dispatch({
+                type: SET_QUEUES_ERROR,
+                payload: error.message
+            })
         }
         
     }
 }
 
-export function fetchCurrentQueueingNumber(queueID) {
+export function fetchCurrentQueueingNumber(queueID, setCurrentQueueingNumber) {
     return async dispatch => {
         try {
-            console.log(`Application is trying to fetch current queueing number`);
-
-            await dispatch({
-                type: SET_QUEUES_LOADING,
-                payload: true
-            })
-
             const token = await getToken()
             const { data } = await instance({
                 method: 'POST',
@@ -70,18 +66,17 @@ export function fetchCurrentQueueingNumber(queueID) {
             })
 
             if(data.data) {
-            console.log(`Current queueing number is ${data.data.currentQueueingNumber} for queueID ${queueID}`);
-
-                await dispatch({
-                    type: SET_QUEUES_NUMBER,
-                    payload: data.data.currentQueueingNumber
-                })
+                setCurrentQueueingNumber(data.data.currentQueueingNumber)
             }
             else {
                 throw { error: data }
             }
         } catch (error) {
-            console.log(error)
+            console.log(error.message)
+            await dispatch({
+                type: SET_QUEUES_ERROR,
+                payload: error.message
+            })
         }
     }
 }
