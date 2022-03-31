@@ -25,15 +25,11 @@ import * as Google from 'expo-google-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import {
-  SignIn,
-  SignInGoogle,
-  setLoading,
+  
 } from '../../../stores/action';
 
 const mapDispatchToProps = {
-  setLoading,
-  SignIn,
-  SignInGoogle,
+  
 };
 const mapStateToProps = (state) => {
   return state;
@@ -65,16 +61,16 @@ const signIn = (props) => {
         : null;
       console.log(navigateTo);
       setload(true);
-      props.SignIn(
-        {
-          email,
-          password,
-          firebaseNotificationToken,
-        },
-        props.navigation,
-        modalFalse,
-        navigateTo
-      );
+      // props.SignIn(
+      //   {
+      //     email,
+      //     password,
+      //     firebaseNotificationToken,
+      //   },
+      //   props.navigation,
+      //   modalFalse,
+      //   navigateTo
+      // );
     }
   }
 
@@ -110,7 +106,7 @@ const signIn = (props) => {
       } else {
         console.log('Google sign in was cancelled');
       }
-      props.SignInGoogle(idToken, props.navigation, navigateTo);
+      // props.SignInGoogle(idToken, props.navigation, navigateTo);
     } catch (error) {
       console.log(error, 'Error in google sign in');
     }

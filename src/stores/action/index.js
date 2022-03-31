@@ -37,7 +37,8 @@ import {
 } from './drugs';
 import {
   signIn,
-  signUp
+  signUp,
+  logout
 } from './entry'
 import {
   getDocumentByPatient,
@@ -195,161 +196,6 @@ export function retrieveData(data, navigation) {
           ToastAndroid.SHORT
         );
         console.log(err);
-      });
-  };
-}
-
-export function SignIn(userData, navigation, modalF, navigateTo) {
-  return (dispatch) => {
-    console.log(userData, 'Email and password of the user trying to sign in');
-    // console.log(navigation, 'ini navigationnya')
-    instance(
-      {
-        url: '/v1/members/signin',
-        method: 'POST',
-        data: userData,
-      },
-      { timeout: 3000 }
-    )
-      .then(({ data }) => {
-        // console.log(data, 'ini yang pertama');
-        if (data.token) {
-          _storeData({ token: data.token });
-          return instance(
-            {
-              url: '/v1/members/dataLogged',
-              method: 'GET',
-              headers: {
-                Authorization: data.token,
-              },
-            },
-            { timeout: 3000 }
-          );
-        } else if (data.message) {
-          // console.log(data)
-          // console.log('masuk else')
-          throw { message: data.message };
-        }
-      })
-      .then(async ({ data }) => {
-        // console.log(`User's data is`, data);
-        try {
-          if (data.data === null) {
-            // console.log('masuk if');
-            await dispatch({
-              type: 'GET_USER_DATA',
-              payload: data.data,
-            });
-            navigation.navigate('UserDataCompletion');
-          } else {
-            // console.log('masuk else');
-            await dispatch({
-              type: 'AFTER_SIGNIN',
-              payload: data.data,
-            });
-            await dispatch({
-              type: 'SET_MY_LOCATION',
-              payload: {
-                lat: data.data.location.coordinates[1],
-                lng: data.data.location.coordinates[0],
-              },
-            });
-            navigation.pop();
-            navigateTo
-              ? navigation.navigate(navigateTo)
-              : navigation.navigate('Home');
-          }
-        } catch (error) {
-          console.log(error, 'Ini adalah error ketika sign in');
-          modalF(error.message);
-        }
-      })
-      .catch((err) => {
-        modalF(
-          err.response
-            ? err.response.status == 401
-              ? 'Email and password not match'
-              : err.message
-            : err.message
-        );
-      });
-  };
-}
-
-export function SignInWithEmailOrPhoneNumber(
-  userData,
-  navigation,
-  modalF,
-  navigateTo
-) {
-  return (dispatch) => {
-    console.log(userData, 'Email and password of the user trying to sign in');
-    // console.log(navigation, 'ini navigationnya')
-    instance(
-      {
-        url: '/v1/members/authentication',
-        method: 'POST',
-        data: userData,
-      },
-      { timeout: 3000 }
-    )
-      .then(({ data: response }) => {
-        // console.log(data, 'ini yang pertama');
-        if (response.data.token) {
-          _storeData({ token: response.data.token });
-          return instance(
-            {
-              url: '/v1/members/dataLogged',
-              method: 'GET',
-              headers: {
-                Authorization: response.data.token,
-              },
-            },
-            { timeout: 3000 }
-          );
-        }
-      })
-      .then(async ({ data }) => {
-        // console.log(`User's data is`, data);
-        try {
-          if (data.data === null) {
-            // console.log('masuk if');
-            await dispatch({
-              type: 'GET_USER_DATA',
-              payload: data.data,
-            });
-            navigation.navigate('UserDataCompletion');
-          } else {
-            // console.log('masuk else');
-            await dispatch({
-              type: 'AFTER_SIGNIN',
-              payload: data.data,
-            });
-            // await dispatch({
-            //   type: 'SET_MY_LOCATION',
-            //   payload: {
-            //     lat: data.data.location.coordinates[1],
-            //     lng: data.data.location.coordinates[0],
-            //   },
-            // });
-            navigation.pop();
-            navigateTo
-              ? navigation.navigate(navigateTo)
-              : navigation.navigate('Home');
-          }
-        } catch (error) {
-          console.log(error, 'Ini adalah error ketika sign in');
-          modalF(error.message);
-        }
-      })
-      .catch((err) => {
-        modalF(
-          err.response
-            ? err.response.status == 401
-              ? 'Email and password not match'
-              : err.message
-            : err.message
-        );
       });
   };
 }
@@ -763,35 +609,6 @@ export function GetUser(token, navigation) {
         rej(error);
       }
     });
-  };
-}
-
-export function logout(navigation) {
-  return async (dispatch) => {
-    try {
-      await navigation.pop();
-      await navigation.navigate('Sign');
-      const token = await AsyncStorage.getItem('token');
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('docterFavorite');
-      await axios({
-        url: `${baseURL}/api/v1/members/firebase/token`,
-        method: 'PATCH',
-        headers: {
-          Authorization: JSON.parse(token).token,
-        },
-        data: {
-          token: '',
-        },
-      });
-      await dispatch({
-        type: 'GET_USER_DATA',
-        payload: null,
-      });
-      ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
-    } catch (error) {
-      console.log(error);
-    }
   };
 }
 
@@ -1295,7 +1112,8 @@ export {
 
 export { 
   signIn,
-  signUp
+  signUp,
+  logout,
 }
 
 export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };

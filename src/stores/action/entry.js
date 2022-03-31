@@ -1,6 +1,8 @@
 import { instance } from '../../config';
 import keys from '../keys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import getToken from '../../helpers/localStorage/token';
+import { ToastAndroid } from 'react-native';
 
 const { 
     SET_USER_DATA,
@@ -148,6 +150,37 @@ export function signUp(userData, navigation, modalFailed) {
                 type: SET_SIGNUP_ERROR,
                 payload: errorMessage
             })
+        }
+    }
+}
+
+export function logout(navigation){
+    return async dispatch => {
+        try {
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `firebase/token`,
+                headers: {
+                    Authorization: token
+                },
+                data: {
+                    token: ''
+                }
+            })
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: null
+            })
+
+            await AsyncStorage.removeItem('token');
+            await navigation.pop();
+            await navigation.navigate('Sign');
+            
+            ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
+        } catch (error) {
+            
         }
     }
 }
