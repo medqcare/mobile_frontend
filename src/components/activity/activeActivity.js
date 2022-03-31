@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import io from 'socket.io-client';
-import getAge from '../../helpers/getAge';
 import IcPatient from '../../assets/svg/ic_pasien';
 import { baseURL } from '../../config';
 import { connect } from 'react-redux';
 import { fetchCurrentQueueingNumber } from '../../stores/action'
 import { ActivityIndicator } from 'react-native-paper';
-import { WHITE_PRIMARY } from '../../values/color';
 
 const activeActivity = (props) => {
 	let { queuingNumber, queueID } = props.data
