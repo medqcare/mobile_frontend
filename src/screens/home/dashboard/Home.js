@@ -15,7 +15,6 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import {
   setCurrentLocation,
-  GetUser,
   setLoading,
   getDrugs,
   getReminders,
@@ -451,7 +450,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setLoading,
   setCurrentLocation,
-  GetUser,
   getDrugs,
   getReminders,
   setShowInstruction,

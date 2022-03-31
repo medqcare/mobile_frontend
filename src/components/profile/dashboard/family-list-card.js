@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //function
 import { properAge } from '../../../helpers/getAge';
-import { deleteFamily, deleteFamilyData , GetUser } from '../../../stores/action';
+import { deleteFamily, deleteFamilyData } from '../../../stores/action';
 
 //component
 import ConfirmationModal from '../../modals/ConfirmationModal';
@@ -24,7 +24,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const mapDispatchToProps = {
   deleteFamily,
   deleteFamilyData,
-  GetUser,
 };
 
 const mapStateToProps = (state) => {

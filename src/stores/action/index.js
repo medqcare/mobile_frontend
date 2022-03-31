@@ -558,60 +558,6 @@ export function changePassword(email, password, navigate, destination) {
   };
 }
 
-export function GetUser(token, navigation) {
-  console.log(token);
-  console.log('Above is the token that is already in AsyncStorage');
-  return (dispatch) => {
-    return new Promise(async (res, rej) => {
-      try {
-        console.log('Application is trying to GET dataLogged');
-        let { data } = await axios(
-          {
-            method: 'GET',
-            url: `${baseURL}/api/v1/members/dataLogged`,
-            headers: { Authorization: token },
-          },
-          { timeout: 100 }
-        );
-        if (data.data) {
-          console.log('Application Found dataLogged');
-          let temp = data.data;
-          let docFav = await AsyncStorage.getItem('doctorFavorite');
-          await AsyncStorage.setItem('userData', JSON.stringify(data.data));
-          if (docFav) {
-            temp.doctorFavorites = JSON.parse(docFav);
-          }
-          dispatch({
-            type: 'GET_USER_DATA',
-            payload: data.data,
-          });
-          dispatch({
-            type: 'TOGGLE_LOADING',
-            payload: false,
-          });
-          res(data.data);
-        } else {
-          console.log(`Application didn't find dataLogged`);
-          dispatch({
-            type: 'TOGGLE_LOADING',
-            payload: false,
-          });
-          res();
-          navigation.navigate('UserDataCompletion');
-          // modalW()
-        }
-      } catch (error) {
-        ToastAndroid.show(
-          `Please check your internet connection`,
-          ToastAndroid.LONG
-        );
-        console.log('Error found in function GetUser ==>', error.message);
-        rej(error);
-      }
-    });
-  };
-}
-
 export function addFamily(dataFamily, navigation, loadFalse) {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem('token');
