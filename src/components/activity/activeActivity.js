@@ -4,107 +4,147 @@ import io from 'socket.io-client';
 import getAge from '../../helpers/getAge';
 import IcPatient from '../../assets/svg/ic_pasien';
 import { baseURL } from '../../config';
+import { connect } from 'react-redux';
+import { fetchCurrentQueueingNumber } from '../../stores/action'
+import { ActivityIndicator } from 'react-native-paper';
+import { WHITE_PRIMARY } from '../../values/color';
 
 const activeActivity = (props) => {
-  // console.log(Object.keys(props.data.registration))
-  // console.log(props.data, 'this is data')
-  let queuingNumber = props.data.queuingNumber;
-  const [quesekarang, setquesekarang] = useState(props.currentQueue);
+	let { queuingNumber, queueID } = props.data
+	queueID = JSON.stringify(queueID)
+	const { 
+		data, 
+	} = props
 
-  useEffect(() => {
-    let socketer = socketers();
-    console.log('socket nyala');
-    return () => {
-      console.log(
-        'ini pas mau cabut dari component jadi manggil socket supaya mati'
-      );
-      socketer.close();
-    };
-  }, []);
-  function socketers() {
-    let socketIO = `${baseURL}`;
-    // let socketIO = `http://192.168.43.100:3004` // only development
-    let socket = io(socketIO);
-    socket.on(`que-${JSON.parse(props.queueId)}`, (data) => {
-      console.log('ini console.log dari socket ', `que-${props.queueId}`);
-      console.log(data);
-      setquesekarang(data);
-    });
-    return socket;
-  }
-  return (
-    <View style={Styles.containerComponent}>
-      <View style={{ marginBottom: 20, paddingHorizontal: 20 }}>
-        <Text style={{ color: '#B5B5B5' }}>Pasien </Text>
-        <View style={{ flexDirection: 'row', marginTop: 10 }}>
-          <View style={{ marginTop: 2 }}>
-            <IcPatient />
-          </View>
-          <Text style={{ color: '#FFF', fontSize: 14, marginLeft: 10 }}>
-            {props.data.patient.patientName}
-          </Text>
-        </View>
-      </View>
+	const [currentQueueingNumber, setCurrentQueueingNumber] = useState(0)
+	const [currentQueueingNumberLoading, setCurrentQueueingNumberLoading ] = useState(false)
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <View
-          style={{
-            minWidth: '42%',
-            margin: '2%',
-            marginLeft: '4%',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: '#B5B5B5' }}>Antrian Saat Ini</Text>
-          <Text style={{ fontSize: 55, color: '#B5B5B5', fontWeight: 'bold' }}>
-            {' '}
-            {quesekarang}{' '}
-          </Text>
-        </View>
-        <View
-          style={{
-            width: 1,
-            height: '80%',
-            backgroundColor: '#757575',
-          }}
-        />
-        <View
-          style={{
-            minWidth: '42%',
-            margin: '2%',
-            marginRight: '4%',
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: '#FFBD00' }}>Antrian Saya</Text>
-          <Text style={{ fontSize: 55, color: '#FFBD00', fontWeight: 'bold' }}>
-            {' '}
-            {queuingNumber}{' '}
-          </Text>
-        </View>
-      </View>
-      {/* <View style={Styles.bookingCodeBox}>
-        <Text style={{color: '#DDDDDD', paddingHorizontal: 5, fontSize: 13}}>
-          {props.data.registration.bookingCode}
-        </Text>
-        <Text
-          style={{
-            color: '#fff',
-            paddingHorizontal: 5,
-            fontSize: 13,
-            fontWeight: 'bold',
-          }}>
-          {props.data.registration.bookingTime}
-        </Text>
-      </View> */}
-    </View>
-  );
+	useEffect(async () => {
+        setCurrentQueueingNumberLoading(true)
+        let unMounted = false
+		await checkAsync()
+
+        if(!unMounted){
+            setCurrentQueueingNumberLoading(false)
+        }
+
+        return () => {
+            setCurrentQueueingNumberLoading(false)
+            unMounted = true
+        }
+
+    }, [])
+
+	async function checkAsync(){
+		try {
+			await props.fetchCurrentQueueingNumber(queueID, setCurrentQueueingNumber);
+
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	useEffect(() => {
+		let socketer = socketers();
+
+		return () => {
+			socketer.close();
+			console.log('Socket turned off');
+		};
+	}, []);
+
+	function socketers() {
+		console.log(`Socket turned on for queueID ${queueID}`)
+		let socketIO = `${baseURL}`;
+		let socket = io(socketIO);
+
+		socket.on(`que-${JSON.parse(queueID)}`, (data) => {
+			console.log('Data logged from socket: ', `que-${queueID}`);
+			console.log(data);
+			setCurrentQueueingNumber(data);
+		});
+		return socket;
+	}
+
+  	return (
+		<View style={Styles.containerComponent}>
+			<View style={{ marginBottom: 20, paddingHorizontal: 20 }}>
+				<Text style={{ color: '#B5B5B5' }}>Pasien </Text>
+				<View style={{ flexDirection: 'row', marginTop: 10 }}>
+					<View style={{ marginTop: 2 }}>
+						<IcPatient />
+					</View>
+					<Text style={{ color: '#FFF', fontSize: 14, marginLeft: 10 }}>
+						{data.patient.patientName}
+					</Text>
+				</View>
+			</View>
+
+			<View
+				style={{
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+				}}
+			>
+				<View
+					style={{
+						minWidth: '42%',
+						margin: '2%',
+						marginLeft: '4%',
+						alignItems: 'center',
+					}}
+				>
+					<Text style={{ color: '#B5B5B5' }}>Antrian Saat Ini</Text>
+					<Text style={{ fontSize: 55, color: '#B5B5B5', fontWeight: 'bold' }}>
+						{' '}
+						{currentQueueingNumberLoading ? 
+							<ActivityIndicator size={'small'} color={ '#B5B5B5'}/> : 
+							currentQueueingNumber
+						}
+						{' '}
+					</Text>
+				</View>
+
+				<View
+					style={{
+						width: 1,
+						height: '80%',
+						backgroundColor: '#757575',
+					}}
+				/>
+					<View
+						style={{
+							minWidth: '42%',
+							margin: '2%',
+							marginRight: '4%',
+							alignItems: 'center',
+						}}
+					>
+						<Text style={{ color: '#FFBD00' }}>Antrian Saya</Text>
+						<Text style={{ fontSize: 55, color: '#FFBD00', fontWeight: 'bold' }}>
+							{' '}
+							{queuingNumber}{' '}
+						</Text>
+					</View>
+
+				</View>
+				{/* <View style={Styles.bookingCodeBox}>
+					<Text style={{color: '#DDDDDD', paddingHorizontal: 5, fontSize: 13}}>
+					{props.data.registration.bookingCode}
+					</Text>
+					<Text
+					style={{
+						color: '#fff',
+						paddingHorizontal: 5,
+						fontSize: 13,
+						fontWeight: 'bold',
+					}}>
+					{props.data.registration.bookingTime}
+					</Text>
+				</View> */}
+		</View>
+  	);
 };
 const Styles = StyleSheet.create({
   containerComponent: {
@@ -140,4 +180,13 @@ const Styles = StyleSheet.create({
     paddingVertical: 20,
   },
 });
-export default activeActivity;
+
+const mapStateToProps = (state) => {
+	return state;
+  };
+  
+  const mapDispatchToProps = {
+	fetchCurrentQueueingNumber
+  };
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(activeActivity);
