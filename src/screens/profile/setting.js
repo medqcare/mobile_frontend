@@ -11,7 +11,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { changeLogin, Logout } from '../../stores/action'
+import { Logout } from '../../stores/action'
 
 import Item from '../../components/profile/setting/setting-item'
 import Title from '../../components/profile/setting/setting-tittle'
@@ -21,7 +21,6 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import { BackHandler } from 'react-native'
 
 const mpaDispatchToprops = {
-    changeLogin,
     Logout
 }
 const mapStateToProps = state => {
@@ -64,8 +63,6 @@ const setting = (props) => {
     ]
 
     const logout = async () => {
-        // await props.changeLogin()
-
         AsyncStorage.removeItem('token')
             .then(async function () {
                 props.Logout(props.navigation.navigate('Sign'))

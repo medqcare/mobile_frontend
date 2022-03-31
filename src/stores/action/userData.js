@@ -118,6 +118,41 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
     }
 }
 
+export function deleteProfileImage(patientID, userData){
+    return async dispatch => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            console.log('Application is trying to delete profile image....');
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: 'deleteAvatar',
+                headers: {
+                    id: patientID,
+                    Authorization: token
+                }
+            })
+
+            userData.imageUrl = ''
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: userData
+            })
+
+            console.log('Server has successfully deleted imageUrl');
+            ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+}
+
 export function updateProfileData(updateData, navigate, navigateTo, userData){
     console.log('Sending data to server...')
     return async (dispatch) => {

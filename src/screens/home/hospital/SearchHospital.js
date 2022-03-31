@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import CardHospital from '../../../components/home/hospital/card-hospital';
-import { getDataHospital, searchAllClinics, searchClinicByName } from '../../../stores/action';
+import { searchAllClinics, searchClinicByName } from '../../../stores/action';
 import SearchBar from '../../../components/headers/SearchBar';
 
 import axios from 'axios';
@@ -244,7 +244,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  getDataHospital,
   searchAllClinics,
   searchClinicByName,
 };

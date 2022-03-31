@@ -16,7 +16,7 @@ function userDataReducer(state = initState, action){
     const { type, payload } = action
     switch (type) {
         case SET_USER_DATA:
-            return { ...state, userData: payload, error: null }
+            return { ...state, userData: payload, isLoading: false, error: null }
         case SET_USER_DATA_LOADING:
             return { ...state, isLoading: payload}
         case SET_USER_DATA_ERROR:

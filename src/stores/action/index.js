@@ -64,8 +64,12 @@ import {
   changeReminderStatus,
 } from './reminders';
 import {
+  setShowInstruction
+} from './showInstruction'
+import {
   getLoggedData,
   updateProfilePicture,
+  deleteProfileImage,
   updateProfileData,
   changeAccountPassword,
   createNewFamily,
@@ -122,60 +126,6 @@ const _storeData = async (data) => {
   //   }
   // }
 // }
-
-export function changeLogin(status) {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      // console.log('masuk action');
-      await dispatch({
-        type: 'CHANGE_LOGIN',
-        payload: status,
-      });
-      resolve();
-    });
-  };
-}
-
-export function getDataHospital(location) {
-  // console.log('ini location', location);
-  // console.log(page, 'ini page')
-  return async (dispatch) => {
-    try {
-      console.log(location, 'ini dari actionnya');
-      let { data } = await axios({
-        method: 'POST',
-        url: `${baseURL}/api/hospitals/get`,
-        data: {
-          lat: location.lat,
-          lng: location.lng,
-        },
-      });
-      console.log(data, 'ini data dati action');
-      dispatch({
-        type: 'FETCH_DATA_HOSPITAL',
-        payload: data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-}
-
-export function getDataDoctor(page) {
-  // console.log('masuk sini data doctor');
-  return async (dispatch) => {
-    try {
-      let { data } = await instance.get(`/doctors`);
-      // console.log(data, 'in data dari action')
-      dispatch({
-        type: 'FETCH_DATA_DOCTOR',
-        payload: data,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-}
 
 export function setCurrentLocation(myLocation) {
   return async (dispatch) => {
@@ -1299,49 +1249,6 @@ export function uploadImage(
     }
   };
 }
-export function deleteImage(patientId, token) {
-  return async (dispatch) => {
-    console.log('Application is sending command to server....');
-    try {
-      let { data } = await instance({
-        url: `/v1/members/deleteAvatar`,
-        method: 'PATCH',
-        headers: {
-          id: patientId,
-          authorization: token,
-        },
-      });
-      console.log('Server has successfully deleted imageUrl');
-
-      let result = await instance({
-        method: 'GET',
-        url: `/v1/members/dataLogged`,
-        headers: { Authorization: token },
-      });
-      if (result.data) {
-        console.log('Application Found dataLogged');
-        await dispatch({
-          type: 'GET_USER_DATA',
-          payload: result.data.data,
-        });
-      }
-
-      ToastAndroid.show(data.message, ToastAndroid.SHORT);
-    } catch (error) {
-      console.log(
-        error.response.data,
-        'Error found when trying to delete avatar'
-      );
-    }
-  };
-}
-
-export function setShowInstruction(payload) {
-  return {
-    type: 'SHOW_INSTRUCTION',
-    payload: payload,
-  };
-}
 
 export {
   getPatientAllergies,
@@ -1403,7 +1310,8 @@ export {
   getMedicalServices,
   createMedicalServiceReservation,
 }
+export { setShowInstruction }
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
+export { getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }

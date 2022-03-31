@@ -11,12 +11,11 @@ import { connect } from 'react-redux';
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info';
 
-import { changeLogin, logout, deleteUserData } from '../../stores/action';
+import { logout, deleteUserData } from '../../stores/action';
 import { SafeAreaView } from 'react-navigation';
 import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapDispatchToProps = {
-  changeLogin,
   logout,
   deleteUserData
 };

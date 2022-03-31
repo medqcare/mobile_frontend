@@ -25,7 +25,6 @@ import * as Google from 'expo-google-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import {
-  changeLogin,
   SignIn,
   SignInGoogle,
   setLoading,
@@ -33,7 +32,6 @@ import {
 
 const mapDispatchToProps = {
   setLoading,
-  changeLogin,
   SignIn,
   SignInGoogle,
 };

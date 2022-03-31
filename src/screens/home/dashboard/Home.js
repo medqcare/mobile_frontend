@@ -15,7 +15,6 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import {
   setCurrentLocation,
-  changeLogin,
   GetUser,
   setLoading,
   getDrugs,
@@ -27,7 +26,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchBar from '../../../components/headers/SearchBar';
 
 import keys from '../../../stores/keys'
@@ -54,6 +52,7 @@ function HomePage(props) {
   const { SET_USER_LOCATION } = keys.userLocationKeys
   const { userData, isLoading, error } = props.userDataReducer
   const { userLocation } = props.userLocationReducer
+  const { showInstruction } = props.showInstructionReducer
   const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
@@ -354,13 +353,12 @@ function HomePage(props) {
           </View>
         </>
       )}
-      {/* <InstructionModal
-        visible={props.showInstruction}
+      <InstructionModal
+        visible={showInstruction}
         onFinishOrSkip={() => {
-          // setModalInstruction(false);
           props.setShowInstruction(false);
         }}
-      /> */}
+      />
     </View>
   );
 }
@@ -453,7 +451,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setLoading,
   setCurrentLocation,
-  changeLogin,
   GetUser,
   getDrugs,
   getReminders,
