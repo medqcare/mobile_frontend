@@ -146,60 +146,6 @@ export function setLoading(loading) {
   };
 }
 
-export function retrieveData(data, navigation) {
-  return async (dispatch) => {
-    let storage = JSON.parse(data);
-    let token = storage.token;
-    console.log(token, 'ini token pak');
-    instance({
-      url: '/v1/members/dataLogged',
-      method: 'GET',
-      headers: {
-        Authorization: token,
-      },
-    })
-      .then(async ({ data }) => {
-        // console.log(data)
-        try {
-          if (data.data === null) {
-            console.log('masuk if ini donnng');
-            await dispatch({
-              type: 'GET_USER_DATA',
-              payload: data.data,
-            });
-            navigation.navigate('RegistrationUser');
-          } else {
-            console.log('masuk else');
-            await dispatch({
-              type: 'AFTER_SIGNIN',
-              payload: data.data,
-            });
-            await dispatch({
-              type: 'SET_MY_LOCATION',
-              payload: {
-                lat: data.data.location.coordinates[0],
-                lng: data.data.location.coordinates[1],
-              },
-            });
-            console.log(navigation.state.params.data);
-            // navigation.navigate('ProfileSwitch');
-          }
-        } catch (error) {
-          console.log(error);
-          // modalF(error.message)
-        }
-      })
-      .catch((err) => {
-        // console.log('servernya mattiiiiiii')
-        ToastAndroid.show(
-          `Please check your internet connection`,
-          ToastAndroid.SHORT
-        );
-        console.log(err);
-      });
-  };
-}
-
 export function AddNewUser(userData, navigation) {
   return async (dispatch) => {
     try {

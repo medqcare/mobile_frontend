@@ -2,15 +2,12 @@ import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { View, Text } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { retrieveData } from '../../stores/action'
-import axios from 'axios'
 import StopOver from '../../components/stopoverRegist'
 
 const mapStateToProps = state => {
     return state
 }
 const mapDispatchToProps = {
-    retrieveData
 }
 
 const loadingCard = (props) => {
@@ -20,7 +17,7 @@ const loadingCard = (props) => {
         try {
             let value = await AsyncStorage.getItem('token');
             if (value !== null) {
-                props.retrieveData(value, props.navigation)
+                // props.retrieveData(value, props.navigation)
                 // props.navigation.navigate('ProfileSwitch')
             }
             else {
