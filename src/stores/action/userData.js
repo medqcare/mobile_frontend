@@ -205,7 +205,7 @@ export function deleteProfileImage(patientID, userData){
     }
 }
 
-export function updateProfileData(updateData, navigate, navigateTo, userData){
+export function updateProfileData(updateData, patientID, parentID, navigate, navigateTo, userData){
     console.log('Sending data to server...')
     return async (dispatch) => {
         try {
@@ -213,39 +213,34 @@ export function updateProfileData(updateData, navigate, navigateTo, userData){
                 type: SET_USER_DATA_LOADING,
                 payload: true
             })
-            const { _id } = userData 
+            
             const token = await getToken()
             const { data } = await instance({
                 method: 'PATCH',
-                url: `editProfile/${_id}`,
-                headers: {
-                    Authorization: token
+                url: `editProfile/${patientID}`,
+                headers: { 
+                    Authorization: token,
+                    parentID: parentID
                 },
                 data: updateData
             })
-            const newUserData = {
-                ...userData,
-                ...updateData
-            }
-            await dispatch({
-                type: SET_USER_DATA,
-                payload: newUserData
-            })
-
             await dispatch({
                 type: SET_USER_DATA_LOADING,
                 payload: false
             })
 
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: data.data
+            })
+
             ToastAndroid.show(data.message, ToastAndroid.SHORT);
 
             navigate(navigateTo)
-
         } catch (error) {
             console.log(error)
         }
     }
-
 }
 
 export function changeAccountPassword(email, password, navigate, navigateTo){
