@@ -12,25 +12,23 @@ import {
   BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { AddNewUser, setLoading, SignUp } from '../../stores/action';
+import { AddNewUser, setLoading, SignUp, credentialCheck, addNewUser } from '../../stores/action';
 
 import { LinearGradient } from 'expo-linear-gradient'; // Made for background linear gradient
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
 import formatPhoneNumber from '../../helpers/formatPhoneNumber';
-import axios from 'axios';
-import { baseURL } from '../../config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const mapDispatchToProps = {
   setLoading,
+  credentialCheck,
   AddNewUser,
+  addNewUser,
 };
 const mapStateToProps = (state) => {
   return state;
 };
 
 const SignUpScreen = (props) => {
-  const [loading, setLoading] = useState(false);
   const [credential, setCredential] = useState({
     phoneNumber: '',
     password: '',
@@ -45,6 +43,8 @@ const SignUpScreen = (props) => {
   const [errorConfirmationPassword, setErrorConfirmationPassword] =
     useState(false);
   const [errorPhoneNumber, setErrorPhonenNumber] = useState(false);
+
+  const { signUpisRegistered, signUpIsLoading, signUpError } = props.entryReducer
 
   const checkPasswordMatch = (password, confirmationPassword) => {
     return password === confirmationPassword;
@@ -135,48 +135,67 @@ const SignUpScreen = (props) => {
     }
 
     try {
-      setLoading(true);
       const phoneNumber = formatPhoneNumber(credential.phoneNumber);
       const email = credential.email;
-      const { data: response } = await axios({
-        method: 'POST',
-        url: baseURL + '/api/v1/members/check/phone/email',
-        data: {
-          phoneNumber,
-          email,
-        },
-      });
-
-      const { isEmailExist, isPhoneExist } = response;
-
-      if (isEmailExist) {
-        ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
-        return;
+      const credentialCheckPayload = {
+        phoneNumber,
+        email
       }
+      await props.credentialCheck(credentialCheckPayload)
 
-      if (isPhoneExist) {
-        ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
-        return;
-      }
+      if(signUpisRegistered) return;
 
-      const payload = {
+      const addNewUserPayload = {
         email: credential.email,
         password: credential.password,
         phoneNumber: phoneNumber,
       };
+
       props.navigation.navigate('InputSecretCodeOTP', {
         phoneNumber,
         backTo: 'SignUp',
         onSuccess: () => {
-          props.AddNewUser(payload, props.navigation);
+          props.addNewUser(addNewUserPayload, props.navigation);
         },
       });
+
+      // const { data: response } = await axios({
+      //   method: 'POST',
+      //   url: baseURL + '/api/v1/members/check/phone/email',
+      //   data: {
+      //     phoneNumber,
+      //     email,
+      //   },
+      // });
+
+      // const { isEmailExist, isPhoneExist } = response;
+
+      // if (isEmailExist) {
+      //   ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
+      //   return;
+      // }
+
+      // if (isPhoneExist) {
+      //   ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
+      //   return;
+      // }
+
+      // const payload = {
+      //   email: credential.email,
+      //   password: credential.password,
+      //   phoneNumber: phoneNumber,
+      // };
+      // props.navigation.navigate('InputSecretCodeOTP', {
+      //   phoneNumber,
+      //   backTo: 'SignUp',
+      //   onSuccess: () => {
+      //     props.AddNewUser(payload, props.navigation);
+      //   },
+      // });
     } catch (error) {
       console.log(error.message);
       ToastAndroid.show(`Error`, ToastAndroid.LONG);
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -286,9 +305,9 @@ const SignUpScreen = (props) => {
           <TouchableOpacity
             style={styles.button}
             onPress={() => onSubmitHandler()}
-            disabled={loading}
+            disabled={signUpIsLoading}
           >
-            {loading ? (
+            {signUpIsLoading ? (
               <ActivityIndicator size="small" color="#FFF" />
             ) : (
               <Text style={styles.buttonText}>Daftar</Text>

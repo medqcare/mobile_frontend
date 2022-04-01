@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -21,15 +21,20 @@ import {
 } from 'react-native-confirmation-code-field';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 import { ActivityIndicator } from 'react-native-paper';
+import keys from '../../../stores/keys';
 import { ORANGE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
 
+const { SET_SIGNUP_LOADING } = keys.entryKeys
+
 const InputSecretCodeOTP = (props) => {
+  const dispatch = useDispatch()
   const CELL_COUNT = 6;
   const {
     phoneNumber,
     back = 'Home',
     onSuccess,
   } = props.navigation.state.params;
+  const { signUpIsLoading } = props.entryReducer
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
   const [secretCode, setSecretCode] = useState('');
   const [timer, setTimer] = useState(30);
@@ -47,11 +52,24 @@ const InputSecretCodeOTP = (props) => {
   useEffect(() => {
     (async () => {
       try {
+        dispatch({
+          type: SET_SIGNUP_LOADING,
+          payload: true
+        })
+
+        console.log(phoneNumber, 'phoneNumber')
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
+        console.log(verificationId, 'verificationID')
         setVerificationId(verificationId);
+
+        dispatch({
+          type: SET_SIGNUP_LOADING,
+          payload: false
+        })
       } catch (error) {
+        console.log(error.message, 'useEffect')
         ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG);
       }
     })();
@@ -65,6 +83,10 @@ const InputSecretCodeOTP = (props) => {
   async function onPressHandler() {
     ToastAndroid.show('Verifikasi...', ToastAndroid.SHORT);
     try {
+      dispatch({
+        type: SET_SIGNUP_LOADING,
+        payload: true
+      })
       await firebaseAuthService.confirmCode(verificationId, secretCode);
       /**
        * params: onSuccess
@@ -72,6 +94,7 @@ const InputSecretCodeOTP = (props) => {
        */
       await onSuccess();
     } catch (error) {
+      console.log(error.message, 'onPressHandler')
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
     }
   }
@@ -80,10 +103,10 @@ const InputSecretCodeOTP = (props) => {
     (async () => {
       setLoadingResenCode(true);
       try {
+        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG);
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
-        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG);
         setVerificationId(verificationId);
         setTimer(timer * 2);
       } catch (error) {
@@ -147,9 +170,13 @@ const InputSecretCodeOTP = (props) => {
           <TouchableOpacity
             style={style.bottomButton}
             onPress={() => onPressHandler()}
+            disabled={signUpIsLoading}
           >
             <View>
-              <Text style={style.bottomButtonText}>Verifikasi</Text>
+              {signUpIsLoading ? 
+                <ActivityIndicator size="small" color="#FFF" /> : 
+                <Text style={style.bottomButtonText}>Verifikasi</Text>
+              }
             </View>
           </TouchableOpacity>
           <TouchableOpacity
