@@ -3,7 +3,6 @@ import keys from '../keys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getToken from '../../helpers/localStorage/token';
 import { ToastAndroid } from 'react-native';
-import { getLoggedData } from './userData';
 
 const { 
     SET_USER_DATA,

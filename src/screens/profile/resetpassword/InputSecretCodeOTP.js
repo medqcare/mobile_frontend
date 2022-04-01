@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 //action
-import { validateSecretCode } from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import {
   CodeField,
@@ -342,7 +341,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  validateSecretCode,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputSecretCodeOTP);

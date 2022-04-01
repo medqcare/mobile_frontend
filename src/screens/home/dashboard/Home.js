@@ -14,7 +14,6 @@ import {
 import { connect, useDispatch, useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import {
-  setCurrentLocation,
   setLoading,
   getDrugs,
   getReminders,
@@ -105,11 +104,6 @@ function HomePage(props) {
           lng
         }
       })
-      props.setCurrentLocation({
-        lat,
-        lng,
-      });
-        
     }
   }
   
@@ -121,10 +115,6 @@ function HomePage(props) {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      props.setCurrentLocation({
-        lat: location.coords.latitude,
-        lng: location.coords.longitude,
-      });
     } catch (error) {
       console.log('Error Get Location', error.message);
     }
@@ -444,7 +434,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setLoading,
-  setCurrentLocation,
   getDrugs,
   getReminders,
   setShowInstruction,
