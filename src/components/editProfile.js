@@ -10,7 +10,6 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
   TouchableOpacity,
-  Picker,
   BackHandler,
   ToastAndroid,
 } from 'react-native';
@@ -21,13 +20,11 @@ import {
 
 // Radio Form
 import RadioForm from 'react-native-simple-radio-button';
-import { edit_profile, setLoading, updateProfileData } from '../stores/action';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateProfileData } from '../stores/action';
 
 // Modal
 import {
   dateWithDDMMMYYYYFormat,
-  fullMonthFormat,
 } from '../helpers/dateFormat';
 import SelectModal from './modals/modalPicker';
 import GradientHeader from './headers/GradientHeader';
@@ -231,21 +228,13 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
 
 
 	// Function for sending data to server
-	async function sendData(data) {
+	async function sendData() {
 		try {
-			await updateProfileData(currentUserData, navigation.navigate, 'ProfileDetail', userData)
+      const patientID = userData._id
+			await updateProfileData(currentUserData, patientID, patientID, navigation.navigate, 'ProfileDetail', userData)
 		} catch (error) {
 			console.log(error)
 		}
-		// setLoad(true);
-		// .then((backData) => {
-		// 	setLoad(false);
-		// 	setModalS(true);
-		// })
-		// .catch((err) => {
-		// 	setLoad(false);
-		// 	console.log(err);
-		// });
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
@@ -910,9 +899,7 @@ const textStyles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  edit_profile,
   updateProfileData,
-  setLoading,
 };
 
 const mapStateToProps = (state) => {

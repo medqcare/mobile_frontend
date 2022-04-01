@@ -339,38 +339,6 @@ export function changePassword(email, password, navigate, destination) {
   };
 }
 
-export function edit_profile(userData, userID, token, navigateTo) {
-  console.log('Sending data to server...');
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // console.log(userID, 'ini userIDnya');
-        let data = await instance({
-          url: `/v1/members/editProfile/${userID}`,
-          method: 'PATCH',
-          data: userData,
-          headers: { Authorization: token },
-        });
-        let dataUpdate = await instance({
-          url: '/v1/members/dataLogged',
-          method: 'GET',
-          headers: { Authorization: token },
-        });
-        resolve({ ...dataUpdate, message: 'success' });
-        dispatch({
-          type: 'GET_USER_DATA',
-          payload: dataUpdate.data.data,
-        });
-        ToastAndroid.show(data.data.message, ToastAndroid.SHORT);
-        return data.data;
-      } catch (error) {
-        // console.log(error);
-        reject(error);
-      }
-    });
-  };
-}
-
 export function bookDoctor(bookData, token) {
   return (dispatch) => {
     // console.log(bookData, 'ini book datanya di action')
