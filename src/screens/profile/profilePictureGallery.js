@@ -25,8 +25,8 @@ const mapDispatchToProps = {
     updateProfilePicture
 };
 
-function ProfilePictureGallery({navigation, uploadImage, updateProfilePicture }){
-    const { userData, isLoading } = useSelector(state => state.userDataReducer)
+function ProfilePictureGallery({navigation, userDataReducer, uploadImage, updateProfilePicture }){
+    const { userData, isLoading } = userDataReducer
     const { destination } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
