@@ -11,6 +11,58 @@ const {
     DELETE_USER_DATA
 } = keys.userDataKeys
 
+export function createPatientAsUser(payload, modalSuccess, modalFailed, navigateTo){
+    return async dispatch => {
+        try {
+            console.log('Application is trying to send patient data to server')
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data: response } = await instance({
+                method: 'POST',
+                url: 'createProfile',
+                headers: {
+                    Authorization: token,
+                },
+                data: payload
+            })
+
+            console.log('Application received data from server')
+
+            const { data, message } = response
+            if(data !== null){
+                if(message === 'NIK already registered'){
+                    ToastAndroid.show(message, ToastAndroid.LONG)
+                } else {
+                    await dispatch({
+                        type: SET_USER_DATA,
+                        payload: data,
+                    });
+
+                    ToastAndroid.show(
+                        'Data saved, redirecting you to our home screen...',
+                        ToastAndroid.SHORT
+                    );
+
+                    modalSuccess(message)
+                    navigateTo('Home', { from: 'registration' });
+                }
+            }
+        } catch(error){
+            modalFailed(error);
+            console.log(error.message)
+            await dispatch({
+                type: SET_USER_DATA_ERROR,
+                payload: error.message
+            })
+        }
+    }
+}
+
 export function getLoggedData(navigation){
     return async (dispatch) => {
         try {

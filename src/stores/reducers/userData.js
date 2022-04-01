@@ -20,7 +20,7 @@ function userDataReducer(state = initState, action){
         case SET_USER_DATA_LOADING:
             return { ...state, isLoading: payload}
         case SET_USER_DATA_ERROR:
-            return { ...state, userData: payload, error: payload }
+            return { ...state, error: payload, isLoading: false }
         case DELETE_USER_DATA:
             return { userData: null, isLoading: false, error: null }
         default:

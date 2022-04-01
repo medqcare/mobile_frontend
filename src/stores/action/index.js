@@ -70,6 +70,7 @@ import {
   setShowInstruction
 } from './showInstruction'
 import {
+  createPatientAsUser,
   getLoggedData,
   updateProfilePicture,
   deleteProfileImage,
@@ -202,61 +203,6 @@ export function SignInGoogle(token, navigation, navigateTo) {
         console.log(err);
         // ToastAndroid.show(`${err.response.data.errors}`, ToastAndroid.SHORT)
         // console.log(err.response.data)
-      });
-  };
-}
-
-export function CreatePatientAsUser(
-  payload,
-  modalSuccess,
-  modalFailed,
-  navigateTo
-) {
-  return async (dispatch) => {
-    let token = await AsyncStorage.getItem('token');
-    instance({
-      url: '/v1/members/createProfile',
-      method: 'POST',
-      headers: { Authorization: JSON.parse(token).token },
-      data: payload,
-    })
-      .then(async ({ data }) => {
-        if (data.data !== null) {
-          if (data.message == 'NIK already registered') {
-            ToastAndroid.show(data.message, ToastAndroid.LONG);
-          } else {
-            try {
-              console.log('masuk after signIn', data);
-              await dispatch({
-                type: 'GET_USER_DATA',
-                payload: data.data,
-              });
-              ToastAndroid.show(
-                'Data saved, redirecting you to our home screen...',
-                ToastAndroid.SHORT
-              );
-              modalSuccess(data.message);
-              await AsyncStorage.setItem(
-                'showInstruction',
-                JSON.stringify(true)
-              );
-              navigateTo('Home', { from: 'registration' });
-              navigateTo('Home');
-              dispatch(setShowInstruction(true));
-            } catch (error) {
-              modalFailed(error);
-              console.log('e1', error.message);
-            }
-          }
-        } else if (data.error !== null) {
-          modalFailed(data.error);
-          console.log('e2', data.error);
-        }
-      })
-      .catch((err) => {
-        modalFailed(err.message);
-        console.log('e3,', err.message);
-        console.log('Error Create Patient as User');
       });
   };
 }
@@ -915,4 +861,4 @@ export { setShowInstruction }
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
+export { createPatientAsUser, getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
