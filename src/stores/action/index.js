@@ -339,37 +339,6 @@ export function changePassword(email, password, navigate, destination) {
   };
 }
 
-export function deleteFamily(userId, { token }, modalF) {
-  // console.log(userId, "<===== ini userID, token ini ====>", token)
-  return async (dispatch) => {
-    try {
-      let Data = await instance({
-        url: `/v1/members/deleteFamily`,
-        method: 'PUT',
-        headers: {
-          Authorization: token,
-        },
-        data: {
-          patientId: userId,
-        },
-      });
-      ToastAndroid.show(Data.data.message, ToastAndroid.SHORT);
-      let newUserData = await instance({
-        url: `/v1/members/dataLogged`,
-        method: 'GET',
-        headers: { Authorization: token },
-      });
-      dispatch({
-        type: 'GET_USER_DATA',
-        payload: newUserData.data.data,
-      });
-    } catch (error) {
-      console.log(error);
-      // modalF(error.message)
-    }
-  };
-}
-
 export function edit_profile(userData, userID, token, navigateTo) {
   console.log('Sending data to server...');
   return (dispatch) => {
