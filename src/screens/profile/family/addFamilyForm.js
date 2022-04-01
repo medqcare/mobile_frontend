@@ -106,6 +106,7 @@ const familyForm = (props) => {
     phoneNumber: '',
     relationship: 'SUAMI',
     insuranceStatus: 'UMUM',
+    parentID: userData._id,
     location: {
       province: selectedProvinceLabel,
       city: selectedDistrictLabel,
@@ -134,14 +135,13 @@ const familyForm = (props) => {
       !dataFamily.phoneNumber ||
       !chosenDate
     ) {
-      console.log(dataFamily, 'ini data family');
       setValid(true);
       ToastAndroid.show('Please check the Data', ToastAndroid.LONG);
     } else {
       setValid(false);
       setLoad(true);
       Finalvalidation(dataFamily);
-      console.log('ini data familyy', dataFamily);
+      // console.log('ini data familyy', dataFamily);
     }
   };
 
@@ -198,7 +198,7 @@ const familyForm = (props) => {
 
     var send = Object.filter(_sendData, (value) => value !== null);
     send = Object.filter(send, (value) => value !== '');
-
+    
     if (typeof send.nik == 'string') {
       send.nik = Number(send.nik);
     }
