@@ -52,7 +52,6 @@ function HomePage(props) {
   const { userData, isLoading, error } = props.userDataReducer
   const { userLocation } = props.userLocationReducer
   const { showInstruction } = props.showInstructionReducer
-  const [myLocation, setMyLocation] = useState(null);
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {
@@ -99,10 +98,6 @@ function HomePage(props) {
       lng = userData.location.coordinates[0];
       console.log('Error :', error.message);
     } finally {
-      setMyLocation({
-        lat,
-        lng,
-      });
       dispatch({
         type: SET_USER_LOCATION,
         payload: {
