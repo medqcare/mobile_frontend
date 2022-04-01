@@ -3,6 +3,7 @@ import keys from '../keys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getToken from '../../helpers/localStorage/token';
 import { ToastAndroid } from 'react-native';
+import { getLoggedData } from './userData';
 
 const { 
     SET_USER_DATA,
@@ -14,6 +15,7 @@ const {
 const {
     SET_SIGNIN_LOADING,
     SET_SIGNIN_ERROR,
+    SET_SIGNUP_IS_REGISTERED,
     SET_SIGNUP_LOADING,
     SET_SIGNUP_ERROR,
 } = keys.entryKeys
@@ -116,6 +118,104 @@ export function signIn(userData, navigation, modalF, navigateTo){
                 type: SET_SIGNIN_ERROR,
                 payload: message
             })
+        }
+    }
+}
+
+export function credentialCheck(payload){
+    return async dispatch => {
+        try {
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            const { data } = await instance({
+                method: 'POST',
+                url: 'check/phone/email',
+                data: payload
+            })
+
+            const { isEmailExist, isPhoneExist } = data
+            if(isEmailExist){
+                ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
+                return await dispatch({
+                    type: SET_SIGNUP_IS_REGISTERED,
+                    payload: true
+                });
+            }
+            if (isPhoneExist) {
+                ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
+                return await dispatch({
+                    type: SET_SIGNUP_IS_REGISTERED,
+                    payload: true
+                });
+            }
+
+            return await dispatch({
+                type: SET_SIGNUP_IS_REGISTERED,
+                payload: false
+            });
+        } catch (error) {
+            console.log(error.message)
+            await dispatch({
+                type: SET_SIGNUP_ERROR,
+                payload: error.message
+            })
+        }
+    }
+}
+
+export function addNewUser(payload, navigation){
+    return async dispatch => {
+        try {
+            const { data } = await instance({
+                method: 'POST',
+                url: 'users',
+                data: payload
+            })
+
+            const { token } = data.data
+            await storeToken({ token })
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: false
+            })
+
+            if(token){
+                const { data: userData } = await instance({
+                    method: 'GET',
+                    url: 'dataLogged',
+                    headers: {
+                        Authorization: token
+                    }
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA,
+                    payload: userData.data
+                })
+
+                if (!userData.data){
+                    navigation.navigate('UserDataCompletion', {
+                        phoneNumber: payload.phoneNumber,
+                    });
+                } else {
+                    navigation.navigate('Home');
+                }
+
+                await dispatch({
+                    type: SET_SIGNIN_LOADING,
+                    payload: false
+                })
+            }
+            
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: false
+            })
+        } catch (error) {
+            
         }
     }
 }

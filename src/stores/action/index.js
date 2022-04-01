@@ -37,6 +37,8 @@ import {
 } from './drugs';
 import {
   signIn,
+  credentialCheck,
+  addNewUser,
   signUp,
   logout
 } from './entry'
@@ -1004,6 +1006,8 @@ export {
 
 export { 
   signIn,
+  credentialCheck,
+  addNewUser,
   signUp,
   logout,
 }
