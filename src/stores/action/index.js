@@ -76,6 +76,7 @@ import {
   deleteProfileImage,
   updateProfileData,
   verirfyPassword,
+  resetAccountPassword,
   changeAccountPassword,
   createNewFamily,
   deleteFamilyData,
@@ -665,4 +666,4 @@ export { setShowInstruction }
 
 export { getReminders, changeReminderAlarmTime, changeReminderStatus };
 
-export { createPatientAsUser, getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, verirfyPassword, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
+export { createPatientAsUser, getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, verirfyPassword, resetAccountPassword, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }

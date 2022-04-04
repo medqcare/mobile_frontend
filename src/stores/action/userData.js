@@ -11,6 +11,11 @@ const {
     DELETE_USER_DATA
 } = keys.userDataKeys
 
+const { 
+    SET_SIGNUP_LOADING,
+    SET_SIGNUP_ERROR
+} = keys.entryKeys
+
 export function createPatientAsUser(payload, modalSuccess, modalFailed, navigateTo){
     return async dispatch => {
         try {
@@ -296,6 +301,56 @@ export function verirfyPassword(payload, onSuccess){
             })
 
             console.log(error.response.data.message)
+        }
+    }
+}
+
+export function resetAccountPassword(payload, navigateTo, destination){
+    return async dispatch => {
+        try {
+            console.log('Application is sending data to reset your password')
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `user/password`,
+
+                data: payload
+            })
+
+            console.log('Password succesfully changed')
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            ToastAndroid.show(
+                'Sukses atur ulang sandi, silahkan login',
+                ToastAndroid.LONG
+            );
+            navigateTo(destination)
+        } catch (error) {
+            console.log(error.response.data)
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            await dispatch({
+                type: SET_SIGNUP_ERROR,
+                payload: error.response.data.message
+            })
+
+            ToastAndroid.show(
+                `Atur ulang sandi gagal: ${error.response.data.message}`,
+                ToastAndroid.LONG
+            );
         }
     }
 }
