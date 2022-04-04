@@ -110,29 +110,6 @@ const _storeData = async (data) => {
   }
 };
 
-export function resendConfirmationEmail(email) {
-  console.log('Application is sending request to resend confirmation email');
-  return async (dispatch) => {
-    try {
-      const { data } = await instance({
-        method: 'POST',
-        url: '/v1/members/resendVerificationCode',
-        data: {
-          email,
-        },
-      });
-      ToastAndroid.show(data.message, ToastAndroid.SHORT);
-    } catch (error) {
-      const { message } = error.response.data.err;
-      console.log(
-        message,
-        'Error found when trying to resend confirmation email'
-      );
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-    }
-  };
-}
-
 export function SignInGoogle(token, navigation, navigateTo) {
   console.log('ini di panggi diaction');
   return (dispatch) => {
