@@ -249,35 +249,6 @@ export function validateSecretCode(
   };
 }
 
-export function changePassword(email, password, navigate, destination) {
-  console.log('Application is sending request to change password...');
-  return async (dispatch) => {
-    try {
-      let { data } = await instance({
-        method: 'POST',
-        url: `/v1/members/changePassword`,
-        data: {
-          email,
-          password,
-        },
-      });
-      if (data.message) {
-        console.log(data.message);
-        ToastAndroid.show(data.message, ToastAndroid.SHORT);
-        await AsyncStorage.removeItem('secretCode');
-        navigate(destination);
-      } else {
-        ToastAndroid.show(data.error, ToastAndroid.SHORT);
-      }
-    } catch (error) {
-      console.log(error);
-      // const { message } = error.response.data.err
-      // console.log(message, 'Error found when trying to reset password and send email')
-      // ToastAndroid.show(message, ToastAndroid.SHORT)
-    }
-  };
-}
-
 export function bookDoctor(bookData, token) {
   return (dispatch) => {
     // console.log(bookData, 'ini book datanya di action')
