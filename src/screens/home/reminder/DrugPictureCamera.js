@@ -9,8 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native'
 import { connect } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage, updateDrugImageUrl } from '../../../stores/action'
+import { updateDrugImageUrl } from '../../../stores/action'
 
 import createFormData from '../../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
@@ -20,7 +19,6 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage,
     updateDrugImageUrl
 };
 

@@ -527,49 +527,6 @@ export function getDataMedicine() {
   };
 }
 
-export function uploadImage(
-  patientId,
-  fileToUpload,
-  token,
-  navigateTo,
-  destination
-) {
-  return async (dispatch) => {
-    console.log('Application is trying to upload the image...');
-    try {
-      console.log(fileToUpload);
-      let { data } = await instance({
-        url: `/v1/members/updateAvatar`,
-        method: 'PATCH',
-        data: fileToUpload,
-        headers: {
-          Accept: 'application/json',
-          authorization: token,
-          id: patientId,
-          'content-type': 'multipart/form-data',
-        },
-      });
-      console.log('server has successfully updated Image Url');
-      let result = await instance({
-        method: 'GET',
-        url: `/v1/members/dataLogged`,
-        headers: { Authorization: token },
-      });
-      if (result.data) {
-        console.log('Application Found dataLogged');
-        await dispatch({
-          type: 'GET_USER_DATA',
-          payload: result.data.data,
-        });
-      }
-      ToastAndroid.show(data.message, ToastAndroid.SHORT);
-      navigateTo(destination);
-    } catch (error) {
-      console.log(error.response, 'Error found when trying to upload avatar');
-    }
-  };
-}
-
 export {
   getPatientAllergies,
   createAllergy,
