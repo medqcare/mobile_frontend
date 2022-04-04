@@ -127,7 +127,7 @@ export function SignInGoogle(token, navigation, navigateTo) {
     return (dispatch) => {
       // console.log(navigation, 'ini navigationnya')
       instance({
-        url: '/v1/members/signinGoogle',
+        url: 'signinGoogle',
         method: 'POST',
         data: { token },
       })
