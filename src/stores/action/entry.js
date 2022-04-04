@@ -140,9 +140,9 @@ export function SignInGoogle(token, navigation, navigateTo) {
             });
             alert(data.message);
           } else {
-            _storeData({ token: data.token });
+            storeToken({ token: data.token });
             return instance({
-              url: '/v1/members/dataLogged',
+              url: 'dataLogged',
               method: 'GET',
               headers: {
                 Authorization: data.token,

@@ -1,116 +1,234 @@
 import axios from 'axios';
+
 import {
-  getPatientAllergies,
-  createAllergy,
-  editSelectedAllergy,
-  deleteSelectedAllergy
+    getPatientAllergies,
+    createAllergy,
+    editSelectedAllergy,
+    deleteSelectedAllergy
 } from './allergies'
+
+export {
+	getPatientAllergies,
+	createAllergy,
+	editSelectedAllergy,
+	deleteSelectedAllergy
+}
+
+
 import {
-  searchAllReservations,
-  setHealthFacility,
-  checkIn,
-  cancelSelectedReservation
+	searchAllReservations,
+	setHealthFacility,
+	checkIn,
+	cancelSelectedReservation
 } from './appointment'
+
+export {
+	searchAllReservations,
+	setHealthFacility,
+	checkIn,
+	cancelSelectedReservation
+}
+
+
 import {
-  getAllTransactions
-} from './transactions'
-import {
-  searchAllClinics,
-  searchClinicByName
+	searchAllClinics,
+	searchClinicByName
 } from './clinic'
+
+export {
+	searchAllClinics,
+	searchClinicByName
+}
+
+
 import {
-  searchAllDoctors,
-  searchDoctorBySpecialist,
-  searchDoctorByName,
-  makeReservation
+	searchAllDoctors,
+	searchDoctorBySpecialist,
+	searchDoctorByName,
+	makeReservation
 } from './doctor'
+
+export {
+	searchAllDoctors,
+	searchDoctorBySpecialist,
+	searchDoctorByName,
+	makeReservation,
+}
+
+
 import {
-  getDrugs,
-  searchAllDrugs,
-  searchDrugByName,
-  createNewDrugFromUser,
-  changeDrugNotes,
-  changeAlarmBoolean,
-  updateDrugImageUrl,
-  deleteDrugImageUrl,
-  updateFinishStatus,
+	getDrugs,
+	searchAllDrugs,
+	searchDrugByName,
+	createNewDrugFromUser,
+	changeDrugNotes,
+	changeAlarmBoolean,
+	updateDrugImageUrl,
+	deleteDrugImageUrl,
+	updateFinishStatus,
 } from './drugs';
+
+export {
+	getDrugs,
+	searchAllDrugs,
+	searchDrugByName,
+	createNewDrugFromUser,
+	changeDrugNotes,
+	changeAlarmBoolean,
+	updateDrugImageUrl,
+	deleteDrugImageUrl,
+	updateFinishStatus,
+};
+
+
 import {
-  signIn,
-  SignInGoogle,
-  credentialCheck,
-  addNewUser,
-  signUp,
-  logout
+	signIn,
+	SignInGoogle,
+	credentialCheck,
+	addNewUser,
+	signUp,
+	logout
 } from './entry'
+
+export { 
+	signIn,
+	SignInGoogle,
+	credentialCheck,
+	addNewUser,
+	signUp,
+	logout,
+}
+
+
 import {
-  getDocumentByPatient,
-  uploadDocument,
-  renameDocument,
-  deleteDocument,
-} from './medicalDocuments';
-import {
-  getAllPrescriptions,
-  getTodaysPrescriptions,
-  getPrescriptionHistory,
-} from './prescription';
-import {
-  getAllOrderHistory,
-  getAllTransactionHistory,
+	getAllOrderHistory,
+	getAllTransactionHistory,
 } from './histories'
+
+export { 
+	getAllOrderHistory, 
+	getAllTransactionHistory
+}
+
+
 import {
-  getTodaysRegistration,
-  fetchCurrentQueueingNumber,
-} from './queues'
+	getDocumentByPatient,
+	uploadDocument,
+	renameDocument,
+	deleteDocument,
+} from './medicalDocuments';
+
+export { 
+	getDocumentByPatient, 
+	uploadDocument, 
+	renameDocument, 
+	deleteDocument 
+};
+
+
 import {
-  getReminders,
-  changeReminderAlarmTime,
-  changeReminderStatus,
-} from './reminders';
-import {
-  setShowInstruction
-} from './showInstruction'
-import {
-  createPatientAsUser,
-  getLoggedData,
-  updateProfilePicture,
-  deleteProfileImage,
-  updateProfileData,
-  verirfyPassword,
-  resetAccountPassword,
-  changeAccountPassword,
-  createNewFamily,
-  deleteFamilyData,
-  addFavoriteDoctor,
-  removeFavoriteDoctor,
-  deleteUserData,
-} from './userData'
-import {
-  getMedicalServices,
-  createMedicalServiceReservation,
+	getMedicalServices,
+	createMedicalServiceReservation,
 } from './medical_services';
+
+export {
+	getMedicalServices,
+	createMedicalServiceReservation,
+}
+
+
+import {
+	getAllPrescriptions,
+	getTodaysPrescriptions,
+	getPrescriptionHistory,
+} from './prescription';
+
+export { 
+	getAllPrescriptions, 
+	getTodaysPrescriptions, 
+	getPrescriptionHistory 
+};
+
+
+import {
+	getTodaysRegistration,
+	fetchCurrentQueueingNumber,
+} from './queues'
+
+export { 
+	getTodaysRegistration, 
+	fetchCurrentQueueingNumber, 
+}
+
+
+import {
+	getReminders,
+	changeReminderAlarmTime,
+	changeReminderStatus,
+} from './reminders';
+
+export { 
+	getReminders, 
+	changeReminderAlarmTime, 
+	changeReminderStatus };
+
+import {
+  	setShowInstruction
+} from './showInstruction'
+
+export { 
+	setShowInstruction 
+}
+
+
+import {
+	getAllTransactions
+} from './transactions'
+
+export {
+  getAllTransactions
+}
+
+
+import {
+	createPatientAsUser,
+	getLoggedData,
+	updateProfilePicture,
+	deleteProfileImage,
+	updateProfileData,
+	verirfyPassword,
+	resetAccountPassword,
+	changeAccountPassword,
+	createNewFamily,
+	deleteFamilyData,
+	addFavoriteDoctor,
+	removeFavoriteDoctor,
+	deleteUserData,
+} from './userData'
+
+export { 
+	createPatientAsUser, 
+	getLoggedData, 
+	updateProfilePicture, 
+	deleteProfileImage, 
+	updateProfileData, 
+	verirfyPassword, 
+	resetAccountPassword, 
+	changeAccountPassword, 
+	createNewFamily, 
+	deleteFamilyData, 
+	addFavoriteDoctor, 
+	removeFavoriteDoctor, 
+	deleteUserData 
+}
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ToastAndroid, Alert, ShadowPropTypesIOS } from 'react-native';
+import { ToastAndroid, Alert } from 'react-native';
 import { baseURL } from '../../config';
 
 const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
-
-const _storeData = async (data) => {
-  console.log(data, 'This is the token after signing in');
-  try {
-    await AsyncStorage.setItem('token', JSON.stringify(data));
-    console.log(
-      await AsyncStorage.getItem('token'),
-      'This is the token in AsyncStorage'
-    );
-  } catch (error) {
-    // Error saving data
-    console.log(error);
-  }
-};
-
 
 export function bookDoctor(bookData, token) {
   return (dispatch) => {
@@ -389,73 +507,3 @@ export function getDataMedicine() {
     });
   };
 }
-
-export {
-  getPatientAllergies,
-  createAllergy,
-  editSelectedAllergy,
-  deleteSelectedAllergy
-}
-
-export {
-  searchAllReservations,
-  setHealthFacility,
-  checkIn,
-  cancelSelectedReservation
-}
-
-
-export {
-  getAllTransactions
-}
-
-export {
-  searchAllClinics,
-  searchClinicByName
-}
-
-export {
-  searchAllDoctors,
-  searchDoctorBySpecialist,
-  searchDoctorByName,
-  makeReservation,
-}
-
-export {
-  getDrugs,
-  searchAllDrugs,
-  searchDrugByName,
-  createNewDrugFromUser,
-  changeDrugNotes,
-  changeAlarmBoolean,
-  updateDrugImageUrl,
-  deleteDrugImageUrl,
-  updateFinishStatus,
-};
-
-export { 
-  signIn,
-  SignInGoogle,
-  credentialCheck,
-  addNewUser,
-  signUp,
-  logout,
-}
-
-export { getDocumentByPatient, uploadDocument, renameDocument, deleteDocument };
-
-export { getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory };
-
-export { getAllOrderHistory, getAllTransactionHistory}
-
-export { getTodaysRegistration, fetchCurrentQueueingNumber, }
-
-export {
-  getMedicalServices,
-  createMedicalServiceReservation,
-}
-export { setShowInstruction }
-
-export { getReminders, changeReminderAlarmTime, changeReminderStatus };
-
-export { createPatientAsUser, getLoggedData, updateProfilePicture, deleteProfileImage, updateProfileData, verirfyPassword, resetAccountPassword, changeAccountPassword, createNewFamily, deleteFamilyData, addFavoriteDoctor, removeFavoriteDoctor, deleteUserData }
