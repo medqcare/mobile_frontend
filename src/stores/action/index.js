@@ -111,45 +111,6 @@ const _storeData = async (data) => {
   }
 };
 
-export function validateSecretCode(
-  secretCode,
-  storedSecretCode,
-  navigate,
-  navigateTo,
-  email
-) {
-  console.log(
-    `Application is sending request to validate user's input code...`
-  );
-  return async (dispatch) => {
-    try {
-      let { data } = await instance({
-        method: 'POST',
-        url: `/v1/members/validateSecretCode`,
-        data: {
-          secretCode,
-        },
-        headers: {
-          storedSecretCode,
-        },
-      });
-      if (data.message) {
-        console.log(data.message);
-        ToastAndroid.show(data.message, ToastAndroid.SHORT);
-        navigate(navigateTo, { email, destination: 'SignIn' });
-      } else {
-        ToastAndroid.show(data.error, ToastAndroid.SHORT);
-      }
-    } catch (error) {
-      const { message } = error.response.data.err;
-      console.log(
-        message,
-        'Error found when trying to reset password and send email'
-      );
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-    }
-  };
-}
 
 export function bookDoctor(bookData, token) {
   return (dispatch) => {

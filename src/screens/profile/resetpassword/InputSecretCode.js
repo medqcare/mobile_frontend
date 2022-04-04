@@ -3,19 +3,14 @@ import { connect } from 'react-redux'
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
-    ScrollView,
     StyleSheet,
     Image,
     BackHandler,
-    ActivityIndicator,
     Dimensions,
 } from 'react-native'
 
 //action
-import { validateSecretCode } from '../../../stores/action'
-import ArrowBack from '../../../assets/svg/ArrowBack'
 import { ToastAndroid } from 'react-native';
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 
 'react-native-confirmation-code-field';
@@ -43,7 +38,6 @@ const InputSecretCode = (props) => {
             ToastAndroid.show('Format kode tidak valid, mohon masukan angka', ToastAndroid.SHORT)
         }
          else {
-            props.validateSecretCode(secretCode, storedSecretCode, props.navigation.navigate, 'ChangePasswordForm', email )
         }
     }
 
@@ -228,7 +222,6 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    validateSecretCode
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputSecretCode)
