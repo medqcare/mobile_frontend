@@ -243,6 +243,63 @@ export function updateProfileData(updateData, patientID, parentID, navigate, nav
     }
 }
 
+export function verirfyPassword(payload, onSuccess){
+    return async dispatch => {
+        try {
+            console.log('Application is trying to verify your password')
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'POST',
+                url: `verify/password`,
+                headers: {
+                    Authorization: token
+                },
+                data: payload
+            })
+
+            if(typeof onSuccess === 'function'){
+                console.log('Application succesfully verified the password')
+
+                ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG);
+                await dispatch({
+                    type: SET_USER_DATA_ERROR,
+                    payload: null
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+
+                onSuccess();
+            }
+        } catch (error) {
+            ToastAndroid.show(
+                'Verifikasi gagal, silahkan coba lagi',
+                ToastAndroid.LONG
+            );
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
+            await dispatch({
+                type: SET_USER_DATA_ERROR,
+                payload: error.response.data.message
+            })
+
+            console.log(error.response.data.message)
+        }
+    }
+}
+
 export function changeAccountPassword(email, password, navigate, navigateTo){
     return async (dispatch) => {
         try {
