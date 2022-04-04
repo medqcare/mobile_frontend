@@ -1,6 +1,8 @@
 import { instance } from '../../config';
 import keys from '../keys';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import getToken from '../../helpers/localStorage/token';
+import { ToastAndroid } from 'react-native';
 
 const { 
     SET_USER_DATA,
@@ -12,6 +14,7 @@ const {
 const {
     SET_SIGNIN_LOADING,
     SET_SIGNIN_ERROR,
+    SET_SIGNUP_IS_REGISTERED,
     SET_SIGNUP_LOADING,
     SET_SIGNUP_ERROR,
 } = keys.entryKeys
@@ -118,6 +121,181 @@ export function signIn(userData, navigation, modalF, navigateTo){
     }
 }
 
+// Not yet used
+export function SignInGoogle(token, navigation, navigateTo) {
+    console.log('ini di panggi diaction');
+    return (dispatch) => {
+      // console.log(navigation, 'ini navigationnya')
+      instance({
+        url: '/v1/members/signinGoogle',
+        method: 'POST',
+        data: { token },
+      })
+        .then(({ data }) => {
+          console.log('ini datanya dari backend', data);
+          if (data.token == null) {
+            dispatch({
+              type: 'TOGGLE_LOADING',
+              payload: false,
+            });
+            alert(data.message);
+          } else {
+            _storeData({ token: data.token });
+            return instance({
+              url: '/v1/members/dataLogged',
+              method: 'GET',
+              headers: {
+                Authorization: data.token,
+              },
+            });
+          }
+        })
+        .then(async ({ data }) => {
+          console.log(data, 'ini yang kedua');
+          try {
+            if (data.data === null) {
+              console.log('masuk if yg ini');
+              navigation.navigate('UserDataCompletion');
+            } else {
+              console.log('masuk else');
+              await dispatch({
+                type: 'AFTER_SIGNIN',
+                payload: data.data,
+              });
+              await dispatch({
+                type: 'SET_MY_LOCATION',
+                payload: {
+                  lat: data.data.location.coordinates[1],
+                  lng: data.data.location.coordinates[0],
+                },
+              });
+              navigation.pop();
+              navigateTo
+                ? navigation.navigate(navigateTo)
+                : navigation.navigate('Home');
+            }
+          } catch (error) {
+            dispatch({
+              type: 'TOGGLE_LOADING',
+              payload: false,
+            });
+            ToastAndroid.show(
+              `${error.response.data.errors}`,
+              ToastAndroid.SHORT
+            );
+          }
+        })
+        .catch((err) => {
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false,
+          });
+          console.log('idihhh kenapa nihhhh');
+          console.log(err);
+          // ToastAndroid.show(`${err.response.data.errors}`, ToastAndroid.SHORT)
+          // console.log(err.response.data)
+        });
+    };
+}
+
+export function credentialCheck(payload){
+    return async dispatch => {
+        try {
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            const { data } = await instance({
+                method: 'POST',
+                url: 'check/phone/email',
+                data: payload
+            })
+
+            const { isEmailExist, isPhoneExist } = data
+            if(isEmailExist){
+                ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
+                return await dispatch({
+                    type: SET_SIGNUP_IS_REGISTERED,
+                    payload: true
+                });
+            }
+            if (isPhoneExist) {
+                ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
+                return await dispatch({
+                    type: SET_SIGNUP_IS_REGISTERED,
+                    payload: true
+                });
+            }
+
+            return await dispatch({
+                type: SET_SIGNUP_IS_REGISTERED,
+                payload: false
+            });
+        } catch (error) {
+            console.log(error.message)
+            await dispatch({
+                type: SET_SIGNUP_ERROR,
+                payload: error.message
+            })
+        }
+    }
+}
+
+export function addNewUser(payload, navigation){
+    return async dispatch => {
+        try {
+            const { data } = await instance({
+                method: 'POST',
+                url: 'users',
+                data: payload
+            })
+
+            const { token } = data.data
+            await storeToken({ token })
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: false
+            })
+
+            if(token){
+                const { data: userData } = await instance({
+                    method: 'GET',
+                    url: 'dataLogged',
+                    headers: {
+                        Authorization: token
+                    }
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA,
+                    payload: userData.data
+                })
+
+                if (!userData.data){
+                    navigation.navigate('UserDataCompletion', {
+                        phoneNumber: payload.phoneNumber,
+                    });
+                } else {
+                    navigation.navigate('Home');
+                }
+
+                await dispatch({
+                    type: SET_SIGNIN_LOADING,
+                    payload: false
+                })
+            }
+            
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: false
+            })
+        } catch (error) {
+            
+        }
+    }
+}
+
 export function signUp(userData, navigation, modalFailed) {
     return async (dispatch) => {
         try {
@@ -148,6 +326,37 @@ export function signUp(userData, navigation, modalFailed) {
                 type: SET_SIGNUP_ERROR,
                 payload: errorMessage
             })
+        }
+    }
+}
+
+export function logout(navigation){
+    return async dispatch => {
+        try {
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `firebase/token`,
+                headers: {
+                    Authorization: token
+                },
+                data: {
+                    token: ''
+                }
+            })
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: null
+            })
+
+            await AsyncStorage.removeItem('token');
+            await navigation.pop();
+            await navigation.navigate('Sign');
+            
+            ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
+        } catch (error) {
+            
         }
     }
 }

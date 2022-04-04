@@ -22,7 +22,7 @@ import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../../components/modals/modalPicker';
 import Header from '../../../components/headers/GradientHeader';
 //action
-import { addFamily, createNewFamily, setLoading } from '../../../stores/action';
+import { createNewFamily } from '../../../stores/action';
 //Modal
 import { ToastAndroid } from 'react-native';
 
@@ -106,6 +106,7 @@ const familyForm = (props) => {
     phoneNumber: '',
     relationship: 'SUAMI',
     insuranceStatus: 'UMUM',
+    parentID: userData._id,
     location: {
       province: selectedProvinceLabel,
       city: selectedDistrictLabel,
@@ -134,14 +135,13 @@ const familyForm = (props) => {
       !dataFamily.phoneNumber ||
       !chosenDate
     ) {
-      console.log(dataFamily, 'ini data family');
       setValid(true);
       ToastAndroid.show('Please check the Data', ToastAndroid.LONG);
     } else {
       setValid(false);
       setLoad(true);
       Finalvalidation(dataFamily);
-      console.log('ini data familyy', dataFamily);
+      // console.log('ini data familyy', dataFamily);
     }
   };
 
@@ -198,12 +198,11 @@ const familyForm = (props) => {
 
     var send = Object.filter(_sendData, (value) => value !== null);
     send = Object.filter(send, (value) => value !== '');
-
+    
     if (typeof send.nik == 'string') {
       send.nik = Number(send.nik);
     }
     console.log('Sending data to store/index...');
-    // props.addFamily(send, props.navigation, setLoadFalse);
     props.createNewFamily(send, props.navigation, 'FamilyList', userData);
 
   }
@@ -659,9 +658,7 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  addFamily,
   createNewFamily,
-  setLoading,
 };
 const mapStateToProps = (state) => {
   return state;

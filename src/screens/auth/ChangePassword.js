@@ -6,8 +6,11 @@ import InputPassword from '../../components/InputPassword';
 import { baseURL } from '../../config';
 import { BLACK_PRIMARY, RED_400, WHITE_PRIMARY } from '../../values/color';
 import { INTER_400, INTER_700 } from '../../values/font';
+import { resetAccountPassword } from '../../stores/action'
+import { connect } from 'react-redux';
 
-export default function ChangePassword(props) {
+function ChangePassword(props) {
+  const { signUpIsLoading } = props.entryReducer
   const MINIMUM_PASSWORD_LENGTH = 8;
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -25,30 +28,17 @@ export default function ChangePassword(props) {
   };
 
   const changePasswordHandler = async (password, phoneNumber) => {
-    setLoadingChangePassword(true);
+    // setLoadingChangePassword(true);
     try {
-      console.log(phoneNumber)
-      console.log(password)
-      const { data } = await axios({
-        url: `${baseURL}/api/v1/members/user/password`,
-        method: 'PATCH',
-        data: {
-          password,
-          phoneNumber,
-        },
-      });
-      ToastAndroid.show(
-        'Sukses atur ulang sandi, silahkan login',
-        ToastAndroid.LONG
-      );
-      props.navigation.navigate('SignIn');
+      const payload = {
+        password,
+        phoneNumber
+      }
+      await props.resetAccountPassword(payload, props.navigation.navigate, 'SignIn')
     } catch (error) {
-      ToastAndroid.show(
-        `Atur ulang sandi gagal: ${error.message}`,
-        ToastAndroid.LONG
-      );
+      console.log(error)
     } finally {
-      setLoadingChangePassword(false);
+      // setLoadingChangePassword(false);
     }
   };
 
@@ -116,6 +106,7 @@ export default function ChangePassword(props) {
       <ButtonPrimary
         label={'Lanjutkan'}
         isActive={isButtonActive}
+        loading={signUpIsLoading}
         onPress={() => {
           changePasswordHandler(
             password,
@@ -145,3 +136,13 @@ const styles = StyleSheet.create({
     fontFamily: INTER_400,
   },
 });
+
+const mapStateToProps = state => {
+  return state
+}
+
+const mapDispatchToProps = {
+  resetAccountPassword
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword)

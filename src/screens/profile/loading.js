@@ -2,14 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { View, Text, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { retrieveData } from '../../stores/action'
-import axios from 'axios'
 
 const mapStateToProps = state => {
     return state
 }
 const mapDispatchToProps = {
-    retrieveData
 }
 
 const loading = (props) => {
@@ -33,18 +30,18 @@ const loading = (props) => {
         }
     }
 
-    useEffect(() => {
-        try {
-            if (props.userData) {
-                props.navigation.navigate(`${props.navigation.state.params.data}`)
-            } else {
-                _retrieveData()
-            }
-        } catch (error) {
-            console.log(error, 'diloading')
-            setError(true)
-        }
-    }, [new Date()])
+    // useEffect(() => {
+    //     try {
+    //         if (props.userData) {
+    //             props.navigation.navigate(`${props.navigation.state.params.data}`)
+    //         } else {
+    //             _retrieveData()
+    //         }
+    //     } catch (error) {
+    //         console.log(error, 'diloading')
+    //         setError(true)
+    //     }
+    // }, [new Date()])
 
     return (
         <View style={{ justifyContent: 'center', flex: 1, justifyContent: 'center', alignItems: 'center' }}>

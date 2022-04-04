@@ -15,7 +15,7 @@ import { connect, useSelector } from 'react-redux';
 import capitalFirst from '../../../helpers/capitalFirst'; // for proper case full name
 import PictureModal from '../../modals/profilePictureModal'; // modal for profile picture options
 import ConfirmationModal from '../../modals/ConfirmationModal';
-import { deleteImage } from '../../../stores/action';
+import { deleteProfileImage } from '../../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FullImageModal from '../../modals/FullImageModal';
 import {
@@ -29,7 +29,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  deleteImage,
+  deleteProfileImage,
 };
 
 const profileInfo = (props) => {
@@ -70,7 +70,7 @@ const profileInfo = (props) => {
     const patientId = userData._id;
     let token = await AsyncStorage.getItem('token');
     token = JSON.parse(token).token;
-    await props.deleteImage(patientId, token);
+    await props.deleteProfileImage(patientId, userData);
     setLoad(false);
     setConfirmationModal(false);
   }

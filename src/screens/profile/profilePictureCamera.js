@@ -9,8 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native'
 import { connect, useSelector } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage, updateProfilePicture } from '../../stores/action'
+import { updateProfilePicture } from '../../stores/action'
 
 import createFormData from '../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
@@ -20,11 +19,10 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage,
     updateProfilePicture
 };
 
-function ProfilePictureCamera({navigation, uploadImage, updateProfilePicture}){
+function ProfilePictureCamera({navigation, updateProfilePicture}){
     const { userData, isLoading } = useSelector(state => state.userDataReducer)
     const { destination } = navigation.state.params
     // Image

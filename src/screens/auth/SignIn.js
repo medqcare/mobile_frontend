@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  CheckBox,
-  ImageBackground,
   KeyboardAvoidingView,
   BackHandler,
   ActivityIndicator,
@@ -14,7 +12,6 @@ import {
   Image,
 } from 'react-native';
 import { connect } from 'react-redux';
-import IconFontA from 'react-native-vector-icons/FontAwesome5';
 
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
 
@@ -22,13 +19,10 @@ import { LinearGradient } from 'expo-linear-gradient'; // Made for background li
 
 import * as Google from 'expo-google-app-auth';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { SignInWithEmailOrPhoneNumber, signIn } from '../../stores/action';
+import { signIn } from '../../stores/action';
 import formatPhoneNumber from '../../helpers/formatPhoneNumber';
 
 const mapDispatchToProps = {
-  SignInWithEmailOrPhoneNumber,
   signIn,
 };
 const mapStateToProps = (state) => {
@@ -46,7 +40,6 @@ const SignInScreen = (props) => {
   const [password, setPassword] = useState('');
   const [load, setload] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const [identityError, setIdentityError] = useState('');
 
   function CekValidation() {
     if (!identity && !password) {

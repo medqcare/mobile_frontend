@@ -16,7 +16,7 @@ import DatePicker from 'react-native-datepicker';
 import DatePickerIcon from '../../../assets/svg/DatePickerIcon';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { connect } from 'react-redux';
-import { edit_profile, setLoading } from '../../../stores/action';
+import { updateProfileData } from '../../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RadioForm from 'react-native-simple-radio-button';
 import SelectModal from '../../modals/modalPicker';
@@ -36,6 +36,7 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 import nikValidation from '../../../helpers/validationNIK';
 
 const editFamilyData = (props) => {
+  const { userData } = props.userDataReducer
   let dataFamily = props.navigation.state.params.data;
   const dateOfBirthDay = new Date(dataFamily.dob);
   const [load, setLoad] = useState(false);
@@ -202,24 +203,13 @@ const editFamilyData = (props) => {
   }
 
   async function sendData(data) {
-    console.log('Data validated');
-    console.log('Sending data to store/index');
-    let token = await AsyncStorage.getItem('token');
-    props
-      .edit_profile(
-        data,
-        dataFamily._id,
-        JSON.parse(token).token,
-        )
-      .then((backData) => {
-        const newData = backData.data.data.family.filter(el => el._id === dataFamily._id)
-        props.navigation.navigate('FamilyDetail', {data: newData[0]})
-        setLoad(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoad(false);
-      });
+    try {
+      console.log('Sending data to store/index');
+      const parentID = dataFamily.parentID
+      await props.updateProfileData(data, dataFamily._id, parentID, props.navigation.navigate, 'FamilyDetail', userData)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
@@ -773,8 +763,7 @@ const textStyle = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  edit_profile,
-  setLoading,
+  updateProfileData
 };
 const mapStateToProps = (state) => {
   return state;

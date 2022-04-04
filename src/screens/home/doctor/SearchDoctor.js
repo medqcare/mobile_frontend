@@ -16,7 +16,6 @@ import {
 import { connect, useDispatch } from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
 import { 
-  getDataDoctor, 
   setLoading,
   searchAllDoctors,
   searchDoctorBySpecialist,
@@ -633,7 +632,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  getDataDoctor,
   setLoading,
   searchAllDoctors,
   searchDoctorBySpecialist,

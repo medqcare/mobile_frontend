@@ -11,6 +11,63 @@ const {
     DELETE_USER_DATA
 } = keys.userDataKeys
 
+const { 
+    SET_SIGNUP_LOADING,
+    SET_SIGNUP_ERROR
+} = keys.entryKeys
+
+export function createPatientAsUser(payload, modalSuccess, modalFailed, navigateTo){
+    return async dispatch => {
+        try {
+            console.log('Application is trying to send patient data to server')
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data: response } = await instance({
+                method: 'POST',
+                url: 'createProfile',
+                headers: {
+                    Authorization: token,
+                },
+                data: payload
+            })
+
+            console.log('Application received data from server')
+
+            const { data, message } = response
+            if(data !== null){
+                if(message === 'NIK already registered'){
+                    ToastAndroid.show(message, ToastAndroid.LONG)
+                } else {
+                    await dispatch({
+                        type: SET_USER_DATA,
+                        payload: data,
+                    });
+
+                    ToastAndroid.show(
+                        'Data saved, redirecting you to our home screen...',
+                        ToastAndroid.SHORT
+                    );
+
+                    modalSuccess(message)
+                    navigateTo('Home', { from: 'registration' });
+                }
+            }
+        } catch(error){
+            modalFailed(error);
+            console.log(error.message)
+            await dispatch({
+                type: SET_USER_DATA_ERROR,
+                payload: error.message
+            })
+        }
+    }
+}
+
 export function getLoggedData(navigation){
     return async (dispatch) => {
         try {
@@ -118,7 +175,42 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
     }
 }
 
-export function updateProfileData(updateData, navigate, navigateTo, userData){
+export function deleteProfileImage(patientID, userData){
+    return async dispatch => {
+        try {
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            console.log('Application is trying to delete profile image....');
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'PATCH',
+                url: 'deleteAvatar',
+                headers: {
+                    id: patientID,
+                    Authorization: token
+                }
+            })
+
+            userData.imageUrl = ''
+
+            await dispatch({
+                type: SET_USER_DATA,
+                payload: userData
+            })
+
+            console.log('Server has successfully deleted imageUrl');
+            ToastAndroid.show(data.message, ToastAndroid.SHORT)
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+}
+
+export function updateProfileData(updateData, patientID, parentID, navigate, navigateTo, userData){
     console.log('Sending data to server...')
     return async (dispatch) => {
         try {
@@ -126,39 +218,141 @@ export function updateProfileData(updateData, navigate, navigateTo, userData){
                 type: SET_USER_DATA_LOADING,
                 payload: true
             })
-            const { _id } = userData 
+            
             const token = await getToken()
             const { data } = await instance({
                 method: 'PATCH',
-                url: `editProfile/${_id}`,
-                headers: {
-                    Authorization: token
+                url: `editProfile/${patientID}`,
+                headers: { 
+                    Authorization: token,
+                    parentID: parentID
                 },
                 data: updateData
             })
-            const newUserData = {
-                ...userData,
-                ...updateData
-            }
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: false
+            })
+
             await dispatch({
                 type: SET_USER_DATA,
-                payload: newUserData
+                payload: data.data
             })
+
+            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+
+            navigate(navigateTo)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export function verirfyPassword(payload, onSuccess){
+    return async dispatch => {
+        try {
+            console.log('Application is trying to verify your password')
+
+            await dispatch({
+                type: SET_USER_DATA_LOADING,
+                payload: true
+            })
+
+            const token = await getToken()
+            const { data } = await instance({
+                method: 'POST',
+                url: `verify/password`,
+                headers: {
+                    Authorization: token
+                },
+                data: payload
+            })
+
+            if(typeof onSuccess === 'function'){
+                console.log('Application succesfully verified the password')
+
+                ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG);
+                await dispatch({
+                    type: SET_USER_DATA_ERROR,
+                    payload: null
+                })
+
+                await dispatch({
+                    type: SET_USER_DATA_LOADING,
+                    payload: false
+                })
+
+                onSuccess();
+            }
+        } catch (error) {
+            ToastAndroid.show(
+                'Verifikasi gagal, silahkan coba lagi',
+                ToastAndroid.LONG
+            );
 
             await dispatch({
                 type: SET_USER_DATA_LOADING,
                 payload: false
             })
 
-            ToastAndroid.show(data.message, ToastAndroid.SHORT);
+            await dispatch({
+                type: SET_USER_DATA_ERROR,
+                payload: error.response.data.message
+            })
 
-            navigate(navigateTo)
-
-        } catch (error) {
-            console.log(error)
+            console.log(error.response.data.message)
         }
     }
+}
 
+export function resetAccountPassword(payload, navigateTo, destination){
+    return async dispatch => {
+        try {
+            console.log('Application is sending data to reset your password')
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            const { data } = await instance({
+                method: 'PATCH',
+                url: `user/password`,
+
+                data: payload
+            })
+
+            console.log('Password succesfully changed')
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            ToastAndroid.show(
+                'Sukses atur ulang sandi, silahkan login',
+                ToastAndroid.LONG
+            );
+            navigateTo(destination)
+        } catch (error) {
+            console.log(error.response.data)
+
+            await dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: true
+            })
+
+            await dispatch({
+                type: SET_SIGNUP_ERROR,
+                payload: error.response.data.message
+            })
+
+            ToastAndroid.show(
+                `Atur ulang sandi gagal: ${error.response.data.message}`,
+                ToastAndroid.LONG
+            );
+        }
+    }
 }
 
 export function changeAccountPassword(email, password, navigate, navigateTo){
@@ -176,7 +370,6 @@ export function changeAccountPassword(email, password, navigate, navigateTo){
             if (data.message) {
                 console.log(data.message);
                 ToastAndroid.show(data.message, ToastAndroid.SHORT);
-                // await AsyncStorage.removeItem('secretCode');
                 navigate(navigateTo);
               } else {
                 ToastAndroid.show(data.error, ToastAndroid.SHORT);

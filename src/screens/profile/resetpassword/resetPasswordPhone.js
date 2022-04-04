@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -12,12 +12,17 @@ import {
 } from 'react-native';
 
 //action
-import { resetPasswordPhone } from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import GreyHeader from '../../../components/headers/GreyHeader';
 import formatPhoneNumber from '../../../helpers/formatPhoneNumber';
+import keys from '../../../stores/keys';
+
+const {
+  SET_SIGNUP_LOADING
+} = keys.entryKeys
 
 const resetPasswdPhone = (props) => {
+  const dispatch = useDispatch()
   BackHandler.addEventListener('hardwareBackPress', () => {
     props.navigation.pop();
     return true;
@@ -53,7 +58,11 @@ const resetPasswdPhone = (props) => {
       props.navigation.navigate('InputSecretCodeOTP', {
         verificationId: 'hello',
         phoneNumber: code,
-        onSuccess: () => {
+        onSuccess: async () => {
+          dispatch({
+            type: SET_SIGNUP_LOADING,
+            payload: false
+          })
           console.log(true);
         },
         back: 'Home',
@@ -220,7 +229,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  resetPasswordPhone,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(resetPasswdPhone);

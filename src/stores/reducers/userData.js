@@ -16,11 +16,11 @@ function userDataReducer(state = initState, action){
     const { type, payload } = action
     switch (type) {
         case SET_USER_DATA:
-            return { ...state, userData: payload, error: null }
+            return { ...state, userData: payload, isLoading: false, error: null }
         case SET_USER_DATA_LOADING:
             return { ...state, isLoading: payload}
         case SET_USER_DATA_ERROR:
-            return { ...state, userData: payload, error: payload }
+            return { ...state, error: payload, isLoading: false }
         case DELETE_USER_DATA:
             return { userData: null, isLoading: false, error: null }
         default:
