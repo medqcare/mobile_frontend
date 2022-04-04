@@ -121,6 +121,83 @@ export function signIn(userData, navigation, modalF, navigateTo){
     }
 }
 
+// Not yet used
+export function SignInGoogle(token, navigation, navigateTo) {
+    console.log('ini di panggi diaction');
+    return (dispatch) => {
+      // console.log(navigation, 'ini navigationnya')
+      instance({
+        url: '/v1/members/signinGoogle',
+        method: 'POST',
+        data: { token },
+      })
+        .then(({ data }) => {
+          console.log('ini datanya dari backend', data);
+          if (data.token == null) {
+            dispatch({
+              type: 'TOGGLE_LOADING',
+              payload: false,
+            });
+            alert(data.message);
+          } else {
+            _storeData({ token: data.token });
+            return instance({
+              url: '/v1/members/dataLogged',
+              method: 'GET',
+              headers: {
+                Authorization: data.token,
+              },
+            });
+          }
+        })
+        .then(async ({ data }) => {
+          console.log(data, 'ini yang kedua');
+          try {
+            if (data.data === null) {
+              console.log('masuk if yg ini');
+              navigation.navigate('UserDataCompletion');
+            } else {
+              console.log('masuk else');
+              await dispatch({
+                type: 'AFTER_SIGNIN',
+                payload: data.data,
+              });
+              await dispatch({
+                type: 'SET_MY_LOCATION',
+                payload: {
+                  lat: data.data.location.coordinates[1],
+                  lng: data.data.location.coordinates[0],
+                },
+              });
+              navigation.pop();
+              navigateTo
+                ? navigation.navigate(navigateTo)
+                : navigation.navigate('Home');
+            }
+          } catch (error) {
+            dispatch({
+              type: 'TOGGLE_LOADING',
+              payload: false,
+            });
+            ToastAndroid.show(
+              `${error.response.data.errors}`,
+              ToastAndroid.SHORT
+            );
+          }
+        })
+        .catch((err) => {
+          dispatch({
+            type: 'TOGGLE_LOADING',
+            payload: false,
+          });
+          console.log('idihhh kenapa nihhhh');
+          console.log(err);
+          // ToastAndroid.show(`${err.response.data.errors}`, ToastAndroid.SHORT)
+          // console.log(err.response.data)
+        });
+    };
+}
+
 export function credentialCheck(payload){
     return async dispatch => {
         try {
