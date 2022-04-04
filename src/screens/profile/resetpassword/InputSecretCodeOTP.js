@@ -86,7 +86,12 @@ const InputSecretCodeOTP = (props) => {
         type: SET_SIGNUP_LOADING,
         payload: true
       })
-      await firebaseAuthService.confirmCode(verificationId, secretCode);
+      const confirmed = await firebaseAuthService.confirmCode(verificationId, secretCode);
+      console.log(confirmed, 'This is confirmed')
+      dispatch({
+        type: SET_SIGNUP_LOADING,
+        payload: false
+      })
       /**
        * params: onSuccess
        * function

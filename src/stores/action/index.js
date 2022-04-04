@@ -208,69 +208,6 @@ export function SignInGoogle(token, navigation, navigateTo) {
   };
 }
 
-export function resetPasswordEmail(email, navigate, navigateTo, isResend) {
-  console.log(
-    'Application is sending request to reset password and send email'
-  );
-  return async (dispatch) => {
-    try {
-      const { data } = await instance({
-        method: 'POST',
-        url: '/v1/members/resetPasswordEmail',
-        data: {
-          email,
-        },
-      });
-      const storedSecretCode = data.secretCode;
-      await AsyncStorage.setItem('storedSecretCode', storedSecretCode);
-      console.log('Email sent to', email);
-      ToastAndroid.show(data.message, ToastAndroid.SHORT);
-      if (!isResend) {
-        navigate(navigateTo, { email });
-      }
-    } catch (error) {
-      console.log(
-        error.message,
-        'Error found when trying to reset password and send email'
-      );
-      ToastAndroid.show(message, ToastAndroid.SHORT);
-    }
-  };
-}
-
-export function resetPasswordPhone(
-  phoneNumber,
-  navigate,
-  navigateTo,
-  isResend
-) {
-  console.log('Application is sending request to reset password and send SMS');
-  return async (dispatch) => {
-    try {
-      const { data } = await instance({
-        method: 'POST',
-        url: '/v1/members/resetPasswordOTP',
-        data: {
-          phoneNumber,
-        },
-      });
-      const { email, secretCode } = data;
-      await AsyncStorage.setItem('storedSecretCode', secretCode);
-      console.log('SMS sent to', phoneNumber);
-      ToastAndroid.show(data.message, ToastAndroid.SHORT);
-      if (!isResend) {
-        navigate(navigateTo, { phoneNumber, email });
-      }
-    } catch (error) {
-      console.log(
-        error.message,
-        'Error found when trying to reset password and send email'
-      );
-      ToastAndroid.show(error.message, ToastAndroid.SHORT);
-    }
-  };
-}
-
 export function validateSecretCode(
   secretCode,
   storedSecretCode,

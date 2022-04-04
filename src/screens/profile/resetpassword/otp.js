@@ -17,7 +17,6 @@ import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from
 'react-native-confirmation-code-field';
 
 //action
-import { resetPasswordEmail,resetPasswordPhone, setLoading } from '../../../stores/action'
 import ArrowBack from '../../../assets/svg/ArrowBack'
 import resetPasswd from './resetPassword'
 import { color } from 'react-native-reanimated'
