@@ -315,7 +315,6 @@ export function changeAccountPassword(email, password, navigate, navigateTo){
             if (data.message) {
                 console.log(data.message);
                 ToastAndroid.show(data.message, ToastAndroid.SHORT);
-                // await AsyncStorage.removeItem('secretCode');
                 navigate(navigateTo);
               } else {
                 ToastAndroid.show(data.error, ToastAndroid.SHORT);
