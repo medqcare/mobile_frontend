@@ -12,9 +12,8 @@ import {
   TextInput,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  getAlergie,
+  getPatientAllergies,
   makeReservation
 } from '../../../stores/action';
 
@@ -33,7 +32,7 @@ import Modal from 'react-native-modal';
 import SelectPatient from '../../../components/modals/selectPatient';
 
 const mapDispatchToProps = {
-  getAlergie,
+  getPatientAllergies,
   makeReservation
 };
 
@@ -44,6 +43,7 @@ const mapStateToProps = (state) => {
 const buatJanji = (props) => {
   const { userData, error } = props.userDataReducer
   const { isLoading } = props.doctorReducer
+  const { allergies: reducerAllergies } = props.allergiesReducer
   const { doctorData: datadoctor } = props.navigation.state.params;
   const {
     healthFacility,
@@ -352,18 +352,16 @@ const buatJanji = (props) => {
 
   async function setSelectedValue(data) {
     const patientId = data._id;
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    const { data: selectedPatientAllergies } = await props.getAlergie(
-      patientId,
-      token
-    );
-    if (selectedPatientAllergies.length > 0) {
-      const allergies = selectedPatientAllergies.map((el) => {
-        el.patientID = el.patientID._id;
-        return el;
-      });
-      setAllergies(allergies);
+    await props.getPatientAllergies(patientId, true)
+    
+    if(reducerAllergies.length > 0){
+      const newAllergiesList = reducerAllergies.map(el => {
+        el.patientID = el.patientID._id
+        return el
+      })
+      setAllergies(newAllergiesList)
     }
+
     setPatient({
       patient: {
         patientID: data._id,
