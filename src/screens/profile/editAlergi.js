@@ -12,7 +12,6 @@ import {
   Dimensions,
 } from "react-native";
 import {
-  getAlergie,
   editSelectedAllergy,
   deleteSelectedAllergy,
 } from "../../stores/action";
@@ -488,7 +487,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  getAlergie,
   editSelectedAllergy,
   deleteSelectedAllergy
 };

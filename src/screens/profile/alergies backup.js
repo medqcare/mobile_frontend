@@ -10,7 +10,6 @@ import {
   ToastAndroid,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getAlergie } from '../../stores/action';
 import {connect} from 'react-redux';
 import SetModals from '../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
@@ -94,26 +93,26 @@ const Allergies = props => {
     return props.navigation.pop();
   });
 
-  async function _fetchDataAlergi() {
-    setAlergies([]);
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    let tempt = [];
-    props
-      .getAlergie(idUser._id, JSON.parse(token).token)
-      .then(allAlergi => {
-        console.log(allAlergi.data.length, 'then yang ke 2');
-        allAlergi.data.map((el, idx) => {
-          return el.status == 'Active' ? tempt.push(el) : null;
-        });
-        setAlergies(tempt);
-        setLoad(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setLoad(false);
-      });
-  }
+  // async function _fetchDataAlergi() {
+  //   setAlergies([]);
+  //   setLoad(true);
+  //   let token = await AsyncStorage.getItem('token');
+  //   let tempt = [];
+  //   props
+  //     .getAlergie(idUser._id, JSON.parse(token).token)
+  //     .then(allAlergi => {
+  //       console.log(allAlergi.data.length, 'then yang ke 2');
+  //       allAlergi.data.map((el, idx) => {
+  //         return el.status == 'Active' ? tempt.push(el) : null;
+  //       });
+  //       setAlergies(tempt);
+  //       setLoad(false);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //       setLoad(false);
+  //     });
+  // }
 
   // async function _DeleteAlergi(_idAlergie) {
   //   let token = await AsyncStorage.getItem('token');
@@ -448,7 +447,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  getAlergie,
 };
 
 const mapStateToProps = state => {
