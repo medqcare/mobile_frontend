@@ -230,26 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-export function cancelRecervation(reservationID) {
-  return async (dispatch) => {
-    let token = await AsyncStorage.getItem('token');
-    try {
-      let { data } = await instance({
-        url: `/v1/members/cancelReservation`,
-        method: 'PATCH',
-        headers: {
-          Authorization: JSON.parse(token).token,
-        },
-        data: {
-          reservationID: reservationID,
-        },
-      });
-      console.log(data);
-    } catch (error) {
-      ToastAndroid.show(error.message, ToastAndroid.SHORT);
-    }
-  };
-}
 
 export function getTodayRegistration(userID) {
   return (dispatch) => {
