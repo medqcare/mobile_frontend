@@ -22,7 +22,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import QRCode from 'react-native-qrcode-svg'
 
 import { baseURL } from '../../../config/index'
-import { getDataMedicine } from '../../../stores/action'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import IconAD from 'react-native-vector-icons/AntDesign'
@@ -60,15 +59,15 @@ const SetDrug = (props) => {
         return (props.navigation.navigate('Schedule'))
     })
 
-    async function fetchMedicine() {
-        props.getDataMedicine()
-            .then(allMedicine => {
-                setItems(allMedicine)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-    }
+    // async function fetchMedicine() {
+    //     props.getDataMedicine()
+    //         .then(allMedicine => {
+    //             setItems(allMedicine)
+    //         })
+    //         .catch(error => {
+    //             console.log(error)
+    //         })
+    // }
 
     function validation() {
         const newEtiquetteTime = []
@@ -508,6 +507,5 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    getDataMedicine
 }
 export default connect(mapStateToProps, mapDispatchToProps)(SetDrug)

@@ -11,12 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  setAlergie,
-  getAlergie,
-  deleteAlergie,
-  editAlergi,
   editSelectedAllergy,
   deleteSelectedAllergy,
 } from "../../stores/action";
@@ -100,20 +95,19 @@ const EditAllergies = (props) => {
   }
 
   async function deleteAlergi(id) {
-    // let token = await AsyncStorage.getItem("token");
-    // return props.deleteAlergie(id, JSON.parse(token).token);
-    return props.deleteSelectedAllergy(id, allergies, selected)
+    try {
+      return props.deleteSelectedAllergy(id, allergies, selected)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function editAlergi(item) {
-    // let token = await AsyncStorage.getItem("token");
-    // return props.editAlergi(
-    //   item.id,
-    //   item.alergi,
-    //   item.type,
-    //   JSON.parse(token).token
-    // );
-    return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
+    try {
+      return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function actionAsync() {
@@ -493,10 +487,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  setAlergie,
-  getAlergie,
-  deleteAlergie,
-  editAlergi,
   editSelectedAllergy,
   deleteSelectedAllergy
 };

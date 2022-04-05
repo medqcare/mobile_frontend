@@ -12,13 +12,8 @@ import {
   TextInput,
 } from 'react-native';
 import { heightPercentageToDP, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  bookDoctor,
-  findPatientFacility,
-  createPatientFacility,
-  setLoading,
-  getAlergie,
+  getPatientAllergies,
   createMedicalServiceReservation
 } from '../../../stores/action';
 
@@ -43,11 +38,7 @@ const {
 } = keys.appointmentsKeys
 
 const mapDispatchToProps = {
-	bookDoctor,
-	findPatientFacility,
-	createPatientFacility,
-	setLoading,
-	getAlergie,
+	getPatientAllergies,
 	createMedicalServiceReservation
 };
 
@@ -58,6 +49,7 @@ const mapStateToProps = (state) => {
 const MakeAppointment = (props) => {
 	const dispatch = useDispatch()
 	const { serviceDetail, bookingSchedule, healthFacility, clinic } = props.navigation.state.params
+	const { allergies: reducerAllergies } = props.allergiesReducer
 	const { userData } = props.userDataReducer
 	const { medicalService, isLoading, error } = props.medicalServicesReducer
 	const photo = ''
@@ -162,27 +154,6 @@ const MakeAppointment = (props) => {
 		} catch (error) {
 			console.log(error, 'error in BuatJanji.js service')
 		}
-		// props
-		// .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-		// .then((data, status) => {
-		// 	return props.bookDoctor(dataSend, JSON.parse(token).token);
-		// })
-		// .then((data) => {
-		// 	if (data.message == 'already reserve for that patient') {
-		// 		setLoad(false);
-		// 		ToastAndroid.show(data.message, ToastAndroid.LONG);
-		// 	} else {
-		// 		setLoad(false);
-		// 		setModal(true);
-		// 	}
-		// })
-		// .catch((error) => {
-		// 	setLoad(false);
-		// 	setMessageF(error);
-		// 	setModalf(true);
-		// 	// alert('Something Wrong', error)
-		// 	console.log(error, 'loh kok error weehhh');
-		// });
 	}
 
 	useEffect(() => {
@@ -378,18 +349,16 @@ const MakeAppointment = (props) => {
 	}
 	async function setSelectedValue(data) {
 		const patientId = data._id;
-		const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-		const { data: selectedPatientAllergies } = await props.getAlergie(
-			patientId,
-			token
-		);
-		if (selectedPatientAllergies.length > 0) {
-			const allergies = selectedPatientAllergies.map((el) => {
-				el.patientID = el.patientID._id;
-				return el;
-			});
-			setAllergies(allergies);
+		await props.getPatientAllergies(patientId, true)
+    
+		if(reducerAllergies.length > 0){
+			const newAllergiesList = reducerAllergies.map(el => {
+				el.patientID = el.patientID._id
+				return el
+			})
+			setAllergies(newAllergiesList)
 		}
+
 		setPatient({
 			patient: {
 				patientID: data._id,

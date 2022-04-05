@@ -16,7 +16,7 @@ import { baseURL } from '../../../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../../components/headers/GradientHeader';
 
-import { cancelRecervation, searchAllReservations, cancelSelectedReservation } from '../../../stores/action';
+import { searchAllReservations, cancelSelectedReservation } from '../../../stores/action';
 import LottieLoader from 'lottie-react-native';
 import CardMedicalService from '../../../components/home/appointment/CardMedicalService';
 import DeleteAppointmentModal from '../../../components/modals/DeleteAppointmentModal';
@@ -219,7 +219,6 @@ const Appointment = (props) => {
         isVisible={showModalDelete}
         setIsVisible={setShowModalDelete}
         onButtonCancelPress={() => {
-          // props.cancelRecervation(reservationID);
           const { appointmentList, keyToDispatch } = cancelReservationData
           props.cancelSelectedReservation(reservationID,  appointmentList, keyToDispatch)
           onRefresh();
@@ -236,7 +235,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  cancelRecervation,
   searchAllReservations, 
   cancelSelectedReservation
 };

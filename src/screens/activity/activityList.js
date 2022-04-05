@@ -14,7 +14,6 @@ import LottieLoader from 'lottie-react-native';
 
 //action
 import {
-  getTodayRegistration,
   getCurrentQueueingNumber,
   getTodaysRegistration,
 } from '../../stores/action';
@@ -101,7 +100,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  getTodayRegistration,
   getCurrentQueueingNumber,
   getTodaysRegistration,
 };

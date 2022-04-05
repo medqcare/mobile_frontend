@@ -13,7 +13,7 @@ const {
     DELETE_ALLERGIES
 } = keys.allergyKeys
 
-export function getPatientAllergies(patientID){
+export function getPatientAllergies(patientID, isReservation){
     return async (dispatch) => {
         try {
             await dispatch({
@@ -33,6 +33,25 @@ export function getPatientAllergies(patientID){
 
             const allergyList = data.data
             const allergyCount = allergyList.length
+            
+            if(allergyCount > 1){
+                console.log(`Application found ${allergyCount} allergies for the selected patient`)
+            } else {
+                console.log(`Application found ${allergyCount} allergy for the selected patient`)
+            }
+
+            if(isReservation){
+                await dispatch({
+                    type: SET_ALLERGIES,
+                    payload: data.data
+                })
+    
+                return await dispatch({
+                    type: SET_ALLERGIES_LOADING,
+                    payload: false
+                })
+            }
+
             let temp = {
                 OBAT: [],
                 MAKANAN: [],
@@ -40,12 +59,6 @@ export function getPatientAllergies(patientID){
               };
             let fromPatient = false
             let fromDokter = false
-
-            if(allergyCount > 1){
-                console.log(`Application found ${allergyCount} allergies for the selected patient`)
-            } else {
-                console.log(`Application found ${allergyCount} allergy for the selected patient`)
-            }
 
             for(let i = 0; i < allergyCount; i++){
                 const allergy = allergyList[i]

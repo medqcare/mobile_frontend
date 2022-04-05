@@ -14,12 +14,13 @@ import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons'
 import getAge from '../../../helpers/getAge'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getAlergie } from '../../../stores/action'
+import { getPatientAllergies } from '../../../stores/action'
 import ArrowBack from '../../../assets/svg/ArrowBack'
 
 
 
 const detailMedrec = (props) => {
+    const { allergies: reducerAllergies } = props.allergiesReducer
     const [medrec, setMedrec] = useState(props.navigation.state.params.data)
     const [alergies, setAlergies] = useState(null)
     const [registrationID, setRegistrationID] = useState(props.navigation.state.params.data.registrationID)
@@ -42,24 +43,23 @@ const detailMedrec = (props) => {
     const [visibleOrder, setVOrder] = useState(true)
 
     async function _fetchDataAlergi() {
-        setAlergies([])
-        let token = await AsyncStorage.getItem("token");
-        let tempt = []
-        console.log(patient, 'id patient')
-        props.getAlergie(patient.patientID, JSON.parse(token).token)
-            .then(allAlergi => {
-                console.log(allAlergi, 'then yang ke 2')
-                allAlergi.data.map((el, idx) => {
-                    return (
-                        el.status == "Active" ? tempt.push(el) : null
-                    )
-                })
-                setAlergies(tempt)
+        try {
+            setAlergies([])
+            let token = await AsyncStorage.getItem("token");
+            let tempt = []
+            console.log(patient, 'id patient')
+            await props.getPatientAllergies(patient.patientID, true)
+
+            reducerAllergies.map(el => {
+                return (
+                    el.status = 'Active' ? tempt.push(el) : null
+                )
             })
-            .catch(error => {
-                console.log(error)
-                setLoad(false)
-            })
+            setAlergies(tempt)
+        } catch (error) {
+            console.log(error)
+            setLoad(false)
+        }
     }
 
     useEffect(() => {
@@ -581,7 +581,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    getAlergie,
+    getPatientAllergies
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(detailMedrec)

@@ -10,7 +10,6 @@ import {
   ToastAndroid,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {setAlergie, getAlergie, deleteAlergie} from '../../stores/action';
 import {connect} from 'react-redux';
 import SetModals from '../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
@@ -48,27 +47,27 @@ const Allergies = props => {
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
 
-  async function addAlergies(data) {
-    let token = await AsyncStorage.getItem('token');
-    if (inputAlergies && type) {
-      props
-        .setAlergie(
-          idUser._id,
-          {alergie: inputAlergies, alergieType: type},
-          JSON.parse(token).token,
-        )
-        .then(backData => {
-          _fetchDataAlergi();
-          setInputAlergies('');
-          setType('Cuaca');
-        });
-    } else {
-      ToastAndroid.show(
-        'please fill in allergy and type of allergy',
-        ToastAndroid.LONG,
-      );
-    }
-  }
+  // async function addAlergies(data) {
+  //   let token = await AsyncStorage.getItem('token');
+  //   if (inputAlergies && type) {
+  //     props
+  //       .setAlergie(
+  //         idUser._id,
+  //         {alergie: inputAlergies, alergieType: type},
+  //         JSON.parse(token).token,
+  //       )
+  //       .then(backData => {
+  //         _fetchDataAlergi();
+  //         setInputAlergies('');
+  //         setType('Cuaca');
+  //       });
+  //   } else {
+  //     ToastAndroid.show(
+  //       'please fill in allergy and type of allergy',
+  //       ToastAndroid.LONG,
+  //     );
+  //   }
+  // }
 
   function getFamily() {
     let dataUser = {
@@ -94,34 +93,34 @@ const Allergies = props => {
     return props.navigation.pop();
   });
 
-  async function _fetchDataAlergi() {
-    setAlergies([]);
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    let tempt = [];
-    props
-      .getAlergie(idUser._id, JSON.parse(token).token)
-      .then(allAlergi => {
-        console.log(allAlergi.data.length, 'then yang ke 2');
-        allAlergi.data.map((el, idx) => {
-          return el.status == 'Active' ? tempt.push(el) : null;
-        });
-        setAlergies(tempt);
-        setLoad(false);
-      })
-      .catch(error => {
-        console.log(error);
-        setLoad(false);
-      });
-  }
+  // async function _fetchDataAlergi() {
+  //   setAlergies([]);
+  //   setLoad(true);
+  //   let token = await AsyncStorage.getItem('token');
+  //   let tempt = [];
+  //   props
+  //     .getAlergie(idUser._id, JSON.parse(token).token)
+  //     .then(allAlergi => {
+  //       console.log(allAlergi.data.length, 'then yang ke 2');
+  //       allAlergi.data.map((el, idx) => {
+  //         return el.status == 'Active' ? tempt.push(el) : null;
+  //       });
+  //       setAlergies(tempt);
+  //       setLoad(false);
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //       setLoad(false);
+  //     });
+  // }
 
-  async function _DeleteAlergi(_idAlergie) {
-    let token = await AsyncStorage.getItem('token');
-    props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
-      // console.log('delete', backData);
-      _fetchDataAlergi();
-    });
-  }
+  // async function _DeleteAlergi(_idAlergie) {
+  //   let token = await AsyncStorage.getItem('token');
+  //   props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
+  //     // console.log('delete', backData);
+  //     _fetchDataAlergi();
+  //   });
+  // }
 
   useEffect(() => {
     getFamily();
@@ -448,9 +447,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  setAlergie,
-  getAlergie,
-  deleteAlergie,
 };
 
 const mapStateToProps = state => {
