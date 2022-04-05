@@ -11,8 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { setAlergie, getAlergie, deleteAlergie, getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
+import { getAlergie, deleteAlergie, getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
 import { connect } from "react-redux";
 import LottieLoader from "lottie-react-native";
 import SelectPatient from "../../components/modals/selectPatient";
@@ -37,7 +36,6 @@ const Allergies = (props) => {
   const [inputAlergies, setInputAlergies] = useState("");
   const [needInfo, setNeedInfo] = useState(false)
 
-//   const [allergies, setAlergies] = useState([]);
   const [idUser, setIduser] = useState({ firstName: userData.firstName, _id: userData._id });
   const [modalPatient, setModalPatient] = useState(false);
   const [modalAllergyTypes, setModalAllergyTypes] = useState(false);
@@ -411,7 +409,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  setAlergie,
   getAlergie,
   deleteAlergie,
   getPatientAllergies, 

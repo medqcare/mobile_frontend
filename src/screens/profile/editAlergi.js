@@ -11,9 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  setAlergie,
   getAlergie,
   deleteAlergie,
   editAlergi,
@@ -493,7 +491,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  setAlergie,
   getAlergie,
   deleteAlergie,
   editAlergi,
