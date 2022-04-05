@@ -152,9 +152,7 @@ const SignUpScreen = (props) => {
       props.navigation.navigate('InputSecretCodeOTP', {
         phoneNumber,
         backTo: 'SignUp',
-        onSuccess: () => {
-          props.addNewUser(addNewUserPayload, props.navigation);
-        },
+        addNewUserPayload,
       });
 
     } catch (error) {

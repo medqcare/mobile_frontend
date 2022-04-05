@@ -22,6 +22,7 @@ import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
 import { ActivityIndicator } from 'react-native-paper';
 import keys from '../../../stores/keys';
 import { ORANGE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
+import { addNewUser } from "../../../stores/action";
 
 const { SET_SIGNUP_LOADING } = keys.entryKeys
 
@@ -31,7 +32,7 @@ const InputSecretCodeOTP = (props) => {
   const {
     phoneNumber,
     back = 'Home',
-    onSuccess,
+    addNewUserPayload,
   } = props.navigation.state.params;
   const { signUpIsLoading } = props.entryReducer
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
@@ -96,7 +97,7 @@ const InputSecretCodeOTP = (props) => {
        * params: onSuccess
        * function
        */
-      await onSuccess();
+      await props.addNewUser(addNewUserPayload, props.navigation)
     } catch (error) {
       console.log(error.message, 'onPressHandler')
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
@@ -346,6 +347,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
+  addNewUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputSecretCodeOTP);
