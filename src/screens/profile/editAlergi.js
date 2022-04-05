@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import {
   getAlergie,
-  deleteAlergie,
   editSelectedAllergy,
   deleteSelectedAllergy,
 } from "../../stores/action";
@@ -97,9 +96,11 @@ const EditAllergies = (props) => {
   }
 
   async function deleteAlergi(id) {
-    // let token = await AsyncStorage.getItem("token");
-    // return props.deleteAlergie(id, JSON.parse(token).token);
-    return props.deleteSelectedAllergy(id, allergies, selected)
+    try {
+      return props.deleteSelectedAllergy(id, allergies, selected)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function editAlergi(item) {
@@ -488,7 +489,6 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = {
   getAlergie,
-  deleteAlergie,
   editSelectedAllergy,
   deleteSelectedAllergy
 };

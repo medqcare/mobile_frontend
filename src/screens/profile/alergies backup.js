@@ -10,7 +10,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { getAlergie, deleteAlergie} from '../../stores/action';
+import { getAlergie } from '../../stores/action';
 import {connect} from 'react-redux';
 import SetModals from '../../components/modals/setModal';
 import LottieLoader from 'lottie-react-native';
@@ -115,13 +115,13 @@ const Allergies = props => {
       });
   }
 
-  async function _DeleteAlergi(_idAlergie) {
-    let token = await AsyncStorage.getItem('token');
-    props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
-      // console.log('delete', backData);
-      _fetchDataAlergi();
-    });
-  }
+  // async function _DeleteAlergi(_idAlergie) {
+  //   let token = await AsyncStorage.getItem('token');
+  //   props.deleteAlergie(_idAlergie, JSON.parse(token).token).then(backData => {
+  //     // console.log('delete', backData);
+  //     _fetchDataAlergi();
+  //   });
+  // }
 
   useEffect(() => {
     getFamily();
@@ -449,7 +449,6 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = {
   getAlergie,
-  deleteAlergie,
 };
 
 const mapStateToProps = state => {

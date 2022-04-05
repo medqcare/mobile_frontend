@@ -11,7 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { getAlergie, deleteAlergie, getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
+import { getPatientAllergies, createAllergy, deleteSelectedAllergy } from "../../stores/action";
 import { connect } from "react-redux";
 import LottieLoader from "lottie-react-native";
 import SelectPatient from "../../components/modals/selectPatient";
@@ -409,8 +409,6 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  getAlergie,
-  deleteAlergie,
   getPatientAllergies, 
   createAllergy, 
   deleteSelectedAllergy

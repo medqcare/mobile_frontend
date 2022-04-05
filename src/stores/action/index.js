@@ -257,26 +257,6 @@ export function getAlergie(patientId, token) {
   };
 }
 
-export function deleteAlergie(_id, token) {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log('kepanggil di try');
-        let data = await instance({
-          url: `/v1/members/alergies/${_id}`,
-          method: 'PUT',
-          headers: { Authorization: token },
-        });
-        resolve(data.data);
-      } catch (error) {
-        console.log(error, 'ini kembalian data delete alergie');
-        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
-        reject(error.message);
-      }
-    });
-  };
-}
-
 export function getDataMedicine() {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
