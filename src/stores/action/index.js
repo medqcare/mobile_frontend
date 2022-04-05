@@ -230,39 +230,7 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-export function findPatientFacility(dataPatient, token, createPatient) {
-  // console.log(createPatient, 'ini createPatient untuk find')
-  // console.log(dataPatient, 'ini datapatient untuk find')
-  // console.log(token, "ini token find")
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let { data, status } = await instance({
-          url: '/v1/members/facilityMedrec',
-          method: 'POST',
-          headers: { Authorization: token },
-          data: dataPatient,
-        });
-        console.log(data, status, 'ini data hasil find');
-        if (status === 204) {
-          let { data } = await instance({
-            url: '/v1/members/addPatientToFacility',
-            method: 'POST',
-            headers: { Authorization: token },
-            data: createPatient,
-          });
-          console.log(data, 'ini data hasil create');
-          resolve(data, status);
-        } else {
-          resolve(status);
-        }
-      } catch (error) {
-        console.log(error, 'error di findPatientFaciity');
-        reject(error);
-      }
-    });
-  };
-}
+
 
 export function createPatientFacility(createPatient, token) {
   console.log(createPatient, 'ini datapatient untuk create');

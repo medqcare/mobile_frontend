@@ -14,7 +14,6 @@ import {
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  findPatientFacility,
   createPatientFacility,
   getAlergie,
   makeReservation
@@ -35,7 +34,6 @@ import Modal from 'react-native-modal';
 import SelectPatient from '../../../components/modals/selectPatient';
 
 const mapDispatchToProps = {
-  findPatientFacility,
   createPatientFacility,
   getAlergie,
   makeReservation
