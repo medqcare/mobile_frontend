@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import {
@@ -13,76 +13,83 @@ import {
 import { connect } from 'react-redux';
 import GradientHeader from '../../../components/headers/GradientHeader';
 import EmptyNotificationLogo from '../../../assets/svg/EmptyNotificationLogo';
-import axios from 'axios';
-import { baseURL } from '../../../config';
+// import axios from 'axios';
+// import { baseURL } from '../../../config';
 import NotificationCard from '../../../components/home/NotificationCard';
 import LottieLoader from 'lottie-react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import { setUserData } from '../../../stores/action';
+import { setUserData, getAllNotifications, patchNotificationAsViewed } from '../../../stores/action';
 
 const dimension = Dimensions.get('window');
 const dimHeight = dimension.height;
 const dimWidth = dimension.width;
 
 function Notification({ navigation, ...props }) {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { userData } = props.userDataReducer
+  const { notifications: reducerNotifications, notificationsCount, isLoading, error } = props.notificationsReducer
+  // const [notifications, setNotifications] = useState([]);
+  // const [loading, setLoading] = useState(false);
   const [loadingActionClose, setLoadingActionClose] = useState(false);
 
   useEffect(async () => {
     try {
-      setLoading(true);
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
-      const parentID = props.userData.userID._id;
-      const patientID = props.userData._id;
-      const { data } = await axios({
-        url: `${baseURL}/api/v1/members/notifications/${patientID}/${parentID}`,
-        method: 'GET',
-        headers: {
-          Authorization: token,
-        },
-      });
-      const { notifications } = data;
-      setNotifications(notifications);
+      const parentID = userData.userID._id
+      const patientID = userData._id
+      await props.getAllNotifications(patientID, parentID)
+      // setLoading(true);
+      // const tokenString = await AsyncStorage.getItem('token');
+      // const { token } = JSON.parse(tokenString);
+      // const parentID = userData.userID._id;
+      // const patientID = userData._id;
+      // const { data } = await axios({
+      //   url: `${baseURL}/api/v1/members/notifications/${patientID}/${parentID}`,
+      //   method: 'GET',
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // });
+      // const { notifications } = data;
+      // console.log(notifications, 'notifications')
+      // setNotifications(notifications);
     } catch (error) {
       console.log(error.message, 'this is error from notification screen');
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
 
-    return () => {
-      setNotifications([]);
-    };
+    // return () => {
+    //   setNotifications([]);
+    // };
   }, []);
 
   const onButtonClosePressHandler = async (notificationId) => {
     try {
       setLoadingActionClose(true);
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
-      const { data } = await axios({
-        url: `${baseURL}/api/v1/members/notifications/${notificationId}`,
-        method: 'PATCH',
-        headers: {
-          Authorization: token,
-        },
-      });
+      await props.patchNotificationAsViewed(notificationId, reducerNotifications, notificationsCount)
+      // const tokenString = await AsyncStorage.getItem('token');
+      // const { token } = JSON.parse(tokenString);
+      // const { data } = await axios({
+      //   url: `${baseURL}/api/v1/members/notifications/${notificationId}`,
+      //   method: 'PATCH',
+      //   headers: {
+      //     Authorization: token,
+      //   },
+      // });
 
-      const result = notifications.filter(
-        (notif) => notif._id !== notificationId
-      );
-      setNotifications(result);
+      // const result = reducerNotifications.filter(
+      //   (notif) => notif._id !== notificationId
+      // );
+      // setNotifications(result);
     } catch (error) {
       console.log(error, 'this is error when button close pressed');
     } finally {
       setLoadingActionClose(false);
-      const { countNotification: currentTotalNotification } = props.userData;
-      const payload = {
-        ...props.userData,
-        countNotification: currentTotalNotification - 1
-      };
-      props.setUserData(payload)
+      // const { countNotification: currentTotalNotification } = props.userData;
+      // const payload = {
+      //   ...props.userData,
+      //   countNotification: currentTotalNotification - 1
+      // };
+      // props.setUserData(payload)
     }
   };
 
@@ -106,7 +113,7 @@ function Notification({ navigation, ...props }) {
     <View style={{ flex: 1 }}>
       <GradientHeader title="Notifikasi" navigate={navigation.navigate} />
       <View style={styles.container}>
-        {loading ? (
+        {isLoading ? (
           <LottieLoader
             source={require('../../animation/loading.json')}
             loop
@@ -114,9 +121,9 @@ function Notification({ navigation, ...props }) {
           />
         ) : (
           <>
-            {notifications.length > 0 ? (
+            {reducerNotifications.length > 0 ? (
               <FlatList
-                data={notifications}
+                data={reducerNotifications}
                 keyExtractor={(item) => item._id}
                 renderItem={renderNotificationCard}
               />
@@ -223,7 +230,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  setUserData
+  setUserData,
+  getAllNotifications,
+  patchNotificationAsViewed
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notification);

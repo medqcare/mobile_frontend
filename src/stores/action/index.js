@@ -136,6 +136,17 @@ export {
 
 
 import {
+	getAllNotifications,
+	patchNotificationAsViewed
+} from './notifications'
+
+export {
+	getAllNotifications,
+	patchNotificationAsViewed
+}
+
+
+import {
 	getAllPrescriptions,
 	getTodaysPrescriptions,
 	getPrescriptionHistory,
