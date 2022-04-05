@@ -230,28 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-
-
-export function createPatientFacility(createPatient, token) {
-  console.log(createPatient, 'ini datapatient untuk create');
-  console.log(token, 'ini token create patientFacility');
-  return new Promise(async (resolve, reject) => {
-    try {
-      let { data } = await instance({
-        url: '/v1/members/addPatientToFacility',
-        method: 'POST',
-        headers: { Authorization: token },
-        data: createPatient,
-      });
-      console.log(data, 'ini data hasil create');
-      resolve(data);
-    } catch (error) {
-      console.log(error, 'error di findPatientFaciity');
-      reject(error);
-    }
-  });
-}
-
 export function getCurrentQueueingNumber(queueId) {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {

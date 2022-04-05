@@ -14,7 +14,6 @@ import {
 import { heightPercentageToDP, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  createPatientFacility,
   getAlergie,
   createMedicalServiceReservation
 } from '../../../stores/action';
@@ -40,7 +39,6 @@ const {
 } = keys.appointmentsKeys
 
 const mapDispatchToProps = {
-	createPatientFacility,
 	getAlergie,
 	createMedicalServiceReservation
 };
