@@ -14,10 +14,8 @@ import {
 import { heightPercentageToDP, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  bookDoctor,
   findPatientFacility,
   createPatientFacility,
-  setLoading,
   getAlergie,
   createMedicalServiceReservation
 } from '../../../stores/action';
@@ -43,10 +41,8 @@ const {
 } = keys.appointmentsKeys
 
 const mapDispatchToProps = {
-	bookDoctor,
 	findPatientFacility,
 	createPatientFacility,
-	setLoading,
 	getAlergie,
 	createMedicalServiceReservation
 };
@@ -162,27 +158,6 @@ const MakeAppointment = (props) => {
 		} catch (error) {
 			console.log(error, 'error in BuatJanji.js service')
 		}
-		// props
-		// .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-		// .then((data, status) => {
-		// 	return props.bookDoctor(dataSend, JSON.parse(token).token);
-		// })
-		// .then((data) => {
-		// 	if (data.message == 'already reserve for that patient') {
-		// 		setLoad(false);
-		// 		ToastAndroid.show(data.message, ToastAndroid.LONG);
-		// 	} else {
-		// 		setLoad(false);
-		// 		setModal(true);
-		// 	}
-		// })
-		// .catch((error) => {
-		// 	setLoad(false);
-		// 	setMessageF(error);
-		// 	setModalf(true);
-		// 	// alert('Something Wrong', error)
-		// 	console.log(error, 'loh kok error weehhh');
-		// });
 	}
 
 	useEffect(() => {

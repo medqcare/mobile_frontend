@@ -230,41 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-export function bookDoctor(bookData, token) {
-  return (dispatch) => {
-    // console.log(bookData, 'ini book datanya di action')
-    dispatch({
-      type: 'TOGGLE_LOADING',
-      payload: true,
-    });
-    let d2ate = new Date(bookData.bookingSchedule);
-    let month = '' + (d2ate.getMonth() + 1),
-      day = '' + d2ate.getDate(),
-      year = d2ate.getFullYear();
-    if (month.length < 2) month = '0' + month;
-    if (day.length < 2) day = '0' + day;
-    bookData.bookingSchedule = `${day}/${month}/${year}`;
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log('masuk sini dari book dokter');
-        // console.log(bookData);
-        // console.log(token);
-        let data = await instance({
-          url: '/v1/members/makeReservation',
-          method: 'POST',
-          data: bookData,
-          headers: { Authorization: token },
-        });
-        console.log(data, 'ini datanya mmmmmmmmmmmmmmmmmmm');
-        resolve({ message: data.data.message, status: data.data.status });
-      } catch (error) {
-        console.log(error);
-        reject(error);
-      }
-    });
-  };
-}
-
 export function findPatientFacility(dataPatient, token, createPatient) {
   // console.log(createPatient, 'ini createPatient untuk find')
   // console.log(dataPatient, 'ini datapatient untuk find')
