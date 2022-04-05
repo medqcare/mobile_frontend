@@ -14,6 +14,7 @@ import prescriptionsReducer from "./prescriptions";
 import medicalDocumentsReducer from "./medicalDocuments";
 import transactionsReducer from "./transactions";
 import historiesReducer from "./histories";
+import notificationsReducer from "./notifications";
 
 const reducer = combineReducers({
 	allergiesReducer,
@@ -31,6 +32,7 @@ const reducer = combineReducers({
 	medicalDocumentsReducer,
 	transactionsReducer,
 	historiesReducer,
+	notificationsReducer,
 })
 
 export default reducer
