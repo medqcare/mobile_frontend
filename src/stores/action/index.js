@@ -256,21 +256,3 @@ export function getAlergie(patientId, token) {
     });
   };
 }
-
-export function getDataMedicine() {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let data = await axios({
-          url: `http://api-medqcare.applimetis.id:8888/api/v1/master/barangMedis/getAll`,
-          method: 'GET',
-        });
-        resolve(data.data);
-      } catch (error) {
-        console.log(error, 'ini kembalian data Obat');
-        // ToastAndroid.show('Gagal mengambil data alergi', ToastAndroid.SHORT)
-        reject(error.message);
-      }
-    });
-  };
-}

@@ -13,7 +13,6 @@ import {
 } from 'react-native'
 import ModalHalf from 'react-native-modal'
 import { connect } from 'react-redux'
-import { getDataMedicine } from '../../../stores/action'
 import SearchableDropdown from 'react-native-searchable-dropdown'
 import ModalDrug from '../../modals/medSchedule/modalSetDrug'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -156,7 +155,6 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    getDataMedicine
 
 }
 export default connect(mapStateToProps, mapDispatchToProps)(detailSchedule)
