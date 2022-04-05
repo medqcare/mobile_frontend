@@ -230,29 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-export function editAlergi(id, alergie, alergieType, token) {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let data = await instance({
-          url: `/v1/members/editAlergi/${id}`,
-          method: 'PUT',
-          data: {
-            alergie,
-            alergieType,
-          },
-          headers: { Authorization: token },
-        });
-        resolve(data.data);
-      } catch (error) {
-        console.log(error, 'ini kembalian data alergie');
-        ToastAndroid.show('Gagal menambahkan alergi', ToastAndroid.SHORT);
-        reject(error.message);
-      }
-    });
-  };
-}
-
 export function getAlergie(patientId, token) {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {

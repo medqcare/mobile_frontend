@@ -14,7 +14,6 @@ import {
 import {
   getAlergie,
   deleteAlergie,
-  editAlergi,
   editSelectedAllergy,
   deleteSelectedAllergy,
 } from "../../stores/action";
@@ -104,14 +103,11 @@ const EditAllergies = (props) => {
   }
 
   async function editAlergi(item) {
-    // let token = await AsyncStorage.getItem("token");
-    // return props.editAlergi(
-    //   item.id,
-    //   item.alergi,
-    //   item.type,
-    //   JSON.parse(token).token
-    // );
-    return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
+    try {
+      return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function actionAsync() {
@@ -493,7 +489,6 @@ const styles = StyleSheet.create({
 const mapDispatchToProps = {
   getAlergie,
   deleteAlergie,
-  editAlergi,
   editSelectedAllergy,
   deleteSelectedAllergy
 };
