@@ -230,31 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-export function getCurrentQueueingNumber(queueId) {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let token = await AsyncStorage.getItem('token');
-        // console.log(JSON.parse(token).token,'ini token yang dari get current queue')
-        // console.log('ini data queueID', JSON.parse(queueId), typeof queueId);
-        let { data } = await instance({
-          method: 'POST',
-          url: '/v1/members/getQueueById',
-          data: { queueID: JSON.parse(queueId) },
-          headers: { Authorization: JSON.parse(token).token },
-        });
-        if (data) {
-          resolve(data.data.currentQueueingNumber);
-        } else {
-          throw { error: 'no data' };
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-}
-
 export function cancelRecervation(reservationID) {
   return async (dispatch) => {
     let token = await AsyncStorage.getItem('token');
