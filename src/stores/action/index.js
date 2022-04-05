@@ -230,42 +230,6 @@ const instance = axios.create({
   baseURL: `${baseURL}/api`,
 });
 
-
-export function getTodayRegistration(userID) {
-  return (dispatch) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let access_token = await AsyncStorage.getItem('token');
-
-        // console.log('ini userIDnya boss', userID)
-        // console.log('ini tokennya boss', access_token)
-        let { data } = await axios({
-          method: 'POST',
-          url: baseURL + '/api/v1/members/getTodayRegistration',
-          data: {
-            userID,
-          },
-          headers: {
-            Authorization: JSON.parse(access_token).token,
-          },
-        });
-        // console.log('ini hasil balikan dari get today registration',data)
-
-        dispatch({
-          type: 'SET_TODAY_ACTIVITY',
-          payload: data ? data.data : [],
-        });
-        resolve(data);
-      } catch (error) {
-        console.log('gagal di get Today registration');
-        console.log(error);
-        reject(error);
-        Alert.alert(error);
-      }
-    });
-  };
-}
-
 export function setAlergie(patientId, alergie, token) {
   return (dispatch) => {
     return new Promise(async (resolve, reject) => {
