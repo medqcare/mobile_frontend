@@ -232,12 +232,12 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 					data={medicalServices}
 					keyExtractor={(item, index) => String(index)}
 					renderItem={renderMedicalService}
-					onEndReached={() => {
-						if (medicalServices.length >= 10) {
-							searchMedicalServices(true);
-						}
-						}}
-						onEndReachedThreshold={1}
+					// onEndReached={() => {
+					// 	if (medicalServices.length > 10) {
+					// 		searchMedicalServices(true);
+					// 	}
+					// }}
+					onEndReachedThreshold={1}
 				/>
 			) :
 			(
