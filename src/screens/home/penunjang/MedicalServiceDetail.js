@@ -91,7 +91,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
     }
 
     const [healthFacility, setHealthFacility] = useState({
-        facilityID: id,
+        facilityID: clinic.idClinicMobile,
         facilityName: clinic.name,
         // facilityType: 'Klinik',
         // facilityMainType: 'Klinik',
