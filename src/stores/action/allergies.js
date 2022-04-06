@@ -31,7 +31,7 @@ export function getPatientAllergies(patientID, isReservation){
                 }
             })
 
-            const allergyList = data.data
+            const allergyList = data.data.filter(el => el.status === 'Active')
             const allergyCount = allergyList.length
             
             if(allergyCount > 1){
@@ -62,18 +62,16 @@ export function getPatientAllergies(patientID, isReservation){
 
             for(let i = 0; i < allergyCount; i++){
                 const allergy = allergyList[i]
-                if(allergy.status === 'Active'){
-                    if(allergy.createBy === 'Patient'){ fromPatient = true}
-                    if(allergy.createBy === 'Dokter'){ fromDokter = true}
-                    if (!temp[allergy.alergieType.toUpperCase()]) {
-                        temp[allergy.alergieType.toUpperCase()] = [];
-                    }
-                    temp[allergy.alergieType.toUpperCase()].push({
-                        id: allergy._id,
-                        alergi: allergy.alergie,
-                        createBy: allergy.createBy,
-                    });
+                if(allergy.createBy === 'Patient'){ fromPatient = true}
+                if(allergy.createBy === 'Dokter'){ fromDokter = true}
+                if (!temp[allergy.alergieType.toUpperCase()]) {
+                    temp[allergy.alergieType.toUpperCase()] = [];
                 }
+                temp[allergy.alergieType.toUpperCase()].push({
+                    id: allergy._id,
+                    alergi: allergy.alergie,
+                    createBy: allergy.createBy,
+                });
             }
 
             const keySelection = Object.keys(temp);
@@ -106,12 +104,17 @@ export function getPatientAllergies(patientID, isReservation){
                 payload: false
             })
         } catch (error) {
-            console.log(error)
             if(error?.response?.status){
                 console.log(error?.response?.status, `Error found when trying to get patient's allergy`)
                 await dispatch({
                     type: SET_ALLERGIES_ERROR,
                     payload: error.response.status
+                })
+            } else {
+                console.log(error)
+                await dispatch({
+                    type: SET_ALLERGIES_ERROR,
+                    payload: error
                 })
             }
         }
@@ -145,12 +148,27 @@ export function createAllergy(patientID, allergy, allergies, setInputAlergies){
             }
 
             const allergyType = alergieType.toUpperCase()
-            const newAllergyTypes = [...allergies[allergyType], newAllergy]
-            const newAllergyList = {
-                ...allergies,
-                [allergyType]: newAllergyTypes
+            let newAllergyList;
+            if(Object.keys(allergies).length > 0){
+                if(!allergies[allergyType]){
+                    newAllergyList = {
+                        ...allergies,
+                        [allergyType]: [newAllergy]
+                    }
+                }
+                else if(allergies[allergyType].length > 0){
+                    const newAllergyTypes = [...allergies[allergyType], newAllergy]
+                    newAllergyList = {
+                        ...allergies,
+                        [allergyType]: newAllergyTypes
+                    }
+                } 
+            } else {
+                newAllergyList = {
+                    [allergyType]: [newAllergy]
+                }
             }
-
+            
             await dispatch({
                 type: SET_ALLERGIES,
                 payload: newAllergyList
@@ -174,7 +192,7 @@ export function createAllergy(patientID, allergy, allergies, setInputAlergies){
     }
 }
 
-export function editSelectedAllergy(allergyID, allergy, allergyType, allergies){
+export function editSelectedAllergy(allergyID, allergy, allergyType, allergies, selected){
     return async dispatch => {
         try {
             console.log('Application is trying to edit selected allergy')
@@ -198,17 +216,21 @@ export function editSelectedAllergy(allergyID, allergy, allergyType, allergies){
             })
 
             const { _id: id, createBy, alergie, alergieType } = data.data
-            const newAllergy = {
+            const editedAllergy = {
                 id,
-                alergie,
+                alergi: alergie,
                 createBy
             }
 
             let selectedAllergyTypes = []
             let newAllergyTypes
 
-            if(allergyType === alergieType){
-                selectedAllergyTypes = [...allergies[allergyType], newAllergy]
+            if(selected === alergieType){
+                // selectedAllergyTypes = [...allergies[allergyType], editedAllergy]
+                selectedAllergyTypes = allergies[allergyType].map(el => {
+                    if(id === el.id) el = editedAllergy
+                    return el
+                })
 
                 const newAllergyList = {
                     ...allergies,
@@ -220,14 +242,17 @@ export function editSelectedAllergy(allergyID, allergy, allergyType, allergies){
                     payload: newAllergyList
                 })
             } else {
-                selectedAllergyTypes = allergies[allergyType].filter(el => el.id !== allergyID)
-                newAllergyTypes = [...allergies[alergieType], newAllergy]
+                selectedAllergyTypes = allergies[selected].filter(el => el.id !== allergyID)
+                if(!allergies[alergieType]) newAllergyTypes = [editedAllergy]
+                else newAllergyTypes = [...allergies[alergieType], editedAllergy]
 
                 const newAllergyList = {
                     ...allergies,
-                    [allergyType]: selectedAllergyTypes,
+                    [selected]: selectedAllergyTypes,
                     [alergieType]: newAllergyTypes
                 }
+
+                if(newAllergyList[selected].length === 0) delete newAllergyList[selected]
 
                 await dispatch({
                     type: SET_ALLERGIES,
@@ -242,7 +267,11 @@ export function editSelectedAllergy(allergyID, allergy, allergyType, allergies){
                 payload: false
             })
         } catch (error) {
-            console.log(error, 'Error when trying to edit allergy')   
+            console.log(error, 'Error when trying to edit allergy') 
+            await dispatch({
+                type: SET_ALLERGIES_ERROR,
+                payload: error
+            })  
         }
     }
 }
@@ -271,6 +300,8 @@ export function deleteSelectedAllergy(allergyID, allergies, allergyType){
                 ...allergies,
                 [allergyType]: newAllergyTypes
             }
+
+            if(newAllergyList[allergyType].length === 0) delete newAllergyList[allergyType]
 
             await dispatch({
                 type: SET_ALLERGIES,

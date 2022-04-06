@@ -87,7 +87,7 @@ const Allergies = (props) => {
     } else {
       console.log('_id is undefined')
     }
-  }, [idUser, props.navigation.state.params]);
+  }, [idUser, ]);
 
 //   console.log(selectionType)
 

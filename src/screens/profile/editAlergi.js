@@ -104,7 +104,7 @@ const EditAllergies = (props) => {
 
   async function editAlergi(item) {
     try {
-      return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies)
+      return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies, selected)
     } catch (error) {
       console.log(error)
     }
