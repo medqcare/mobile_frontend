@@ -57,6 +57,7 @@ function MedicalServiceDetail({ navigation, userData, myLocation }) {
     __v,
     clinic,
     photo,
+    doctor
   } = item;
 
   console.log(item, "hehehe ada item")
@@ -128,6 +129,10 @@ function MedicalServiceDetail({ navigation, userData, myLocation }) {
             bookingSchedule,
             healthFacility,
             clinic,
+            doctor: {
+              doctorName: doctor.doctorName,
+              dokterIdWeb: doctor.doctorId
+            }
           })
         : navigation.navigate('SignIn')
     }

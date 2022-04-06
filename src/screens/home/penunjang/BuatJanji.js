@@ -51,7 +51,7 @@ const mapStateToProps = (state) => {
 };
 
 const MakeAppointment = (props) => {
-	const { serviceDetail, bookingSchedule, healthFacility, clinic } = props.navigation.state.params
+	const { serviceDetail, bookingSchedule, healthFacility, clinic, doctor } = props.navigation.state.params
 	const photo = ''
 
 	const { email, _id } = props.userData.userID
@@ -290,6 +290,7 @@ const MakeAppointment = (props) => {
 					? patient2.photo
 					: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
 				},
+				doctor
 			};
 
 			var sendCreate = {
@@ -994,7 +995,6 @@ const MakeAppointment = (props) => {
 				setModalP={setModalP}
 				patient={patient}
 				setPatient={setPatient}
-				family={family}
 				navigateTo={props.navigation.navigate}
 			/>
 			{/* modal Pilih Insurance */}

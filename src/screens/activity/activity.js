@@ -63,14 +63,14 @@ const activity = (props) => {
   BackHandler.addEventListener('hardwareBackPress', () => {
     return props.navigation.navigate('Home');
   });
-
+  
   return (
     <>
       {scannedData && (
         <View style={{ marginBottom: 16 }}>
-          {scannedData.doctor ? (
+          {scannedData.orderType === 'doctor' ? (
             <View style={Styles.middleBox}>
-              <Text style={Styles.text}>Dokter </Text>
+              <Text style={Styles.text}>Dokter</Text>
               <View
                 style={{
                   flexDirection: 'row',
