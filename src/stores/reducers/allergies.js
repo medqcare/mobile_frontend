@@ -19,13 +19,13 @@ function allergiesReducer(state = initState, action){
 
     switch (type) {
         case SET_ALLERGIES:
-            return  {...state, allergies : payload }
+            return  {...state, allergies : payload, isLoading: false, error: null }
         case SET_ALLERGIES_NEED_INFO:
-            return { ...state, allergies: payload}
+            return { ...state, allergies: payload }
         case SET_ALLERGIES_LOADING:
             return { ...state, isLoading: payload }
         case SET_ALLERGIES_ERROR:
-            return { ...state, error: payload }
+            return { ...state, error: payload, isLoading: false }
         case DELETE_ALLERGIES: 
             return { ...state, allergies: []}
         default:
