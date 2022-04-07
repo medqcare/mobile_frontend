@@ -20,7 +20,7 @@ const activity = (props) => {
   	return (
 		data && (
 			<View style={{ marginBottom: 16 }}>
-				{data.doctor ? (
+				{data.orderType === 'doctor' ? (
 					<View style={Styles.middleBox}>
 						<Text style={Styles.text}>Dokter </Text>
 						<View
