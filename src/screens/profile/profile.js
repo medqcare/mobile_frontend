@@ -4,31 +4,20 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   BackHandler,
   Image,
 } from 'react-native';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ArrowBack from '../../assets/svg/ArrowBack';
-
-import Icon from 'react-native-vector-icons/Ionicons';
-
-import Icon5 from 'react-native-vector-icons/FontAwesome5';
 
 import ProfileInfo from '../../components/profile/dashboard/profile-info';
 
-import { changeLogin, logout } from '../../stores/action';
+import { logout, deleteUserData } from '../../stores/action';
 import { SafeAreaView } from 'react-navigation';
 import GreyHeader from '../../components/headers/GreyHeader';
 
 const mapDispatchToProps = {
-  changeLogin,
   logout,
+  deleteUserData
 };
 
 const mapStateToProps = (state) => {
@@ -36,7 +25,9 @@ const mapStateToProps = (state) => {
 };
 
 const profile = (props) => {
-  const { email } = props.userData.userID;
+  const { userData, isLoading, error } = props.userDataReducer
+  const { email } = userData.userID;
+
   BackHandler.addEventListener('hardwareBackPress', () => {
     props.navigation.navigate('Home');
     return true;
@@ -44,6 +35,14 @@ const profile = (props) => {
 
   const logoutButton = async () => {
     props.logout(props.navigation);
+    props.deleteUserData(props.navigation)
+  };
+
+  const onVerifyPasswordSuccessful = () => {
+    props.navigation.navigate('ChangePasswordForm', {
+      email,
+      destination: 'ProfileStack',
+    });
   };
 
   return (
@@ -53,7 +52,7 @@ const profile = (props) => {
         navigateTo={'Home'}
         title="Profil Saya"
       />
-      <ProfileInfo navigation={props.navigation} destination="ProfileStack" data={props.userData}/>
+      <ProfileInfo navigation={props.navigation} destination="ProfileStack" data={userData}/>
       <View style={{ flex: 1, backgroundColor: '#1F1F1F', width: '100%' }}>
         <View style={styles.menu}>
           <TouchableOpacity
@@ -89,9 +88,8 @@ const profile = (props) => {
           <TouchableOpacity
             style={styles.bottomMenu}
             onPress={() =>
-              props.navigation.navigate('ChangePasswordForm', {
-                email,
-                destination: 'ProfileStack',
+              props.navigation.navigate('VerifyPassword', {
+                onSuccess: onVerifyPasswordSuccessful,
               })
             }
           >
@@ -307,98 +305,3 @@ const styles = StyleSheet.create({
 // })
 
 export default connect(mapStateToProps, mapDispatchToProps)(profile);
-
-{
-  /*<ScrollView style={{ flex: 1, }}>
-                <View style={viewStyles.list}>
-                    <TouchableOpacity
-                        style={[viewStyles.bottom,]}
-                        onPress={() => props.navigation.navigate('AddFamily')}>
-                        <View style={style.viewProfileOption}>
-                            <View style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}>
-                                <Icon
-                                    name={'users'}
-                                    size={20}
-                                    color={'#000'}
-                                    style={style.optionLogo} />
-                                <Text style={style.profileOption}>Family</Text>
-                            </View>
-                            <Icon
-                                name={'chevron-right'}
-                                size={20}
-                                color={'#000'}
-                                style={style.chevronRight}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                    {/* <TouchableOpacity 
-                        style={viewStyles.bottom}
-                        onPress={() => {
-                            props.navigation.navigate('ProfileSwitch')
-                            props.navigation.navigate('MedicalStats', {goback: 'ProfileSwitch'}) 
-                        }}>
-                        <View style={style.viewProfileOption}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Icon5
-                                    name={'chart-line'}
-                                    size={20}
-                                    color={'#000'}
-                                    style={style.optionLogo} />
-                                <Text style={style.profileOption} >Medical History</Text>
-                            </View>
-                            <Icon
-                                name={'chevron-right'}
-                                size={20}
-                                color={'#000'}
-                                style={style.chevronRight}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={viewStyles.bottom}
-                        onPress={() => {
-                            props.navigation.navigate('History')
-                        }}>
-                        <View style={style.viewProfileOption}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Icon5
-                                    name={'chart-line'}
-                                    size={20}
-                                    color={'#000'}
-                                    style={style.optionLogo} />
-                                <Text style={style.profileOption} >History</Text>
-                            </View>
-                            <Icon
-                                name={'chevron-right'}
-                                size={20}
-                                color={'#000'}
-                                style={style.chevronRight}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={viewStyles.bottom}
-                        onPress={() => { props.navigation.navigate('SettingStack') }}>
-                        <View style={style.viewProfileOption}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Icon
-                                    name={'cog'}
-                                    size={20}
-                                    color={'#000'}
-                                    style={style.optionLogo} />
-                                <Text style={style.profileOption} >Setting</Text>
-                            </View>
-                            <Icon
-                                name={'chevron-right'}
-                                size={20}
-                                color={'#000'}
-                                style={style.chevronRight}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-            */
-}

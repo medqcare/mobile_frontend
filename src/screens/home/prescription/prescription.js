@@ -6,12 +6,11 @@ import {
 	Text,
 	View,
 	Dimensions,
-	Image,
 	TouchableOpacity,
 	ScrollView,
-	ActivityIndicator
+	BackHandler
 } from "react-native";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import Header from "../../../components/headers/GradientHeader";
 import { 
 	getAllPrescriptions,
@@ -23,31 +22,26 @@ import PrescriptionTodaysList from '../../../components/prescription/Prescriptio
 import PrescriptionHistory from '../../../components/prescription/PrescriptionHistory'
 import Swiper from 'react-native-swiper'
 import LottieLoader from 'lottie-react-native';
+import keys from "../../../stores/keys";
+
+const {
+    SET_PRESCRIPTIONS_LOADING,
+} = keys.prescrptionKeys
 
 const dimension = Dimensions.get('window')
 const dimHeight = dimension.height;
 const dimWidth = dimension.width;
 
-function Prescription({navigation, userData, getAllPrescriptions, getTodaysPrescriptions, getPrescriptionHistory }) {
-	const [load, setLoad] = useState(true)
-	const [todaysPrescriptions, setTodaysPrescriptions] = useState(null)
-	const [prescriptionHistory, setPrescriptionHistory] = useState(null)
+function Prescription(props) {
+	const { userData, isLoading: userDataLoading, error: userDataError } = props.userDataReducer
+	const dispatch = useDispatch()
 	const [patientID, setPatientID] = useState(userData._id)
 	const swiper = useRef(null)
 
 	useEffect(async () => {
 		try {
-			setLoad(true)
-			const token = JSON.parse(await AsyncStorage.getItem('token')).token
-
-			await getAllPrescriptions(patientID, token)
-			const today = await getTodaysPrescriptions(patientID, token)
-			setTodaysPrescriptions(today)
-
-			const history = await getPrescriptionHistory(patientID, token)
-			setPrescriptionHistory(history)
-			
-			setLoad(false)
+			await props.getTodaysPrescriptions(patientID)
+			await props.getPrescriptionHistory(patientID)
 		} catch (error) {
 			console.log(error)
 		}
@@ -91,11 +85,14 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 		setDisplayName(fullName)
 		setPatientID(data._id)
 	}
-	
+
+	BackHandler.addEventListener('hardwareBackPress', () => {
+    	return props.navigation.pop();
+  	});
   
 	return (
 		<View style={styles.container}>
-			<Header title="Resep Obat" navigate={navigation.navigate} />
+			<Header title="Resep Obat" navigate={props.navigation.navigate} />
 			
 			<View style={styles.boxContainer}>
 				<TouchableOpacity
@@ -112,7 +109,7 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					family={family}
 					title="Siapa yang ingin anda check?"
 					setSelectedValue={setSelectedValue}
-					navigateTo={navigation.navigate}
+					navigateTo={props.navigation.navigate}
 				/>
 			</View>
 
@@ -139,12 +136,12 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 			</View>
 
 			<View style={styles.content}>
-			{load ? 
+			{/* {isLoading ? 
 				<LottieLoader
-				source={require('../../animation/loading.json')}
-				autoPlay
-				loop
-			  /> :
+					source={require('../../animation/loading.json')}
+					autoPlay
+					loop
+				/> : */}
 				<Swiper
 					showsButtons={false} 
 					ref={swiper}
@@ -153,13 +150,13 @@ function Prescription({navigation, userData, getAllPrescriptions, getTodaysPresc
 					onIndexChanged={(index) => setIndex(index)}
 				>
 					<ScrollView bounces={true}>
-						<PrescriptionTodaysList props={userData, navigation} prescriptions={todaysPrescriptions}/>
+						<PrescriptionTodaysList props={props}/>
 					</ScrollView>
 					<ScrollView>
-						<PrescriptionHistory props={userData, navigation} prescriptions={prescriptionHistory}/>
+						<PrescriptionHistory props={props}/>
 					</ScrollView>
 				</Swiper>
-			}
+			{/* } */}
 			</View>
 		</View>
 	);

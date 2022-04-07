@@ -16,7 +16,7 @@ import {
   StatusBar,
   ToastAndroid,
 } from 'react-native';
-import { changePassword } from '../../../stores/action';
+import { changePassword, changeAccountPassword } from '../../../stores/action';
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
 
 function ChangePasswordForm({ navigation, ...props }) {
@@ -45,7 +45,7 @@ function ChangePasswordForm({ navigation, ...props }) {
     } else if (password !== confirmPassword) {
       ToastAndroid.show('Confirm password does not match');
     } else {
-      props.changePassword(email, password, navigation.navigate, destination);
+      props.changeAccountPassword(email, password, navigation.navigate, destination);
     }
   };
 
@@ -256,6 +256,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   changePassword,
+  changeAccountPassword
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePasswordForm);

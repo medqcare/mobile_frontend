@@ -12,19 +12,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Favourite = (props) => {
     // console.log(props, 'situ liat props nya ga ?')
-    const [favorit, setfavorit] = useState(props.userData.doctorFavorites)
+    const { userData, isLoading, errror } = props.userDataReducer
+    const [favorit, setfavorit] = useState(userData.doctorFavorites)
     
     BackHandler.addEventListener('hardwareBackPress', () => {
         return (props.navigation.navigate('Home'))
     })
 
     useEffect(() => {
-        setfavorit(props.userData.doctorFavorites)
-    },[props.userData])
+        setfavorit(userData.doctorFavorites)
+    },[userData])
 
     const deleteFromFavorite = async (id) => {
         const newData = favorit.filter(el => el._id !== id)
-        const dataSend = {...props.userData, doctorFavorites: newData}
+        const dataSend = {...userData, doctorFavorites: newData}
         props.addDoctorFavorite(dataSend)
         try {
             await AsyncStorage.setItem(
@@ -37,7 +38,6 @@ const Favourite = (props) => {
         setfavorit(newData)
     }
     
-    console.log(favorit.length, 'fap')
     return (
         <View style={styles.container}>
             <Header title={'Dokter Favorit'} navigate={props.navigation.navigate}/>
@@ -53,7 +53,7 @@ const Favourite = (props) => {
                 :
                 (
                     <View style={{ width: '100%', alignItems: 'center', padding: 20 }}>
-                        <Text style={{color: '#DDDDDD'}}>tidak ada dokter favorite</Text>
+                        <Text style={{color: '#DDDDDD'}}>Tidak ada dokter favorit</Text>
                     </View>
                 )
             }

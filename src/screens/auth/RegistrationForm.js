@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import { CreatePatientAsUser, setLoading, Logout } from '../../stores/action';
+import { createPatientAsUser, setShowInstruction, Logout } from '../../stores/action';
 import { connect } from 'react-redux';
 
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
@@ -121,6 +121,7 @@ const RegistrationForm = (props) => {
 
   // Loading animation for submit button
   const [load, setLoad] = useState(false);
+  const { isLoading } = props.userDataReducer
 
   // Gender radio
   const gender_radio = [
@@ -188,6 +189,7 @@ const RegistrationForm = (props) => {
         });
         const user = response.user;
         const employee = response.data;
+        console.log(employee.gender, ">>>>> gender employee ku")
         const splittedNameBySpace = employee.name.split(' ');
         const [firstName, ...rest] = splittedNameBySpace;
         const lastName = rest.join(' ');
@@ -198,7 +200,7 @@ const RegistrationForm = (props) => {
           ...userData,
           firstName,
           lastName,
-          gender: employee.gender === 'Laki-laki' ? 'Male' : 'Female',
+          gender: employee.gender.toLowerCase() === gender_radio[0].label.toLowerCase() ? 'Male' : 'Female',
           nik: employee.NIK ? employee.NIK : '',
           dob: employee.dob ? dob : '',
         });
@@ -362,10 +364,8 @@ const RegistrationForm = (props) => {
         .filter((key) => predicate(obj[key]))
         .reduce((res, key) => ((res[key] = obj[key]), res), {});
 
-    console.log(data, 'sebelum Filter');
     var send = Object.filter(data, (value) => value !== null);
     send = Object.filter(send, (value) => value !== '');
-    console.log(send, 'seudah Filter');
 
     setLoad(true);
     const payload = { patient: send };
@@ -373,13 +373,15 @@ const RegistrationForm = (props) => {
     if (employee) {
       payload.employee = employee;
     }
-
-    props.CreatePatientAsUser(
+    console.log('Sending data to action (createPatientAsUse)')
+    await props.createPatientAsUser(
       payload,
       dataSuccess,
       dataError,
       props.navigation.navigate
     );
+
+    await props.setShowInstruction(true)
     setLoad(false);
   }
 
@@ -780,7 +782,7 @@ const RegistrationForm = (props) => {
               }}
               style={styles.submitButton}
             >
-              {load === true ? (
+              {isLoading === true ? (
                 <ActivityIndicator size={'small'} color="#FFF" />
               ) : (
                 <Text style={{ fontSize: 18, color: '#FFF' }}>Simpan Data</Text>
@@ -876,8 +878,8 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  CreatePatientAsUser,
-  setLoading,
+  createPatientAsUser,
+  setShowInstruction,
   changePassword,
   Logout,
 };

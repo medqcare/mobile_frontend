@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 
 //action
-import { validateSecretCode } from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import {
   CodeField,
@@ -20,19 +19,27 @@ import {
   useBlurOnFulfill,
 } from 'react-native-confirmation-code-field';
 import firebaseAuthService from '../../../helpers/firebasePhoneAuth';
+import { ActivityIndicator } from 'react-native-paper';
+import keys from '../../../stores/keys';
+import { ORANGE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
+import { addNewUser } from "../../../stores/action";
+
+const { SET_SIGNUP_LOADING } = keys.entryKeys
 
 const InputSecretCodeOTP = (props) => {
+  const dispatch = useDispatch()
   const CELL_COUNT = 6;
   const {
     phoneNumber,
     back = 'Home',
-    onSuccess,
+    addNewUserPayload,
   } = props.navigation.state.params;
-
+  const { signUpIsLoading } = props.entryReducer
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
   const [secretCode, setSecretCode] = useState('');
   const [timer, setTimer] = useState(30);
   const [verificationId, setVerificationId] = useState('');
+  const [loadingResendCode, setLoadingResenCode] = useState(false);
 
   useEffect(() => {
     if (timer === 0) {
@@ -45,13 +52,25 @@ const InputSecretCodeOTP = (props) => {
   useEffect(() => {
     (async () => {
       try {
+        dispatch({
+          type: SET_SIGNUP_LOADING,
+          payload: true
+        })
+
+        console.log(phoneNumber, 'phoneNumber')
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
+        console.log(verificationId, 'verificationID')
         setVerificationId(verificationId);
+
+        dispatch({
+          type: SET_SIGNUP_LOADING,
+          payload: false
+        })
       } catch (error) {
-        console.log(error.message);
-        ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG)
+        console.log(error.message, 'useEffect')
+        ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG);
       }
     })();
 
@@ -64,29 +83,45 @@ const InputSecretCodeOTP = (props) => {
   async function onPressHandler() {
     ToastAndroid.show('Verifikasi...', ToastAndroid.SHORT);
     try {
-      await firebaseAuthService.confirmCode(verificationId, secretCode);
+      dispatch({
+        type: SET_SIGNUP_LOADING,
+        payload: true
+      })
+      const confirmed = await firebaseAuthService.confirmCode(verificationId, secretCode);
+      console.log(confirmed, 'This is confirmed')
+      dispatch({
+        type: SET_SIGNUP_LOADING,
+        payload: false
+      })
       /**
        * params: onSuccess
        * function
        */
-      await onSuccess();
+      await props.addNewUser(addNewUserPayload, props.navigation)
     } catch (error) {
-      console.log(error);
+      console.log(error.message, 'onPressHandler')
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
     }
   }
 
   const resendCodeHandler = () => {
     (async () => {
+      setLoadingResenCode(true);
       try {
+        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG);
         const verificationId = await firebaseAuthService.verifyPhoneNumber(
           phoneNumber
         );
-        ToastAndroid.show('Mohon tunggu sebentar', ToastAndroid.LONG)
         setVerificationId(verificationId);
-        setTimer(120)
+        setTimer(timer * 2);
       } catch (error) {
-        ToastAndroid.show('Yeah :)', ToastAndroid.LONG);
+        console.log(error.message, '>>>>>');
+        ToastAndroid.show(
+          'Gagal mengirim ulang kode, silahkan coba lagi nanti',
+          ToastAndroid.LONG
+        );
+      } finally {
+        setLoadingResenCode(false);
       }
     })();
   };
@@ -140,9 +175,13 @@ const InputSecretCodeOTP = (props) => {
           <TouchableOpacity
             style={style.bottomButton}
             onPress={() => onPressHandler()}
+            disabled={signUpIsLoading}
           >
             <View>
-              <Text style={style.bottomButtonText}>Verifikasi</Text>
+              {signUpIsLoading ? 
+                <ActivityIndicator size="small" color="#FFF" /> : 
+                <Text style={style.bottomButtonText}>Verifikasi</Text>
+              }
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -152,22 +191,32 @@ const InputSecretCodeOTP = (props) => {
             disabled={timer > 0}
             onPress={() => resendCodeHandler()}
           >
-            <Text
-              style={{
-                color: '#DDDDDD',
-                fontSize: 16,
-              }}
-            >
-              {timer === 0 ? (
-                'Kirim Ulang Kode'
-              ) : (
-                <>
+            <>
+              {timer === 0 && loadingResendCode === false ? (
+                <View>
+                  <Text style={{ color: ORANGE_PRIMARY }}>
+                    Kirim Ulang Kode
+                  </Text>
+                </View>
+              ) : null}
+
+              {timer === 0 && loadingResendCode === true ? (
+                <ActivityIndicator size={'small'} color={WHITE_PRIMARY} />
+              ) : null}
+
+              {timer > 0 && !loadingResendCode ? (
+                <Text
+                  style={{
+                    color: WHITE_PRIMARY,
+                    fontSize: 16,
+                  }}
+                >
                   <Text>Kirim ulang kode dalam </Text>
-                  <Text style={{ color: '#FBB632' }}>{`${timer} `}</Text>
+                  <Text style={{ color: ORANGE_PRIMARY }}>{`${timer} `}</Text>
                   <Text>detik</Text>
-                </>
-              )}
-            </Text>
+                </Text>
+              ) : null}
+            </>
           </TouchableOpacity>
         </View>
       </View>
@@ -276,7 +325,7 @@ const style = StyleSheet.create({
     width: '95%',
     height: 60,
     marginTop: '5%',
-    marginBottom: 10,
+    marginBottom: 8,
     backgroundColor: 'rgba(31, 198, 188, 0.3)',
     borderRadius: 50,
     justifyContent: 'center',
@@ -298,7 +347,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  validateSecretCode,
+  addNewUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InputSecretCodeOTP);

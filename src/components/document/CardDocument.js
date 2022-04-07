@@ -56,17 +56,19 @@ export function CardDocument({
           <Text style={styles.dokumentName} numberOfLines={4}>
             {item.name}
           </Text>
-          <Text
-            style={{
-              color: '#b5b5b5',
-              fontSize: 12,
-              marginTop: 4,
-            }}
-          >
-            {item.createdBy.type === 'doctor'
-              ? `dr. ${item.createdBy.name}`
-              : item.createdBy.name}
-          </Text>
+          {item.createdBy.name ? (
+            <Text
+              style={{
+                color: '#b5b5b5',
+                fontSize: 12,
+                marginTop: 4,
+              }}
+            >
+              {item.createdBy.type === 'doctor'
+                ? `dr. ${item.createdBy.name}`
+                : item.createdBy.name}
+            </Text>
+          ) : null}
         </TouchableOpacity>
         <View
           style={{

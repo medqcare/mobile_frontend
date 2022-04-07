@@ -20,7 +20,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { setLoading, SignUp } from '../../../stores/action';
+import { setLoading } from '../../../stores/action';
 import SettingModal from '../../../components/modals/setModal';
 // import PushNotification from 'react-native-push-notification';
 
@@ -29,7 +29,6 @@ import Feather from 'react-native-vector-icons/Feather'; // Made for password vi
 
 const mapDispatchToProps = {
   setLoading,
-  SignUp,
 };
 const mapStateToProps = (state) => {
   return state;
@@ -125,7 +124,7 @@ const signUp = (props) => {
       console.log('All necessary data was entered and preparing to sign up');
       props.setLoading(true);
       setload(true);
-      props.SignUp(signUpData, props.navigation, setModalFalse);
+      // props.SignUp(signUpData, props.navigation, setModalFalse);
     }
   }
 

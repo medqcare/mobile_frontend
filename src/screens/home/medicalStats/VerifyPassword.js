@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 import {
   Text,
   View,
@@ -15,44 +14,29 @@ import {
 import { TextInput } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import IconLock from '../../../assets/svg/IconLock';
-import { baseURL } from '../../../config';
+import { verirfyPassword } from '../../../stores/action'
 
 function VerifyPassword(props) {
+  const { userData, isLoading } = props.userDataReducer
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
-  const [loading, setLoading] = useState(false);
+
   const onSubmitHandler = async () => {
     try {
-      setLoading(true);
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
-      const { email } = props.userData.userID;
-      console.log(token, email);
-      await axios({
-        url: baseURL + '/api/v1/members/verify/password',
-        method: 'POST',
-        headers: {
-          Authorization: token,
-        },
-        data: {
-          password,
-          email,
-        },
-      });
-      const patientID = props.navigation.getParam('patientID');
-      console.log('This is patient ID (Verify): ', patientID)
-
-      ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG)
-      props.navigation.navigate('ScannerShareMedres', {
-        patientID
-      });
+      const { email } = userData.userID;
+      const onSuccess = props.navigation.getParam('onSuccess');
+      const payload = {
+        password,
+        email
+      }
+      await props.verirfyPassword(payload, onSuccess)
     } catch (error) {
       ToastAndroid.show(
         'Verifikasi gagal, silahkan coba lagi',
         ToastAndroid.LONG
       );
     } finally {
-      setLoading(false);
+      setPassword('');
     }
   };
 
@@ -79,6 +63,7 @@ function VerifyPassword(props) {
             style={styles.inputPassword}
             autoCapitalize="none"
             onChangeText={setPassword}
+            value={password}
           />
           <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -96,19 +81,19 @@ function VerifyPassword(props) {
           <TouchableOpacity
             style={styles.buttonPrimaryWrapper}
             onPress={onSubmitHandler}
-            disabled={loading}
+            disabled={isLoading}
           >
-            {loading ? (
+            {isLoading ? (
               <ActivityIndicator color={'#DDDDDD'} size={'small'} />
             ) : (
-              <Text style={styles.buttonPrimaryText}>Bagikan</Text>
+              <Text style={styles.buttonPrimaryText}>Verifikasi</Text>
             )}
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={styles.buttonSecondaryWrapper}
           onPress={() => props.navigation.pop()}
-          disabled={loading}
+          disabled={isLoading}
         >
           <Text style={styles.buttonSecondaryText}>Batal</Text>
         </TouchableOpacity>
@@ -195,4 +180,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => state;
 
-export default connect(mapStateToProps)(VerifyPassword);
+const mapDispatchToProps = {
+  verirfyPassword
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(VerifyPassword);

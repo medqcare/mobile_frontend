@@ -12,20 +12,9 @@ import {
 
 import { LinearGradient } from 'expo-linear-gradient';
 
-//action
-import {
-  resetPasswordEmail,
-  resetPasswordPhone,
-  setLoading,
-} from '../../../stores/action';
-
 import ArrowBack from '../../../assets/svg/ArrowBack';
 import GreyHeader from '../../../components/headers/GreyHeader';
 
-//mapTopProps
-// const mapStateToProps = state => {
-//     return state
-// }
 
 const resetPasswd = (props) => {
   // const { resetpassword } = props.userData
@@ -144,14 +133,5 @@ const style = StyleSheet.create({
   },
 });
 
-// const mapDispatchToProps = {
-//     resetPasswordEmail,
-//     resetPasswordPhone,
-//     setLoading
-// }
-
-// const mapStateToProps = (state) => {
-//     return state
-// }
 
 export default resetPasswd;

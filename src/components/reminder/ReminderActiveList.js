@@ -27,13 +27,30 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import * as Calendar from 'expo-calendar';
+import { useDispatch } from "react-redux";
+import keys from "../../stores/keys";
+import ConfirmationModal from "../modals/ConfirmationModal";
+
+const { 
+    SET_DRUGS,
+    SET_ACTIVE_DRUGS,
+    SET_FINISHED_DRUGS,
+    SET_DRUGS_LOADING,
+    SET_DRUGS_ERROR,
+    DELETE_DRUGS
+} = keys.drugKeys
 
 const dimHeight = Dimensions.get("window").height;
 const dimWidth = Dimensions.get("window").width;
 
-function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, setFinishedDrugs, selectedPatient, updateFinishStatusFunction, }) {
-    const [load, setLoad] = useState(true)
-    const [content, setContent] = useState(null)
+function ReminderActiveList({props, selectedPatient, updateFinishStatusFunction, }) {
+    const { activeDrugs, finishedDrugs, isLoading } = props.drugReducer
+    const dispatch = useDispatch()
+    const [content, setContent] = useState(activeDrugs)
+    const [load, setLoad] = useState(false)
+    const [confirmationModalLoad, setConfirmationModalLoad] = useState(false)
+    const [confirmationModal, setConfirmationModal] = useState(false)
+    const [selectedSection, setSelectedSection] = useState(null)
     const [loadChangeStatusTrue, setLoadChangeStatusTrue] = useState([false, false, false])
     const [loadChangeStatusFalse, setLoadChangeStatusFalse] = useState([false, false, false])
     const [loadToggle, setLoadToggle] = useState(false)
@@ -185,20 +202,23 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             setShow(Platform.OS === 'ios');
             setDate(currentDate);
 
-            const newReminders= content[currentIndex].reminders.map(el => {
+            const newReminders= activeDrugs[currentIndex].reminders.map(el => {
                 if(el._id === currentReminderID){
                     el.alarmTime = currentDate
                 }
                 return el
             })
 
-            const newContent = content.map((el, idx) => {
-                if(el._id === content[currentIndex]._id){
+            const newContent = activeDrugs.map((el, idx) => {
+                if(el._id === activeDrugs[currentIndex]._id){
                     el.reminders = newReminders
                 }
                 return el
             })
-
+            dispatch({
+                type: SET_ACTIVE_DRUGS,
+                payload: newContent
+            })
             setContent(newContent)
             ToastAndroid.show('Successfully updated alarm time', ToastAndroid.SHORT)
 
@@ -209,7 +229,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             const minutes = currentDate.getMinutes()
 
             if(currentIndexDrugAlarmIDs.length === 0){
-                const currentIndexReminder = content[currentIndex].reminders
+                const currentIndexReminder = activeDrugs[currentIndex].reminders
                 for(let i = 0; i < currentIndexReminder.length; i++){
                     if(currentIndexReminder[i].etiquetteIndex === alarmIndex){
                         const alarmTime = new Date(currentIndexReminder[i].alarmTime)
@@ -250,35 +270,58 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
         showMode('time');
     };
 
+    // useEffect(() => {
+    //     setLoad(true)
+    //     let unMounted = false
+
+    //     if(!unMounted){
+    //         if(activeDrugs.length > 0){
+    //             setContent(activeDrugs)
+    //             setLoad(false)
+    //         } else {
+    //             setContent([])
+    //             setLoad(false)
+    //         }
+    //     }
+
+    //     return () => {
+    //         setLoad(false)
+    //         unMounted = true
+    //     }
+    // }, [activeDrugs])
+
     useEffect(() => {
-        if(activeDrugs.length > 0){
-            setContent(activeDrugs)
-            setLoad(false)
-        } else {
-            setContent([])
+        setLoad(true)
+        let unMounted = false
+
+        if(!unMounted){
             setLoad(false)
         }
-    }, [activeDrugs])
+
+        return () => {
+            setLoad(false)
+            unMounted = true
+        }
+
+    }, [])
 
     const toggleSwitch = async (index, section) => {
         try {
             setLoadToggle(true)
             const { reminders, reminder, etiquette } = section
             const etiquetteLength = etiquette.length
-            const token = JSON.parse(await AsyncStorage.getItem('token')).token
             const drugID = section._id
             const drugName = section.drugName
-            const change = await props.changeAlarmBoolean(drugID, token)
-            ToastAndroid.show(change, ToastAndroid.SHORT)
+            await props.changeAlarmBoolean(drugID)
 
-            if(reminder){
-                const alarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
+            if(reminder && foundAlarmIDs){
 
                 const toBeDeleted = []
                 const notDeleted = []
-                for(let i = 0; i < alarmIDs.length; i++){
-                    if(alarmIDs[i].drugID === drugID) toBeDeleted.push(alarmIDs[i])
-                    else notDeleted.push(alarmIDs[i])
+                for(let i = 0; i < foundAlarmIDs.length; i++){
+                    if(foundAlarmIDs[i].drugID === drugID) toBeDeleted.push(foundAlarmIDs[i])
+                    else notDeleted.push(foundAlarmIDs[i])
                 }
 
                 for(let i = 0; i < toBeDeleted.length; i ++){
@@ -291,7 +334,6 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                 else await AsyncStorage.setItem('alarmIDs', stringified)
 
             } else {
-                const foundAlarmIDs = JSON.parse(await AsyncStorage.getItem('alarmIDs'))
                 let alarmIDs = []
                 
                 if(foundAlarmIDs){
@@ -311,12 +353,16 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             }
 
            
-            const newArray = content.map((el, idx) => {
+            const newArray = activeDrugs.map((el, idx) => {
                 const newObject = {
                     ...el,
                     reminder: index === idx ? !el.reminder : el.reminder
                 }
                 return newObject
+            })
+            dispatch({
+                type: SET_ACTIVE_DRUGS,
+                payload: newArray
             })
             setContent(newArray)
             setLoadToggle(false)
@@ -360,7 +406,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
         const token = JSON.parse(await AsyncStorage.getItem('token')).token
         await props.changeReminderStatus(status, reminderID, token)
 
-        const newReminders= content[_].reminders.map(el => {
+        const newReminders= activeDrugs[_].reminders.map(el => {
             if(el._id === reminderID){
                 el.status = status
                 el.statusChangedAt = new Date()
@@ -368,13 +414,16 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
             return el
         })
 
-        const newContent = content.map((el, idx) => {
-            if(el._id === content[_]._id){
+        const newContent = activeDrugs.map((el, idx) => {
+            if(el._id === activeDrugs[_]._id){
                 el.reminders = newReminders
             }
             return el
         })
-
+        dispatch({
+            type: SET_ACTIVE_DRUGS,
+            payload: newContent
+        })
         setContent(newContent)
         if(status){
             const newLoad = loadChangeStatusTrue.map((el, idx) => {
@@ -395,22 +444,19 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
         }
     }
 
-    async function updateFinishStatus(section){
+    async function updateFinishStatus(){
         try {
-            const token = JSON.parse(await AsyncStorage.getItem('token')).token
-            const drugID = section._id
-            const updated = await updateFinishStatusFunction(drugID, token)
-            ToastAndroid.show(updated, ToastAndroid.SHORT)
-            
-            const newActiveList = activeDrugs.filter(el => el._id !== drugID)
+            const drugID = selectedSection._id
             const finishedDrug = {
-                ...section,
+                ...selectedSection,
                 finishedAt : new Date(),
                 isFinished : true
             }
-            const newFinishedList = [...finishedDrugs, finishedDrug]
-            setActiveDrugs(newActiveList)
-            setFinishedDrugs(newFinishedList)
+
+            await updateFinishStatusFunction(drugID, activeDrugs, finishedDrug, finishedDrugs)
+
+            setConfirmationModal(false);
+            setConfirmationModalLoad(false)
         } catch (error) {
             console.log(error)
         }
@@ -433,7 +479,7 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                         animation={'wobble'}>
                             <TouchableOpacity
                             style={styles.detailContainer}
-                                onPress={() => props.navigation.navigate('DrugDetail', {drugDetail: section, activeDrugs: activeDrugs, setActiveDrugs: setActiveDrugs})}
+                                onPress={() => props.navigation.navigate('DrugDetail', { drugDetail: section })}
                             >
                                 <Text style={styles.lighterText}>Detail</Text>
                             </TouchableOpacity>
@@ -574,7 +620,10 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                             </TouchableWithoutFeedback>
 
                             <TouchableWithoutFeedback 
-                                onPress={() => updateFinishStatus(section)}    
+                                onPress={() => {
+                                    setSelectedSection(section)
+                                    setConfirmationModal(true)
+                                }}    
                             >
                                 <View style={{flexDirection: "row", alignItems: "center"}}>
                                     <Text style={styles.finishText}>Selesaikan obat</Text>
@@ -588,11 +637,11 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
   
     return (
         load ? <ActivityIndicator color="blue" size={'small'}/> :
-        content.length > 0 ? 
+        activeDrugs?.length > 0 ? 
         <>
             <Accordion
                 activeSections={activeSections}
-                sections={content}
+                sections={activeDrugs}
                 touchableComponent={TouchableWithoutFeedback}
                 expandMultiple={true}
                 renderHeader={renderHeader}
@@ -611,6 +660,17 @@ function ReminderActiveList({props, activeDrugs, finishedDrugs, setActiveDrugs, 
                     onChange={onChange}
                 />
             )}
+            <ConfirmationModal
+                load={confirmationModalLoad}
+                modal={confirmationModal}
+                warning={'Anda akan menghapus obat dari list obat aktif. Pastikan semua obat sudah anda tandai sebagai diminum atau terlewat'}
+                optionLeftText={'BATAL'}
+                optionRightText={'SELESAIKAN'}
+                optionLeftFunction={() => setConfirmationModal(false)}
+                optionRightFunction={async () => {
+                    updateFinishStatus()
+                }}
+            />
         </>
         : (
             <View style={styles.noDataContainer}>

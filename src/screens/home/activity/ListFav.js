@@ -24,7 +24,6 @@ import { BLUE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
 import { INTER_400 } from '../../../values/font';
 
 const ListFavDoctor = ({ data, navigation, deleteFav }) => {
-  console.log(data, 'Ini props nya yaa');
   // console.log(navigation, 'ini navigation nya !')
   const [send, setSend] = useState({
     doctorID: data._id,

@@ -9,8 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native'
 import { connect } from 'react-redux'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { uploadImage, updateDrugImageUrl, } from '../../../stores/action'
+import { updateDrugImageUrl, } from '../../../stores/action'
 
 import createFormData from '../../../helpers/formData'
 import * as ImagePicker from 'expo-image-picker';
@@ -21,19 +20,16 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-	uploadImage,
     updateDrugImageUrl,
 };
 
-function DrugPictureGallery({navigation, updateDrugImageUrl}){
+function DrugPictureGallery({navigation, updateDrugImageUrl, drugReducer}){
     const { destination, drugDetail, setDrugImage } = navigation.state.params
+    const { activeDrugs, isLoading } = drugReducer
+
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
-
-    // Load
-    const [load, setLoad] = useState(false)
-
 
     // Use effect for asking permission
     useEffect(() => {
@@ -69,15 +65,11 @@ function DrugPictureGallery({navigation, updateDrugImageUrl}){
     }
 
     const saveImage = async () => {
-        setLoad(true)
-        let token = await AsyncStorage.getItem('token')
-        token = JSON.parse(token).token
         const id = drugDetail._id
         
         console.log('Application is sending data to store/action...')
         
-        await updateDrugImageUrl(id, imageToUpload, token, navigation.navigate, destination)
-        setLoad(false)
+        await updateDrugImageUrl(id, imageToUpload, navigation.navigate, destination, activeDrugs)
     }
 
     return (
@@ -103,9 +95,9 @@ function DrugPictureGallery({navigation, updateDrugImageUrl}){
                 {imageToUpload ? 
                     <TouchableOpacity
                         onPress={() => saveImage()}
-                        disabled={load}
+                        disabled={isLoading}
                     >
-                        {load ? (
+                        {isLoading ? (
                             <ActivityIndicator size={"small"} color="#FFF" />
                             ) : (
                                 <Text style={styles.text}>Simpan</Text>

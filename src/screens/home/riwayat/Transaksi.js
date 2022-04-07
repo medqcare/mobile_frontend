@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
@@ -16,42 +17,37 @@ import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import LottieLoader from 'lottie-react-native';
 import getPaymentMethod from '../../../helpers/getPaymentMethod';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import { WHITE_PRIMARY } from '../../../values/color';
+import { getAllTransactionHistory } from '../../../stores/action'
 
 const dimHeight = Dimensions.get('window').height;
 const DEFAULT_IMAGE_URL =
-  "'https://awsimages.detik.net.id/community/media/visual/2017/07/05/165087b7-e1d9-471b-9b82-c8ccb475de94_43.jpg?w=700&q=90'";
+  'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg';
 
-export default function Transaksi(props) {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(false);
+function Transaksi(props) {
+  const { userData, } = props.userDataReducer
+  const [refreshing, setRefreshing] = useState(false);
+  const { transactionHistory, transactionIsLoading } = props.historiesReducer
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchTransactionHistory();
+    setRefreshing(false);
+  }, [refreshing]);
+
   useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const stringToken = await AsyncStorage.getItem('token');
-        const { token } = JSON.parse(stringToken);
-        const patientId = props.userData._id;
-        const patientIDs = props.userData.family
-          .map((e) => e._id)
-          .concat(patientId);
-        const { data: response } = await axios({
-          method: 'GET',
-          url: baseURL + `/api/v1/members/transactions/${patientId}`,
-          headers: {
-            authorization: token,
-            'X-Secret': 123456,
-            ids: patientIDs.join(','),
-          },
-        });
-        const { transactions } = response.data;
-        setTransactions(transactions);
-      } catch (error) {
-        console.log(error, 'this is error from axios on transaction screen');
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    fetchTransactionHistory()
+  }, [])
+
+  async function fetchTransactionHistory(){
+    const patientID = userData._id
+    const IDs = userData.family
+      .map((e) => e._id)
+      .concat(patientID)
+      .join(',')
+
+    await props.getAllTransactionHistory(patientID, IDs)
+  }
 
   const getTransactionStatus = (status) => {
     switch (status) {
@@ -69,7 +65,7 @@ export default function Transaksi(props) {
     }
   };
 
-  if (loading) {
+  if (transactionIsLoading) {
     return (
       <LottieLoader
         source={require('../../animation/loading.json')}
@@ -81,11 +77,14 @@ export default function Transaksi(props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181818' }}>
-      {transactions.length !== 0 ? (
+      {transactionHistory.length !== 0 ? (
         <View style={{ paddingHorizontal: 16 }}>
           <FlatList
-            data={transactions}
+            data={transactionHistory}
             keyExtractor={(item) => `${item._id}`}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+            }
             renderItem={({ item }) => {
               const status = getTransactionStatus(item.status);
               const scheduleDate = item.bookingSchedule
@@ -97,7 +96,6 @@ export default function Transaksi(props) {
                 <TouchableOpacity
                   style={{
                     backgroundColor: '#2F2F2F',
-                    // padding: 10,
                     paddingHorizontal: 10,
                     paddingVertical: 12,
                     borderRadius: 5,
@@ -114,32 +112,47 @@ export default function Transaksi(props) {
                   <View
                     style={{
                       flexDirection: 'row',
-                      // paddingVertical: 6,
                       alignItems: 'center',
                     }}
                   >
-                    <View style={{}}>
-                      <View style={styles.borderImage}>
-                        <Image
-                          style={styles.image}
-                          source={{
-                            uri: item.doctor.doctorPhoto
-                              ? item.doctor.doctorPhoto
-                              : DEFAULT_IMAGE_URL,
-                          }}
-                        />
-                      </View>
-                    </View>
-                    {item.doctor.doctorID ? (
-                      <View style={{ marginLeft: dimHeight * 0.02 }}>
-                        <Text style={styles.name}>
-                          {item.doctor.title} {item.doctor.doctorName}
-                        </Text>
-                        <Text style={styles.textcontent}>
-                          Spesialis {item.doctor.doctorSpecialist}
-                        </Text>
-                      </View>
-                    ) : null}
+                    {item.doctor !== undefined ? (
+                      <>
+                        <View>
+                          <View style={styles.borderImage}>
+                            <Image
+                              style={styles.image}
+                              source={{
+                                uri: item.doctor.doctorPhoto
+                                  ? item.doctor.doctorPhoto
+                                  : DEFAULT_IMAGE_URL,
+                              }}
+                            />
+                          </View>
+                        </View>
+                        <View style={{ marginLeft: dimHeight * 0.02 }}>
+                          <Text style={styles.name}>
+                            {item.doctor.title} {item.doctor.doctorName}
+                          </Text>
+                          <Text style={styles.textcontent}>
+                            Spesialis {item.doctor.doctorSpecialist}
+                          </Text>
+                        </View>
+                      </>
+                    ) : (
+                      <>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              color: WHITE_PRIMARY,
+                              textTransform: 'capitalize',
+                            }}
+                          >
+                            Layanan Medis {item.services.name}
+                          </Text>
+                        </View>
+                      </>
+                    )}
                   </View>
                   <View style={styles.line} />
                   <View>
@@ -148,11 +161,17 @@ export default function Transaksi(props) {
                     </Text>
                     <View style={styles.time}>
                       <Text style={styles.textcontent}>{schedule}</Text>
-                      <View style={styles.dividingPoint}></View>
-                      <Text style={styles.textcontent}>{item.bookingTime}</Text>
+                      {item.bookingTime ? (
+                        <>
+                          <View style={styles.dividingPoint}></View>
+                          <Text style={styles.textcontent}>
+                            {item.bookingTime}
+                          </Text>
+                        </>
+                      ) : null}
                     </View>
                     <Text style={styles.textcontent}>
-                      Nama Pasien:{' '}
+                      { 'Nama Pasien: '}
                       <Text style={{ color: '#DDDDDD' }}>
                         {item.patient.patientName}
                       </Text>
@@ -211,7 +230,6 @@ export default function Transaksi(props) {
                     </View>
                   </View>
                 </TouchableOpacity>
-                // </View>
               );
             }}
           />
@@ -261,6 +279,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#B5B5B5',
     marginBottom: 4,
+    textTransform: 'capitalize',
   },
   time: {
     flexDirection: 'row',
@@ -280,3 +299,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
+
+const mapStateToProps = (state) => {
+  return state;
+};
+
+const mapDispatchToProps = {
+  getAllTransactionHistory
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Transaksi);

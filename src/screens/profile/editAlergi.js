@@ -11,12 +11,9 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
-  setAlergie,
-  getAlergie,
-  deleteAlergie,
-  editAlergi,
+  editSelectedAllergy,
+  deleteSelectedAllergy,
 } from "../../stores/action";
 import { connect } from "react-redux";
 import SelectModalAllergies from "../../components/modals/modalPickerAllergies";
@@ -31,6 +28,7 @@ const dimWidth = Dimensions.get("window").width;
 
 const EditAllergies = (props) => {
   const { data, selected, selectionType } = props.navigation.state.params;
+  const { allergies } = props.allergiesReducer
 
   const [Load, setLoad] = useState(false);
   const [inputAlergies, setInputAlergies] = useState("");
@@ -97,18 +95,19 @@ const EditAllergies = (props) => {
   }
 
   async function deleteAlergi(id) {
-    let token = await AsyncStorage.getItem("token");
-    return props.deleteAlergie(id, JSON.parse(token).token);
+    try {
+      return props.deleteSelectedAllergy(id, allergies, selected)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function editAlergi(item) {
-    let token = await AsyncStorage.getItem("token");
-    return props.editAlergi(
-      item.id,
-      item.alergi,
-      item.type,
-      JSON.parse(token).token
-    );
+    try {
+      return props.editSelectedAllergy(item.id, item.alergi, item.type, allergies, selected)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function actionAsync() {
@@ -488,10 +487,8 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  setAlergie,
-  getAlergie,
-  deleteAlergie,
-  editAlergi,
+  editSelectedAllergy,
+  deleteSelectedAllergy
 };
 
 const mapStateToProps = (state) => {

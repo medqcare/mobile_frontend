@@ -12,13 +12,9 @@ import {
   TextInput,
 } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  bookDoctor,
-  findPatientFacility,
-  createPatientFacility,
-  setLoading,
-  getAlergie,
+  getPatientAllergies,
+  makeReservation
 } from '../../../stores/action';
 
 import ArrowDownWhite from '../../../assets/svg/ArrowDownWhite';
@@ -36,11 +32,8 @@ import Modal from 'react-native-modal';
 import SelectPatient from '../../../components/modals/selectPatient';
 
 const mapDispatchToProps = {
-  bookDoctor,
-  findPatientFacility,
-  createPatientFacility,
-  setLoading,
-  getAlergie,
+  getPatientAllergies,
+  makeReservation
 };
 
 const mapStateToProps = (state) => {
@@ -48,8 +41,10 @@ const mapStateToProps = (state) => {
 };
 
 const buatJanji = (props) => {
+  const { userData, error } = props.userDataReducer
+  const { isLoading } = props.doctorReducer
+  const { allergies: reducerAllergies } = props.allergiesReducer
   const { doctorData: datadoctor } = props.navigation.state.params;
-  console.log(datadoctor);
   const {
     healthFacility,
     bookingSchedule,
@@ -78,8 +73,8 @@ const buatJanji = (props) => {
     'Saturday',
   ];
   const [book, setBook] = useState({
-    userID: props.userData.userID._id,
-    email: props.userData.userID.email,
+    userID: userData.userID._id,
+    email: userData.userID.email,
     healthFacility,
     doctor: {
       doctorID: datadoctor._id,
@@ -152,41 +147,15 @@ const buatJanji = (props) => {
   const [modalL, setModalL] = useState(false);
 
   const [dompet, setDompet] = useState('Tunai');
-  const [accountOwner, setAccountOwner] = useState(props.userData);
+  const [accountOwner, setAccountOwner] = useState(userData);
   const [displayName, setDisplayName] = useState(
-    props.userData.lastName
-      ? props.userData.firstName + ' ' + props.userData.lastName
-      : props.userData.firstName
+    userData.lastName
+      ? userData.firstName + ' ' + userData.lastName
+      : userData.firstName
   );
 
   async function gobookDoctor(dataSend, dataCreate) {
-    setLoad(true);
-    let token = await AsyncStorage.getItem('token');
-    props
-      .findPatientFacility(forFind, JSON.parse(token).token, dataCreate)
-      .then((data, status) => {
-        return props.bookDoctor(dataSend, JSON.parse(token).token);
-      })
-      .then((data) => {
-        console.log(data, 'response rsv')
-        if (data.message == 'already reserve for that patient') {
-          setLoad(false);
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-        } else if (data.status === 'fail') {
-          setLoad(false);
-          ToastAndroid.show(data.message, ToastAndroid.LONG);
-        } else {
-          setLoad(false);
-          setModal(true);
-        }
-      })
-      .catch((error) => {
-        setLoad(false);
-        setMessageF(error);
-        setModalf(true);
-        // alert('Something Wrong', error)
-        console.log(error, 'loh kok error weehhh');
-      });
+    props.makeReservation(dataSend, setModal)
   }
 
   useEffect(() => {
@@ -280,7 +249,7 @@ const buatJanji = (props) => {
         patient: {
           ...patient2,
           mobilePhone: !patient2.mobilePhone
-            ? props.userData.phoneNumber
+            ? userData.phoneNumber
             : patient2.mobilePhone,
           patientTitle: getTitle(patient2),
           paymentMethod: dompet,
@@ -308,11 +277,11 @@ const buatJanji = (props) => {
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach((el) => {
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));
@@ -352,23 +321,6 @@ const buatJanji = (props) => {
     }
   }, [modalP]);
 
-  //   function settime() {
-  //     if (getDay !== '') {
-  //       datadoctor.facility.forEach((item) => {
-  //         Object.keys(item.facilitySchedule).forEach((item2, index2) => {
-  //           if (getDay == item2) {
-  //             dayChoose = Object.values(item.facilitySchedule);
-  //             setTime(dayChoose[index2]);
-  //             // setBook({...book, bookingTime: dayChoose[index2]});
-  //           }
-  //         });
-  //       });
-  //     } else {
-  //       setTime([]);
-  //       // setBook({...book, bookingTime: null});
-  //     }
-  //   }
-
   function getJadwal() {
     datadoctor.facility.forEach((item) => {
       if (item.facilityName == book.healthFacility.facilityName) {
@@ -400,18 +352,16 @@ const buatJanji = (props) => {
 
   async function setSelectedValue(data) {
     const patientId = data._id;
-    const token = JSON.parse(await AsyncStorage.getItem('token')).token;
-    const { data: selectedPatientAllergies } = await props.getAlergie(
-      patientId,
-      token
-    );
-    if (selectedPatientAllergies.length > 0) {
-      const allergies = selectedPatientAllergies.map((el) => {
-        el.patientID = el.patientID._id;
-        return el;
-      });
-      setAllergies(allergies);
+    await props.getPatientAllergies(patientId, true)
+    
+    if(reducerAllergies.length > 0){
+      const newAllergiesList = reducerAllergies.map(el => {
+        el.patientID = el.patientID._id
+        return el
+      })
+      setAllergies(newAllergiesList)
     }
+
     setPatient({
       patient: {
         patientID: data._id,
@@ -926,8 +876,9 @@ const buatJanji = (props) => {
           <TouchableOpacity
             onPress={() => validation()}
             style={viewStyle.button}
+            disabled={isLoading}
           >
-            {load ? (
+            {isLoading ? (
               <ActivityIndicator size={'small'} color={'#FFF'} />
             ) : (
               <View style={{ flexDirection: 'row' }}>
@@ -1012,7 +963,6 @@ const buatJanji = (props) => {
         setModalP={setModalP}
         patient={patient}
         setPatient={setPatient}
-        family={family}
         navigateTo={props.navigation.navigate}
       />
       {

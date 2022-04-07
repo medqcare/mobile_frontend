@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import CardDetailTransaction from '../../../components/transaction/CardDetailTransaction';
 import Header from '../../../components/headers/GradientHeader';
+import CardDetailTransactionService from '../../../components/transaction/CardDetailTransactionService';
 
 export default function DetailTransaction(props) {
   const transaction = props.navigation.getParam('transaction');
@@ -22,7 +23,13 @@ export default function DetailTransaction(props) {
         navigate={props.navigation.navigate}
         navigateBack="Riwayat"
       />
-      <CardDetailTransaction transaction={transaction} props={props}/>
+      {transaction.services ? (
+        <View style={{ padding: 12 }}>
+          <CardDetailTransactionService transaction={transaction} {...props} />
+        </View>
+      ) : (
+        <CardDetailTransaction transaction={transaction} props={props} />
+      )}
     </View>
   );
 }

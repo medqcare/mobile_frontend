@@ -23,16 +23,20 @@ import LottieLoader from 'lottie-react-native';
 import InformationIcon from '../../../assets/svg/information';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import BarcodeSvg from '../../../assets/svg/Barcode';
+import { 
+  setHealthFacility,
+  checkIn,
+} from '../../../stores/action/'
 import * as Location from 'expo-location';
 
 //action
 const Assistant_scan = (props) => {
+  const { healthFacility } = props.appointmentsReducer
   const reservationParam = props.navigation.getParam('reservationData');
   const isToday = props.navigation.getParam('isToday');
   const [reservationData, setReservationData] = useState(reservationParam);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [healthFacilityData, setHealthFacilityData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isScanFailed, setIsScanFailed] = useState(false);
   const [loadingCheckin, setLoadingCheckin] = useState(false);
@@ -45,7 +49,10 @@ const Assistant_scan = (props) => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        return ToastAndroid.show('Permission to access location was denied', ToastAndroid.LONG);
+        return ToastAndroid.show(
+          'Permission to access location was denied',
+          ToastAndroid.LONG
+        );
       }
 
       const { coords } = await Location.getCurrentPositionAsync({});
@@ -69,28 +76,16 @@ const Assistant_scan = (props) => {
     })();
   }, []);
 
-	useEffect(async () => {
-		if (isToday) {
-			setLoading(true);
-			try {
-				const { data: response } = await axios({
-					method: 'POST',
-					url: `${baseURL}/api/v1/members/detailFacility/${reservationData.healthFacility.facilityID}`,
-				});
-				console.log(reservationData)
-				console.log(response)
-
-				if (response.data) {
-				setHealthFacilityData(response.data);
-				} else {
-				setHealthFacilityData(reservationData.healthFacility)
-				} 
-
-			} catch (error) {
-				console.log(error.message, 'this is error from scanner check in');
-			}
-		}
-	}, []);
+  useEffect(async () => {
+    if (isToday) {
+      setLoading(true);
+      try {
+        await props.setHealthFacility(reservationData)
+      } catch (error) {
+        console.log(error.message, 'this is error from scanner check in');
+      }
+    }
+  }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
@@ -106,25 +101,12 @@ const Assistant_scan = (props) => {
 
     (async () => {
       try {
-        const stringToken = await AsyncStorage.getItem('token');
-        const { token } = JSON.parse(stringToken);
-        const { data: responseRegistered } = await axios({
-          method: 'POST',
-          url: baseURL + '/api/v1/members/createRegistered',
-          headers: {
-            'X-Secret': 123456,
-            authorization: token,
-          },
-          data: {
-            queueNumber: '2-3',
-            reservationID: reservationData._id,
-            facilityID: reservationData.healthFacility.facilityID,
-          },
-        });
-
-        if (responseRegistered.status === true) {
-          props.navigation.navigate('Activity_List');
+        const payload = {
+          queueNumber: '2-3',
+          reservationID: reservationData._id,
+          facilityID: reservationData.healthFacility.facilityID,
         }
+        await props.checkIn(payload, props.navigation)
       } catch (error) {
         ToastAndroid.show(
           'Check-In failed, please try again later',
@@ -139,13 +121,13 @@ const Assistant_scan = (props) => {
 
   const isValidBarCode = (dataBarCode) => {
     const { clinicIdWeb } = reservationData.healthFacility;
-    const { location } = healthFacilityData;
+    const { location } = healthFacility;
 
-    let { lat, long: lng } = location
+    let { lat, long: lng } = location;
 
     if (location.length) {
-      lng = location.coordinates[0]
-      lat = location.coordinates[1]
+      lng = location.coordinates[0];
+      lat = location.coordinates[1];
     }
     const { latitude, longitude } = userLocation;
     const distance = getDistanceFromLatLonInKm(latitude, longitude, lat, lng);
@@ -176,7 +158,6 @@ const Assistant_scan = (props) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-
 
   if (!isToday) {
     return (
@@ -365,7 +346,10 @@ const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  setHealthFacility,
+  checkIn,
+};
 
 const styles = StyleSheet.create({
   thisContainer: {

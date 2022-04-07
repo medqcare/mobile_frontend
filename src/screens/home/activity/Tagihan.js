@@ -4,10 +4,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
-  StatusBar,
-  TouchableOpacity,
   StyleSheet,
   Dimensions,
+  BackHandler
 } from 'react-native';
 import { connect } from 'react-redux';
 import Header from '../../../components/headers/GradientHeader';
@@ -16,23 +15,25 @@ import { baseURL } from '../../../config';
 import LottieLoader from 'lottie-react-native';
 import PatientBoard from '../../../components/PatientBoard';
 import SelectPatient from '../../../components/modals/selectPatient';
+import CardDetailTransactionService from '../../../components/transaction/CardDetailTransactionService';
+import { getAllTransactions } from '../../../stores/action'
 
 const dimHeight = Dimensions.get('window').height;
 
 function Tagihan(props) {
+  const { userData } = props.userDataReducer
+  const { transactions, isLoading, error} = props.transactionsReducer
   const [showModalSelectPatient, setShowModalSelectPatient] = useState(false);
-  const [transaction, setTransaction] = useState({});
-  const [loading, setLoading] = useState(true);
   const [family, setFamily] = useState([]);
-  const [patient, setPatient] = useState(props.userData);
+  const [patient, setPatient] = useState(userData);
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach((el) => {
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));
@@ -40,27 +41,12 @@ function Tagihan(props) {
 
   useEffect(() => {
     (async () => {
-      const patientID = patient._id;
-      setLoading(true);
       try {
-        const stringToken = await AsyncStorage.getItem('token');
-        const { token } = JSON.parse(stringToken);
-        const { data: response } = await axios({
-          method: 'GET',
-          url: baseURL + `/api/v1/members/transactions/${patientID}/latest`,
-          headers: {
-            authorization: token,
-            'X-Secret': 123456,
-          },
-        });
-
-        const { transaction } = response.data;
-        setTransaction(transaction);
+        const patientID = patient._id;
+        await props.getAllTransactions(patientID)
       } catch (error) {
         console.log(error, 'this is error on tagihan screen');
-      } finally {
-        setLoading(false);
-      }
+      } 
     })();
   }, [patient]);
 
@@ -68,15 +54,19 @@ function Tagihan(props) {
     setPatient({ ...data });
   };
 
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    return props.navigation.pop();
+  });
+
   return (
-    <>
+    <View style={{flex: 1}}>
       <Header
         title="Detail Transaksi"
         navigate={props.navigation.navigate}
         navigateBack="Home"
       />
       <View style={{ flex: 1, backgroundColor: '#181818' }}>
-        {loading ? (
+        {isLoading ? (
           <LottieLoader
             source={require('../../animation/loading.json')}
             autoPlay
@@ -94,8 +84,16 @@ function Tagihan(props) {
               />
             </View>
 
-            {transaction?._id ? (
-              <CardDetailTransaction transaction={transaction} />
+            {transactions?._id ? (
+              <>
+                {transactions.services ? (
+                  <View style={{padding: 12}}>
+                    <CardDetailTransactionService transaction={transactions} />
+                  </View>
+                ) : (
+                  <CardDetailTransaction transaction={transactions} />
+                )}
+              </>
             ) : (
               <View
                 style={{
@@ -119,7 +117,7 @@ function Tagihan(props) {
           </>
         )}
       </View>
-    </>
+    </View>
   );
 }
 
@@ -176,6 +174,8 @@ const mapStateToProps = (state) => {
   return state;
 };
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = {
+  getAllTransactions
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Tagihan);

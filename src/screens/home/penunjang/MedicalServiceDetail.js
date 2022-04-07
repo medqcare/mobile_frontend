@@ -4,13 +4,8 @@ import {
 	Text,
 	View,
 	Dimensions,
-	FlatList,
 	TouchableOpacity,
-	ScrollView,
-	SafeAreaView,
-	StatusBar,
 	Platform,
-	ActivityIndicator,
 	BackHandler,
 	Image,
 	ToastAndroid,
@@ -18,7 +13,6 @@ import {
 
 } from 'react-native';
 import { connect } from 'react-redux';
-import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import {
 	heightPercentageToDP,
 	widthPercentageToDP,
@@ -26,16 +20,15 @@ import {
 import GradientHeader from '../../../components/headers/GradientHeader';
 import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
 import Calendar from '../../../components/Calendar';
-import { checkDisabled } from '../../../helpers/disabledScheduleTime';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
+import { GREY_BORDER_LINE, WHITE_PRIMARY } from '../../../values/color';
+import { INTER_400 } from '../../../values/font';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServiceDetail({navigation, userData, myLocation}) {
-
-	
+function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}) {
     const { item } = navigation.state.params
 
 	const { 
@@ -58,9 +51,9 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
 		__v,
 		clinic,
 		photo,
+        doctor
 	} = item
 
-	
 	const [serviceDetail, setServiceDetail] = useState({
 		name,
 		id,
@@ -95,41 +88,44 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
 			} else clinicLocation = defaultLocation
 		}
 
-        return clinicLocation
+        return clinicLocation;
     }
 
+    const [healthFacility, setHealthFacility] = useState({
+        facilityID: clinic.idClinicMobile,
+        facilityName: clinic.name,
+        // facilityType: 'Klinik',
+        // facilityMainType: 'Klinik',
+        address: clinic.address,
+        clinicIdWeb: clinic.id,
+        location: getClinicLocation(clinic.location),
+    });
 
-	const [healthFacility, setHealthFacility] = useState({
-		facilityID: id,
-		facilityName: clinic.name,
-		// facilityType: 'Klinik',
-		// facilityMainType: 'Klinik',
-		address: clinic.address,
-		clinicIdWeb: clinic.id,
-		location: getClinicLocation(clinic.location)
-	})
-
-    const [bookingDate, setBookingDate] = useState(null)
-	const [bookingSchedule, setBookingSchedule] = useState(null)
-    function onDateSelected(selectedDate){
-        setBookingDate(selectedDate)
-		const year = selectedDate.getFullYear()
-		const Month = selectedDate.getMonth() + 1
-		const date = selectedDate.getDate()
-		setBookingSchedule(`${year}-${Month}-${date}`)
+    const [bookingDate, setBookingDate] = useState(null);
+    const [bookingSchedule, setBookingSchedule] = useState(null);
+    function onDateSelected(selectedDate) {
+        setBookingDate(selectedDate);
+        const year = selectedDate.getFullYear();
+        const Month = selectedDate.getMonth() + 1;
+        const date = selectedDate.getDate();
+        setBookingSchedule(`${year}-${Month}-${date}`);
     }
 
-	function makeAppointment(){
-		if (!bookingSchedule) {
-			ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
-		} else {
-			userData ? navigation.push('Payment', { 
-				serviceDetail, bookingSchedule, healthFacility, clinic
-			}) : 
-				(navigation.navigate('DetailDoctor'),
-				navigation.navigate('Sign'));
-		}
-	}
+    function makeAppointment() {
+        if (!bookingSchedule) {
+            ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
+        } else {
+            userDataReducer.userData
+                ? navigation.push('Payment', {
+                    serviceDetail,
+                    bookingSchedule,
+                    healthFacility,
+                    clinic,
+                    doctor
+                })
+                : navigation.navigate('SignIn')
+        }
+    }
 
     const openMap = (lat, lang) => {
         const scheme = Platform.select({
@@ -146,7 +142,7 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
         Linking.openURL(url);
     };
 
-    const { lat: userLat, lng: userLng } = myLocation
+    const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
     const distance = Math.floor(getDistanceFromLatLonInKm(healthFacility.location.lat, healthFacility.location.long, userLat, userLng))
 
     BackHandler.addEventListener('hardwareBackPress', () => {
@@ -157,108 +153,158 @@ function MedicalServiceDetail({navigation, userData, myLocation}) {
     return (
         <View style={styles.contentContainer}>
             <GradientHeader
-                title='Detail Layanan'
+                title="Detail Layanan"
                 navigate={navigation.navigate}
                 navigateBack={'MedicalServices'}
             />
-            <View style={{justifyContent: 'space-between', flex: 1}}>
-                <View>
-                    <View style={styles.topContainer}>
-                        <View style={styles.leftContent}>
-                        <View>
-                            <Text style={textStyles.nameColor}>{name}</Text> 
+                <View
+                    style={{
+                    justifyContent: 'space-between',
+                    flex: 1,
+                    paddingVertical: 12,
+                    }}
+                >
+                    <View>
+                        <View style={styles.topContainer}>
+                            <View style={{ flex: 0.8 }}>
+                                <View style={{ marginBottom: 8 }}>
+                                    <Text style={textStyles.nameColor}>{name}</Text>
+                                </View>
+                                <View
+                                    style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginBottom: 7,
+                                    }}
+                                >
+                                    <FontAwesome5 name="hospital-alt" size={12} color="#A5A5A5" />
+                                    <Text style={textStyles.greyColorWithPaddingLeftText}>
+                                    {clinic.name}
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    marginBottom: 7,
+                                    }}
+                                >
+                                    <Entypo name="location" size={12} color="#A5A5A5" />
+                                    <Text
+                                        numberOfLines={2}
+                                        style={[
+                                            textStyles.greyColorWithPaddingLeftText,
+                                            { width: '90%', alignSelf: 'center' },
+                                        ]}
+                                    >
+                                        {clinic.address}
+                                    </Text>
+                                </View>
+                                <View
+                                    style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    }}
+                                >
+                                    <FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
+                                    <Text style={textStyles.greyColorWithPaddingLeftText}>
+                                        {distance} Km
+                                    </Text>
+                                </View>
+                            </View>
+                            <View>
+                                <Image
+                                    source={{
+                                    uri: photo
+                                        ? photo
+                                        : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1',
+                                    }}
+                                    style={{
+                                    width: 60,
+                                    height: 60,
+                                    borderRadius: 4,
+                                    marginBottom: 4,
+                                    }}
+                                />
+                                <TouchableOpacity
+                                    onPress={() => {
+                                    const { location } = healthFacility;
+                                    openMap(location.lat, location.long);
+                                    }}
+                                >
+                                    <Text style={textStyles.mapSelectionButtonText}>
+                                        Lihat Maps
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
-                            <FontAwesome5 name="hospital-alt" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{clinic.name}</Text> 
-                        </View>
-                        <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
-                            <Entypo name="location" size={12} color="#A5A5A5" />
-                            <Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
-                        </View>
-                        <View style={{flexDirection: 'row', paddingTop: heightPercentageToDP('0.5%')}}>
-                            <FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
-                            <Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
-                        </View>
-                        </View>
-                        <View style={styles.rightContent}>
-                            <Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    const { location } = healthFacility
-                                    openMap(location.lat, location.long)
-                                }}
-                                style={{paddingBottom: heightPercentageToDP('0.2%'), paddingTop: heightPercentageToDP('1%'), paddingHorizontal: widthPercentageToDP('1%')}}
+
+                        <View
+                            style={{
+                            marginHorizontal: 12,
+                            backgroundColor: GREY_BORDER_LINE,
+                            height: 1,
+                            marginVertical: 20,
+                            }}
+                        />
+
+                        <View style={styles.middleContainer}>
+                            <Text
+                                style={[
+                                    textStyles.whiteColorText,
+                                    {
+                                    paddingTop: heightPercentageToDP('2%'),
+                                    paddingBottom: heightPercentageToDP('1%'),
+                                    },
+                                ]}
                             >
-                            <Text style={textStyles.mapSelectionButtonText}>Lihat Maps</Text>
-                            </TouchableOpacity>
+                                Paket termasuk:{' '}
+                            </Text>
+                            {itemCheck.map((el, itemCheckIndex) => {
+                                return (
+                                    <Text
+                                        key={itemCheckIndex}
+                                        style={[
+                                            textStyles.whiteColorText,
+                                            { paddingTop: heightPercentageToDP('0.2%') },
+                                        ]}
+                                    >
+                                        {itemCheckIndex + 1}. {el.name}
+                                    </Text>
+                                );
+                            })}
                         </View>
-                    </View>
 
-                    <View style={styles.middleContainer}>
-                        {/* <Text style={textStyles.whiteColorText}>Deskripsi</Text>
-                        <Text style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.5%')}]}>{description}</Text> */}
-                        <Text style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('2%'), paddingBottom: heightPercentageToDP('1%')}]}>Paket termasuk: </Text>
-                        {itemCheck.map((el, itemCheckIndex) => {
-                            return (
-                                <Text key={itemCheckIndex} style={[textStyles.whiteColorText, { paddingTop: heightPercentageToDP('0.2%')}]}>{itemCheckIndex + 1}. {el.name}</Text>
-                            )
-                        })}
-                    </View>
-
-                    <View style={{marginHorizontal: widthPercentageToDP('3%')}}>
+                    <View style={{ paddingLeft: 12 }}>
                         <Calendar
-                            // selectedDate={}
-                            onDateSelected={onDateSelected}
-                            isDateBlackList={false}
-							availableDays={schedule}
-                            isOnlyRenderForOneMonth={true}
+                        // selectedDate={}
+                        onDateSelected={onDateSelected}
+                        isDateBlackList={false}
+                        availableDays={schedule}
+                        isOnlyRenderForOneMonth={true}
                         />
                     </View>
 
-
-                    {/* {filteredSchedules.length > 0 ? (
-                        <View style={styles.avalaibleHours}>
-                            {filteredSchedules.map((filteredSchedule, filteredScheduleIndex) => {
-                                const { status, limit, cancelledDates, scheduleDay, scheduleTime } = filteredSchedule
-                                const disabled = checkDisabled(filteredSchedule, bookingSchedule)
-
-                                return (
-                                    <TouchableOpacity
-                                        key={filteredScheduleIndex}
-                                        onPress={() => {
-                                            setBookingTime(scheduleTime)
-                                        }}
-                                        style={bookingTime === scheduleTime ? styles.selectedScheduleTimeContainer : styles.unSelectedScheduleTimeContainer}
-                                        disabled={disabled}
-                                    >
-                                        <Text style={textStyles.whiteColorText}>{scheduleTime}</Text>
-                                    </TouchableOpacity>
-                                )
-                            })}
-                        </View>
-                    ) : null} */}
-
                 </View>
-                <TouchableOpacity
-                    onPress={async () => {
+                <View style={{ paddingHorizontal: 12 }}>
+                    <TouchableOpacity
+                        onPress={async () => {
                         makeAppointment();
-                    }}
-                    style={styles.makeAppointmentButton}
-                >
-                    <View style={{ flexDirection: 'row' }}>
-                        <View style={{ marginTop: 2 }}>
+                        }}
+                        style={styles.makeAppointmentButton}
+                    >
+                        <View style={{ flexDirection: 'row' }}>
                             <BuatJanji />
+                            <Text style={{ color: WHITE_PRIMARY, marginLeft: 8 }}>
+                                Buat Janji
+                            </Text>
                         </View>
-                        <Text style={{ color: '#FFF', fontSize: 16, marginLeft: 10 }}>
-                            Buat Janji
-                        </Text>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     )
-}
+    }
 
 const textStyles = StyleSheet.create({
 	mapSelectionText: {
@@ -308,21 +354,19 @@ const textStyles = StyleSheet.create({
 const styles = StyleSheet.create({
     contentContainer: {
         backgroundColor: '#1f1f1f',
-		// height: heightPercentageToDP('100%'),
         flex: 1,
     },
 
     topContainer: {
         flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: heightPercentageToDP('2%'),
-        marginHorizontal: widthPercentageToDP('3%'),
-        borderBottomWidth: 1,
-		borderBottomColor: '#3E3D3D'
+        justifyContent: 'space-between',
+        borderBottomColor: '#3E3D3D',
+        alignItems: 'center',
+        paddingHorizontal: 12,
     },
 
     leftContent: {
-		alignItems: 'flex-start'
+		alignItems: 'flex-start',
 
 	}, 
 
