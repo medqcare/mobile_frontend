@@ -109,7 +109,6 @@ function DetailDoctorPage(props) {
 
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
   const [bookingTime, setBookingTime] = useState('');
-  console.log(new Date().toUTCString(), "hari ini")
   // const [lang, lat] = clinic.Location.coordinates;
   const findDistance = (item) => {
     const lat = item.location.coordinates[0];

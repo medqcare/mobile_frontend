@@ -1,29 +1,39 @@
 import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { connect } from 'react-redux';
 import formatRP from '../../../helpers/rupiah';
-import RatingStar from '../../../assets/svg/RatingStar';
-import latLongToKM from '../../../helpers/latlongToKM';
-import IconFA from 'react-native-vector-icons/FontAwesome';
-import IconLove from 'react-native-vector-icons/Ionicons';
-import { Fontisto } from '@expo/vector-icons';
-import { INTER_400, INTER_500 } from '../../../values/font';
-import { WHITE_PRIMARY } from '../../../values/color';
+import { INTER_300, INTER_400, INTER_500 } from '../../../values/font';
+import {
+  BLACK_SECONDARY,
+  GREY_SECONDARY,
+  WHITE_PRIMARY,
+} from '../../../values/color';
 // import axios from 'axios';
 
-const mapStateToProps = (state) => ({
-  isLoading: state.isLoading,
-  myLocation: state.myLocation,
-});
+const mapStateToProps = (state) => state;
 
-function CardDoctor({ navigation, data, myLocation, distance }) {
+function CardDoctor({ data, distance, userLocationReducer }) {
+  const { userLocation } = userLocationReducer;
+
+  const renderDoctorName = () => {
+    let name = `${data.title} ${data.doctorName}`;
+    if (data.specialistId) {
+      name += `, ${data.specialistId.alias}`;
+    }
+
+    return name;
+  };
+
+  const renderDoctorSpecialist = () => {
+    let specialist = 'Umum';
+
+    if (data.specialistId) {
+      specialist = `Spesialis ${data.specialistId.name}`;
+    }
+
+    return specialist;
+  };
+
   return (
     <View style={styles.Container}>
       <View style={styles.Photo}>
@@ -38,11 +48,21 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
       </View>
       <View style={styles.DetailDokter}>
         <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: INTER_500 }}>
-          {data.title} {data.doctorName}
+          {renderDoctorName()}
         </Text>
-        <Text style={{ ...styles.TextContent, textTransform: 'capitalize' }}>
-          {data.specialist}
-        </Text>
+        <View
+          style={{
+            paddingVertical: 2,
+            paddingHorizontal: 6,
+            backgroundColor: BLACK_SECONDARY,
+            alignSelf: 'flex-start',
+            alignItems: 'center',
+            marginTop: 4,
+            marginBottom: 10
+          }}
+        >
+          <Text style={styles.textSpecailist}>{renderDoctorSpecialist()}</Text>
+        </View>
         <View>
           <View
             style={{
@@ -50,50 +70,26 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
               alignItems: 'center',
               marginTop: 10,
             }}
-          >
-            {/* <View style={{ marginRight: 8 }}>
-              <RatingStar />
-            </View>
-            <Text style={{ color: '#B2B2B2', marginRight: 12 }}>4.7/5</Text>
-            <View
-              style={{
-                backgroundColor: '#11BF66',
-                height: 10,
-                width: 10,
-                borderRadius: 10,
-                marginRight: 8,
-              }}
-            ></View>
-            <Text style={{ color: '#B2B2B2' }}>Online</Text> */}
-          </View>
-
-          {/* {
-            data.facilityID && <Text style={[styles.TextContent,{fontWeight:'bold'}]} >{data.facilityID.facilityName}</Text>
-          }
-          {
-            data.facility && <Text style={[styles.TextContent,{fontWeight:'bold'}]} >{data.facility[0].facilityName}</Text>
-          } */}
-
-          {/* {<Text>{JSON.stringify(data, null, 2)}</Text>} */}
+          ></View>
 
           {data.estPrice && (
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }} />
-              <Text style={{ ...styles.TextContent, color: WHITE_PRIMARY, fontFamily: INTER_400 }}>
+              <Text
+                style={{
+                  ...styles.TextContent,
+                  color: WHITE_PRIMARY,
+                  fontFamily: INTER_400,
+                }}
+              >
                 {formatRP(data.estPrice, 'IDR ')}
               </Text>
             </View>
           )}
         </View>
       </View>
-      {myLocation && (
+      {userLocation && (
         <View style={{ flexDirection: 'row' }}>
-          {/* <IconFA
-            name="location-arrow"
-            size={18}
-            color="gray"
-            style={{marginRight: 5, marginLeft: -20}}
-          /> */}
           <Text style={{ color: WHITE_PRIMARY }}>
             &#177; <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
           </Text>
@@ -102,10 +98,6 @@ function CardDoctor({ navigation, data, myLocation, distance }) {
     </View>
   );
 }
-
-const minHeight = Dimensions.get('screen').height * 0.15;
-const minWidth = Dimensions.get('screen').width * 0.15;
-
 const styles = StyleSheet.create({
   Container: {
     minWidth: 300,
@@ -134,8 +126,15 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   TextContent: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: 13,
+    color: WHITE_PRIMARY,
+    fontFamily: INTER_500,
+  },
+  textSpecailist: {
+    fontFamily: INTER_300,
+    color: GREY_SECONDARY,
+    fontSize: 12,
+    textTransform: 'capitalize',
   },
 });
 

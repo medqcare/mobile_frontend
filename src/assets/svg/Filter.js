@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Circle, Line } from "react-native-svg";
 
-function SvgComponent({ title, titleId, ...props }) {
+function IconFilter({ title, titleId, ...props }) {
   return (
     <Svg
       width="25"
@@ -35,4 +35,4 @@ function SvgComponent({ title, titleId, ...props }) {
   );
 }
 
-export default SvgComponent;
+export default IconFilter;
