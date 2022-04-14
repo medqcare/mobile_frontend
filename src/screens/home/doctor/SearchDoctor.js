@@ -61,15 +61,18 @@ function SearchDoctorPage(props) {
     setShow([]);
     setCurrentPage(0);
     props.getSpecialists();
-    _fetchDataDoctorPagination();
+    _fetchDataDoctorPagination(DEFAULT_SPESIALIS);
   }, []);
 
-  const _fetchDataDoctorPagination = async (params) => {
+  const _fetchDataDoctorPagination = async (params, filterQuery) => {
     console.log(params, 'params ...', currentPage);
     if (params == DEFAULT_SPESIALIS) {
       props.searchAllDoctors(currentPageReducer, userLocation, doctors);
+    }
+    else if(filterQuery){
+      props.searchAllDoctors(currentPageReducer, userLocation, doctors, filterQuery)
     } else {
-      props.searchDoctorBySpecialist(currentPageReducer, doctors);
+      props.searchDoctorBySpecialist(currentPageReducer, null, doctors);
     }
   };
 
@@ -231,6 +234,7 @@ function SearchDoctorPage(props) {
                     keyExtractor={(item, index) => String(index)}
                     renderItem={({ item }) => {
                       const { distance, doctors } = item;
+                      const { humanReadable } = distance
                       return doctors.map((el) => {
                         return (
                           <TouchableOpacity
@@ -239,15 +243,14 @@ function SearchDoctorPage(props) {
                               props.navigation.navigate('DetailDoctor', {
                                 data: el,
                                 back: 'SearchDoctor',
-                                distance,
+                                distance: humanReadable,
                               });
                             }}
                           >
                             <View style={{ marginHorizontal: dimWidth * 0.03 }}>
                               <CardDoctor
                                 data={el}
-                                myLocation={props.myLocation}
-                                distance={distance}
+                                distance={humanReadable}
                               />
                             </View>
                           </TouchableOpacity>
@@ -270,6 +273,7 @@ function SearchDoctorPage(props) {
         )}
       </KeyboardAvoidingView>
       <ModalFilterDoctor
+        searchByFilter={_fetchDataDoctorPagination}
         isVisible={modalFilterIsActive}
         onBackButtonPress={() => {
           setModalFilterIsActive(false);

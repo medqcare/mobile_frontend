@@ -21,7 +21,12 @@ import Gap from '../Gap';
 import RightArrow from '../../assets/svg/RightArrow';
 import ArrowLeft from '../../assets/svg/ArrowBack';
 import SearchIcon from '../../assets/svg/Search';
-import { color } from 'react-native-reanimated';
+import keys from '../../stores/keys';
+import { useDispatch } from 'react-redux';
+
+const {
+  SET_DOCTORS_LOADING
+} = keys.doctorKeys
 
 const EXPERIENCE_DICTIONARY = {
   LT_5: {
@@ -64,7 +69,9 @@ export default function ModalFilterDoctor({
   onBackButtonPress,
   specialists = [],
   searchSpecialistHandler,
+  searchByFilter,
 }) {
+  const dispatch = useDispatch()
   const [selectedSpecialist, setSelectedSpecialist] = useState();
   const [selectedKeyExperience, setSelectedKeyExperience] = useState();
   const [selectedKeyGender, setSelectedKeyGender] = useState();
@@ -89,17 +96,17 @@ export default function ModalFilterDoctor({
     }
   };
 
-  const onPressButtonApplyFilterHandler = (keyword) => {
+  const onPressButtonApplyFilterHandler = async (keyword) => {
     const resultFilter = {};
 
     if (selectedKeyExperience) {
       let { max, min } = EXPERIENCE_DICTIONARY[selectedKeyExperience];
 
-      if (max) {
+      if (min) {
         resultFilter.minExperience = min;
       }
 
-      if (min) {
+      if (max) {
         resultFilter.maxEperience = max;
       }
     }
@@ -109,8 +116,18 @@ export default function ModalFilterDoctor({
     }
 
     if (selectedSpecialist) {
-      resultFilter.specialist = selectedSpecialist._id;
+      resultFilter.specialist = selectedSpecialist.name;
     }
+
+    onBackButtonPress()
+    dispatch({
+      type: SET_DOCTORS_LOADING,
+      payload: true
+    })
+
+    setTimeout(async () => {
+      await searchByFilter(null, resultFilter)
+    }, 500)
   };
 
   const renderGender = (key, index) => {
@@ -211,6 +228,7 @@ export default function ModalFilterDoctor({
 
   return (
     <Modal
+      onBackdropPress={onBackButtonPress}
       isVisible={isVisible}
       animationIn={'fadeInUp'}
       animationOut={'fadeOutDown'}
