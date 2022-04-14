@@ -16,7 +16,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
 
   const renderDoctorName = () => {
     let name = `${data.title} ${data.doctorName}`;
-    if (data.specialistId) {
+    if (data.specialistId !== null && data.specialistId.length !== 0) {
       name += `, ${data.specialistId[0].alias}`;
     }
 
@@ -26,7 +26,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
   const renderDoctorSpecialist = () => {
     let specialist = 'Umum';
 
-    if (data.specialistId) {
+    if (data.specialistId !== null && data.specialistId.length !== 0) {
       specialist = `Spesialis ${data.specialistId[0].name}`;
     }
 
