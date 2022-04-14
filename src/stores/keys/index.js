@@ -14,6 +14,7 @@ import medicalDocumentKeys from './medicalDocuments'
 import transactionKeys from "./transactions";
 import historyKeys from "./histories";
 import notificationKeys from "./notifications";
+import specialistKeys from "./specialists";
 
 const keys = {
     userDataKeys,
@@ -32,6 +33,7 @@ const keys = {
     transactionKeys,
     historyKeys,
     notificationKeys,
+    specialistKeys,
 }
 
 export default keys

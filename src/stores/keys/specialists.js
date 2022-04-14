@@ -1,7 +1,11 @@
 const SET_SPECIALISTS = 'specialist/setSpecialists';
-const LOADING_SPECIALISTS = 'specialist/loadingSpecialists';
+const SET_SPECIALISTS_LOADING = 'specialist/setSpecialistsLoading';
+const SET_SPECIALISTS_ERROR = 'specialists/setSpecialistsError'
 
-module.exports = {
+const specialistKeys = {
   SET_SPECIALISTS,
-  LOADING_SPECIALISTS,
-};
+  SET_SPECIALISTS_LOADING,
+  SET_SPECIALISTS_ERROR
+}
+
+export default specialistKeys
