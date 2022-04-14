@@ -8,7 +8,6 @@ import {
   GREY_SECONDARY,
   WHITE_PRIMARY,
 } from '../../../values/color';
-// import axios from 'axios';
 
 const mapStateToProps = (state) => state;
 
@@ -18,7 +17,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
   const renderDoctorName = () => {
     let name = `${data.title} ${data.doctorName}`;
     if (data.specialistId) {
-      name += `, ${data.specialistId.alias}`;
+      name += `, ${data.specialistId[0].alias}`;
     }
 
     return name;
@@ -28,7 +27,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
     let specialist = 'Umum';
 
     if (data.specialistId) {
-      specialist = `Spesialis ${data.specialistId.name}`;
+      specialist = `Spesialis ${data.specialistId[0].name}`;
     }
 
     return specialist;
