@@ -11,7 +11,7 @@ import {
   Dimensions,
   BackHandler,
 } from 'react-native';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
 import {
   setLoading,
@@ -26,7 +26,7 @@ import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
 import SearchBar from '../../../components/headers/SearchBar';
 
-import keys from '../../../stores/keys'
+import keys from '../../../stores/keys';
 
 import NewNotificationBell from '../../../assets/svg/home-blue/lonceng';
 import NoNotificationBell from '../../../assets/svg/NoNotificationBell';
@@ -46,11 +46,11 @@ import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
-  const dispatch = useDispatch()
-  const { SET_USER_LOCATION } = keys.userLocationKeys
-  const { userData, isLoading, error } = props.userDataReducer
-  const { userLocation } = props.userLocationReducer
-  const { showInstruction } = props.showInstructionReducer
+  const dispatch = useDispatch();
+  const { SET_USER_LOCATION } = keys.userLocationKeys;
+  const { userData, isLoading, error } = props.userDataReducer;
+  const { userLocation } = props.userLocationReducer;
+  const { showInstruction } = props.showInstructionReducer;
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {
@@ -66,21 +66,14 @@ function HomePage(props) {
   const [fcmRegistered, setFcmRegistered] = useState(false);
 
   useEffect(() => {
-    requestLocationPermission()
-  }, []);
-
-  useEffect( () => {
-    getLoggedData()
+    getLoggedData();
   }, []);
 
   useEffect(() => {
-    // if (!userData) {
-    //   return
-    // }
-    requestLocationPermission2()
-  }, [userData]);
-
-  async function requestLocationPermission2(){
+    requestLocationPermission();
+  }, []);
+  
+  async function requestLocationPermission() {
     let lat = null;
     let lng = null;
     try {
@@ -101,28 +94,15 @@ function HomePage(props) {
         type: SET_USER_LOCATION,
         payload: {
           lat,
-          lng
-        }
-      })
-    }
-  }
-  
-  async function requestLocationPermission(){
-    try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        throw new Error('permission failed');
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-    } catch (error) {
-      console.log('Error Get Location', error.message);
+          lng,
+        },
+      });
     }
   }
 
-  async function getLoggedData(){
+  async function getLoggedData() {
     try {
-      await props.getLoggedData(props.navigation)
+      await props.getLoggedData(props.navigation);
     } catch (error) {
     } finally {
       setload(false);
@@ -234,7 +214,7 @@ function HomePage(props) {
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -258,31 +238,33 @@ function HomePage(props) {
                       )}
                     </View>
 
-                      <TouchableOpacity
-                        onPress={() => {
-                          userData ? props.navigation.navigate('ProfileStack') : props.navigation.navigate('SignIn')
-                        }}
-                      >
-                        <View style={{ marginLeft: 10 }}>
-                          {userData?.imageUrl ? (
-                            <Image
-                              style={style.profilePicture}
-                              source={{
-                                uri: userData.imageUrl
-                              }}
-                            />
-                          ) : (
-                            <FontAwesome
-                              name="user-circle"
-                              size={23}
-                              color="white"
-                            />
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        userData
+                          ? props.navigation.navigate('ProfileStack')
+                          : props.navigation.navigate('SignIn');
+                      }}
+                    >
+                      <View style={{ marginLeft: 10 }}>
+                        {userData?.imageUrl ? (
+                          <Image
+                            style={style.profilePicture}
+                            source={{
+                              uri: userData.imageUrl,
+                            }}
+                          />
+                        ) : (
+                          <FontAwesome
+                            name="user-circle"
+                            size={23}
+                            color="white"
+                          />
+                        )}
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                  
+                </View>
+
                 <SearchBar
                   placeholder={'cari dokter atau spesialis'}
                   onFocus={() =>
@@ -297,10 +279,7 @@ function HomePage(props) {
 
           <View style={style.container}>
             <View style={{ marginBottom: hp('2%') }}>
-              <MenuNavigator
-                navigation={props.navigation}
-                data={userData}
-              />
+              <MenuNavigator navigation={props.navigation} data={userData} />
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {userData && (
@@ -319,10 +298,7 @@ function HomePage(props) {
                 </View>
               )}
               <View style={{ marginBottom: hp('4%') }}>
-                <ActivityAction
-                  navigation={props.navigation}
-                  data={userData}
-                />
+                <ActivityAction navigation={props.navigation} data={userData} />
               </View>
               <View style={{ marginBottom: hp('2%') }}>
                 <FlatList
