@@ -33,6 +33,7 @@ const InputSecretCodeOTP = (props) => {
     phoneNumber,
     back = 'Home',
     addNewUserPayload,
+    onSuccess,
   } = props.navigation.state.params;
   const { signUpIsLoading } = props.entryReducer
   const ref = useBlurOnFulfill({ secretCode, cellCount: CELL_COUNT });
@@ -103,6 +104,7 @@ const InputSecretCodeOTP = (props) => {
        * function
        */
       await props.addNewUser(addNewUserPayload, props.navigation)
+      await onSuccess()
     } catch (error) {
       console.log(error.message, 'onPressHandler')
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
