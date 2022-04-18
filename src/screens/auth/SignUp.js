@@ -139,9 +139,18 @@ const SignUpScreen = (props) => {
         phoneNumber,
         email
       }
-      await props.credentialCheck(credentialCheckPayload)
+    
+      const { isEmailExist, isPhoneExist } = await props.credentialCheck(credentialCheckPayload)
 
-      if(signUpisRegistered) return;
+      if (isEmailExist) {
+        ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
+        return;
+      }
+
+      if (isPhoneExist) {
+        ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
+        return;
+      }
 
       const addNewUserPayload = {
         email: credential.email,
@@ -152,7 +161,9 @@ const SignUpScreen = (props) => {
       props.navigation.navigate('InputSecretCodeOTP', {
         phoneNumber,
         backTo: 'SignUp',
-        addNewUserPayload,
+        onSuccess: async () => {
+          await props.addNewUser(addNewUserPayload, props.navigation);
+        },
       });
 
     } catch (error) {

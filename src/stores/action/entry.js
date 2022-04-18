@@ -201,7 +201,7 @@ export function SignInGoogle(token, navigation, navigateTo) {
 export function credentialCheck(payload){
     return async dispatch => {
         try {
-            await dispatch({
+            dispatch({
                 type: SET_SIGNUP_LOADING,
                 payload: true
             })
@@ -212,31 +212,16 @@ export function credentialCheck(payload){
                 data: payload
             })
 
-            const { isEmailExist, isPhoneExist } = data
-            if(isEmailExist){
-                ToastAndroid.show('Email sudah terdaftar', ToastAndroid.LONG);
-                return await dispatch({
-                    type: SET_SIGNUP_IS_REGISTERED,
-                    payload: true
-                });
-            }
-            if (isPhoneExist) {
-                ToastAndroid.show('Nomor Hp sudah terdaftar', ToastAndroid.LONG);
-                return await dispatch({
-                    type: SET_SIGNUP_IS_REGISTERED,
-                    payload: true
-                });
-            }
-
-            return await dispatch({
-                type: SET_SIGNUP_IS_REGISTERED,
-                payload: false
-            });
+            return data
         } catch (error) {
-            console.log(error.message)
-            await dispatch({
+            dispatch({
                 type: SET_SIGNUP_ERROR,
                 payload: error.message
+            })
+        } finally {
+            dispatch({
+                type: SET_SIGNUP_LOADING,
+                payload: false
             })
         }
     }
