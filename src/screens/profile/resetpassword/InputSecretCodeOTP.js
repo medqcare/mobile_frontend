@@ -71,6 +71,11 @@ const InputSecretCodeOTP = (props) => {
       } catch (error) {
         console.log(error.message, 'useEffect')
         ToastAndroid.show('Silahkan coba lagi nanti', ToastAndroid.LONG);
+      } finally {
+        dispatch({
+          type: SET_SIGNUP_LOADING,
+          payload: false
+        })
       }
     })();
 
@@ -101,6 +106,11 @@ const InputSecretCodeOTP = (props) => {
     } catch (error) {
       console.log(error.message, 'onPressHandler')
       ToastAndroid.show('Invalid Code', ToastAndroid.LONG);
+    } finally {
+      dispatch({
+        type: SET_SIGNUP_LOADING,
+        payload: false
+      })
     }
   }
 
