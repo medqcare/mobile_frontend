@@ -13,48 +13,49 @@ const {
     SET_MEDICAL_SERVICES_ERROR,
 } = keys.medicalServicesKeys
 
-export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices){
+export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices, setCurrentPage){
 	return async dispatch => {
 		try {
 			console.log('Application trying to find avaliable medical services')
 			console.log('type:', type)
 			console.log('status:', status)
 			console.log('page:', page)
-			await dispatch({
-				type: SET_MEDICAL_SERVICES_LOADING,
-				payload: true
-			})
+
+			if(addPage){
+				page += 1
+				setCurrentPage(page)
+			} else {
+				await dispatch({
+					type: SET_MEDICAL_SERVICES_LOADING,
+					payload: true
+				})
+			}
+
 			const { data } = await instance({
 				method: 'GET',
 				url: `medical/services?type=${type}&status=${status}&page=${page}`,
 			})
-			if(data.data) {
-				if(data.data.docs.length === 0){
-					console.log(`Application didn't find any available services`)
-				}
-				if(page == 1){
-					await setMedicalServices(data.data.docs)
-					await dispatch({
-						type: SET_MEDICAL_SERVICES,
-						payload: data.data.docs
-					})
-				} else {
-					await dispatch({
-						type: SET_MEDICAL_SERVICES,
-						payload: [...medicalServices, ...data.data.docs]
-					})
-				}
-				console.log(`Application found ${data.data.docs.length} medical service(s)`)
 
-				if(addPage){
-					const nextPage = page + 1;
+			if(data.data) {
+				const { docs, totalDocs, limit, totalPages, page: dataPage, pagingCounter, hasPrevPage, hasNextPage, prevPage, nextPage } = data.data
+
+				if(docs.length === 0){
+					console.log(`Application didn't find any available services`)
+				} else if (page == 1){
+					await setMedicalServices(docs)
 					await dispatch({
-						type: SET_MEDICAL_SERVICES_CURRENTPAGE,
-						payload: nextPage
+						type: SET_MEDICAL_SERVICES,
+						payload: docs
 					})
+					return hasNextPage
+				} else {
+					await setMedicalServices([...medicalServices, ...docs])
+					await dispatch({
+						type: SET_MEDICAL_SERVICES,
+						payload: [...medicalServices, ...docs]
+					})
+					return hasNextPage
 				}
-				console.log('All data fetched, no need to add page')
-				
 			}
 		}
 		catch(error){

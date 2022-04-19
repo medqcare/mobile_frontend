@@ -46,9 +46,11 @@ const dimWidth = Dimensions.get('window').width;
 
 function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
 	const dispatch = useDispatch()
-	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage } = medicalServicesReducer
+	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage: currentPageR } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
 	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [hasNextPage, setHasNextPage] = useState(false)
 
 	// "docs",
 	// "totalDocs",
@@ -67,7 +69,9 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 
 	async function searchMedicalServices(addPage){
 		try {
-			await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices)
+			const returnHasNextPage = await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices, setCurrentPage)
+			if(returnHasNextPage) setHasNextPage(true)
+			else setHasNextPage(false)
 		}
 		catch(error){
 			console.log(error)
@@ -87,17 +91,15 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 	}
 
 	const onRefresh = useCallback(async () => {
-		setType('All');
 		dispatch({
 			type: SET_MEDICAL_SERVICES_TYPE,
-			payload: 'All'
+			payload: 'UMUM'
 		})
-		setStatus(true);
 		dispatch({
 			type: SET_MEDICAL_SERVICES_STATUS,
 			payload: true
 		})
-		setPage(1)
+		setCurrentPage(1)
 		searchMedicalServices();
 	}, [refreshLoading]);
 
@@ -224,6 +226,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 				/>
 			) :
 			( medicalServices.length > 0 ? (
+				<>
 				<FlatList
 					refreshControl={
 						<RefreshControl refreshing={refreshLoading} onRefresh={onRefresh} />
@@ -232,13 +235,22 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 					data={medicalServices}
 					keyExtractor={(item, index) => String(index)}
 					renderItem={renderMedicalService}
-					// onEndReached={() => {
-					// 	if (medicalServices.length > 10) {
-					// 		searchMedicalServices(true);
-					// 	}
-					// }}
+					onEndReached={() => {
+						if(hasNextPage) {
+							console.log('Using searchMedicalService function')
+							searchMedicalServices(true)
+						}
+					}}
 					onEndReachedThreshold={1}
+					ListFooterComponent={() => 
+						hasNextPage && (
+							<View style={{paddingVertical: 15}}>
+								<ActivityIndicator size={"large"} color={"white"} />
+							</View>
+						)
+					}
 				/>
+				</>
 			) :
 			(
 				<View style={styles.noContentContainer}>
