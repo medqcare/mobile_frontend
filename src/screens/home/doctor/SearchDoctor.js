@@ -281,6 +281,12 @@ function SearchDoctorPage(props) {
         specialists={specialists}
         searchSpecialistHandler={searchSpecialistHandler}
         getSpecialists={props.getSpecialists}
+        onCancel={() => {
+          setModalFilterIsActive(false)
+        }}
+        close={() => {
+          setModalFilterIsActive(false)
+        }}
       />
     </>
   );

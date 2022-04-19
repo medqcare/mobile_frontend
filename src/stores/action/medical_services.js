@@ -61,6 +61,12 @@ export function getMedicalServices(type, status, page, medicalServices, addPage,
 			console.log(error.response.data)
 			console.log('error di action')
 		}
+		finally {
+			dispatch({
+      		  type: SET_MEDICAL_SERVICES_LOADING,
+      		  payload: true,
+      		});
+		}
 	}
 }
 

@@ -24,9 +24,7 @@ import SearchIcon from '../../assets/svg/Search';
 import keys from '../../stores/keys';
 import { useDispatch } from 'react-redux';
 
-const {
-  SET_DOCTORS_LOADING
-} = keys.doctorKeys
+const { SET_DOCTORS_LOADING } = keys.doctorKeys;
 
 const EXPERIENCE_DICTIONARY = {
   LT_5: {
@@ -70,8 +68,10 @@ export default function ModalFilterDoctor({
   specialists = [],
   searchSpecialistHandler,
   searchByFilter,
+  onCancel,
+  close,
 }) {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [selectedSpecialist, setSelectedSpecialist] = useState();
   const [selectedKeyExperience, setSelectedKeyExperience] = useState();
   const [selectedKeyGender, setSelectedKeyGender] = useState();
@@ -99,17 +99,17 @@ export default function ModalFilterDoctor({
   const onPressButtonApplyFilterHandler = async (keyword) => {
     const resultFilter = {};
 
-    if (selectedKeyExperience) {
-      let { max, min } = EXPERIENCE_DICTIONARY[selectedKeyExperience];
+    // if (selectedKeyExperience) {
+    //   let { max, min } = EXPERIENCE_DICTIONARY[selectedKeyExperience];
 
-      if (min) {
-        resultFilter.minExperience = min;
-      }
+    //   if (min) {
+    //     resultFilter.minExperience = min;
+    //   }
 
-      if (max) {
-        resultFilter.maxEperience = max;
-      }
-    }
+    //   if (max) {
+    //     resultFilter.maxEperience = max;
+    //   }
+    // }
 
     if (selectedKeyGender) {
       resultFilter.gender = GENDER_DICTIONARY[selectedKeyGender].value;
@@ -119,15 +119,24 @@ export default function ModalFilterDoctor({
       resultFilter.specialist = selectedSpecialist.name;
     }
 
-    onBackButtonPress()
+    if (typeof close === 'function') {
+      close();
+    }
+
     dispatch({
       type: SET_DOCTORS_LOADING,
-      payload: true
-    })
+      payload: true,
+    });
 
     setTimeout(async () => {
-      await searchByFilter(null, resultFilter)
-    }, 500)
+      await searchByFilter(null, resultFilter);
+    }, 1000);
+  };
+
+  const onPressButtonCancelHandler = async () => {
+    if (typeof onCancel === 'function') {
+      onCancel();
+    }
   };
 
   const renderGender = (key, index) => {
@@ -296,7 +305,7 @@ export default function ModalFilterDoctor({
               </View>
               <Gap height={32} />
               <View style={[styles.row]}>
-                <TouchableOpacity style={styles.buttonCancelFilter}>
+                <TouchableOpacity style={styles.buttonCancelFilter} onPress={onPressButtonCancelHandler}>
                   <Text style={styles.buttonTextLabel}>Batal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
