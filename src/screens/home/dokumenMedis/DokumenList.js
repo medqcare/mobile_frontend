@@ -19,7 +19,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
 import keys from '../../../stores/keys';
-const { SET_MEDICAL_DOCUMENTS } = keys.medicalDocumentKeys
+const { SET_MEDICAL_DOCUMENTS } = keys.medicalDocumentKeys;
 
 import { Ionicons } from '@expo/vector-icons';
 import SearchIcon from '../../../assets/svg/Search';
@@ -52,12 +52,13 @@ const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
 function DokumenList(props) {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const { types: DEFAULT_TYPES, allowUploadDocument } =
     props.navigation.state.params;
   const { routeName: SCREEN_NAME } = props.navigation.state;
-  const { userData } = props.userDataReducer
-  const { medicalDocuments, totalPages, isLoading, error } = props.medicalDocumentsReducer
+  const { userData } = props.userDataReducer;
+  const { medicalDocuments, totalPages, isLoading, error } =
+    props.medicalDocumentsReducer;
   const DEFAULT_TYPE_SELECTED = 'semua';
   const [data, setData] = useState([]);
   const [modalAdd, setModalAdd] = useState(false);
@@ -107,12 +108,7 @@ function DokumenList(props) {
     if (pageNumber === 1) {
       await _fetchData();
     } else {
-      await fetchDocumentsWithPagination(
-        token,
-        patientId,
-        typeSelected,
-        pageNumber
-      );
+      await fetchDocumentsWithPagination();
     }
   }, [patient, pageNumber, typeSelected]);
 
@@ -137,14 +133,15 @@ function DokumenList(props) {
 
     try {
       const patientID = patient._id;
-      await props.getDocumentByPatient(patientID, type, pageNumber)
+      const DEFAULT_PAGE_NUMBER = 1
+      await props.getDocumentByPatient(patientID, type, DEFAULT_PAGE_NUMBER);
     } catch (error) {
       ToastAndroid.show(
         `Please check your internet connection`,
         ToastAndroid.SHORT
       );
       console.log(error);
-    } 
+    }
   };
 
   const fetchDocumentsWithPagination = async () => {
@@ -154,20 +151,14 @@ function DokumenList(props) {
         : typeSelected;
     try {
       setLoadingPagination(true);
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
       const patientId = patient._id;
-      const { data: response } = await props.getDocumentByPatient(
-        token,
+      await props.getDocumentByPatient(
         patientId,
         type,
         pageNumber
       );
-      const documents = response.data;
-      if (documents.length > 0) {
-        setData(data.concat(documents));
-      }
     } catch (error) {
+      console.log(error);
       ToastAndroid.show('Gagal memuat documents', ToastAndroid.LONG);
     } finally {
       setLoadingPagination(false);
@@ -176,53 +167,58 @@ function DokumenList(props) {
 
   const fetchBySearchQuery = async (search, patientId) => {
     try {
-      const defaultTypes = DEFAULT_TYPES.join(',')
-      await props.getDocumentByPatient(patientId, null, null, search, defaultTypes)
+      const defaultTypes = DEFAULT_TYPES.join(',');
+      await props.getDocumentByPatient(
+        patientId,
+        null,
+        null,
+        search,
+        defaultTypes
+      );
     } catch (error) {
       ToastAndroid.show('Gagal memuat dokumen, silahkan coba kembali');
-    } 
+    }
   };
 
   const upload = async (document) => {
-    const patientID = patient._id
-    await props.uploadDocument(patientID, document, medicalDocuments)
-    setPageNumber(1)
-    setUploadLoading(false)
+    const patientID = patient._id;
+    await props.uploadDocument(patientID, document, medicalDocuments);
+    setPageNumber(1);
+    setUploadLoading(false);
   };
 
   const renameAction = async (newName) => {
     try {
       const payload = {
         documentid: selectedId,
-        name: newName
-      }
-      const patientID = patient._id
+        name: newName,
+      };
+      const patientID = patient._id;
 
-      await props.renameDocument(patientID, payload, medicalDocuments)
+      await props.renameDocument(patientID, payload, medicalDocuments);
 
-      setPageNumber(1)
-      setModalRename(false)
-
+      setPageNumber(1);
+      setModalRename(false);
     } catch (error) {
-      console.log(error) 
+      console.log(error);
     }
   };
 
   const deleteAction = async () => {
     try {
-      const patientID = patient._id
+      const patientID = patient._id;
       const payload = {
         documentid: selectedId,
-        key: selectedKey
-      }
+        key: selectedKey,
+      };
 
-      await props.deleteDocument(patientID, payload, medicalDocuments)
+      await props.deleteDocument(patientID, payload, medicalDocuments);
 
       setPageNumber(1);
       setModalLoad(false);
       setModalDelete(false);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
@@ -439,13 +435,13 @@ function DokumenList(props) {
   }, []);
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-		props.navigation.pop();
+    props.navigation.pop();
     dispatch({
       type: SET_MEDICAL_DOCUMENTS,
-      payload: []
-    })
-		return true;
-	});
+      payload: [],
+    });
+    return true;
+  });
 
   return (
     <View style={styles.container}>

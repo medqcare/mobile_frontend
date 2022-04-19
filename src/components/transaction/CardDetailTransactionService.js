@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  PermissionsAndroid,
+} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import IconClinic from '../../assets/svg/IconClinic';
 import IconTime from '../../assets/svg/IconTime';
 import IconUser from '../../assets/svg/IconUser';
@@ -17,6 +21,7 @@ import {
   WHITE_SECONDARY,
 } from '../../values/color';
 import { INTER_400 } from '../../values/font';
+import { shareFile, shareFilePDF } from '../../helpers/shareDocument';
 
 function Gap({ height = 0, width = 0 }) {
   return <View style={{ width, height }}></View>;
@@ -26,19 +31,6 @@ export default function CardDetailTransactionService({
   transaction,
   ...props
 }) {
-  const shareFile = async (selectedUrl) => {
-    (async () => {
-      const permission = await checkPermission();
-      if (!permission) {
-        await askPermission();
-      }
-
-      let fileUri = FileSystem.documentDirectory + 'struk.pdf';
-      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
-      await Sharing.shareAsync(uri);
-    })();
-  };
-
   const getTransactionStatus = (status) => {
     switch (status) {
       case 'success': {
@@ -167,7 +159,10 @@ export default function CardDetailTransactionService({
                     backTo: 'DetailTransaction',
                     option: {
                       name: 'share',
-                      action: () => shareFile(transaction.file.url),
+                      action: async () => {
+                        const filename = `struk_pembayaran_layanan_${transaction.services.name}`;
+                        await shareFilePDF(transaction.file.url, filename);
+                      },
                     },
                   });
                 }}
