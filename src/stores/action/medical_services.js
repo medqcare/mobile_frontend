@@ -64,7 +64,7 @@ export function getMedicalServices(type, status, page, medicalServices, addPage,
 		finally {
 			dispatch({
       		  type: SET_MEDICAL_SERVICES_LOADING,
-      		  payload: true,
+      		  payload: false,
       		});
 		}
 	}
