@@ -53,7 +53,6 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
 		photo,
         doctor
 	} = item
-
 	const [serviceDetail, setServiceDetail] = useState({
 		name,
 		id,
@@ -121,7 +120,10 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
                     bookingSchedule,
                     healthFacility,
                     clinic,
-                    doctor
+                    doctor: {
+                        doctorName: doctor.doctorName,
+                        dokterIdWeb: doctor.doctorId
+                    }
                 })
                 : navigation.navigate('SignIn')
         }
