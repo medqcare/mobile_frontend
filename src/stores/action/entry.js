@@ -336,8 +336,6 @@ export function logout(navigation){
             })
 
             await AsyncStorage.removeItem('token');
-            await navigation.pop();
-            await navigation.navigate('Sign');
             
             ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
         } catch (error) {
