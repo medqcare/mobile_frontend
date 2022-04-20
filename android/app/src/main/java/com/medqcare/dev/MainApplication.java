@@ -1,4 +1,4 @@
-package com.medqcare.app;
+package com.medqcare.dev;
 
 import android.app.Application;
 import android.content.Context;

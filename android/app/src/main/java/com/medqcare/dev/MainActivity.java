@@ -1,4 +1,4 @@
-package com.medqcare.app;
+package com.medqcare.dev;
 
 import android.os.Bundle;
 
