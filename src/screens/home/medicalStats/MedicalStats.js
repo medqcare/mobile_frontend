@@ -82,7 +82,7 @@ function MedicalResume(props) {
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
