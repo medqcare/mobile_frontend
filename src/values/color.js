@@ -9,3 +9,4 @@ export const ORANGE_PRIMARY = '#F37335';
 export const GREY_BORDER_LINE = '#444444';
 export const RED_400 = '#f87171';
 export const RED_500 = '#ef4444';
+export const GREEN = "#4BE395"
