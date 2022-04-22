@@ -28,7 +28,7 @@ const mapStateToProps = (state) => {
 };
 
 const addFamily = (props) => {
-  const { family } = props.userData;
+  const { family } = props.userDataReducer.userData;
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     props.navigation.pop();

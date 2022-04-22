@@ -4,7 +4,7 @@ import GreyHeader from '../../../components/headers/GreyHeader';
 
 const NotificationDetail = (props) => {
   const notification = props.navigation.getParam('notification');
-  console.log(notification);
+  // console.log(notification);
   return (
     <View style={{ flex: 1, backgroundColor: '#2f2f2f' }}>
       <GreyHeader

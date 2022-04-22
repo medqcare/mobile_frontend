@@ -11,7 +11,7 @@ import {
   BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
-import { GetUser } from '../../../stores/action'
+import {  } from '../../../stores/action'
 import Header from '../../../components/headers/GradientHeader'
 
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -267,7 +267,6 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-  GetUser
 }
 
 

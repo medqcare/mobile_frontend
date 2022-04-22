@@ -1,17 +1,11 @@
 import React, { useEffect, useState  } from 'react'
 import { connect } from 'react-redux'
-import { resendConfirmationEmail } from '../../../stores/action'
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
-    ScrollView,
     StyleSheet,
     Image,
-    BackHandler,
-    ActivityIndicator,
-    SafeAreaView
 } from 'react-native'
 
 
@@ -22,10 +16,9 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-    resendConfirmationEmail
 }
 
-const SuccessSignUp = ({navigation, resendConfirmationEmail}) => {
+const SuccessSignUp = ({navigation,}) => {
     const [displayTime, setDisplayTime] = useState(30);
     const [countDown, setCountDown] = useState(true)
     const [timeCreated, setTimeCreated] = useState(new Date())
@@ -45,7 +38,6 @@ const SuccessSignUp = ({navigation, resendConfirmationEmail}) => {
     function resendEmail(){
         setCountDown(true)
         setDisplayTime(30)
-        resendConfirmationEmail(email)
     }
 
      return(

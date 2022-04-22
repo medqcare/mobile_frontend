@@ -27,6 +27,7 @@ import { heightPercentageToDP } from 'react-native-responsive-screen';
 const dimHeight = Dimensions.get('window').height;
 
 function MedicalResume(props) {
+  const { userData } = props.userDataReducer
   const [dataMedRes, setDataMedres] = useState([]);
   const [resumeMedis, setResumeMedis] = useState(null);
   const [activePage, setActivePage] = useState(null);
@@ -34,16 +35,16 @@ function MedicalResume(props) {
   const [modalQR, setModalQR] = useState(false);
   const [modalKonfirmasi, setModalKonfirmasi] = useState(false);
   const [displayName, setDisplayName] = useState(
-    props.userData.lastName
-      ? props.userData.firstName + ' ' + props.userData.lastName
-      : props.userData.firstName
+    userData.lastName
+      ? userData.firstName + ' ' + userData.lastName
+      : userData.firstName
   );
   const [family, setFamily] = useState([]);
   const [accountOwner, setAccountOwner] = useState(props.userData);
   const [modalPatient, setModalPatient] = useState(false);
   const [patient, setPatient] = useState({
     patient: {
-      patientID: props.userData._id,
+      patientID: userData._id,
     },
   });
   const [loading, setLoading] = useState(false);
@@ -81,11 +82,11 @@ function MedicalResume(props) {
 
   useEffect(() => {
     let _family = {
-      ...props.userData,
+      ...userData,
     };
     delete _family.family;
     const temp = [_family];
-    props.userData.family.forEach((el) => {
+    userData.family.forEach((el) => {
       temp.push(el);
     });
     setFamily(family.concat(temp));

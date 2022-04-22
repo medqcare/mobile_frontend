@@ -11,49 +11,37 @@ import {
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { baseURL } from '../../../config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieLoader from 'lottie-react-native';
 import { dateWithDDMMMYYYYFormat } from '../../../helpers/dateFormat';
+import { getAllOrderHistory } from '../../../stores/action';
+import { BLUE_PRIMARY, GREEN, RED_500, WHITE_PRIMARY } from '../../../values/color';
 
-export default function Pemesanan(props) {
-  const [appoinment, setAppoinment] = useState([]);
+function Pemesanan(props) {
+  const { orderHistory, orderIsLoading } = props.historiesReducer;
   const [refreshing, setRefreshing] = useState(false);
-  const [Load, setLoad] = useState(false);
-
-  const _getData = async () => {
-    let token = await AsyncStorage.getItem('token');
-    token = JSON.parse(token).token;
-    return axios({
-      url: baseURL + `/api/v1/members/reservations/user?type=doctor`,
-      method: 'GET',
-      headers: {
-        Authorization: token,
-      },
-    });
-  };
 
   const _fetchDataAppoinment = async () => {
     try {
-      const { data: response } = await _getData();
-      const { reservations } = response?.data;
-      setAppoinment(
-        reservations.filter(({ status, isExpired }) => {
-          if (status !== 'booked') {
-            return true;
-          }
-
-          if (status === 'booked' && isExpired) {
-            return true;
-          }
-        })
-      );
+      await props.getAllOrderHistory();
     } catch (error) {
-      console.log(error);
       setRefreshing(false);
-    } finally {
-      setLoad(false);
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    _fetchDataAppoinment();
+  }, []);
+
+  useEffect(() => {
+    if (orderHistory) {
+      orderHistory.sort(function (a, b) {
+        var dateA = new Date(a.bookingSchedule);
+        var dateB = new Date(b.bookingSchedule);
+        return dateA - dateB;
+      });
+    }
+  }, [orderHistory]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -61,24 +49,31 @@ export default function Pemesanan(props) {
     setRefreshing(false);
   }, [refreshing]);
 
-  useEffect(() => {
-    setLoad(true);
-    _fetchDataAppoinment();
-  }, []);
-
-  useEffect(() => {
-    if (appoinment) {
-      appoinment.sort(function (a, b) {
-        var dateA = new Date(a.bookingSchedule);
-        var dateB = new Date(b.bookingSchedule);
-        return dateA - dateB;
-      });
+  const getStatus = (status) => {
+    switch (status) {
+      case 'Report Done':
+        return 'Telah Selesai';
+      case 'registered':
+        return 'Dalam Antrian';
+      case 'canceled':
+        return 'Batal';
     }
-  }, [appoinment]);
+  };
+
+  const getColorStatus = (status) => {
+    switch (status) {
+      case 'Report Done':
+        return GREEN;
+      case 'registered':
+        return WHITE_PRIMARY;
+      case 'canceled':
+        return RED_500;
+    }
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: '#181818', marginHorizontal: 5 }}>
-      {Load ? (
+      {orderIsLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
           autoPlay
@@ -86,143 +81,141 @@ export default function Pemesanan(props) {
         />
       ) : (
         <>
-          {appoinment.length ? (
+          {orderHistory.length ? (
             <FlatList
-              data={appoinment}
+              data={orderHistory}
               keyExtractor={(item) => item._id}
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }
-              renderItem={({ item }) => (
-                <TouchableOpacity style={styles.container}>
-                  <View
-                    style={{
-                      height: 30,
-                      backgroundColor: '#454545',
-                      alignItems: 'center',
-                      borderTopEndRadius: 5,
-                      borderTopStartRadius: 5,
-                    }}
-                  >
-                    <Text
+              renderItem={({ item }) => {
+                return (
+                  <TouchableOpacity style={styles.container}>
+                    <View
                       style={{
-                        color:
-                          item.status === 'canceled'
-                            ? '#EB5959'
-                            : item.status === 'Queueing'
-                            ? '#4BE395'
-                            : '#DDDDDD',
-                        fontStyle: 'italic',
-                        marginTop: 7,
-                        fontSize: 12,
+                        height: 30,
+                        backgroundColor: '#454545',
+                        alignItems: 'center',
+                        borderTopEndRadius: 5,
+                        borderTopStartRadius: 5,
+                        justifyContent: 'center'
                       }}
                     >
-                      {item.status === 'Report Done' ? 'Telah Selesai' : ''}
-                      {item.status === 'Queueing' ? 'Dalam Antrian' : ''}
-                      {item.status === 'canceled' ? 'Dibatalkan' : ''}
-                      {item.status === 'registered' ? 'Dalam Antrian' : ''}
-                      {item.isExpired && item.status === 'booked' ? 'Kadaluwarsa' : ''}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: '#2F2F2F',
-                      padding: 14,
-                      borderBottomStartRadius: 5,
-                      borderBottomEndRadius: 5,
-                    }}
-                  >
-                    <View style={{ flexDirection: 'row' }}>
-                      <View style={{ marginBottom: 5 }}>
-                        <View style={styles.borderImage}>
-                          <Image
-                            style={styles.image}
-                            source={{
-                              uri: item.doctor.doctorPhoto
-                                ? item.doctor.doctorPhoto
-                                : 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
-                            }}
-                          />
-                        </View>
-                      </View>
-                      <View style={{ marginRight: 30 }}>
-                        <Text style={styles.name}>
-                          {item.doctor.title} {item.doctor.doctorName}
-                        </Text>
-                        <Text style={styles.poli}>
-                          {item.doctor.doctorSpecialist}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={{ flex: 1 }}>
-                      <View style={styles.line} />
-                      <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
-                        {item.healthFacility.facilityName}
+                      <Text
+                        style={{
+                          color: getColorStatus(item.status),
+                          fontStyle: 'italic',
+                          fontSize: 12,
+                          fontWeight: "bold"
+                        }}
+                      >
+                        {getStatus(item.status)}
                       </Text>
-                      <View style={styles.time}>
-                        <Text style={styles.date}>
-                          {dateWithDDMMMYYYYFormat(
-                            new Date(
-                              item.bookingSchedule
-                                .split('/')
-                                .reverse()
-                                .join('/')
-                            )
-                          )}
-                        </Text>
-                        <View style={styles.dividingPoint}></View>
-                        <Text style={styles.clock}>{item.bookingTime}</Text>
-                      </View>
-                      <View style={styles.time}>
-                        <Text style={{ color: '#B5B5B5' }}>Nama Pasien : </Text>
-                        <Text style={{ color: '#DDDDDD' }}>
-                          {item.patient.patientName}
-                        </Text>
-                      </View>
                     </View>
                     <View
                       style={{
-                        marginTop: 20,
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
+                        backgroundColor: '#2F2F2F',
+                        padding: 14,
+                        borderBottomStartRadius: 5,
+                        borderBottomEndRadius: 5,
                       }}
                     >
-                      {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
-                      <TouchableOpacity
-                        onPress={() => {
-                          (async () => {
-                            try {
-                              const { data } = await axios({
-                                method: 'POST',
-                                url: `${baseURL}/api/v1/members/detailDoctor/${item.doctor.doctorID}`,
-                              });
-                              console.log(data);
-                              props.navigation.navigate('DetailDoctor', {
-                                data,
-                                back: 'Riwayat',
-                              });
-                            } catch (error) {
-                              console.log(error, 'error get Dockter');
-                            }
-                          })();
+                      <View style={{ flexDirection: 'row' }}>
+                        <View style={{ marginBottom: 5 }}>
+                          <View style={styles.borderImage}>
+                            <Image
+                              style={styles.image}
+                              source={{
+                                uri: item.doctor.doctorPhoto
+                                  ? item.doctor.doctorPhoto
+                                  : 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
+                              }}
+                            />
+                          </View>
+                        </View>
+                        <View style={{ marginRight: 30 }}>
+                          <Text style={styles.name}>
+                            {item.doctor.title} {item.doctor.doctorName}
+                          </Text>
+                          <Text style={styles.poli}>
+                            {item.doctor.doctorSpecialist}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={{ flex: 1 }}>
+                        <View style={styles.line} />
+                        <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
+                          {item.healthFacility.facilityName}
+                        </Text>
+                        <View style={styles.time}>
+                          <Text style={styles.date}>
+                            {dateWithDDMMMYYYYFormat(
+                              new Date(
+                                item.bookingSchedule
+                                  .split('/')
+                                  .reverse()
+                                  .join('/')
+                              )
+                            )}
+                          </Text>
+                          <View style={styles.dividingPoint}></View>
+                          <Text style={styles.clock}>{item.bookingTime}</Text>
+                        </View>
+                        <View style={styles.time}>
+                          <Text style={{ color: '#B5B5B5' }}>
+                            Nama Pasien :{' '}
+                          </Text>
+                          <Text style={{ color: '#DDDDDD' }}>
+                            {item.patient.patientName}
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          marginTop: 20,
+                          flexDirection: 'row',
+                          justifyContent: 'flex-end',
                         }}
                       >
-                        <View
-                          style={{
-                            backgroundColor: '#005EA2',
-                            borderRadius: 5,
-                            paddingVertical: 8,
-                            paddingHorizontal: 15,
+                        {/* <Text style={{marginTop: 10, color: '#F37335'}}>{item.status !== "canceled" ? 'Lihat Rekam Medis' : ''}</Text> */}
+                        <TouchableOpacity
+                          onPress={() => {
+                            (async () => {
+                              try {
+                                const { data } = await axios({
+                                  method: 'POST',
+                                  url: `${baseURL}/api/v1/members/detailDoctor/${item.doctor.doctorID}`,
+                                });
+                                console.log(data);
+                                props.navigation.navigate('DetailDoctor', {
+                                  data,
+                                  back: 'Riwayat',
+                                });
+                              } catch (error) {
+                                console.log(error, 'error get Dockter');
+                              }
+                            })();
                           }}
                         >
-                          <Text style={{ color: '#fff' }}>Buat Janji Lagi</Text>
-                        </View>
-                      </TouchableOpacity>
+                          <View
+                            style={{
+                              backgroundColor: '#005EA2',
+                              borderRadius: 5,
+                              paddingVertical: 8,
+                              paddingHorizontal: 15,
+                            }}
+                          >
+                            <Text style={{ color: '#fff' }}>
+                              Buat Janji Lagi
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              )}
+                  </TouchableOpacity>
+                );
+              }}
             />
           ) : (
             <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
@@ -332,3 +325,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
+
+const mapStateToProps = (state) => {
+  return state;
+};
+
+const mapDispatchToProps = {
+  getAllOrderHistory,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Pemesanan);

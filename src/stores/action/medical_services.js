@@ -1,57 +1,106 @@
 import axios from 'axios';
-import { baseURL } from '../../config';
-// import { medicalServices } from '../reducers/keys'
+import { ToastAndroid } from 'react-native';
+import { instance } from '../../config'
+import getToken from '../../helpers/localStorage/token';
+import keys from '../keys';
 
-// const { 
-//     SET_MEDICAL_SERVICES,
-//     SET_ERROR_MEDICAL_SERVICES,
-//     SET_LOADING_MEDICAL_SERVICES
-// } = medicalServices
+const { 
+    SET_MEDICAL_SERVICES,
+    SET_MEDICAL_SERVICES_CURRENTPAGE,
+    SET_MEDICAL_SERVICES_TYPE,
+    SET_MEDICAL_SERVICES_STATUS,
+    SET_MEDICAL_SERVICES_LOADING,
+    SET_MEDICAL_SERVICES_ERROR,
+} = keys.medicalServicesKeys
 
-const mobileMedicalServiceInstance = axios.create({
-	baseURL: `${baseURL}/api/v1/members/reservations/service`
-})
-
-export function getMedicalServices(type, status, page){
+export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices, setCurrentPage){
 	return async dispatch => {
 		try {
-			// await dispatch({
-            //     type: SET_LOADING_MEDICAL_SERVICES,
-            //     payload: true
-            // })
-			const { data } = await axios({
+			console.log('Application trying to find avaliable medical services')
+			console.log('type:', type)
+			console.log('status:', status)
+			console.log('page:', page)
+
+			if(addPage){
+				page += 1
+				setCurrentPage(page)
+			} else {
+				await dispatch({
+					type: SET_MEDICAL_SERVICES_LOADING,
+					payload: true
+				})
+			}
+
+			const { data } = await instance({
 				method: 'GET',
-				url: `${baseURL}/api/v1/members/medical/services?type=${type}&status=${status}&page=${page}`,
+				url: `medical/services?type=${type}&status=${status}&page=${page}`,
 			})
-			// await dispatch({
-            //     type: SET_LOADING_MEDICAL_SERVICES,
-            //     payload: false
-            // })
-			if(data) return data.data
-			return []
+
+			if(data.data) {
+				const { docs, totalDocs, limit, totalPages, page: dataPage, pagingCounter, hasPrevPage, hasNextPage, prevPage, nextPage } = data.data
+
+				if(docs.length === 0){
+					console.log(`Application didn't find any available services`)
+				} else if (page == 1){
+					await setMedicalServices(docs)
+					await dispatch({
+						type: SET_MEDICAL_SERVICES,
+						payload: docs
+					})
+					return hasNextPage
+				} else {
+					await setMedicalServices([...medicalServices, ...docs])
+					await dispatch({
+						type: SET_MEDICAL_SERVICES,
+						payload: [...medicalServices, ...docs]
+					})
+					return hasNextPage
+				}
+			}
 		}
 		catch(error){
-			console.log(error)
+			console.log(error.response.data)
 			console.log('error di action')
+		}
+		finally {
+			dispatch({
+      		  type: SET_MEDICAL_SERVICES_LOADING,
+      		  payload: false,
+      		});
 		}
 	}
 }
 
-export function createMedicalServiceReservation(bookData, token){
+export function createMedicalServiceReservation(bookData, setModal){
 	return async dispatch => {
 		try {
-			const { data } = await mobileMedicalServiceInstance({
+			await dispatch({
+				type: SET_MEDICAL_SERVICES_LOADING,
+				payload: true
+			})
+			console.log('Application is trying to make medical service reservation')
+			const token = await getToken()
+			const { data } = await instance({
 				method: 'POST',
+				url: `reservations/service`,
 				data: bookData,
 				headers: { Authorization: token },
 			})
-			return data
+
+			setModal(true)
+			
+			await dispatch({
+				type: SET_MEDICAL_SERVICES_LOADING,
+				payload: false
+			})
 		} catch (error) {
-			// console.log(error.response.data, 'Error in creating service reservation')
-			return error.response.data
+			if(error.response.data.message === 'patient already reserve for this service'){
+				await dispatch({
+					type: SET_MEDICAL_SERVICES_ERROR,
+					payload: error.response.data.message
+				})
+				ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
+			}
 		}
 	}
 }
-
-
-  

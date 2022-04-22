@@ -8,6 +8,7 @@ export default function DeleteAppointmentModal({
 }) {
   return (
     <Modal
+    onBackdropPress={() => setIsVisible(false)}
       isVisible={isVisible}
       swipeDirection={'down'}
       onSwipeComplete={() => {

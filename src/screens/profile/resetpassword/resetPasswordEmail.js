@@ -12,11 +12,6 @@ import {
 } from 'react-native';
 
 //action
-import {
-  resetPasswordEmail,
-  resetPasswordPhone,
-  setLoading,
-} from '../../../stores/action';
 import { ToastAndroid } from 'react-native';
 import GreyHeader from '../../../components/headers/GreyHeader';
 
@@ -26,7 +21,6 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  resetPasswordEmail,
 };
 
 const resetPasswdEmail = (props) => {
@@ -58,7 +52,7 @@ const resetPasswdEmail = (props) => {
 
   function Finalvalidation(email) {
     setLoad(false);
-    props.resetPasswordEmail(email, props.navigation.navigate, 'allertEmail');
+    // props.resetPasswordEmail(email, props.navigation.navigate, 'allertEmail');
   }
 
   return (

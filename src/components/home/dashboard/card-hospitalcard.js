@@ -1,24 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { connect } from 'react-redux';
-import axios from 'axios'
-import { baseURL } from '../../../config'
 
 const mapStateToProps = state => {
     return state
 }
 
-//   const mapDispatchToProps = {
-//     setCurrentLocation,
-//     changeLogin,
-//     GetUser
-//   }
-
-
-
 const cardCard = (props) => {
-    // console.log(props.userData, 'ini userData')
-    // const [dataHospital, setDataHospital] = useState(null)
     const { ID, NO_REKAM_MEDIS } = props.data
     return (
         <View style={styles.container}>

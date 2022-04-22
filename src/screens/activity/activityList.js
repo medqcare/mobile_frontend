@@ -5,120 +5,94 @@ import {
   Text,
   View,
   StatusBar,
-  Button,
-  ActivityIndicator,
-  ScrollView,
   FlatList,
-  TouchableOpacity,
   BackHandler,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/headers/GradientHeader';
 import Activity from './activity';
 import LottieLoader from 'lottie-react-native';
 
 //action
 import {
-  getTodayRegistration,
   getCurrentQueueingNumber,
+  getTodaysRegistration,
 } from '../../stores/action';
 
 const activityList = (props) => {
-  const [dateRef, setDateRef] = useState(null);
-  const [refresh, setRefresh] = useState(true);
-  const [registrationData, setRegistrationData] = useState(null);
+	const [refresh, setRefresh] = useState(true)
+	const { userData } = props.userDataReducer
+	const { queues, isLoading, error } = props.queuesReducer
 
-  useEffect(() => {
-    fetchdata();
-  }, [props.navigation.state.params, dateRef]);
+	useEffect(() => {
+		fetchdata();
+	}, [props.navigation.state.params]);
 
-  async function fetchdata() {
-    try {
-      await props
-        .getTodayRegistration(props.userData.userID._id)
-        .then(({ data }) => {
-          setRefresh(false);
-          setRegistrationData(data);
-          if (!dateRef) {
-            setDateRef(new Date());
-          }
-        })
-        .catch((error) => console.log(error));
-    } catch (error) {
-      console.log(error);
-    }
-  }
+	async function fetchdata() {
+		try {
+			const userID = userData.userID._id
+			await props.getTodaysRegistration(userID)
+			setRefresh(false)
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
-  BackHandler.addEventListener('hardwareBackPress', () => {
-    props.navigation.navigate('Home');
-    return true;
-  });
+	BackHandler.addEventListener('hardwareBackPress', () => {
+		props.navigation.navigate('Home');
+		return true;
+	});
 
-  // if (refresh) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <Header title={'Antrian'} navigate={props.navigation.navigate} />
-
-  // <LottieLoader
-  //   source={require('../animation/loading.json')}
-  //   loop
-  //   autoPlay
-  // />
-  //     </View>
-  //   );
-  // }
-
-  return (
-    <>
-      <Header title={'Antrian'} navigate={props.navigation.navigate} />
-      <View style={styles.container}>
-        {refresh ? (
-          <LottieLoader
-            source={require('../animation/loading.json')}
-            loop
-            autoPlay
-          />
-        ) : (
-          <View>
-            <>
-              {!props.todayActivity?.length && (
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginTop: 25,
-                  }}
-                >
-                  <Text style={{ color: '#fff' }}>
-                    Tidak ada daftar antrian
-                  </Text>
-                </View>
-              )}
-              {props.todayActivity && (
-                <FlatList
-                  data={props.todayActivity}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({ item: el }) => {
-                    return (
-                      <Activity
-                        flag={true}
-                        bookingID={el.bookingCode}
-                        reservationID={el.reservationID}
-                        queueId={JSON.stringify(el.queueID)}
-                        data={el}
-                        navigation={props.navigation}
-                      />
-                    );
-                  }}
-                  keyExtractor={(item) => item._id}
-                />
-              )}
-            </>
-          </View>
-        )}
-      </View>
-    </>
-  );
+  	return (
+    	<>
+      		<Header title={'Antrian'} navigate={props.navigation.navigate} />
+			<View style={styles.container}>
+				{isLoading ? (
+					<LottieLoader
+						source={require('../animation/loading.json')}
+						loop
+						autoPlay
+					/>
+				) : (
+					<View>
+						{!queues?.length && (
+							<View
+							style={{
+								justifyContent: 'center',
+								alignItems: 'center',
+								marginTop: 25,
+							}}
+							>
+							<Text style={{ color: '#fff' }}>
+								Tidak ada daftar antrian
+							</Text>
+							</View>
+						)}
+						{isLoading ? 
+							<LottieLoader
+							source={require('../animation/loading.json')}
+							loop
+							autoPlay
+							/> : 
+						queues && (
+							<FlatList
+								data={queues}
+								showsVerticalScrollIndicator={false}
+								renderItem={({ item: el }) => {
+									return (
+										<Activity
+											navigation={props.navigation}
+											data={el}
+										/>
+									);
+								}}
+								keyExtractor={(item) => item._id}
+							/>
+						)}
+					</View>
+				)}
+			</View>
+    	</>
+  	);
 };
 
 const mapStateToProps = (state) => {
@@ -126,8 +100,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  getTodayRegistration,
   getCurrentQueueingNumber,
+  getTodaysRegistration,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(activityList);
 

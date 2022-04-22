@@ -17,7 +17,7 @@ import {
 
 } from 'react-native';
 import Checkbox from 'expo-checkbox';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatNumberToRupiah } from '../../../helpers/formatRupiah';
 import {
   heightPercentageToDP,
@@ -30,17 +30,27 @@ import { Entypo, FontAwesome, FontAwesome5, } from '@expo/vector-icons'
 import { getMedicalServices } from '../../../stores/action'
 import LottieLoader from 'lottie-react-native'
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
+import keys from '../../../stores/keys';
+
+const { 
+    SET_MEDICAL_SERVICES,
+    SET_MEDICAL_SERVICES_CURRENTPAGE,
+    SET_MEDICAL_SERVICES_TYPE,
+    SET_MEDICAL_SERVICES_STATUS,
+    SET_MEDICAL_SERVICES_LOADING,
+    SET_MEDICAL_SERVICES_ERROR,
+} = keys.medicalServicesKeys
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
 
-function MedicalServices({navigation, userData, getMedicalServices, myLocation}) {
-	const [type, setType] = useState('UMUM')
-	const [status, setStatus] = useState(true)
-	const [page, setPage] = useState(1)
-	const [loading, setLoading] = useState(true)
+function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
+	const dispatch = useDispatch()
+	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage: currentPageR } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
-	const [medicalServices, setMedicalServices] = useState([])
+	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [hasNextPage, setHasNextPage] = useState(false)
 
 	// "docs",
 	// "totalDocs",
@@ -59,30 +69,9 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 
 	async function searchMedicalServices(addPage){
 		try {
-			console.log('Application trying to find avaliable medical services')
-			console.log('type:', type)
-			console.log('status:', status)
-			console.log('page:', page)
-			const result = await getMedicalServices(type, status, page)
-			setLoading(false)
-			if(result.length === 0) {
-				console.log(`Application didn't find any available services`)
-				return setMedicalServices([])
-			}
-			if (page == 1) {
-				setMedicalServices(result.docs)
-			} else {
-				setMedicalServices(medicalServices.concat(result.docs));
-			}
-			console.log(`Application found ${result.docs.length} medical service(s)`)
-			setLoading(false);
-
-			if(addPage){
-				const nextPage = page + 1;
-				setPage(nextPage);
-			}
-
-			console.log('All data fetched, no need to add page')
+			const returnHasNextPage = await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices, setCurrentPage)
+			if(returnHasNextPage) setHasNextPage(true)
+			else setHasNextPage(false)
 		}
 		catch(error){
 			console.log(error)
@@ -93,19 +82,24 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 	async function searchFunction(text){
 		if(text){
 			const lowerCase = text.toLowerCase()
-			const newMedicalServiceList = medicalServices.filter(el => el.name.toLowerCase().includes(lowerCase))
+			const newMedicalServiceList = medicalServicesR.filter(el => el.name.toLowerCase().includes(lowerCase))
 			setMedicalServices(newMedicalServiceList)
 		}
 		else {
-			searchMedicalServices()
+			setMedicalServices(medicalServicesR)
 		}
 	}
 
 	const onRefresh = useCallback(async () => {
-		setLoading(true)
-		setType('All');
-		setStatus(true);
-		setPage(1)
+		dispatch({
+			type: SET_MEDICAL_SERVICES_TYPE,
+			payload: 'UMUM'
+		})
+		dispatch({
+			type: SET_MEDICAL_SERVICES_STATUS,
+			payload: true
+		})
+		setCurrentPage(1)
 		searchMedicalServices();
 	}, [refreshLoading]);
 
@@ -142,14 +136,11 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 				}
 			} else clinicLocation = defaultLocation
 		}
-
-		const { lat: userLat, lng: userLng } = myLocation
+		const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
 		const distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
 		
 		return (
-			<View
-				style={styles.medicalServiceCardContainer}
-			>
+			<View style={styles.medicalServiceCardContainer}>
 				<View style={styles.leftContent}>
 					<View style={{marginBottom: 4}}>
 						<Text style={textStyles.nameColor}>{name}</Text> 
@@ -225,7 +216,7 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 			</View> */}
 
 			{/* Content */}
-			{loading ? (
+			{isLoading ? (
 				// <ActivityIndicator style={styles.noContentContainer} size={"small"} color={"blue"} />
 				<LottieLoader
 					source={require('../../animation/loading.json')}
@@ -235,6 +226,7 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 				/>
 			) :
 			( medicalServices.length > 0 ? (
+				<>
 				<FlatList
 					refreshControl={
 						<RefreshControl refreshing={refreshLoading} onRefresh={onRefresh} />
@@ -244,12 +236,21 @@ function MedicalServices({navigation, userData, getMedicalServices, myLocation})
 					keyExtractor={(item, index) => String(index)}
 					renderItem={renderMedicalService}
 					onEndReached={() => {
-						if (medicalServices.length >= 10) {
-							searchMedicalServices(true);
+						if(hasNextPage) {
+							console.log('Using searchMedicalService function')
+							searchMedicalServices(true)
 						}
-						}}
-						onEndReachedThreshold={1}
+					}}
+					onEndReachedThreshold={1}
+					ListFooterComponent={() => 
+						hasNextPage && (
+							<View style={{paddingVertical: 15}}>
+								<ActivityIndicator size={"large"} color={"white"} />
+							</View>
+						)
+					}
 				/>
+				</>
 			) :
 			(
 				<View style={styles.noContentContainer}>

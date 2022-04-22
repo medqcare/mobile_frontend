@@ -11,23 +11,22 @@ import {
   Dimensions,
   BackHandler,
 } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
 import {
-  setCurrentLocation,
-  changeLogin,
-  GetUser,
   setLoading,
   getDrugs,
   getReminders,
   setShowInstruction,
+  getLoggedData,
 } from '../../../stores/action';
 import { FontAwesome } from '@expo/vector-icons';
 import MenuNavigator from '../../../components/home/dashboard/menu-navigator';
 import RecentActivity from '../../../components/home/dashboard/recent-activity';
 import CardPromo from '../../../components/home/dashboard/card-promo';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import SearchBar from '../../../components/headers/SearchBar';
+
+import keys from '../../../stores/keys';
 
 import NewNotificationBell from '../../../assets/svg/home-blue/lonceng';
 import NoNotificationBell from '../../../assets/svg/NoNotificationBell';
@@ -47,7 +46,11 @@ import { baseURL } from '../../../config';
 
 const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
-  const [myLocation, setMyLocation] = useState(null);
+  const dispatch = useDispatch();
+  const { SET_USER_LOCATION } = keys.userLocationKeys;
+  const { userData, isLoading, error } = props.userDataReducer;
+  const { userLocation } = props.userLocationReducer;
+  const { showInstruction } = props.showInstructionReducer;
   const [load, setload] = useState(true);
   const [promos, setPromos] = useState([
     {
@@ -63,73 +66,50 @@ function HomePage(props) {
   const [fcmRegistered, setFcmRegistered] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          throw new Error('permission failed');
-        }
-
-        let location = await Location.getCurrentPositionAsync({});
-        props.setCurrentLocation({
-          lat: location.coords.latitude,
-          lng: location.coords.longitude,
-        });
-      } catch (error) {
-        console.log('Error Get Location', error.message);
-      }
-    })();
+    getLoggedData();
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+  
+  async function requestLocationPermission() {
+    let lat = null;
+    let lng = null;
     try {
-      const tokenString = await AsyncStorage.getItem('token');
-      if (!tokenString) {
-        setload(false);
-        return;
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('permission failed');
       }
-      const { token } = JSON.parse(tokenString);
-      await props.GetUser(token, props.navigation);
+
+      let location = await Location.getCurrentPositionAsync({});
+      lat = location.coords.latitude;
+      lng = location.coords.longitude;
+    } catch (error) {
+      if (userData) {
+        lat = userData.location.coordinates[1];
+        lng = userData.location.coordinates[0];
+      }
+      console.log('Error :', error.message);
+    } finally {
+      dispatch({
+        type: SET_USER_LOCATION,
+        payload: {
+          lat,
+          lng,
+        },
+      });
+    }
+  }
+
+  async function getLoggedData() {
+    try {
+      await props.getLoggedData(props.navigation);
     } catch (error) {
     } finally {
       setload(false);
     }
-  }, []);
-
-  useEffect(() => {
-
-    if (!props.userData) {
-      return
-    }
-
-    (async () => {
-      let lat = null;
-      let lng = null;
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          throw new Error('permission failed');
-        }
-
-        let location = await Location.getCurrentPositionAsync({});
-        lat = location.coords.latitude;
-        lng = location.coords.longitude;
-      } catch (error) {
-        lat = props.userData.location.coordinates[1];
-        lng = props.userData.location.coordinates[0];
-        console.log('Error :', error.message);
-      } finally {
-        setMyLocation({
-          lat,
-          lng,
-        });
-        props.setCurrentLocation({
-          lat,
-          lng,
-        });
-      }
-    })();
-  }, [props.userData]);
+  }
 
   useEffect(async () => {
     // Update firebase token to database
@@ -145,11 +125,11 @@ function HomePage(props) {
       return;
     }
 
-    if (!props.userData) {
+    if (!userData) {
       return;
     }
 
-    const { firebaseNotificationToken, _id: userID } = props.userData.userID;
+    const { firebaseNotificationToken, _id: userID } = userData.userID;
     if (firebaseNotificationToken === registerToken) {
       return;
     }
@@ -169,7 +149,7 @@ function HomePage(props) {
     } catch (error) {
       console.log(error.message, 'error update token');
     }
-  }, [registerToken, props.userData]);
+  }, [registerToken, userData]);
 
   const onRegister = (token) => {
     setRegisterToken(token.token);
@@ -195,7 +175,7 @@ function HomePage(props) {
         translucent={true}
         backgroundColor={'transparent'}
       />
-      {load ? (
+      {isLoading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}
           autoPlay
@@ -225,7 +205,7 @@ function HomePage(props) {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    paddingBottom: 2
+                    paddingBottom: 2,
                   }}
                 >
                   <Image
@@ -236,40 +216,43 @@ function HomePage(props) {
                     }}
                     source={require('../../../assets/png/MedQCareLogo.png')}
                   />
-                  {/* {props.userData && ( */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {props.userData && (
-                      <TouchableOpacity
-                        style={{ marginTop: 1 }}
-                        onPress={() => {
-                          props.navigation.navigate('NotificationStack');
-                        }}
-                      >
-                        {null ? (
-                          <NewNotificationBell />
-                        ) : (
-                          <NoNotificationBell />
-                        )}
-                      </TouchableOpacity>
-                    )}
+                  <View style={{ flexDirection: 'row' }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {userData && (
+                        <TouchableOpacity
+                          style={{ marginTop: 1 }}
+                          onPress={() => {
+                            props.navigation.navigate('NotificationStack');
+                          }}
+                        >
+                          {null ? (
+                            <NewNotificationBell />
+                          ) : (
+                            <NoNotificationBell />
+                          )}
+                        </TouchableOpacity>
+                      )}
+                    </View>
 
                     <TouchableOpacity
                       onPress={() => {
-                        props.userData ? props.navigation.navigate('ProfileStack') : props.navigation.navigate('SignIn')
+                        userData
+                          ? props.navigation.navigate('ProfileStack')
+                          : props.navigation.navigate('SignIn');
                       }}
                     >
                       <View style={{ marginLeft: 10 }}>
-                        {props.userData?.imageUrl ? (
+                        {userData?.imageUrl ? (
                           <Image
                             style={style.profilePicture}
                             source={{
-                              uri: props.userData.imageUrl
+                              uri: userData.imageUrl,
                             }}
                           />
                         ) : (
@@ -282,8 +265,8 @@ function HomePage(props) {
                       </View>
                     </TouchableOpacity>
                   </View>
-                  {/* )} */}
                 </View>
+
                 <SearchBar
                   placeholder={'cari dokter atau spesialis'}
                   onFocus={() =>
@@ -298,13 +281,10 @@ function HomePage(props) {
 
           <View style={style.container}>
             <View style={{ marginBottom: hp('2%') }}>
-              <MenuNavigator
-                navigation={props.navigation}
-                data={props.userData}
-              />
+              <MenuNavigator navigation={props.navigation} data={userData} />
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {props.userData && (
+              {userData && (
                 <View style={{ marginBottom: hp('4%') }}>
                   <Text
                     style={[
@@ -320,10 +300,7 @@ function HomePage(props) {
                 </View>
               )}
               <View style={{ marginBottom: hp('4%') }}>
-                <ActivityAction
-                  navigation={props.navigation}
-                  data={props.userData}
-                />
+                <ActivityAction navigation={props.navigation} data={userData} />
               </View>
               <View style={{ marginBottom: hp('2%') }}>
                 <FlatList
@@ -339,9 +316,8 @@ function HomePage(props) {
         </>
       )}
       <InstructionModal
-        visible={props.showInstruction}
+        visible={showInstruction}
         onFinishOrSkip={() => {
-          // setModalInstruction(false);
           props.setShowInstruction(false);
         }}
       />
@@ -436,12 +412,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   setLoading,
-  setCurrentLocation,
-  changeLogin,
-  GetUser,
   getDrugs,
   getReminders,
   setShowInstruction,
+  getLoggedData,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

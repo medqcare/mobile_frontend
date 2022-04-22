@@ -1,7 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 import {
   Text,
   View,
@@ -15,43 +14,28 @@ import {
 import { TextInput } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
 import IconLock from '../../../assets/svg/IconLock';
-import { baseURL } from '../../../config';
+import { verirfyPassword } from '../../../stores/action'
 
 function VerifyPassword(props) {
+  const { userData, isLoading } = props.userDataReducer
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
-  const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async () => {
     try {
-      setLoading(true);
-      const tokenString = await AsyncStorage.getItem('token');
-      const { token } = JSON.parse(tokenString);
-      const { email } = props.userData.userID;
-      const { data } = await axios({
-        url: baseURL + '/api/v1/members/verify/password',
-        method: 'POST',
-        headers: {
-          Authorization: token,
-        },
-        data: {
-          password,
-          email,
-        },
-      });
-      console.log(data);
+      const { email } = userData.userID;
       const onSuccess = props.navigation.getParam('onSuccess');
-      if (typeof onSuccess === 'function') {
-        ToastAndroid.show('Verifikasi Berhasil', ToastAndroid.LONG);
-        onSuccess();
+      const payload = {
+        password,
+        email
       }
+      await props.verirfyPassword(payload, onSuccess)
     } catch (error) {
       ToastAndroid.show(
         'Verifikasi gagal, silahkan coba lagi',
         ToastAndroid.LONG
       );
     } finally {
-      setLoading(false);
       setPassword('');
     }
   };
@@ -97,9 +81,9 @@ function VerifyPassword(props) {
           <TouchableOpacity
             style={styles.buttonPrimaryWrapper}
             onPress={onSubmitHandler}
-            disabled={loading}
+            disabled={isLoading}
           >
-            {loading ? (
+            {isLoading ? (
               <ActivityIndicator color={'#DDDDDD'} size={'small'} />
             ) : (
               <Text style={styles.buttonPrimaryText}>Verifikasi</Text>
@@ -109,7 +93,7 @@ function VerifyPassword(props) {
         <TouchableOpacity
           style={styles.buttonSecondaryWrapper}
           onPress={() => props.navigation.pop()}
-          disabled={loading}
+          disabled={isLoading}
         >
           <Text style={styles.buttonSecondaryText}>Batal</Text>
         </TouchableOpacity>
@@ -196,4 +180,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => state;
 
-export default connect(mapStateToProps)(VerifyPassword);
+const mapDispatchToProps = {
+  verirfyPassword
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(VerifyPassword);

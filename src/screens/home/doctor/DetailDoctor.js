@@ -19,7 +19,7 @@ import formatRP from '../../../helpers/rupiah';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { baseURL } from '../../../config';
-import { addDoctorFavorite } from '../../../stores/action';
+import { addFavoriteDoctor, removeFavoriteDoctor } from '../../../stores/action';
 import LottieLoader from 'lottie-react-native';
 import ArrowDown from '../../../assets/svg/ArrowDown';
 import ArrowUp from '../../../assets/svg/ArrowUp';
@@ -36,6 +36,7 @@ const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
 function DetailDoctorPage(props) {
+  const { userData, isLoading, error } = props.userDataReducer
   const calendarRef = useRef(null);
   const months = [
     'Januari',
@@ -108,7 +109,6 @@ function DetailDoctorPage(props) {
 
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
   const [bookingTime, setBookingTime] = useState('');
-  console.log(new Date().toUTCString(), "hari ini")
   // const [lang, lat] = clinic.Location.coordinates;
   const findDistance = (item) => {
     const lat = item.location.coordinates[0];
@@ -213,14 +213,14 @@ function DetailDoctorPage(props) {
 
   useEffect(() => {
     findFavorite();
-  }, [props.userData]);
+  }, [userData]);
 
   const findFavorite = () => {
-    // console.log(props.userData)
-    if (props.userData && dataDoctor) {
-      // console.log(props.userData.doctorFavorites.length, '+++++++++')
-      if (props.userData.doctorFavorites.length > 0) {
-        props.userData.doctorFavorites.find(function (value, index) {
+    // console.log(userData)
+    if (userData && dataDoctor) {
+      // console.log(userData.doctorFavorites.length, '+++++++++')
+      if (userData.doctorFavorites.length > 0) {
+        userData.doctorFavorites.find(function (value, index) {
           // console.log(index, '=', value)
           if (value._id == dataDoctor._id) {
             setThisFavorite(true);
@@ -228,45 +228,19 @@ function DetailDoctorPage(props) {
         });
       } else {
         setThisFavorite(false);
-        console.log('kosong');
+        console.log('Tidak ada doktor favorit');
       }
     }
   };
 
   const changeTapLove = async () => {
-    if (!thisFavorite) {
-      let dataNew = {
-        ...props.userData,
-        doctorFavorites: props.userData.doctorFavorites.concat(dataDoctor),
-      };
-      props.addDoctorFavorite(dataNew);
-      console.log('Lol', props.userData.doctorFavorites.length);
-      await AsyncStorage.setItem(
-        'doctorFavorite',
-        JSON.stringify(dataNew.doctorFavorites)
-      );
-      console.log(await AsyncStorage.getItem('doctorFavorite'));
-      // findFavorite()
+    const changedStatus = !thisFavorite
+    const patientID = userData._id
+    if(!thisFavorite){
+      await props.addFavoriteDoctor(patientID, dataDoctor, changedStatus, setThisFavorite )
     } else {
-      if (dataDoctor) {
-        function arrayRemove(arr, value) {
-          return arr.filter(function (ele) {
-            return ele._id != value;
-          });
-        }
-        var result = arrayRemove(
-          props.userData.doctorFavorites,
-          dataDoctor._id
-        );
-        // console.log(result, 'ini sisa nya')
-        let dataSend = { ...props.userData, doctorFavorites: result };
-        props.addDoctorFavorite(dataSend);
-        await AsyncStorage.setItem(
-          'doctorFavorite',
-          JSON.stringify(dataSend.doctorFavorites)
-        );
-        setThisFavorite(false);
-      }
+      const doctorID = dataDoctor._id
+      await props.removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite)
     }
   };
 
@@ -274,7 +248,7 @@ function DetailDoctorPage(props) {
     if (bookingTime === '') {
       ToastAndroid.show('Silahkan pilih tanggal janji', ToastAndroid.LONG);
     } else {
-      props.userData
+      userData
         ? props.navigation.push('BuatJanji', { doctorData: dataDoctor })
         : (props.navigation.navigate('DetailDoctor'),
           props.navigation.navigate('Sign'));
@@ -433,7 +407,7 @@ function DetailDoctorPage(props) {
                 </Text>
               </View>
             </TouchableOpacity>
-            {props.userData && (
+            {userData && (
               <TouchableOpacity
                 onPress={() => {
                   changeTapLove();
@@ -1689,7 +1663,8 @@ const mapStateToProps = (state) => {
   return state;
 };
 const mapDispatchToProps = {
-  addDoctorFavorite,
+  addFavoriteDoctor,
+  removeFavoriteDoctor
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailDoctorPage);
