@@ -21,6 +21,8 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.microsoft.codepush.react.CodePush;
+
 public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
     this,
@@ -47,6 +49,11 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected JSIModulePackage getJSIModulePackage() {
       return new ReanimatedJSIModulePackage();
+    }
+
+    @Override
+    protected String getJSBundleFile() {
+      return CodePush.getJSBundleFile();
     }
   });
 
