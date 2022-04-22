@@ -86,8 +86,10 @@ function HomePage(props) {
       lat = location.coords.latitude;
       lng = location.coords.longitude;
     } catch (error) {
-      lat = userData.location.coordinates[1];
-      lng = userData.location.coordinates[0];
+      if (userData) {
+        lat = userData.location.coordinates[1];
+        lng = userData.location.coordinates[0];
+      }
       console.log('Error :', error.message);
     } finally {
       dispatch({
