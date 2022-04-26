@@ -9,34 +9,38 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
-  Linking,
 } from 'react-native';
 import { connect } from 'react-redux';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import formatRP from '../../../helpers/rupiah';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { baseURL } from '../../../config';
-import { addFavoriteDoctor, removeFavoriteDoctor } from '../../../stores/action';
+import {
+  addFavoriteDoctor,
+  removeFavoriteDoctor,
+} from '../../../stores/action';
 import LottieLoader from 'lottie-react-native';
 import ArrowDown from '../../../assets/svg/ArrowDown';
 import ArrowUp from '../../../assets/svg/ArrowUp';
 import ButtonMap from '../../../assets/svg/buttonMap';
-import RatingStar from '../../../assets/svg/RatingStar';
 import Money from '../../../assets/svg/Money';
 import BuatJanji from '../../../assets/svg/BuatJanji';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
 import { checkDisabled } from '../../../helpers/disabledScheduleTime';
+import openMap from '../../../helpers/openMap';
+import {
+  BLACK_THIRD,
+  BLUE_PRIMARY,
+  WHITE_PRIMARY,
+} from '../../../values/color';
 
 const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
 function DetailDoctorPage(props) {
-  const { userData, isLoading, error } = props.userDataReducer
+  const { userData, isLoading, error } = props.userDataReducer;
   const calendarRef = useRef(null);
   const months = [
     'Januari',
@@ -109,17 +113,6 @@ function DetailDoctorPage(props) {
 
   const [chooseDate, setChooseDate] = useState(new Date().getDate());
   const [bookingTime, setBookingTime] = useState('');
-  // const [lang, lat] = clinic.Location.coordinates;
-  const findDistance = (item) => {
-    const lat = item.location.coordinates[0];
-    const lang = item.location.coordinates[1];
-    return getDistanceFromLatLonInKm(
-      lat,
-      lang,
-      props.myLocation.lat,
-      props.myLocation.lng
-    ).toFixed(1);
-  };
 
   Date.isLeapYear = function (year) {
     return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
@@ -170,36 +163,10 @@ function DetailDoctorPage(props) {
     return this;
   };
 
-  useEffect(() => {}, [dataDoctor, bookingTime, chooseDate]);
-
-  // useEffect(() => {
-  //   // console.log("===============masuk useeffect===================");
-  //   // console.log(_data, '------------');
-  //   axios({
-  //     method: 'POST',
-  //     url: `${baseURL}/api/v1/members/detailDoctor/${_data.doctorID}`,
-  //     // url: `${baseURL}/api/v1/members/detailDoctor/618ab3931dbe3c74a14d6a18`
-  //   })
-  //     .then(({ data }) => {
-  //       // console.log(data, '===============setelah axios===================');
-  //       // console.log(data);
-  //       setDataDoctor(data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err, 'error get Dockter');
-  //     });
-  // }, [_data]);
-
-  //   useEffect(() => {
-  //     // console.log("======================================");
-  //     // console.log(dataDoctor, "ini data dokter")
-  //     if (dataDoctor !== null) {
-  //       findFavorite();
-  //       getFacility();
-  //       // parsingData();
-  //     }
-  //   }, [dataDoctor]);
+  useEffect(() => {
+    setChooseDate(bookingSchedule.getDate());
+    // setCurrentSchedules()
+  }, []);
 
   useEffect(() => {
     !chooseDate ? setNewData(null) : null;
@@ -234,13 +201,23 @@ function DetailDoctorPage(props) {
   };
 
   const changeTapLove = async () => {
-    const changedStatus = !thisFavorite
-    const patientID = userData._id
-    if(!thisFavorite){
-      await props.addFavoriteDoctor(patientID, dataDoctor, changedStatus, setThisFavorite )
+    const changedStatus = !thisFavorite;
+    const patientID = userData._id;
+    if (!thisFavorite) {
+      await props.addFavoriteDoctor(
+        patientID,
+        dataDoctor,
+        changedStatus,
+        setThisFavorite
+      );
     } else {
-      const doctorID = dataDoctor._id
-      await props.removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite)
+      const doctorID = dataDoctor._id;
+      await props.removeFavoriteDoctor(
+        patientID,
+        doctorID,
+        changedStatus,
+        setThisFavorite
+      );
     }
   };
 
@@ -252,23 +229,6 @@ function DetailDoctorPage(props) {
         ? props.navigation.push('BuatJanji', { doctorData: dataDoctor })
         : (props.navigation.navigate('DetailDoctor'),
           props.navigation.navigate('Sign'));
-    }
-  };
-
-  const getFacility = () => {
-    let temp = null;
-    if (
-      dataDoctor !== null &&
-      dataDoctor.facility !== null &&
-      dataDoctor.facility.length !== 0
-    ) {
-      dataDoctor.facility.forEach((el, i) => {
-        if (el._id === _idHostpital) {
-          setFacility(el);
-        } else if (i === 0) {
-          setFacility(el);
-        }
-      });
     }
   };
 
@@ -293,16 +253,7 @@ function DetailDoctorPage(props) {
   };
 
   const about = () => {
-    // console.log('??', dataDoctor, '??');
-
-    // if (dataDoctor !== null && dataDoctor.doctorProfile !== null) {
-    //   if (dataDoctor.doctorProfile.abstract.length > 120) {
-    //     setDetProfile(false);
-    //   }
-    // }
-    // console.log(facility, 'fac address')
     if (facility !== null && facility.facilityAddress !== null) {
-      // console.log('masuk fac add not null')
       if (facility.facilityAddress.length > 50) {
         setShowAddress(false);
       }
@@ -329,35 +280,6 @@ function DetailDoctorPage(props) {
     return result;
   };
 
-  function parsingData() {
-    let day = {};
-    if (dataDoctor.facility !== null) {
-      dataDoctor.facility.forEach((el1) => {
-        Object.entries(el1.facilitySchedule).forEach((el2, index2) => {
-          if (index2 == 0) {
-            day[el1.facilityName] = el2;
-          }
-        });
-      });
-      setNewData(day);
-    }
-  }
-
-  const _openMap = (lat, lang) => {
-    console.log(lat, lang);
-    const scheme = Platform.select({
-      ios: 'maps:0,0?q=',
-      android: 'geo:0,0?q=',
-    });
-    const latLng = `${lat},${lang}`;
-    const label = 'Custom Label';
-    const url = Platform.select({
-      ios: `${scheme}${label}@${latLng}`,
-      android: `${scheme}${latLng}(${label})`,
-    });
-    Linking.openURL(url);
-  };
-
   const isNextMonthDisabled = () => {
     const dateNow = new Date();
     const yearNow = dateNow.getFullYear();
@@ -368,6 +290,14 @@ function DetailDoctorPage(props) {
     } else {
       return yearBooking.getMonth() === 0;
     }
+  };
+
+  const getBackgroundColorDateContainer = (date) => {
+    if (chooseDate == date) {
+      return BLUE_PRIMARY;
+    }
+
+    return BLACK_THIRD;
   };
 
   return (
@@ -548,7 +478,7 @@ function DetailDoctorPage(props) {
                           alignSelf: 'flex-start',
                           alignSelf: 'center',
                         }}
-                        onPress={() => _openMap(lat, lon)}
+                        onPress={() => openMap(lat, lon)}
                       >
                         <View
                           style={{
@@ -570,13 +500,6 @@ function DetailDoctorPage(props) {
                       <TouchableOpacity
                         onPress={() => {
                           setShowDetail(facilityIndex);
-                          // setNewData({
-                          // 	...newData,
-                          // 	[facilityName]: [
-                          // 		bookingDate.getDay(),
-                          // 		facilitySchedule[bookingDate.getDay()],
-                          // 	],
-                          // });
                           setDataDoctor({
                             ...dataDoctor,
                             healthFacility: {
@@ -587,6 +510,16 @@ function DetailDoctorPage(props) {
                               clinicIdWeb,
                             },
                           });
+                          const schedules = filteredSchedules.filter(
+                            ({ scheduleDay }) =>
+                              scheduleDay === bookingDate.getDay()
+                          );
+
+                          if (schedules.length === 0) {
+                            setChooseDate(null)
+                          }
+
+                          setCurrentSchedules(schedules);
                         }}
                       >
                         <View style={{ flexDirection: 'row' }}>
@@ -720,24 +653,20 @@ function DetailDoctorPage(props) {
                                 )}/${bookingDate.getFullYear()}`
                               ).getDay();
                               const displayDay = day[numberDay];
+                              const availableSchedules =
+                                filteredSchedules.filter((el) => {
+                                  const date = new Date();
+                                  date.setMonth(bookingSchedule.getMonth());
+                                  date.setDate(calcDate(key));
+                                  return el.scheduleDay === date.getDay();
+                                });
                               return (
                                 <TouchableOpacity
                                   key={key}
-                                  // disabled={
-                                  // 	!item.facilitySchedule[
-                                  // checkSchedule(key)
-                                  // 	]
-                                  // }
+                                  disabled={availableSchedules.length === 0}
                                   onPress={() => {
                                     bookingSchedule.setDate(calcDate(key));
-                                    const selectedDay =
-                                      bookingSchedule.getDay();
-                                    const newSchedules =
-                                      filteredSchedules.filter(
-                                        (el) => el.scheduleDay === selectedDay
-                                      );
-                                    setCurrentSchedules(newSchedules);
-
+                                    setCurrentSchedules(availableSchedules);
                                     setBookingTime('');
                                     setChooseDate(calcDate(key));
                                     checkSchedule(key);
@@ -761,9 +690,9 @@ function DetailDoctorPage(props) {
                                       width: 55,
                                       borderRadius: 12,
                                       backgroundColor:
-                                        chooseDate === calcDate(key)
-                                          ? '#005EA2'
-                                          : '#3F3F3F',
+                                        getBackgroundColorDateContainer(
+                                          calcDate(key)
+                                        ),
                                     }}
                                   >
                                     <Text
@@ -771,12 +700,10 @@ function DetailDoctorPage(props) {
                                         fontSize: 14,
                                         marginVertical: 10,
                                         textAlign: 'center',
-                                        color: '#DDDDDD',
-                                        // color: item.facilitySchedule[
-                                        // checkSchedule(key)
-                                        // ]
-                                        // ? '#DDDDDD'
-                                        // : '#727272',
+                                        color:
+                                          availableSchedules.length > 0
+                                            ? WHITE_PRIMARY
+                                            : '#727272',
                                       }}
                                     >
                                       {displayDay}
@@ -786,12 +713,10 @@ function DetailDoctorPage(props) {
                                         fontSize: 14,
                                         marginBottom: 15,
                                         textAlign: 'center',
-                                        color: '#DDDDDD',
-                                        // color: item.facilitySchedule[
-                                        // checkSchedule(key)
-                                        // ]
-                                        // ? '#DDDDDD'
-                                        // : '#727272',
+                                        color:
+                                          availableSchedules.length > 0
+                                            ? WHITE_PRIMARY
+                                            : '#727272',
                                       }}
                                     >
                                       {calcDate(key)}
@@ -1664,7 +1589,7 @@ const mapStateToProps = (state) => {
 };
 const mapDispatchToProps = {
   addFavoriteDoctor,
-  removeFavoriteDoctor
+  removeFavoriteDoctor,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(DetailDoctorPage);
