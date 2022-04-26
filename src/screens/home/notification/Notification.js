@@ -70,12 +70,17 @@ function Notification({ navigation, ...props }) {
     switch (notification.type) {
       case 'antrian': {
         navigation.navigate('ActivityStack');
-        break
+        break;
       }
 
-      case "reservasi": {
+      case 'reservasi': {
         navigation.navigate('AppointmentList');
-        break
+        break;
+      }
+
+      case 'reservasi:batal': {
+        navigation.navigate('Riwayat');
+        break;
       }
 
       default: {
