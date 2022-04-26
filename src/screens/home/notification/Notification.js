@@ -18,84 +18,70 @@ import EmptyNotificationLogo from '../../../assets/svg/EmptyNotificationLogo';
 import NotificationCard from '../../../components/home/NotificationCard';
 import LottieLoader from 'lottie-react-native';
 import { ActivityIndicator } from 'react-native-paper';
-import { setUserData, getAllNotifications, patchNotificationAsViewed } from '../../../stores/action';
-
+import {
+  getAllNotifications,
+  patchNotificationAsViewed,
+} from '../../../stores/action';
+import { setUserData } from '../../../stores/action/userData';
 const dimension = Dimensions.get('window');
 const dimHeight = dimension.height;
 const dimWidth = dimension.width;
 
 function Notification({ navigation, ...props }) {
-  const { userData } = props.userDataReducer
-  const { notifications: reducerNotifications, notificationsCount, isLoading, error } = props.notificationsReducer
-  // const [notifications, setNotifications] = useState([]);
-  // const [loading, setLoading] = useState(false);
+  const { userData } = props.userDataReducer;
+  const {
+    notifications: reducerNotifications,
+    notificationsCount,
+    isLoading,
+    error,
+  } = props.notificationsReducer;
   const [loadingActionClose, setLoadingActionClose] = useState(false);
 
   useEffect(async () => {
     try {
-      const parentID = userData.userID._id
-      const patientID = userData._id
-      await props.getAllNotifications(patientID, parentID)
-      // setLoading(true);
-      // const tokenString = await AsyncStorage.getItem('token');
-      // const { token } = JSON.parse(tokenString);
-      // const parentID = userData.userID._id;
-      // const patientID = userData._id;
-      // const { data } = await axios({
-      //   url: `${baseURL}/api/v1/members/notifications/${patientID}/${parentID}`,
-      //   method: 'GET',
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // });
-      // const { notifications } = data;
-      // console.log(notifications, 'notifications')
-      // setNotifications(notifications);
+      const parentID = userData.userID._id;
+      const patientID = userData._id;
+      await props.getAllNotifications(patientID, parentID);
     } catch (error) {
       console.log(error.message, 'this is error from notification screen');
-    } finally {
-      // setLoading(false);
     }
-
-    // return () => {
-    //   setNotifications([]);
-    // };
   }, []);
 
   const onButtonClosePressHandler = async (notificationId) => {
     try {
       setLoadingActionClose(true);
-      await props.patchNotificationAsViewed(notificationId, reducerNotifications, notificationsCount)
-      // const tokenString = await AsyncStorage.getItem('token');
-      // const { token } = JSON.parse(tokenString);
-      // const { data } = await axios({
-      //   url: `${baseURL}/api/v1/members/notifications/${notificationId}`,
-      //   method: 'PATCH',
-      //   headers: {
-      //     Authorization: token,
-      //   },
-      // });
-
-      // const result = reducerNotifications.filter(
-      //   (notif) => notif._id !== notificationId
-      // );
-      // setNotifications(result);
+      await props.patchNotificationAsViewed(
+        notificationId,
+        reducerNotifications,
+        notificationsCount
+      );
+      setUserData({
+        ...userData,
+        countNotification: userData.countNotification - 1,
+      });
     } catch (error) {
       console.log(error, 'this is error when button close pressed');
     } finally {
       setLoadingActionClose(false);
-      // const { countNotification: currentTotalNotification } = props.userData;
-      // const payload = {
-      //   ...props.userData,
-      //   countNotification: currentTotalNotification - 1
-      // };
-      // props.setUserData(payload)
     }
   };
 
   const onButtonSeeDetailPressHandler = (notification) => {
-    console.log('masuk');
-    navigation.navigate('NotificationDetail', { notification });
+    switch (notification.type) {
+      case 'antrian': {
+        navigation.navigate('ActivityStack');
+        break
+      }
+
+      case "reservasi": {
+        navigation.navigate('AppointmentList');
+        break
+      }
+
+      default: {
+        navigation.navigate('NotificationDetail', { notification });
+      }
+    }
   };
 
   const renderNotificationCard = ({ item }) => {
@@ -104,7 +90,7 @@ function Notification({ navigation, ...props }) {
         <NotificationCard
           notification={item}
           onButtonClosePress={() => onButtonClosePressHandler(item._id)}
-          onButtonDetailPress={() => onButtonSeeDetailPressHandler(item)}
+          onCardPress={() => onButtonSeeDetailPressHandler(item)}
         />
       </View>
     );
@@ -232,7 +218,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setUserData,
   getAllNotifications,
-  patchNotificationAsViewed
+  patchNotificationAsViewed,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notification);

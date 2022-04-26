@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   BackHandler,
+  Alert,
 } from 'react-native';
 import { connect, useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
@@ -72,7 +73,7 @@ function HomePage(props) {
   useEffect(() => {
     requestLocationPermission();
   }, []);
-  
+
   async function requestLocationPermission() {
     let lat = null;
     let lng = null;
@@ -156,6 +157,7 @@ function HomePage(props) {
     setFcmRegistered(true);
   };
 
+
   const notif = new NotifService(onRegister);
 
   BackHandler.addEventListener('hardwareBackPress', () => {
@@ -231,7 +233,7 @@ function HomePage(props) {
                             props.navigation.navigate('NotificationStack');
                           }}
                         >
-                          {null ? (
+                          {userData.countNotification ? (
                             <NewNotificationBell />
                           ) : (
                             <NoNotificationBell />

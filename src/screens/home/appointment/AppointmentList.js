@@ -6,14 +6,9 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  StyleSheet,
   BackHandler,
 } from 'react-native';
-import Modal from 'react-native-modal';
 import ListAppointment from '../../../components/home/appointment/list-appointment';
-import axios from 'axios';
-import { baseURL } from '../../../config';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../../components/headers/GradientHeader';
 
 import { searchAllReservations, cancelSelectedReservation } from '../../../stores/action';

@@ -5,6 +5,7 @@ export const BLUE_PRIMARY = '#005EA2';
 export const BLACK_PRIMARY = '#1F1F1F';
 export const BLUE_RADIO = '#1380C3';
 export const BLACK_SECONDARY = '#2F2F2F';
+export const BLACK_THIRD = '#3F3F3F'
 export const ORANGE_PRIMARY = '#F37335';
 export const GREY_BORDER_LINE = '#444444';
 export const RED_400 = '#f87171';
