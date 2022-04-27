@@ -46,13 +46,14 @@ const dimWidth = Dimensions.get('window').width;
 
 function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
 	const dispatch = useDispatch()
+	const { lat: userLat, lng: userLng } = userLocationReducer.userLocation;
+	console.log(userLocationReducer)
 	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage: currentPageR } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
 	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [hasNextPage, setHasNextPage] = useState(false)
 
-	// "docs",
 	// "totalDocs",
 	// "limit",
 	// "totalPages",
@@ -118,27 +119,32 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 
 		let clinicLocation;
 
+		console.log(clinic)
+
 		if(typeof clinic.location === "object"){
 			const { coordinates } = clinic.location
 			const [long, lat] = coordinates
-				clinicLocation = {
-					lat,
-					long
-				}
+			clinicLocation = { lat, long }
 		} else {
 			const parsedLocation = JSON.parse(clinic.location)
-			if(parsedLocation){
+
+			if (parsedLocation) {
 				const { coordinates } = parsedLocation
 				const [long, lat] = coordinates
 				clinicLocation = {
 					lat,
 					long
 				}
-			} else clinicLocation = defaultLocation
+			}
 		}
-		const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
-		const distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
-		
+
+		let distance = 0
+
+		if (userLat && userLng && clinicLocation) {
+		   distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
+		}
+
+
 		return (
 			<View style={styles.medicalServiceCardContainer}>
 				<View style={styles.leftContent}>
@@ -153,10 +159,12 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 						<Entypo name="location" size={12} color="#A5A5A5" />
 						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
+					{userLat && userLng && clinicLocation ? (
 					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
 					</View>
+					) : null}
 
 					<TouchableOpacity 
 						onPress={() => navigation.navigate('MedicalServiceDetail', { item })}
