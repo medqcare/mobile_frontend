@@ -10,7 +10,7 @@ import {
   FlatList,
   Modal,
 } from 'react-native';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import GradientHeader from '../../../components/headers/GradientHeader';
 import EmptyNotificationLogo from '../../../assets/svg/EmptyNotificationLogo';
 // import axios from 'axios';
@@ -28,6 +28,8 @@ const dimHeight = dimension.height;
 const dimWidth = dimension.width;
 
 function Notification({ navigation, ...props }) {
+  const dispatch = useDispatch();
+
   const { userData } = props.userDataReducer;
   const {
     notifications: reducerNotifications,
@@ -55,10 +57,11 @@ function Notification({ navigation, ...props }) {
         reducerNotifications,
         notificationsCount
       );
-      setUserData({
+      const { countNotification } = userData
+      dispatch(setUserData({
         ...userData,
-        countNotification: userData.countNotification - 1,
-      });
+        countNotification: countNotification - 1
+      }))
     } catch (error) {
       console.log(error, 'this is error when button close pressed');
     } finally {
