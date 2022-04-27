@@ -7,7 +7,10 @@ const {
 } = keys.userLocationKeys
 
 const initState = {
-    userLocation: null,
+    userLocation: {
+        lat: null,
+        lng: null
+    },
     isLoading: false,
     error: null
 }
