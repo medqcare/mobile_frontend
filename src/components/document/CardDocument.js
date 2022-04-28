@@ -10,6 +10,8 @@ import {
 import Ic_Dokumen from '../../assets/svg/ic_documen';
 import Ic_Option from '../../assets/svg/ic_option';
 import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
+import { GREY_SECONDARY, WHITE_PRIMARY, WHITE_SECONDARY } from '../../values/color';
+import { INTER_300, INTER_600 } from '../../values/font';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -58,11 +60,7 @@ export function CardDocument({
           </Text>
           {item.createdBy.name ? (
             <Text
-              style={{
-                color: '#b5b5b5',
-                fontSize: 12,
-                marginTop: 4,
-              }}
+              style={styles.textCreateBy}
             >
               {item.createdBy.type === 'doctor'
                 ? `dr. ${item.createdBy.name}`
@@ -76,7 +74,7 @@ export function CardDocument({
             justifyContent: 'space-between',
           }}
         >
-          <Text style={{ color: '#b5b5b5', fontSize: 10 }}>
+          <Text style={styles.textCreateBy}>
             {item.createdAt
               ? `Diterima ${dateWithDDMMMYYYYFormat(new Date(item.createdAt))}`
               : null}
@@ -110,8 +108,15 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   dokumentName: {
-    color: '#DDDDDD',
+    color: WHITE_PRIMARY,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontFamily: INTER_600,
+    fontWeight: '600',
+  },
+  textCreateBy: {
+    color: GREY_SECONDARY,
+    fontSize: 12,
+    marginTop: 4,
+    fontFamily: INTER_300
   },
 });
