@@ -134,7 +134,7 @@ android {
 
     defaultConfig {
         manifestPlaceholders = [appAuthRedirectScheme: 'dev.expo.app']
-        applicationId 'com.medqcare.app'
+        applicationId 'demo.medqcare.com'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -154,6 +154,12 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            storeFile file('medqcare_demo.keystore')
+            storePassword 'medqcare_demo_aps'
+            keyAlias 'medqcare_demo_aps'
+            keyPassword 'medqcare_demo_aps'
         }
     }
     buildTypes {

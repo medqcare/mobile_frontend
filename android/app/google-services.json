@@ -1,49 +1,34 @@
 {
   "project_info": {
-    "project_number": "419286487519",
-    "project_id": "medqcare-333108",
-    "storage_bucket": "medqcare-333108.appspot.com"
+    "project_number": "347395189230",
+    "project_id": "medqcare-demo",
+    "storage_bucket": "medqcare-demo.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:419286487519:android:bebf27eb92575158d5b46a",
+        "mobilesdk_app_id": "1:347395189230:android:71691e1fdcbd5547ad46ff",
         "android_client_info": {
-          "package_name": "com.medqcare.app"
+          "package_name": "demo.medqcare.com"
         }
       },
       "oauth_client": [
         {
-          "client_id": "419286487519-67g0cmun1op498q3csg50pkpj9b4oqj2.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.medqcare.app",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "419286487519-mjn10k3nr8jbm7siifib38vk2o7jqo03.apps.googleusercontent.com",
+          "client_id": "347395189230-q3goharoguhff1gbi2ercbmrb7k8tukq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCiEBVExLvxhnxfz2xZqjTXzvRYZSKXYMQ"
+          "current_key": "AIzaSyAxdgUw5YT6s9htNXlbt2otctcqwchiiMg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "419286487519-mjn10k3nr8jbm7siifib38vk2o7jqo03.apps.googleusercontent.com",
+              "client_id": "347395189230-q3goharoguhff1gbi2ercbmrb7k8tukq.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "419286487519-d4c4k85hmnlspuv44mj9khp5ve3jrgpo.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "host.exp.exponent"
-              }
             }
           ]
         }
