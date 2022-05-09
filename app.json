@@ -13,9 +13,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -23,7 +21,7 @@
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
       },
-      "bundleIdentifier": "com.medqcare.app"
+      "bundleIdentifier": "demo.medqcare.com"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +34,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.medqcare.app"
+      "package": "demo.medqcare.com"
     },
     "web": {
       "favicon": "./assets/favicon.png"
