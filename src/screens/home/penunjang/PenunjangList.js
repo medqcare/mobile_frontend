@@ -110,7 +110,6 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 	});
 
 	function renderMedicalService({item}){
-		// const { name, clinicName, address, distance, photo, price, discount } = item
 		const { clinic, discount, itemCheck, name, basePrice, price, schedule, status, photo } = item
 		const defaultLocation = {
 			lat: -6.2416152,
@@ -118,8 +117,6 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 		}
 
 		let clinicLocation;
-
-		console.log(clinic)
 
 		if(typeof clinic.location === "object"){
 			const { coordinates } = clinic.location
@@ -174,7 +171,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 				</View>
 
 				<View style={styles.rightContent}>
-					<Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
+					<Image source={{uri: photo != null && photo.url ? photo.url : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
 					<View 
 						style={{alignItems: 'flex-end'}}
 					>
