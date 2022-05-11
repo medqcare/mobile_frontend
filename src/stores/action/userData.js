@@ -16,6 +16,13 @@ const {
     SET_SIGNUP_ERROR
 } = keys.entryKeys
 
+export function setUserData(payload) {
+    return {
+        type: SET_USER_DATA,
+        payload: payload
+    }
+}
+
 export function createPatientAsUser(payload, modalSuccess, modalFailed, navigateTo){
     return async dispatch => {
         try {

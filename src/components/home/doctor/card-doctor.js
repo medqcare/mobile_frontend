@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import { connect } from 'react-redux';
 import formatRP from '../../../helpers/rupiah';
-import { INTER_300, INTER_400, INTER_500 } from '../../../values/font';
+import { INTER_200, INTER_300, INTER_400, INTER_500 } from '../../../values/font';
 import {
   BLACK_SECONDARY,
   GREY_SECONDARY,
@@ -46,7 +46,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
         />
       </View>
       <View style={styles.DetailDokter}>
-        <Text style={{ fontSize: 16, color: '#DDDDDD', fontFamily: INTER_500 }}>
+        <Text style={{ fontSize: 16, color: WHITE_PRIMARY, fontFamily: INTER_500 }}>
           {renderDoctorName()}
         </Text>
         <View
@@ -57,7 +57,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
             alignSelf: 'flex-start',
             alignItems: 'center',
             marginTop: 4,
-            marginBottom: 10
+            marginBottom: 10,
           }}
         >
           <Text style={styles.textSpecailist}>{renderDoctorSpecialist()}</Text>
@@ -78,7 +78,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
                 style={{
                   ...styles.TextContent,
                   color: WHITE_PRIMARY,
-                  fontFamily: INTER_400,
+                  fontFamily: INTER_500,
                 }}
               >
                 {formatRP(data.estPrice, 'IDR ')}

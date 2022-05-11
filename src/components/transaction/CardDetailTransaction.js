@@ -16,34 +16,14 @@ import { FlatList } from 'react-native-gesture-handler';
 import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 import { formatNumberToRupiah } from '../../helpers/formatRupiah';
 import getPaymentMethod from '../../helpers/getPaymentMethod';
-import { WHITE_PRIMARY } from '../../values/color';
+import { GREY_BORDER_LINE, ORANGE_PRIMARY, WHITE_PRIMARY } from '../../values/color';
+import TransactionStatus from '../TransactionStatus';
+import { INTER_400 } from '../../values/font';
+import { shareFilePDF } from '../../helpers/shareDocument';
 const dimHeight = Dimensions.get('window').height;
 
 export default function CardDetailTransaction({ transaction, props }) {
-  const getBookingTime = (stringBookingTime) => {
-    const bookingTime = stringBookingTime.split(' - ')[0];
-    return bookingTime;
-  };
-
   const payment = getPaymentMethod(transaction.paymentMethod);
-
-  const getTransactionStatus = (status) => {
-    switch (status) {
-      case 'success': {
-        return { name: 'Transaksi Sukses', style: { color: '#4ade80' } };
-      }
-
-      case 'fail': {
-        return { name: 'Transaksi Gagal', style: { color: '#ef4444' } };
-      }
-
-      default: {
-        return { name: 'Menunggu Pembayaran', style: { color: '#facc15' } };
-      }
-    }
-  };
-
-  const transactionStatus = getTransactionStatus(transaction.status);
 
   const gantiBahasa = (item) => {
     let result = item;
@@ -62,33 +42,6 @@ export default function CardDetailTransaction({ transaction, props }) {
     return result;
   };
 
-  const checkPermission = async () => {
-    const result = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-    );
-    return result;
-  };
-
-  const askPermission = async () => {
-    const result = await PermissionsAndroid.request(
-      'android.permission.WRITE_EXTERNAL_STORAGE'
-    );
-    return result;
-  };
-
-  const shareFile = async (selectedUrl) => {
-    (async () => {
-      const permission = await checkPermission();
-      if (!permission) {
-        await askPermission();
-      }
-
-      let fileUri = FileSystem.documentDirectory + 'struk.pdf';
-      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
-      await Sharing.shareAsync(uri);
-    })();
-  };
-
   return (
     <View style={styles.container}>
       <View
@@ -102,7 +55,7 @@ export default function CardDetailTransaction({ transaction, props }) {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
+                      uri: transaction.doctor.doctorPhoto ? transaction.doctor.doctorPhoto : 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
                     }}
                   />
                 </View>
@@ -206,13 +159,16 @@ export default function CardDetailTransaction({ transaction, props }) {
         <View style={styles.line} />
 
         {/* Transaction status & amount transaction */}
-        <View>
+        <View style={{marginBottom: 16, paddingBottom: 16, borderBottomWidth: 1.14, borderBottomColor: GREY_BORDER_LINE}}>
           <Text style={styles.textcontent}>
-            {transaction.healthFacility.facilityName}
+            {`Tempat Praktik\t: `}
+            <Text style={{ color: WHITE_PRIMARY }}>
+              {transaction.healthFacility.facilityName}
+            </Text>
           </Text>
           <Text style={styles.textcontent}>
-            Nama Pasien:{' '}
-            <Text style={{ color: '#DDDDDD' }}>
+            {`Nama Pasien\t\t: `}
+            <Text style={{ color: WHITE_PRIMARY }}>
               {transaction.patient.patientName}
             </Text>
           </Text>
@@ -221,19 +177,10 @@ export default function CardDetailTransaction({ transaction, props }) {
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            marginVertical: dimHeight * 0.01,
+            alignItems: 'center',
           }}
         >
-          <Text
-            style={{
-              color: transactionStatus.style.color,
-              fontSize: 12,
-              fontStyle: 'italic',
-              marginTop: dimHeight * 0.02,
-            }}
-          >
-            {transactionStatus.name}
-          </Text>
+          <TransactionStatus status={transaction.status} />
           <View style={{ flexDirection: 'column' }}>
             <Text
               style={{ fontSize: 12, color: '#B5B5B5', textAlign: 'right' }}
@@ -252,7 +199,7 @@ export default function CardDetailTransaction({ transaction, props }) {
             </Text>
             {transaction.status === 'success' && transaction.file.url !== '' && (
               <TouchableOpacity
-                style={{ marginTop: 15 }}
+                style={{ marginTop: 8 }}
                 onPress={() => {
                   props.navigation.navigate('ShowDokumen', {
                     uri: transaction.file.url,
@@ -260,13 +207,22 @@ export default function CardDetailTransaction({ transaction, props }) {
                     backTo: 'DetailTransaction',
                     option: {
                       name: 'share',
-                      action: () => shareFile(transaction.file.url),
+                      action: async () => {
+                        const filename = `struk_pembayaran_dokter_${transaction.doctor.doctorName}`;
+                        await shareFilePDF(transaction.file.url, filename)
+                      },
                     },
                   });
                 }}
               >
                 <Text
-                  style={{ color: '#F37335', fontSize: 11, textAlign: 'right' }}
+                  style={{
+                    textTransform: 'uppercase',
+                    textAlign: 'right',
+                    fontFamily: INTER_400,
+                    fontSize: 12,
+                    color: ORANGE_PRIMARY,
+                  }}
                 >
                   LIHAT STRUK
                 </Text>

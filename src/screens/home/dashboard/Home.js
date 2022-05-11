@@ -10,6 +10,7 @@ import {
   Image,
   Dimensions,
   BackHandler,
+  Alert,
 } from 'react-native';
 import { connect, useDispatch } from 'react-redux';
 import * as Location from 'expo-location';
@@ -72,7 +73,7 @@ function HomePage(props) {
   useEffect(() => {
     requestLocationPermission();
   }, []);
-  
+
   async function requestLocationPermission() {
     let lat = null;
     let lng = null;
@@ -86,8 +87,10 @@ function HomePage(props) {
       lat = location.coords.latitude;
       lng = location.coords.longitude;
     } catch (error) {
-      lat = userData.location.coordinates[1];
-      lng = userData.location.coordinates[0];
+      if (userData) {
+        lat = userData.location.coordinates[1];
+        lng = userData.location.coordinates[0];
+      }
       console.log('Error :', error.message);
     } finally {
       dispatch({
@@ -153,6 +156,7 @@ function HomePage(props) {
     setRegisterToken(token.token);
     setFcmRegistered(true);
   };
+
 
   const notif = new NotifService(onRegister);
 
@@ -229,7 +233,7 @@ function HomePage(props) {
                             props.navigation.navigate('NotificationStack');
                           }}
                         >
-                          {null ? (
+                          {userData.countNotification ? (
                             <NewNotificationBell />
                           ) : (
                             <NoNotificationBell />

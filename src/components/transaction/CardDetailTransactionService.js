@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  PermissionsAndroid,
+} from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 import IconClinic from '../../assets/svg/IconClinic';
 import IconTime from '../../assets/svg/IconTime';
 import IconUser from '../../assets/svg/IconUser';
@@ -17,6 +21,8 @@ import {
   WHITE_SECONDARY,
 } from '../../values/color';
 import { INTER_400 } from '../../values/font';
+import { shareFile, shareFilePDF } from '../../helpers/shareDocument';
+import TransactionStatus from '../TransactionStatus';
 
 function Gap({ height = 0, width = 0 }) {
   return <View style={{ width, height }}></View>;
@@ -24,69 +30,9 @@ function Gap({ height = 0, width = 0 }) {
 
 export default function CardDetailTransactionService({
   transaction,
+  status: transactionStatus,
   ...props
 }) {
-  const shareFile = async (selectedUrl) => {
-    (async () => {
-      const permission = await checkPermission();
-      if (!permission) {
-        await askPermission();
-      }
-
-      let fileUri = FileSystem.documentDirectory + 'struk.pdf';
-      const { uri } = await FileSystem.downloadAsync(selectedUrl, fileUri);
-      await Sharing.shareAsync(uri);
-    })();
-  };
-
-  const getTransactionStatus = (status) => {
-    switch (status) {
-      case 'success': {
-        return {
-          name: 'Transaksi Sukses',
-          style: { color: '#4ade80', backgroundColor: '#37423B' },
-        };
-      }
-
-      case 'fail': {
-        return {
-          name: 'Transaksi Gagal',
-          style: { color: '#ef4444', backgroundColor: '#402829' },
-        };
-      }
-
-      default: {
-        return {
-          name: 'Menunggu Pembayaran',
-          style: { color: '#facc15', backgroundColor: '#48380F' },
-        };
-      }
-    }
-  };
-
-  const renderTransactionStatus = () => {
-    const transactionStatus = getTransactionStatus(transaction.status);
-    return (
-      <View
-        style={{
-          backgroundColor: transactionStatus.style.backgroundColor,
-          paddingHorizontal: 10,
-          paddingVertical: 6,
-          borderRadius: 99,
-        }}
-      >
-        <Text
-          style={{
-            color: transactionStatus.style.color,
-            fontFamily: INTER_400,
-          }}
-        >
-          {transactionStatus.name}
-        </Text>
-      </View>
-    );
-  };
-
   const renderItem = ({ item }) => {
     return (
       <>
@@ -150,15 +96,15 @@ export default function CardDetailTransactionService({
       <Gap height={10} />
       <View>
         <View style={styles.bottomInfoWrapper}>
-          {renderTransactionStatus()}
+          <TransactionStatus status={transaction.status}/>
           <View>
             <Text style={styles.titleTotalPrice}>Total Bayar</Text>
             <Gap height={4} />
             <Text style={styles.totalPriceText}>
               {formatNumberToRupiah(transaction.amount)}
             </Text>
-            <Gap height={4} />
-            {transaction.status === 'success' && (
+            <Gap height={8} />
+            {transaction.status === 'success' && transaction.file.url !== '' ? (
               <TouchableOpacity
                 onPress={() => {
                   props.navigation.navigate('ShowDokumen', {
@@ -167,14 +113,17 @@ export default function CardDetailTransactionService({
                     backTo: 'DetailTransaction',
                     option: {
                       name: 'share',
-                      action: () => shareFile(transaction.file.url),
+                      action: async () => {
+                        const filename = `struk_pembayaran_layanan_${transaction.services.name}`;
+                        await shareFilePDF(transaction.file.url, filename);
+                      },
                     },
                   });
                 }}
               >
                 <Text style={styles.textShowReceipt}>lihat struk</Text>
               </TouchableOpacity>
-            )}
+            ) : null}
           </View>
         </View>
       </View>

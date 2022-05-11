@@ -46,11 +46,14 @@ const dimWidth = Dimensions.get('window').width;
 
 function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
 	const dispatch = useDispatch()
-	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage } = medicalServicesReducer
+	const { lat: userLat, lng: userLng } = userLocationReducer.userLocation;
+	console.log(userLocationReducer)
+	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage: currentPageR } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
 	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
+	const [currentPage, setCurrentPage] = useState(1)
+	const [hasNextPage, setHasNextPage] = useState(false)
 
-	// "docs",
 	// "totalDocs",
 	// "limit",
 	// "totalPages",
@@ -67,7 +70,9 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 
 	async function searchMedicalServices(addPage){
 		try {
-			await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices)
+			const returnHasNextPage = await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices, setCurrentPage)
+			if(returnHasNextPage) setHasNextPage(true)
+			else setHasNextPage(false)
 		}
 		catch(error){
 			console.log(error)
@@ -87,17 +92,15 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 	}
 
 	const onRefresh = useCallback(async () => {
-		setType('All');
 		dispatch({
 			type: SET_MEDICAL_SERVICES_TYPE,
-			payload: 'All'
+			payload: 'UMUM'
 		})
-		setStatus(true);
 		dispatch({
 			type: SET_MEDICAL_SERVICES_STATUS,
 			payload: true
 		})
-		setPage(1)
+		setCurrentPage(1)
 		searchMedicalServices();
 	}, [refreshLoading]);
 
@@ -107,7 +110,6 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 	});
 
 	function renderMedicalService({item}){
-		// const { name, clinicName, address, distance, photo, price, discount } = item
 		const { clinic, discount, itemCheck, name, basePrice, price, schedule, status, photo } = item
 		const defaultLocation = {
 			lat: -6.2416152,
@@ -119,24 +121,27 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 		if(typeof clinic.location === "object"){
 			const { coordinates } = clinic.location
 			const [long, lat] = coordinates
-				clinicLocation = {
-					lat,
-					long
-				}
+			clinicLocation = { lat, long }
 		} else {
 			const parsedLocation = JSON.parse(clinic.location)
-			if(parsedLocation){
+
+			if (parsedLocation) {
 				const { coordinates } = parsedLocation
 				const [long, lat] = coordinates
 				clinicLocation = {
 					lat,
 					long
 				}
-			} else clinicLocation = defaultLocation
+			}
 		}
-		const { lat: userLat, lng: userLng } = userLocationReducer.userLocation
-		const distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
-		
+
+		let distance = 0
+
+		if (userLat && userLng && clinicLocation) {
+		   distance = Math.floor(getDistanceFromLatLonInKm(clinicLocation.lat, clinicLocation.long, userLat, userLng))
+		}
+
+
 		return (
 			<View style={styles.medicalServiceCardContainer}>
 				<View style={styles.leftContent}>
@@ -151,10 +156,12 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 						<Entypo name="location" size={12} color="#A5A5A5" />
 						<Text numberOfLines={2} style={[textStyles.greyColorWithPaddingLeftText, { width: '90%'}]}>{clinic.address}</Text> 
 					</View>
+					{userLat && userLng && clinicLocation ? (
 					<View style={{flexDirection: 'row', alignItems:'center', marginBottom: 7}}>
 						<FontAwesome name="location-arrow" size={12} color="#A5A5A5" />
 						<Text style={textStyles.greyColorWithPaddingLeftText}>{distance} Km</Text> 
 					</View>
+					) : null}
 
 					<TouchableOpacity 
 						onPress={() => navigation.navigate('MedicalServiceDetail', { item })}
@@ -164,7 +171,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 				</View>
 
 				<View style={styles.rightContent}>
-					<Image source={{uri: photo ? photo : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
+					<Image source={{uri: photo != null && photo.url ? photo.url : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1'}} style={{width:60,height:60}}/>
 					<View 
 						style={{alignItems: 'flex-end'}}
 					>
@@ -224,6 +231,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 				/>
 			) :
 			( medicalServices.length > 0 ? (
+				<>
 				<FlatList
 					refreshControl={
 						<RefreshControl refreshing={refreshLoading} onRefresh={onRefresh} />
@@ -232,13 +240,22 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 					data={medicalServices}
 					keyExtractor={(item, index) => String(index)}
 					renderItem={renderMedicalService}
-					// onEndReached={() => {
-					// 	if (medicalServices.length > 10) {
-					// 		searchMedicalServices(true);
-					// 	}
-					// }}
+					onEndReached={() => {
+						if(hasNextPage) {
+							console.log('Using searchMedicalService function')
+							searchMedicalServices(true)
+						}
+					}}
 					onEndReachedThreshold={1}
+					ListFooterComponent={() => 
+						hasNextPage && (
+							<View style={{paddingVertical: 15}}>
+								<ActivityIndicator size={"large"} color={"white"} />
+							</View>
+						)
+					}
 				/>
+				</>
 			) :
 			(
 				<View style={styles.noContentContainer}>

@@ -121,7 +121,7 @@ const ListApointment = (props) => {
                     dataPatient.doctor.doctorPhoto
                       ? { uri: dataPatient.doctor.doctorPhoto }
                       : {
-                          uri: 'https://www.isteducation.com/wp-content/plugins/learnpress/assets/images/no-image.png',
+                          uri: 'https://image.freepik.com/free-vector/doctor-character-background_1270-84.jpg',
                         }
                   }
                 />
@@ -208,7 +208,10 @@ const ListApointment = (props) => {
               <TouchableOpacity
                 onPress={() => {
                   if (typeof props.onCancelReservation === 'function') {
-                    props.onCancelReservation(props.data._id, props.data.orderType);
+                    props.onCancelReservation(
+                      props.data._id,
+                      props.data.orderType
+                    );
                   }
                 }}
               >

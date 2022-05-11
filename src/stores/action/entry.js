@@ -72,7 +72,7 @@ export function signIn(userData, navigation, modalF, navigateTo){
                     type: SET_SIGNIN_LOADING,
                     payload: false
                 })
-                if(userData.data === null) {
+                if(userData.data == null) {
                     navigation.navigate('UserDataCompletion');
                 } else {
                     // const [lng, lat] = data.data.location.coordinates
@@ -336,8 +336,6 @@ export function logout(navigation){
             })
 
             await AsyncStorage.removeItem('token');
-            await navigation.pop();
-            await navigation.navigate('Sign');
             
             ToastAndroid.show(`Logout success`, ToastAndroid.SHORT);
         } catch (error) {
