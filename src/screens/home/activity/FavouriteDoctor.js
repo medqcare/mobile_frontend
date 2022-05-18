@@ -6,7 +6,7 @@ import Header from '../../../components/headers/GradientHeader'
 import Icon from 'react-native-vector-icons/Ionicons'
 import IconAD from 'react-native-vector-icons/AntDesign'
 import ArrowBack from '../../../assets/svg/ArrowBack'
-import {addDoctorFavorite} from '../../../stores/action';
+import { removeFavoriteDoctor } from '../../../stores/action';
 import ListFav from '../activity/ListFav'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -24,18 +24,22 @@ const Favourite = (props) => {
     },[userData])
 
     const deleteFromFavorite = async (id) => {
-        const newData = favorit.filter(el => el._id !== id)
-        const dataSend = {...userData, doctorFavorites: newData}
-        props.addDoctorFavorite(dataSend)
         try {
-            await AsyncStorage.setItem(
-                'doctorFavorite',
-                JSON.stringify(newData),
+            const patientID = userData._id
+            const doctorID = id
+            const newData = favorit.filter(el => el._id !== id)
+            await props.removeFavoriteDoctor(
+                patientID,
+                doctorID,
+                null,
+                null,
+                newData,
+                setfavorit
             );
-        } catch (err) {
-            console.log('err');
+            
+        } catch (error) {
+            console.log(error, 'deleteFromFavorite in FavoriteDoctor.js')
         }
-        setfavorit(newData)
     }
     
     return (
@@ -75,7 +79,7 @@ const mapStateToProps = state => {
     return state;
 };
 const mapDispatchToProps = {
-    addDoctorFavorite,
+    removeFavoriteDoctor,
   };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Favourite)
