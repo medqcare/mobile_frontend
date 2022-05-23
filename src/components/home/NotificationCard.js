@@ -6,21 +6,23 @@ import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
 import {
   BLACK_SECONDARY,
   BLACK_THIRD,
+  GREY_BORDER_LINE,
   WHITE_PRIMARY,
   WHITE_SECONDARY,
 } from '../../values/color';
 import { INTER_400, INTER_700 } from '../../values/font';
 import Gap from '../Gap';
-const NotificationCard = ({
+function NotificationCard ({
   onCardPress,
   onButtonClosePress,
   notification,
-}) => {
+}) {
+  const { isViewed } = notification
   return (
     <TouchableOpacity
       style={{
         borderRadius: 4,
-        backgroundColor: BLACK_SECONDARY,
+        backgroundColor: isViewed ? BLACK_SECONDARY : GREY_BORDER_LINE,
         paddingHorizontal: 12,
         paddingVertical: 12,
       }}
@@ -54,7 +56,7 @@ const NotificationCard = ({
               marginBottom: 2,
             }}
           >
-            <Text style={{ color: '#A1A1A1', fontSize: 12 }}>
+            <Text style={{ color: '#A1A1A1', fontSize: 12, fontWeight: isViewed ? 'normal' : 'bold' }}>
               {dateWithDDMMMYYYYFormat(new Date(notification.createdAt))}
             </Text>
           </View>
@@ -70,6 +72,7 @@ const NotificationCard = ({
             color: WHITE_PRIMARY,
             fontSize: 16,
             fontFamily: INTER_700,
+            fontWeight: isViewed ? 'normal' : 'bold'
           }}
           numberOfLines={2}
         >
@@ -81,6 +84,7 @@ const NotificationCard = ({
             color: WHITE_SECONDARY,
             fontSize: 14,
             fontFamily: INTER_400,
+            fontWeight: isViewed ? 'normal' : 'bold'
           }}
           numberOfLines={3}
         >
