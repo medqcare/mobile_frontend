@@ -54,7 +54,9 @@ function Pemesanan(props) {
       case 'Report Done':
         return 'Telah Selesai';
       case 'registered':
-        return 'Dalam Antrian';
+        return 'Dalam Antrian'
+      case 'canceled by doctor':
+        return 'Dibatalkan oleh Dokter'
       case 'canceled':
         return 'Batal';
     }
@@ -66,6 +68,7 @@ function Pemesanan(props) {
         return GREEN;
       case 'registered':
         return WHITE_PRIMARY;
+      case 'canceled by doctor':
       case 'canceled':
         return RED_500;
     }

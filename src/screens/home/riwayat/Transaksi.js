@@ -130,19 +130,19 @@ function Transaksi(props) {
                   <View style={styles.line} />
                   <View style={styles.cardContentWrapper}>
                     <Text style={styles.textcontent}>
-                      {`Tempat Praktik\t : `}
+                      {`Tempat Praktik : `}
                       <Text style={{ color: WHITE_PRIMARY }}>
                         {item.healthFacility.facilityName}
                       </Text>
                     </Text>
                     <Text style={styles.textcontent}>
-                      {`Nama Pasien\t\t : `}
+                      {`Nama Pasien : `}
                       <Text style={{ color: WHITE_PRIMARY }}>
                         {item.patient.patientName}
                       </Text>
                     </Text>
                     <Text style={styles.textcontent}>
-                      {`Tanggal\t\t\t\t\t : `}
+                      {`Tanggal : `}
                       <Text style={{ color: WHITE_PRIMARY }}>
                         {getBookingSchedule(item.bookingSchedule)}
                       </Text>

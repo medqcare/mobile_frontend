@@ -12,6 +12,7 @@ import {
   Image,
   TextInput,
   BackHandler,
+  ActivityIndicator,
 } from 'react-native';
 
 import * as MediaLibrary from 'expo-media-library';
@@ -36,6 +37,7 @@ import {
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
 import RenameModal from '../../../components/modals/modalRename';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
+import UnauthorizedDelete from '../../../components/modals/UnauthorizedDelete';
 
 import LottieLoader from 'lottie-react-native';
 
@@ -44,13 +46,13 @@ import * as DocumentPicker from 'expo-document-picker';
 import ModalUploadDocument from '../../../components/modals/ModalUploadDocument';
 import { CardDocument } from '../../../components/document/CardDocument';
 import getFullName from '../../../helpers/getFullName';
-import { ActivityIndicator } from 'react-native-paper';
-import axios from 'axios';
-import { baseURL } from '../../../config';
+import { INTER_300 } from '../../../values/font';
+import { BLACK_SECONDARY, BLUE_LIGHT, GREY_SECONDARY } from '../../../values/color';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
-
+const ASCENDING = 'ASC'
+const DESCENDING = 'DESC'
 function DokumenList(props) {
   const dispatch = useDispatch();
   const { types: DEFAULT_TYPES, allowUploadDocument } =
@@ -65,7 +67,9 @@ function DokumenList(props) {
   const [modalOption, setModalOption] = useState(false);
   const [modalRename, setModalRename] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalUnauthorizedDelete, setModalUnauthorizedDelete] = useState(false)
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [createdBy, setCreatedBy] = useState(null)
   const [selectedId, setSelectedId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [selectedKey, setSelectedKey] = useState(null);
@@ -83,8 +87,7 @@ function DokumenList(props) {
     ...userData,
   });
   const [loadingPagination, setLoadingPagination] = useState(false);
-  // const [totalPages, setTotalPages] = useState(0);
-
+  const [sortType, setSortType] = useState(DESCENDING)
   useEffect(() => {
     let _family = {
       ...userData,
@@ -124,6 +127,17 @@ function DokumenList(props) {
     const patientId = patient._id;
     await fetchBySearchQuery(search, patientId);
   }, [search]);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        props.navigation.navigate('Home');
+        return true;
+      }
+    );
+    return () => backHandler.remove();
+  }, []);
 
   const _fetchData = async () => {
     let type =
@@ -309,7 +323,8 @@ function DokumenList(props) {
         break;
 
       case 'Hapus':
-        setModalDelete(true);
+        if(createdBy === 'doctor') setModalUnauthorizedDelete(true)
+        else setModalDelete(true);
         break;
 
       default:
@@ -379,6 +394,7 @@ function DokumenList(props) {
   };
 
   const onOptionPressedHandler = (item) => {
+    setCreatedBy(item.createdBy.type)
     setSelectedId(item._id);
     setSelectedName(item.name);
     setSelectedKey(item.key);
@@ -389,9 +405,9 @@ function DokumenList(props) {
   const typeStyleBehavior = (type) => {
     return {
       container: {
-        backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
+        backgroundColor: type === typeSelected ? '#212D3D' : BLACK_SECONDARY,
         borderWidth: 1,
-        borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
+        borderColor: type === typeSelected ? BLUE_LIGHT : 'transparent',
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 99,
@@ -401,9 +417,10 @@ function DokumenList(props) {
         marginRight: 8,
       },
       text: {
-        color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
+        color: type === typeSelected ? BLUE_LIGHT : GREY_SECONDARY,
         fontSize: 12,
         textTransform: 'capitalize',
+        fontFamily: INTER_300,
       },
     };
   };
@@ -416,6 +433,7 @@ function DokumenList(props) {
         onPress={() => {
           setTypeSelected(item);
           setPageNumber(1);
+          setSortType(DESCENDING)
         }}
       >
         <Text style={text}>{item}</Text>
@@ -423,16 +441,25 @@ function DokumenList(props) {
     );
   };
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      () => {
-        props.navigation.navigate('Home');
-        return true;
+  const sortMedicalDocuments = () => {
+
+
+
+    const docs = medicalDocuments.sort((a, b) => {
+      if (sortType === ASCENDING) {
+        setSortType(DESCENDING)
+        return new Date(b.createdAt) - new Date(a.createdAt)
+      } else {
+        setSortType(ASCENDING)
+        return new Date(a.createdAt) - new Date(b.createdAt);
       }
-    );
-    return () => backHandler.remove();
-  }, []);
+    })
+    dispatch({
+      type: SET_MEDICAL_DOCUMENTS,
+      payload: docs
+    })
+  }
+
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     props.navigation.pop();
@@ -523,8 +550,8 @@ function DokumenList(props) {
         <View style={styles.docsContainer}>
           {medicalDocuments.length && !isLoading ? (
             <View style={styles.document}>
-              <TouchableOpacity style={styles.textHeader}>
-                <Text style={styles.textItem}>Terakhir diunggah </Text>
+              <TouchableOpacity style={styles.textHeader} onPress={sortMedicalDocuments}>
+                <Text style={styles.textItem}>{sortType === DESCENDING ? 'Terbaru' : 'Terlama'}</Text>
                 <View style={{ marginTop: dimHeight * 0.005, paddingLeft: 10 }}>
                   <Ic_Sort />
                 </View>
@@ -656,6 +683,12 @@ function DokumenList(props) {
             optionRightText={'Hapus'}
             warning={'Yakin ingin menghapus dokumen ini'}
             load={modalLoad}
+          />
+          <UnauthorizedDelete
+            modal={modalUnauthorizedDelete}
+            optionLeftFunction={() => setModalUnauthorizedDelete(false)}
+            optionLeftText={'Tutup'}
+            warning={'Hanya Dokter yang bisa menghapus file ini'}
           />
         </View>
       </>

@@ -8,7 +8,7 @@ const {
 } = keys.allergyKeys
 
 const initState = {
-    allergies: [],
+    allergies: {},
     needInfo: false,
     isLoading: false,
     error: null
@@ -27,7 +27,7 @@ function allergiesReducer(state = initState, action){
         case SET_ALLERGIES_ERROR:
             return { ...state, error: payload, isLoading: false }
         case DELETE_ALLERGIES: 
-            return { ...state, allergies: []}
+            return { ...state, allergies: {}}
         default:
             return state
     }

@@ -137,12 +137,14 @@ export {
 
 import {
 	getAllNotifications,
-	patchNotificationAsViewed
+	patchNotificationAsViewed,
+	patchNotificationAsDeleted
 } from './notifications'
 
 export {
 	getAllNotifications,
-	patchNotificationAsViewed
+	patchNotificationAsViewed,
+	patchNotificationAsDeleted
 }
 
 

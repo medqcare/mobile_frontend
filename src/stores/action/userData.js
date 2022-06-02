@@ -16,6 +16,13 @@ const {
     SET_SIGNUP_ERROR
 } = keys.entryKeys
 
+export function setUserData(payload) {
+    return {
+        type: SET_USER_DATA,
+        payload: payload
+    }
+}
+
 export function createPatientAsUser(payload, modalSuccess, modalFailed, navigateTo){
     return async dispatch => {
         try {
@@ -526,7 +533,7 @@ export function addFavoriteDoctor(patientID, doctorData, changedStatus, setThisF
     }
 }
 
-export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite){
+export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite, newData, setFavorit){
     return async dispatch => {
         try {
             const token = await getToken()
@@ -545,7 +552,8 @@ export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThis
                 payload: data.data
             })
             ToastAndroid.show(data.message, ToastAndroid.SHORT);
-            setThisFavorite(changedStatus)
+            if(setThisFavorite) setThisFavorite(changedStatus)
+            if(newData) setFavorit(newData)
         } catch (error) {
             console.log(error.response.data)
         }

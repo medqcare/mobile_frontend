@@ -149,6 +149,8 @@ const ListFavDoctor = ({ data, navigation, deleteFav }) => {
         <Modal
           isVisible={modalKonfirmasi}
           swipeDirection={'down'}
+          onBackButtonPress={() => setModalKonfirmasi(false)}
+          onBackdropPress={() => setModalKonfirmasi(false)}
           onSwipeComplete={() => setModalKonfirmasi(false)}
           style={{
             justifyContent: 'flex-end',

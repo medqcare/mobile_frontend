@@ -217,8 +217,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
                             <View>
                                 <Image
                                     source={{
-                                    uri: photo
-                                        ? photo
+                                    uri: photo != null && photo.url ? photo.url
                                         : 'https://th.bing.com/th/id/OIP.-MMHEFs3KUsUPZMcRrHP-gHaEo?pid=ImgDet&rs=1',
                                     }}
                                     style={{

@@ -11,13 +11,12 @@ import {
   BackHandler,
 } from 'react-native';
 import { connect } from 'react-redux';
-import {  } from '../../../stores/action'
 import Header from '../../../components/headers/GradientHeader'
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import IconMCI from 'react-native-vector-icons/MaterialCommunityIcons'
-import ArrowBack from '../../../assets/svg/ArrowBack'
-import DokterIcon from "../../../assets/svg/Dokter"
+import { WHITE_PRIMARY } from '../../../values/color';
+import { INTER_400, INTER_500 } from '../../../values/font';
 
 
 const dimHeight = Dimensions.get('window').height
@@ -26,9 +25,8 @@ const dimWidth = Dimensions.get('window').width
 function DetailHospitalPage(props) {
   const dataHospital = props.navigation.getParam('data')
   const [facilityVisible, setFacilityVisible] = useState(false)
-  const [medicalVisible, setMedicalVisible] = useState(false)
   const [doctorVisible, setDoctorVisible] = useState(false)
-
+  console.log(dataHospital, 'hello')
   const _openMap = (lat, lang) => {
     const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${lat},${lang}`;
@@ -51,7 +49,7 @@ function DetailHospitalPage(props) {
       <Header title='Detail Klinik' navigateBack={'SearchHospital'} navigate={props.navigation.navigate}/>
       <ScrollView style={{ top: 0, position: 'relative', zIndex: 0 }}>
         <View style={header.container}>
-          <Image source={{ uri: (!dataHospital.photo) ? 'https://rspelabuhan.com/images/album/bsi-article/upload.jpg' : dataHospital.photo }}
+          <Image source={{ uri: (!dataHospital.facilityPhoto) ? 'https://rspelabuhan.com/images/album/bsi-article/upload.jpg' : dataHospital.facilityPhoto }}
             style={header.imageHeader} />
         </View>
         <View style={container.detailRS}>
@@ -109,8 +107,6 @@ function DetailHospitalPage(props) {
                 </TouchableOpacity>
                 {dataHospital !== 0 && dataHospital.doctors.length !== 0 &&
                   Object.entries(dataHospital.doctors).map((el, index) => {
-                    console.log(el, 'this is detail clinic')
-                    // console.log(el.photo, 'ini photo aja')
                     return (
                       <TouchableOpacity
                         onPress={() => {
@@ -230,12 +226,14 @@ const styles = StyleSheet.create({
 const textStyles = StyleSheet.create({
   namaRS: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#DDDDDD',
+    fontFamily: INTER_500,
+    color: WHITE_PRIMARY,
     width: '90%',
+    textTransform: 'capitalize'
   },
   detailRS: {
     fontSize: 14,
+    fontFamily: INTER_400,
     color: '#A5A5A5',
     marginHorizontal: 15,
     textAlign: 'justify'

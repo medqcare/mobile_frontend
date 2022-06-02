@@ -4,21 +4,20 @@ import {
   Text,
   StyleSheet,
   Dimensions,
-  Linking,
-  TouchableOpacity,
   Image,
 } from 'react-native';
 import { connect } from 'react-redux';
 import latLongToKM from '../../../helpers/latlongToKM';
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconEnt from 'react-native-vector-icons/Entypo';
+import { GREY_SECONDARY, WHITE_PRIMARY } from '../../../values/color';
+import { INTER_400, INTER_600 } from '../../../values/font';
 
 const mapStateToProps = (state) => {
   return state;
 };
 
 function CardHospital({ data, userLocationReducer }) {
-  // console.log(data, 'ini datanya --')
   return (
     <View>
       <View style={styles.Container}>
@@ -26,8 +25,8 @@ function CardHospital({ data, userLocationReducer }) {
           <Image
             style={styles.Photo}
             source={
-              data.photo
-                ? { uri: data.photo }
+              data.facilityPhoto
+                ? { uri: data.facilityPhoto }
                 : require('../../../assets/png/klinik.png')
             }
           />
@@ -37,8 +36,9 @@ function CardHospital({ data, userLocationReducer }) {
             style={{
               textTransform: 'capitalize',
               fontSize: 14,
-              color: '#DDDDDD',
+              color: WHITE_PRIMARY,
               marginBottom: 5,
+              fontFamily: INTER_600
             }}
           >
             {data.facilityName}
@@ -90,9 +90,6 @@ function CardHospital({ data, userLocationReducer }) {
   );
 }
 
-const minHeight = Dimensions.get('screen').height;
-const minWidth = Dimensions.get('screen').width;
-
 const styles = StyleSheet.create({
   Container: {
     minWidth: 300,
@@ -122,11 +119,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   TextContent: {
-    // backgroundColor:'#DACFEF',
     fontSize: 12,
-    color: 'gray',
+    color: GREY_SECONDARY,
     marginRight: 10,
     textAlign: 'justify',
+    fontFamily: INTER_400
   },
 });
 
