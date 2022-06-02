@@ -4,6 +4,8 @@ const {
     SET_NOTIFICATIONS,
     SET_NOTIFICATIONS_COUNT,
     SET_NOTIFICATIONS_LOADING,
+    SET_NOTIFICATION_ISVIEWED_LOADING,
+    SET_NOTIFICATION_ISDELETED_LOADING,
     SET_NOTIFICATIONS_ERROR,
 } = keys.notificationKeys
 
@@ -11,6 +13,8 @@ const initState = {
     notifications: [],
     notificationsCount: 0,
     isLoading: false,
+    isViewedLoading: false,
+    isDeletedLoading: false,
     error: null
 }
 
@@ -23,6 +27,10 @@ function notificationsReducer(state = initState, action){
             return { ...state, notificationsCount: payload }
         case SET_NOTIFICATIONS_LOADING:
             return { ...state, isLoading: payload }
+        case SET_NOTIFICATION_ISVIEWED_LOADING:
+            return { ...state, isViewedLoading: payload}
+        case SET_NOTIFICATION_ISDELETED_LOADING:
+            return { ...state, isViewedLoading: payload}
         case SET_NOTIFICATIONS_ERROR:
             return { ...state, error: payload, isLoading: false }
         default:

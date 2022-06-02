@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   FlatList,
+  BackHandler,
   Modal,
 } from 'react-native';
 import { connect, useDispatch } from 'react-redux';
@@ -21,6 +22,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import {
   getAllNotifications,
   patchNotificationAsViewed,
+  patchNotificationAsDeleted,
 } from '../../../stores/action';
 import { setUserData } from '../../../stores/action/userData';
 const dimension = Dimensions.get('window');
@@ -52,7 +54,7 @@ function Notification({ navigation, ...props }) {
   const onButtonClosePressHandler = async (notificationId) => {
     try {
       setLoadingActionClose(true);
-      await props.patchNotificationAsViewed(
+      await props.patchNotificationAsDeleted(
         notificationId,
         reducerNotifications,
         notificationsCount
@@ -69,28 +71,42 @@ function Notification({ navigation, ...props }) {
     }
   };
 
-  const onButtonSeeDetailPressHandler = (notification) => {
-    switch (notification.type) {
-      case 'antrian': {
-        navigation.navigate('ActivityStack');
-        break;
-      }
+  	const onButtonSeeDetailPressHandler = async (notification) => {
+		switch (notification.type) {
+			case 'antrian': {
+				navigation.navigate('ActivityStack');
+				break;
+			}
 
-      case 'reservasi': {
-        navigation.navigate('AppointmentList');
-        break;
-      }
+			case 'reservasi': {
+				navigation.navigate('AppointmentList');
+				break;
+			}
 
-      case 'reservasi:batal': {
-        navigation.navigate('Riwayat');
-        break;
-      }
+			case 'reservasi:batal': {
+				navigation.navigate('Riwayat');
+				break;
+			}
 
-      default: {
-        navigation.navigate('NotificationDetail', { notification });
-      }
-    }
-  };
+			default: {
+				navigation.navigate('NotificationDetail', { notification });
+			}
+		}
+
+		const { countNotification } = userData
+		dispatch(setUserData({
+			...userData,
+			countNotification: countNotification - 1
+		}))
+		
+		if(!notification.isViewed) {
+			await props.patchNotificationAsViewed(
+				notification._id,
+				reducerNotifications,
+				notificationsCount
+			);
+		}
+	};
 
   const renderNotificationCard = ({ item }) => {
     return (
@@ -103,6 +119,12 @@ function Notification({ navigation, ...props }) {
       </View>
     );
   };
+
+  	BackHandler.addEventListener('hardwareBackPress', () => {
+		navigation.pop();
+		return true;
+	});
+
   return (
     <View style={{ flex: 1 }}>
       <GradientHeader title="Notifikasi" navigate={navigation.navigate} />
@@ -227,6 +249,7 @@ const mapDispatchToProps = {
   setUserData,
   getAllNotifications,
   patchNotificationAsViewed,
+  patchNotificationAsDeleted,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Notification);

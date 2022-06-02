@@ -37,6 +37,7 @@ import {
 import DocumentOptionModal from '../../../components/modals/docOptionModal';
 import RenameModal from '../../../components/modals/modalRename';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
+import UnauthorizedDelete from '../../../components/modals/UnauthorizedDelete';
 
 import LottieLoader from 'lottie-react-native';
 
@@ -66,7 +67,9 @@ function DokumenList(props) {
   const [modalOption, setModalOption] = useState(false);
   const [modalRename, setModalRename] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalUnauthorizedDelete, setModalUnauthorizedDelete] = useState(false)
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [createdBy, setCreatedBy] = useState(null)
   const [selectedId, setSelectedId] = useState(null);
   const [selectedName, setSelectedName] = useState(null);
   const [selectedKey, setSelectedKey] = useState(null);
@@ -320,7 +323,8 @@ function DokumenList(props) {
         break;
 
       case 'Hapus':
-        setModalDelete(true);
+        if(createdBy === 'doctor') setModalUnauthorizedDelete(true)
+        else setModalDelete(true);
         break;
 
       default:
@@ -390,6 +394,7 @@ function DokumenList(props) {
   };
 
   const onOptionPressedHandler = (item) => {
+    setCreatedBy(item.createdBy.type)
     setSelectedId(item._id);
     setSelectedName(item.name);
     setSelectedKey(item.key);
@@ -678,6 +683,12 @@ function DokumenList(props) {
             optionRightText={'Hapus'}
             warning={'Yakin ingin menghapus dokumen ini'}
             load={modalLoad}
+          />
+          <UnauthorizedDelete
+            modal={modalUnauthorizedDelete}
+            optionLeftFunction={() => setModalUnauthorizedDelete(false)}
+            optionLeftText={'Tutup'}
+            warning={'Hanya Dokter yang bisa menghapus file ini'}
           />
         </View>
       </>

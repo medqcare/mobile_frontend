@@ -72,7 +72,6 @@ export function signIn(userData, navigation, modalF, navigateTo){
                     type: SET_SIGNIN_LOADING,
                     payload: false
                 })
-                console.log(userData, ">>>>>>")
                 if(userData.data == null) {
                     navigation.navigate('UserDataCompletion');
                 } else {
