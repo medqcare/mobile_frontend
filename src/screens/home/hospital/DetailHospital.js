@@ -49,7 +49,7 @@ function DetailHospitalPage(props) {
       <Header title='Detail Klinik' navigateBack={'SearchHospital'} navigate={props.navigation.navigate}/>
       <ScrollView style={{ top: 0, position: 'relative', zIndex: 0 }}>
         <View style={header.container}>
-          <Image source={{ uri: (!dataHospital.photo) ? 'https://rspelabuhan.com/images/album/bsi-article/upload.jpg' : dataHospital.photo }}
+          <Image source={{ uri: (!dataHospital.facilityPhoto) ? 'https://rspelabuhan.com/images/album/bsi-article/upload.jpg' : dataHospital.facilityPhoto }}
             style={header.imageHeader} />
         </View>
         <View style={container.detailRS}>

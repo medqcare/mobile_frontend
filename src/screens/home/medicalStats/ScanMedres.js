@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ToastAndroid,
+  BackHandler,
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,13 +23,44 @@ const ScanMedres = (props) => {
   console.log('This is patient ID (Scanner): ', patientID);
   const [loading, setLoading] = useState(false);
   const [scanned, setScanned] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
   const [loadingScan, setLoadingScan] = useState(false);
   const [isScanFailed, setIsScanFailed] = useState(false);
+
+  useEffect(async () => {
+    try {
+      await requestCameraPermissionsAsync()
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  async function requestCameraPermissionsAsync() {
+    try {
+      const result = await Camera.requestCameraPermissionsAsync();
+      const { status } = result;
+      setHasPermission(status);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     setLoadingScan(true);
     try {
+      if (hasPermission === null) {
+        return (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Text>Requesting for camera permission</Text>
+          </View>
+        );
+      }
+
+      if (hasPermission === false || hasPermission === 'denied') {
+        return <Text>No access to camera</Text>;
+      }
+
       let token = await AsyncStorage.getItem('token');
       token = JSON.parse(token).token;
       const payload = {
@@ -54,6 +86,10 @@ const ScanMedres = (props) => {
       setLoadingScan(false);
     }
   };
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    props.navigation.navigate('MedResList')
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
