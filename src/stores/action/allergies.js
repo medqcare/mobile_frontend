@@ -41,15 +41,17 @@ export function getPatientAllergies(patientID, isReservation){
             }
 
             if(isReservation){
+                // await dispatch({
+                //     type: SET_ALLERGIES,
+                //     payload: data.data
+                // })
+
                 await dispatch({
-                    type: SET_ALLERGIES,
-                    payload: data.data
-                })
-    
-                return await dispatch({
                     type: SET_ALLERGIES_LOADING,
                     payload: false
                 })
+
+                return data.data
             }
 
             let temp = {
