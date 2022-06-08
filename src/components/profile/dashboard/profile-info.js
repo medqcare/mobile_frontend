@@ -80,12 +80,14 @@ const profileInfo = (props) => {
       case 'Kamera':
         await props.navigation.navigate('ProfilePictureCamera', {
           destination: props.destination,
+          patientData: userData
         });
         break;
 
       case 'Galeri':
         await props.navigation.navigate('ProfilePictureGallery', {
           destination: props.destination,
+          patientData: userData
         });
         break;
 
