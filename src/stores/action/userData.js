@@ -136,7 +136,7 @@ export function getLoggedData(navigation){
     }
 }
 
-export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, userData) {
+export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, patientData) {
     return async (dispatch) => {
         try {
             await dispatch({
@@ -162,12 +162,12 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
             console.log('server has successfully updated Image Url')
 
             const { message, avatarLink } = data
-            userData.imageUrl = avatarLink
+            patientData.imageUrl = avatarLink
 
-            await dispatch({
-                type: SET_USER_DATA,
-                payload: userData
-            })
+            // await dispatch({
+            //     type: SET_USER_DATA,
+            //     payload: userData
+            // })
 
             await dispatch({
                 type: SET_USER_DATA_LOADING,

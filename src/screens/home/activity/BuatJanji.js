@@ -352,10 +352,10 @@ const buatJanji = (props) => {
 
   async function setSelectedValue(data) {
     const patientId = data._id;
-    await props.getPatientAllergies(patientId, true)
+    const reservationAllergies = await props.getPatientAllergies(patientId, true)
     
-    if(reducerAllergies.length > 0){
-      const newAllergiesList = reducerAllergies.map(el => {
+    if(reservationAllergies.length > 0){
+      const newAllergiesList = reservationAllergies.map(el => {
         el.patientID = el.patientID._id
         return el
       })
