@@ -23,8 +23,8 @@ const mapDispatchToProps = {
 };
 
 function ProfilePictureCamera({navigation, updateProfilePicture}){
-    const { userData, isLoading } = useSelector(state => state.userDataReducer)
-    const { destination } = navigation.state.params
+    const { isLoading } = useSelector(state => state.userDataReducer)
+    const { destination, patientData } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
@@ -59,7 +59,7 @@ function ProfilePictureCamera({navigation, updateProfilePicture}){
         
         if (!result.cancelled) {
             setImage(result.uri);
-            const _id = userData._id
+            const _id = patientData._id
             const fileToUpload = createFormData(result, _id)
             setImageToUpload(fileToUpload)
         }
@@ -69,11 +69,11 @@ function ProfilePictureCamera({navigation, updateProfilePicture}){
         // setLoad(true)
         // let token = await AsyncStorage.getItem('token')
         // token = JSON.parse(token).token
-        const id = userData._id
+        const id = patientData._id
 
         console.log('Application is sending data to store/action...')
 
-        await updateProfilePicture(id, imageToUpload, navigation.navigate, destination, userData)
+        await updateProfilePicture(id, imageToUpload, navigation.navigate, destination, patientData)
         // setLoad(false)
     }
 
