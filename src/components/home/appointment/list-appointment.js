@@ -176,7 +176,7 @@ const ListApointment = (props) => {
                 >
                   <View>
                     <View style={styles.time}>
-                      <Text style={{ color: '#B5B5B5' }}>Patient Name : </Text>
+                      <Text style={{ color: '#B5B5B5' }}>Nama Pasien : </Text>
                       <Text style={{ color: '#DDDDDD' }}>
                         {dataPatient.patient.patientName}
                       </Text>
@@ -188,6 +188,17 @@ const ListApointment = (props) => {
                       <Text style={styles.date}> - </Text>
                       <Text style={styles.clock}>
                         {dataPatient.bookingTime}
+                      </Text>
+                    </View>
+                    <View style={styles.time}>
+                      <Text style={{ color: '#B5B5B5' }}>Jumlah Antrian : </Text>
+                      <Text style={{ color: '#DDDDDD' }}>
+                        {dataPatient.totalQueue}
+                      </Text>
+                    </View><View style={styles.time}>
+                      <Text style={{ color: '#B5B5B5' }}>Antrian Saat Ini : </Text>
+                      <Text style={{ color: '#DDDDDD' }}>
+                      {dataPatient.currentQueue}
                       </Text>
                     </View>
                   </View>
