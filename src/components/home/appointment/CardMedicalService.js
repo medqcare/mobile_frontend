@@ -82,7 +82,7 @@ function CardMedicalService({ reservation, ...props }) {
           >
             <View>
               <View style={styles.rowCenterWrap}>
-                <Text style={styles.textSmallGrey}>Patient Name : </Text>
+                <Text style={styles.textSmallGrey}>Nama Pasien : </Text>
                 <Text style={styles.textSmallWhite}>
                   {reservation.patient.patientName}
                 </Text>
@@ -90,6 +90,18 @@ function CardMedicalService({ reservation, ...props }) {
               <View style={styles.rowCenterWrap}>
                 <Text style={styles.textSmallGrey}>
                   {reservation.bookingSchedule}
+                </Text>
+              </View>
+              <View style={styles.rowCenterWrap}>
+                <Text style={styles.textSmallGrey}>Jumlah Antrian : </Text>
+                <Text style={styles.textSmallWhite}>
+                  {reservation.totalQueue}
+                </Text>
+              </View>
+              <View style={styles.rowCenterWrap}>
+                <Text style={styles.textSmallGrey}>Antrian Saat Ini : </Text>
+                <Text style={styles.textSmallWhite}>
+                  {reservation.totalQueue}
                 </Text>
               </View>
             </View>
