@@ -136,7 +136,7 @@ export function getLoggedData(navigation){
     }
 }
 
-export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, userData) {
+export function updateProfilePicture(patientId, fileToUpload, navigateTo, destination, patientData) {
     return async (dispatch) => {
         try {
             await dispatch({
@@ -162,12 +162,12 @@ export function updateProfilePicture(patientId, fileToUpload, navigateTo, destin
             console.log('server has successfully updated Image Url')
 
             const { message, avatarLink } = data
-            userData.imageUrl = avatarLink
+            patientData.imageUrl = avatarLink
 
-            await dispatch({
-                type: SET_USER_DATA,
-                payload: userData
-            })
+            // await dispatch({
+            //     type: SET_USER_DATA,
+            //     payload: userData
+            // })
 
             await dispatch({
                 type: SET_USER_DATA_LOADING,
@@ -533,7 +533,7 @@ export function addFavoriteDoctor(patientID, doctorData, changedStatus, setThisF
     }
 }
 
-export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite){
+export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThisFavorite, newData, setFavorit){
     return async dispatch => {
         try {
             const token = await getToken()
@@ -552,7 +552,8 @@ export function removeFavoriteDoctor(patientID, doctorID, changedStatus, setThis
                 payload: data.data
             })
             ToastAndroid.show(data.message, ToastAndroid.SHORT);
-            setThisFavorite(changedStatus)
+            if(setThisFavorite) setThisFavorite(changedStatus)
+            if(newData) setFavorit(newData)
         } catch (error) {
             console.log(error.response.data)
         }

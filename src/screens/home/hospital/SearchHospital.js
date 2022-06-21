@@ -65,8 +65,8 @@ function SearchDoctorPage(props) {
 		}
 	};
 
-  const onRefresh = React.useCallback(() => {
-    fetchHospitalPagination();
+  const onRefresh = React.useCallback(async () => {
+    await props.searchAllClinics(userLocation, setShow)
   }, [loader]);
 
   BackHandler.addEventListener('hardwareBackPress', () => {

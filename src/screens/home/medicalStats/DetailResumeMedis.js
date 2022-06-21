@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  BackHandler,
 } from 'react-native';
 import { getFormattedDate } from '../../../helpers/dateFormat';
 import ButtonPrevious from '../../../assets/svg/ic_previous';
@@ -24,6 +25,11 @@ export default function DetailResumeMedis(props) {
   // useEffect(() => {
   //   setResumeMedis(data[activePage]);
   // }, [activePage]);
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+		props.navigation.pop();
+		return true;
+	});
 
   return (
     <View style={styles.container}>

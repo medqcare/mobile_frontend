@@ -31,7 +31,7 @@ export function getAllOrderHistory(){
                 },
             })
 
-            const reversedData = data.data.reservations.reverse()
+            const reversedData = data.reservations.reverse()
             let newOrderHistoryList = []
 
             for(let i = 0; i < reversedData.length; i++){

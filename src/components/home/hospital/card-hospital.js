@@ -25,8 +25,8 @@ function CardHospital({ data, userLocationReducer }) {
           <Image
             style={styles.Photo}
             source={
-              data.photo
-                ? { uri: data.photo }
+              data.facilityPhoto
+                ? { uri: data.facilityPhoto }
                 : require('../../../assets/png/klinik.png')
             }
           />
