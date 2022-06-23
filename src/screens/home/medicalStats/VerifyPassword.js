@@ -10,6 +10,7 @@ import {
   Platform,
   ToastAndroid,
   ActivityIndicator,
+  BackHandler
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
@@ -39,6 +40,11 @@ function VerifyPassword(props) {
       setPassword('');
     }
   };
+
+  BackHandler.addEventListener('hardwareBackPress', () => {
+		props.navigation.pop();
+		return true;
+	});
 
   return (
     <KeyboardAvoidingView
