@@ -76,6 +76,7 @@ export default function GradientSearchBarHeader({
                         <View style={{flexDirection: 'row'}}>
                             <View style={{width: wp('85%')}}>
                                 <SearchBar
+                                    autoFocus={true}
                                     placeholder={placeholder}
                                     onChangeText={(text) => searchFunction(text)}
                                 />
