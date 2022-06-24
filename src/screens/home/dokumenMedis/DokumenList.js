@@ -249,7 +249,7 @@ function DokumenList(props) {
 
   const documentAction = [
     {
-      label: 'Detail',
+      label: 'Rincian',
       url: require('../../../assets/png/documentPage/detail.png'),
     },
     {
@@ -257,11 +257,11 @@ function DokumenList(props) {
       url: require('../../../assets/png/documentPage/unduh.png'),
     },
     {
-      label: 'Share',
+      label: 'Bagikan',
       url: require('../../../assets/png/documentPage/ic_share.png'),
     },
     {
-      label: 'Ganti Nama',
+      label: 'Ubah Nama',
       url: require('../../../assets/png/documentPage/rename.png'),
     },
     {

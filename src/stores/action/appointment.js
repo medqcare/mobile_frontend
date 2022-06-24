@@ -29,7 +29,7 @@ export function searchAllReservations(status, type){
                 }
             })
 
-            const { reservations } = data.data
+            const { reservations } = data
             const doctorAppointments = []
             const medicalServiceAppointments = []
 
