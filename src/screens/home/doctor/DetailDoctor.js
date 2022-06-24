@@ -523,7 +523,7 @@ function DetailDoctorPage(props) {
                         }}
                       >
                         <View style={{ flexDirection: 'row' }}>
-                          <Text style={{ color: '#F37335' }}>Selengkapnya</Text>
+                          <Text style={{ color: '#F37335' }}>Pilih Jadwal</Text>
                           <View style={{ marginLeft: 8, marginTop: 5 }}>
                             <ArrowDown />
                           </View>
