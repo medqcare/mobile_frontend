@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 
 import Search from '../../assets/svg/Search';
 
-export default function GradientHeader({ onChangeText, onFocus, placeholder }) {
+export default function GradientHeader({ onChangeText, onFocus, placeholder, autoFocus }) {
   return (
     <View style={styles.container}>
       <View style={styles.searcharea}>
@@ -20,7 +20,7 @@ export default function GradientHeader({ onChangeText, onFocus, placeholder }) {
           placeholderTextColor="#A2A2A2"
           onChangeText={onChangeText || null}
           onFocus={onFocus || null}
-          autoFocus={true}
+          autoFocus={autoFocus}
         />
       </View>
       {/* <View style={{ marginTop: 28 }}>

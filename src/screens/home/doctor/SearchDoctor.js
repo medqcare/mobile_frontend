@@ -181,6 +181,7 @@ function SearchDoctorPage(props) {
               >
                 <View style={{ width: '90%' }}>
                   <SearchBar
+                    autoFocus={true}
                     placeholder={'cari dokter atau spesialis'}
                     onChangeText={(text) => _textChange(text)}
                   />
