@@ -31,6 +31,14 @@ import { getMedicalServices } from '../../../stores/action'
 import LottieLoader from 'lottie-react-native'
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
 import keys from '../../../stores/keys';
+import {
+	GREY_SECONDARY,
+	GREEN,
+	BLUE_PRIMARY,
+	BLACK_PRIMARY,
+	BLACK_SECONDARY,
+	GREY_BORDER_LINE
+} from '../../../values/color.js'
 
 const { 
     SET_MEDICAL_SERVICES,
@@ -47,30 +55,33 @@ const dimWidth = Dimensions.get('window').width;
 function MedicalServices({navigation, userData, getMedicalServices, userLocationReducer, medicalServicesReducer}) {
 	const dispatch = useDispatch()
 	const { lat: userLat, lng: userLng } = userLocationReducer.userLocation;
-	console.log(userLocationReducer)
 	const { medicalServices: medicalServicesR, isLoading, error, type, status, currentPage: currentPageR } = medicalServicesReducer
 	const [refreshLoading, setRefreshLoading] = useState(false)
 	const [medicalServices, setMedicalServices] = useState(medicalServicesR)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [hasNextPage, setHasNextPage] = useState(false)
-
-	// "totalDocs",
-	// "limit",
-	// "totalPages",
-	// "page",
-	// "pagingCounter",
-	// "hasPrevPage",
-	// "hasNextPage",
-	// "prevPage",
-	// "nextPage",
+	const [discountFilter, setDiscountFilter] = useState('')
 
 	useEffect(async () => {
 		await searchMedicalServices()
 	}, [])
 
-	async function searchMedicalServices(addPage){
+	async function changeDiscountFilter(dicountFilter) {
 		try {
-			const returnHasNextPage = await getMedicalServices(type, status, currentPage, medicalServicesR, addPage, setMedicalServices, setCurrentPage)
+			setCurrentPage(1)
+			setHasNextPage(false)
+			setDiscountFilter(dicountFilter)
+			await searchMedicalServices(null, dicountFilter, 1)
+		} catch(error) {
+			console.log(error, 'changeDiscountFilter function error')
+		}
+
+	}
+
+	async function searchMedicalServices(addPage, filter = '', currentPageParam){
+		try {
+			const currentPageInsideFunction = currentPageParam ? currentPageParam : currentPage
+			const returnHasNextPage = await getMedicalServices(type, status, currentPageInsideFunction, medicalServicesR, addPage, setMedicalServices, setCurrentPage, filter)
 			if(returnHasNextPage) setHasNextPage(true)
 			else setHasNextPage(false)
 		}
@@ -208,17 +219,44 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 			/>
 
 			{/* Map Selection */}
-			{/* <View style={styles.mapSelectionContainer}>
-				<View style={{paddingVertical: heightPercentageToDP('1%'),}}>
-					<Text style={textStyles.mapSelectionText}>Sekitar Anda</Text>
-				</View>
-				<TouchableOpacity
-					onPress={() => console.log('Ubah')}
-					style={styles.mapSelectionButton}
+			<View style={styles.mapSelectionContainer}>
+				<View 
+					style={{
+						paddingVertical: heightPercentageToDP('1%'),
+						marginVertical: heightPercentageToDP('1%'),
+						marginHorizontal: widthPercentageToDP('0.5%'),
+					}}
 				>
-					<Text style={textStyles.mapSelectionButtonText}>Ubah</Text>
-				</TouchableOpacity>
-			</View> */}
+					<Text style={textStyles.mapSelectionText}>Filter diskon</Text>
+				</View>
+				{discountFilter === 'discountedItems' ? 
+					<TouchableOpacity
+						onPress={() => {
+							changeDiscountFilter('noDiscount')
+						}}
+						style={styles.mapSelectionButton}
+					>
+						<Text style={textStyles.discountedItemText}>Penunjang berdiskon</Text>
+					</TouchableOpacity>
+					: discountFilter === 'noDiscount' ? 
+					<TouchableOpacity
+						onPress={() => {
+							changeDiscountFilter('')
+						}}
+						style={styles.mapSelectionButton}
+					>
+						<Text style={textStyles.noDiscountText}>Tidak ada diskon</Text>
+					</TouchableOpacity> :
+					<TouchableOpacity
+						onPress={() => {
+							changeDiscountFilter('discountedItems')
+						}}
+						style={styles.mapSelectionButton}
+					>
+						<Text style={textStyles.noFilterText}>Semua penunjang</Text>
+					</TouchableOpacity>
+				}
+			</View>
 
 			{/* Content */}
 			{isLoading ? (
@@ -243,7 +281,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 					onEndReached={() => {
 						if(hasNextPage) {
 							console.log('Using searchMedicalService function')
-							searchMedicalServices(true)
+							searchMedicalServices(true, discountFilter)
 						}
 					}}
 					onEndReachedThreshold={1}
@@ -281,8 +319,16 @@ const textStyles = StyleSheet.create({
 		color: '#A5A5A5'
 	},
 
-	mapSelectionButtonText: {
+	noFilterText: {
+		color: GREY_SECONDARY
+	},
+
+	noDiscountText: {
 		color: '#F37335'
+	},
+
+	discountedItemText: {
+		color: GREEN
 	},
 
 	whiteColorText: {
@@ -338,6 +384,10 @@ const styles = StyleSheet.create({
 	mapSelectionButton: {
 		paddingVertical: heightPercentageToDP('1%'),
 		paddingHorizontal: widthPercentageToDP('2.5%'),
+		marginVertical: heightPercentageToDP('1%'),
+		marginHorizontal: widthPercentageToDP('0.5%'),
+		borderRadius: 8,
+		backgroundColor: BLACK_PRIMARY,
 	},
 
 	contentContainer: {

@@ -4,7 +4,7 @@ function nikValidation(nik) {
   if (!stringNik) {
     return false;
   }
-  if (stringNik.length < 16) {
+  if (stringNik.length < 16 || stringNik.length > 16) {
     return false;
   }
 

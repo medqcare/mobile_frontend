@@ -1,14 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Image } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
 import Search from '../../assets/svg/Search';
-import IcFilter from '../../assets/svg/Filter';
 
-export default function GradientHeader({ onChangeText, onFocus, placeholder }) {
+export default function GradientHeader({ onChangeText, onFocus, placeholder, autoFocus }) {
   return (
     <View style={styles.container}>
       <View style={styles.searcharea}>
@@ -25,6 +20,7 @@ export default function GradientHeader({ onChangeText, onFocus, placeholder }) {
           placeholderTextColor="#A2A2A2"
           onChangeText={onChangeText || null}
           onFocus={onFocus || null}
+          autoFocus={autoFocus}
         />
       </View>
       {/* <View style={{ marginTop: 28 }}>

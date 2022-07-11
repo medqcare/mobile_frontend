@@ -124,6 +124,7 @@ const Assistant_scan = (props) => {
     const { location } = healthFacility;
 
     let { lat, long: lng } = location;
+    const scannedClinicIDWeb = dataBarCode.split('-')[1]
 
     if (location.length) {
       lng = location.coordinates[0];
@@ -132,7 +133,7 @@ const Assistant_scan = (props) => {
     const { latitude, longitude } = userLocation;
     const distance = getDistanceFromLatLonInKm(latitude, longitude, lat, lng);
 
-    if (Number(dataBarCode) !== Number(clinicIdWeb)) {
+    if (Number(scannedClinicIDWeb) !== Number(clinicIdWeb)) {
       return { status: false, message: 'Invalid Barcode' };
     }
 

@@ -13,13 +13,16 @@ const {
     SET_MEDICAL_SERVICES_ERROR,
 } = keys.medicalServicesKeys
 
-export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices, setCurrentPage){
+export function getMedicalServices(type, status, page, medicalServices, addPage, setMedicalServices, setCurrentPage, discount){
 	return async dispatch => {
 		try {
 			console.log('Application trying to find avaliable medical services')
 			console.log('type:', type)
 			console.log('status:', status)
 			console.log('page:', page)
+			console.log('discount:', discount)
+			if(discount === 'discountedItems') discount = true
+			else if(discount === 'noDiscount') discount = false
 
 			if(addPage){
 				page += 1
@@ -33,7 +36,7 @@ export function getMedicalServices(type, status, page, medicalServices, addPage,
 
 			const { data } = await instance({
 				method: 'GET',
-				url: `medical/services?type=${type}&status=${status}&page=${page}`,
+				url: `medical/services?type=${type}&status=${status}&page=${page}&discount=${discount}`,
 			})
 
 			if(data.data) {
