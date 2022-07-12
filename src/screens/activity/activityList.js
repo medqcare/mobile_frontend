@@ -38,7 +38,11 @@ const activityList = (props) => {
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
-		props.navigation.navigate('Home');
+		if(props.navigation.state?.params?.navigateBack) {
+			props.navigation.navigate(props.navigation.state.params.navigateBack);
+		} else {
+			props.navigation.navigate('Home');
+		}
 		return true;
 	});
 

@@ -24,7 +24,12 @@ function RiwayatPage(props) {
   const tipeRiwayat = ['Daftar Janji', 'Transaksi'];
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-    return props.navigation.pop();
+    if(props.navigation.state?.params?.navigateBack) {
+			props.navigation.navigate(props.navigation.state.params.navigateBack);
+		} else {
+			props.navigation.pop();
+		}
+		return true;
   });
 
   return (

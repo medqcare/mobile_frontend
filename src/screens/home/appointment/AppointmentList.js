@@ -175,7 +175,14 @@ const Appointment = (props) => {
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     setOrderType()
-    return props.navigation.navigate('Home');
+    
+    if(props.navigation.state?.params?.navigateBack) {
+      props.navigation.navigate(props.navigation.state.params.navigateBack);
+    } else {
+      props.navigation.navigate('Home');
+    }
+     
+    return true
   });
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
