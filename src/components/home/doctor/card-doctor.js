@@ -70,8 +70,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
               marginTop: 10,
             }}
           ></View>
-
-          {data.estPrice && (
+         
             <View>
               <View style={{ flexDirection: 'row', alignItems: 'center' }} />
               <Text
@@ -81,10 +80,12 @@ function CardDoctor({ data, distance, userLocationReducer }) {
                   fontFamily: INTER_500,
                 }}
               >
-                {formatRP(data.estPrice, 'IDR ')}
+                {data.estPrice ? 
+                formatRP(data.estPrice, 'IDR ') :
+                "Estimasi harga tidak tersedia"}
               </Text>
             </View>
-          )}
+            
         </View>
       </View>
       {userLocation && (
