@@ -124,7 +124,7 @@ const Assistant_scan = (props) => {
     const { location } = healthFacility;
 
     let { lat, long: lng } = location;
-    const scannedClinicIDWeb = dataBarCode.split('-')[1]
+    const scannedClinicIDWeb = dataBarCode.split('-')[2]
 
     if (location.length) {
       lng = location.coordinates[0];

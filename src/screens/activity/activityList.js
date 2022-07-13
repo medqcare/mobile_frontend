@@ -27,6 +27,8 @@ const activityList = (props) => {
 		fetchdata();
 	}, [props.navigation.state.params]);
 
+	const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
+
 	async function fetchdata() {
 		try {
 			const userID = userData.userID._id
@@ -38,13 +40,13 @@ const activityList = (props) => {
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
-		props.navigation.navigate('Home');
+		props.navigation.navigate(navigateBack);
 		return true;
 	});
 
   	return (
     	<>
-      		<Header title={'Antrian'} navigate={props.navigation.navigate} />
+      		<Header title={'Antrian'} navigate={props.navigation.navigate} navigateBack={navigateBack} />
 			<View style={styles.container}>
 				{isLoading ? (
 					<LottieLoader
