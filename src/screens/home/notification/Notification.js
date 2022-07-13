@@ -74,17 +74,17 @@ function Notification({ navigation, ...props }) {
   	const onButtonSeeDetailPressHandler = async (notification) => {
 		switch (notification.type) {
 			case 'antrian': {
-				navigation.navigate('ActivityStack');
+				navigation.navigate('ActivityStack', {navigateBack: "NotificationStack"});
 				break;
 			}
 
 			case 'reservasi': {
-				navigation.navigate('AppointmentList');
+				navigation.navigate('AppointmentList', {navigateBack: "NotificationStack"});
 				break;
 			}
 
 			case 'reservasi:batal': {
-				navigation.navigate('Riwayat');
+				navigation.navigate('Riwayat', {navigateBack: "NotificationStack"});
 				break;
 			}
 

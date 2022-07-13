@@ -69,7 +69,12 @@ export function patchNotificationAsViewed(notificationID, notifications, notific
 
             console.log(`Application patched notifications as viewed`)
 
-            const newNotificationsList = notifications.filter(el => el._id !== notificationID)
+            const newNotificationsList = notifications.map(el => {
+                if(el._id === notificationID) {
+                    el.isViewed = true
+                }
+                return el
+            })
             await dispatch({
                 type: SET_NOTIFICATIONS,
                 payload: newNotificationsList

@@ -103,6 +103,7 @@ function SearchDoctorPage(props) {
               </View>
             </TouchableOpacity>
             <SearchBar
+              autoFocus={true}
               placeholder={'cari klinik'}
               onChangeText={(text) => _textChange(text)}
             />
