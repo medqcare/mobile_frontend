@@ -173,14 +173,13 @@ const Appointment = (props) => {
 		})
 	}
 
+	const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
+
+
   BackHandler.addEventListener('hardwareBackPress', () => {
     setOrderType()
     
-    if(props.navigation.state?.params?.navigateBack) {
-      props.navigation.navigate(props.navigation.state.params.navigateBack);
-    } else {
-      props.navigation.navigate('Home');
-    }
+    props.navigation.navigate(navigateBack);
      
     return true
   });
@@ -189,6 +188,7 @@ const Appointment = (props) => {
       <Header 
 	  	title={'Daftar Janji'} 
 		navigate={props.navigation.navigate} 
+    navigateBack={navigateBack}
 		/>
       <View style={{ marginVertical: 14, paddingLeft: 12 }}>
         <SelectType

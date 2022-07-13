@@ -23,12 +23,11 @@ function RiwayatPage(props) {
   const [page, setPage] = useState('Daftar Janji');
   const tipeRiwayat = ['Daftar Janji', 'Transaksi'];
 
+	const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
+
+
   BackHandler.addEventListener('hardwareBackPress', () => {
-    if(props.navigation.state?.params?.navigateBack) {
-			props.navigation.navigate(props.navigation.state.params.navigateBack);
-		} else {
-			props.navigation.pop();
-		}
+    props.navigation.navigate(navigateBack);
 		return true;
   });
 
@@ -40,7 +39,7 @@ function RiwayatPage(props) {
     >
       {/* <StatusBar hidden /> */}
 
-      <Header title={'Riwayat ' + page} navigate={props.navigation.navigate} />
+      <Header title={'Riwayat ' + page} navigate={props.navigation.navigate} navigateBack={navigateBack} />
 
       <View style={{ height: 40, margin: 20 }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
