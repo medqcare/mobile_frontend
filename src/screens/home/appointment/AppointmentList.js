@@ -173,15 +173,22 @@ const Appointment = (props) => {
 		})
 	}
 
+	const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
+
+
   BackHandler.addEventListener('hardwareBackPress', () => {
     setOrderType()
-    return props.navigation.navigate('Home');
+    
+    props.navigation.navigate(navigateBack);
+     
+    return true
   });
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
       <Header 
 	  	title={'Daftar Janji'} 
 		navigate={props.navigation.navigate} 
+    navigateBack={navigateBack}
 		/>
       <View style={{ marginVertical: 14, paddingLeft: 12 }}>
         <SelectType
