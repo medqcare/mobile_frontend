@@ -11,6 +11,7 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
+import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux';
 import ArrowBack from '../../../assets/svg/ArrowBack';
 import Header from '../../../components/headers/GradientHeader';
@@ -27,7 +28,8 @@ function RiwayatPage(props) {
 
 
   BackHandler.addEventListener('hardwareBackPress', () => {
-    props.navigation.navigate(navigateBack);
+    const backAction = NavigationActions.back();
+    props.navigation.dispatch(backAction) 
 		return true;
   });
 
