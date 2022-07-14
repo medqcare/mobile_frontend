@@ -121,9 +121,9 @@ function Notification({ navigation, ...props }) {
   };
 
   	BackHandler.addEventListener('hardwareBackPress', () => {
-		navigation.pop();
-		return true;
-	});
+      navigation.navigate('Home');
+      return true;
+    });
 
   return (
     <View style={{ flex: 1 }}>
