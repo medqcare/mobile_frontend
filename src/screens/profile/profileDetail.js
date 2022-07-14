@@ -6,6 +6,7 @@ import {
     ScrollView,
     BackHandler,
 } from 'react-native'
+import { NavigationActions } from 'react-navigation'
 import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
@@ -37,6 +38,11 @@ function ProfileDetail({ navigation, userDataReducer }){
     const tglLahir = dateWithDDMMMYYYYFormat(new Date(dob))
     const payment = userData.payment || 'Umum'
     const address = `${capitalFirst(location.city)}, ${capitalFirst(location.province)}` 
+    BackHandler.addEventListener('hardwareBackPress', () => {
+        const backAction = NavigationActions.back();
+        navigation.dispatch(backAction)     
+        return true
+      });
 
     return(
         <ScrollView style={styles.container} contentContainerStyle={{alignItems: 'center'}}>
