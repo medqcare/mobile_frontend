@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
+import { NavigationActions } from 'react-navigation'
 import {
   View,
   Text,
@@ -178,9 +179,8 @@ const Appointment = (props) => {
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     setOrderType()
-    
-    props.navigation.navigate(navigateBack);
-     
+    const backAction = NavigationActions.back();
+    props.navigation.dispatch(backAction)     
     return true
   });
   return (
