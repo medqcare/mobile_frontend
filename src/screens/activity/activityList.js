@@ -11,6 +11,8 @@ import {
 import Header from '../../components/headers/GradientHeader';
 import Activity from './activity';
 import LottieLoader from 'lottie-react-native';
+import { NavigationActions } from 'react-navigation'
+
 
 //action
 import {
@@ -40,7 +42,8 @@ const activityList = (props) => {
 	}
 
 	BackHandler.addEventListener('hardwareBackPress', () => {
-		props.navigation.navigate(navigateBack);
+		const backAction = NavigationActions.back();
+    	props.navigation.dispatch(backAction) 
 		return true;
 	});
 
