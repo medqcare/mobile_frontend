@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   ToastAndroid,
   Image,
+  Keyboard,
 } from 'react-native';
 import { connect } from 'react-redux';
 
@@ -42,6 +43,7 @@ const SignInScreen = (props) => {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   function CekValidation() {
+    Keyboard.dismiss()
     if (!identity && !password) {
       ToastAndroid.show(
         'Please enter email or phone number and password for login'
