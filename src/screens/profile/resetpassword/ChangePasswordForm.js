@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { changePassword, changeAccountPassword } from '../../../stores/action';
 import Feather from 'react-native-vector-icons/Feather'; // Made for password visibility
+import { NavigationActions } from 'react-navigation';
 
 function ChangePasswordForm({ navigation, ...props }) {
   const { email, destination } = navigation.state.params;
@@ -50,6 +51,8 @@ function ChangePasswordForm({ navigation, ...props }) {
   };
 
   BackHandler.addEventListener('hardwareBackPress', () => {
+    const backAction = NavigationActions.back();
+    props.navigation.dispatch(backAction) 
     navigation.navigate(destination);
     return true;
   });
