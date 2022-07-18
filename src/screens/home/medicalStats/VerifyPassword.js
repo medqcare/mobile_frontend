@@ -10,7 +10,8 @@ import {
   Platform,
   ToastAndroid,
   ActivityIndicator,
-  BackHandler
+  BackHandler,
+  Keyboard
 } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { connect } from 'react-redux';
@@ -24,6 +25,7 @@ function VerifyPassword(props) {
 
   const onSubmitHandler = async () => {
     try {
+      Keyboard.dismiss()
       const { email } = userData.userID;
       const onSuccess = props.navigation.getParam('onSuccess');
       const payload = {
