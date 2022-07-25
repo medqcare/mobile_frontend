@@ -6,6 +6,7 @@ import { INTER_200, INTER_300, INTER_400, INTER_500 } from '../../../values/font
 import {
   BLACK_SECONDARY,
   GREY_SECONDARY,
+  RED_400,
   WHITE_PRIMARY,
 } from '../../../values/color';
 
@@ -17,7 +18,11 @@ function CardDoctor({ data, distance, userLocationReducer }) {
   const renderDoctorName = () => {
     let name = `${data.title} ${data.doctorName}`;
     if (data.specialistId !== null && data.specialistId.length !== 0) {
-      name += `, ${data.specialistId[0].alias}`;
+      if (distance === "Turn on location" ) {
+        name += `, ${data.specialistId.alias}`;
+      } else {
+        name += `, ${data.specialistId[0].alias}`;
+      }
     }
 
     return name;
@@ -27,7 +32,11 @@ function CardDoctor({ data, distance, userLocationReducer }) {
     let specialist = 'Umum';
 
     if (data.specialistId !== null && data.specialistId.length !== 0) {
-      specialist = `Spesialis ${data.specialistId[0].name}`;
+      if (distance === "Turn on location" ) {
+        specialist = `Spesialis ${data.specialistId.name}`
+      } else {
+        specialist = `Spesialis ${data.specialistId[0].name}`
+      }
     }
 
     return specialist;
@@ -90,9 +99,16 @@ function CardDoctor({ data, distance, userLocationReducer }) {
       </View>
       {userLocation && (
         <View style={{ flexDirection: 'row' }}>
-          <Text style={{ color: WHITE_PRIMARY }}>
-            &#177; <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
-          </Text>
+          {distance === "Turn on location" ?
+            <Text style={{ color: RED_400 }}>
+            <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
+            </Text>
+          :
+            <Text style={{ color: WHITE_PRIMARY }}>
+              &#177; <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
+            </Text>
+          }
+          
         </View>
       )}
     </View>
