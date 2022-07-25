@@ -177,7 +177,7 @@ function MedicalServices({navigation, userData, getMedicalServices, userLocation
 					<TouchableOpacity 
 						onPress={() => navigation.navigate('MedicalServiceDetail', { item })}
 						style={styles.makeAppointmentButton}>
-						<Text style={textStyles.whiteColorText}>Buat Janji</Text>
+						<Text style={textStyles.whiteColorText}>Lihat Detail</Text>
 					</TouchableOpacity>
 				</View>
 
