@@ -234,8 +234,11 @@ function SearchDoctorPage(props) {
                     data={doctors}
                     keyExtractor={(item, index) => String(index)}
                     renderItem={({ item }) => {
+                      let humanReadable = 'Turn on location'
                       const { distance, doctors } = item;
-                      const { humanReadable } = distance
+                      if(distance) {
+                        humanReadable = distance.humanReadable
+                      }
                       return doctors.map((el) => {
                         return (
                           <TouchableOpacity
