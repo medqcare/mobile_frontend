@@ -61,7 +61,7 @@ export function patchNotificationAsViewed(notificationID, notifications, notific
             const token = await getToken()
             const { data } = await instance({
                 method: 'PATCH',
-                url: `notifications/${notificationID}`,
+                url: `notifications/patchIsViewedNotification/${notificationID}`,
                 headers: {
                     Authorization: token
                 }
