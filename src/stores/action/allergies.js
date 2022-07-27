@@ -207,7 +207,7 @@ export function editSelectedAllergy(allergyID, allergy, allergyType, allergies, 
             const token = await getToken()
             const { data } = await instance({
                 method: 'PUT',
-                url: `editAlergi/${allergyID}`,
+                url: `alergies/editAlergi/${allergyID}`,
                 headers: {
                     Authorization: token
                 },

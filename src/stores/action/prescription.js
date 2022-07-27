@@ -24,7 +24,7 @@ export function getAllPrescriptions(patientID, token){
         try {
             let { data } = await prescriptionInstance({
                 method: 'GET',
-                url: `/getAllPrescriptions/${patientID}`,
+                url: `prescriptions/getAllPrescriptions/${patientID}`,
                 headers: {
                     authorization: token
                 },
@@ -47,7 +47,7 @@ export function getTodaysPrescriptions(patientID){
             const token = await getToken()
             const { data } = await instance({
                 method: 'GET',
-                url: `getTodaysPrescriptionByPatientID/${patientID}`,
+                url: `prescriptions/getTodaysPrescriptionByPatientID/${patientID}`,
                 headers: {
                     authorization: token
                 },
@@ -74,7 +74,7 @@ export function getPrescriptionHistory(patientID){
             const token = await getToken()
             const { data } = await instance({
                 method: 'GET',
-                url: `getPrescriptionHistory/${patientID}`,
+                url: `prescriptions/getPrescriptionHistory/${patientID}`,
                 headers: {
                     authorization: token
                 },
@@ -98,21 +98,3 @@ export function getPrescriptionHistory(patientID){
         }
     }
 }
-
-// export function changeReminderStatus(status, reminderID, token){
-//     return async dispatch => {
-//         try {
-//             const { data } = await reminderInstance({
-//                 method: 'PATCH',
-//                 url: `/changeReminderStatus/${reminderID}`,
-//                 headers: {
-//                     authorization: token,
-//                 },
-//                 data: { status }
-//             })
-//             ToastAndroid.show('Successflly changed your reminder status', ToastAndroid.SHORT)
-//         } catch (error) {
-//             console.log(error)
-//         }
-//     }
-// }

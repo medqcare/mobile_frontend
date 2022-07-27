@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ToastAndroid } from 'react-native';
 import { instance } from '../../config';
 import getToken from '../../helpers/localStorage/token';
@@ -37,7 +36,7 @@ export function getDocumentByPatient(patientID, stringTypeSeparateByComma, page,
 			if(search){
 				const { data } = await instance({
 					method: 'GET',
-					url: `getDocumentByPatient?search=${search}`,
+					url: `documents/getDocumentByPatient?search=${search}`,
 					headers: {
 						Authorization: token,
 						patientid: patientID,
@@ -54,7 +53,7 @@ export function getDocumentByPatient(patientID, stringTypeSeparateByComma, page,
 			} else {
 				const { data } = await instance({
 					method: 'GET',
-					url: 'getDocumentByPatient',
+					url: 'documents/getDocumentByPatient',
 					headers: {
 						Authorization: token,
 						patientid: patientID,
@@ -108,7 +107,7 @@ export function uploadDocument(patientID, document, medicalDocuments) {
 			const token = await getToken()
 			const { data } = await instance({
 				method: 'POST',
-				url: 'addDokumen',
+				url: 'documents/addDokumen',
 				headers: {
 					Authorization: token,
 					patientid: patientID
@@ -138,7 +137,7 @@ export function renameDocument(patientID, payload, medicalDocuments) {
 			const token = await getToken()
 			const { data } = await instance({
 				method: 'PATCH',
-				url: 'renameDocument',
+				url: 'documents/renameDocument',
 				headers: {
 					Authorization: token,
 					patientid: patientID
@@ -174,7 +173,7 @@ export function deleteDocument(patientID, payload, medicalDocuments) {
 			const token = await getToken()
 			const { data } = await instance({
 				method: 'DELETE',
-				url: `deleteDocument`,
+				url: `documents/deleteDocument`,
 				headers: {
 					Authorization: token,
 					patientid: patientID,
