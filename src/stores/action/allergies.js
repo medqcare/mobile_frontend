@@ -25,7 +25,7 @@ export function getPatientAllergies(patientID, isReservation){
             const token = await getToken()
             const { data } = await instance({
                 method: 'GET',
-                url: `alergies/${patientID}`,
+                url: `allergies/${patientID}`,
                 headers: { 
                     Authorization: token
                 }
@@ -135,7 +135,7 @@ export function createAllergy(patientID, allergy, allergies, setInputAlergies){
             const token = await getToken()
             const { data } = await instance({
                 method: 'POST',
-                url: `alergies/${patientID}`,
+                url: `allergies/${patientID}`,
                 headers: {
                     Authorization: token
                 },
@@ -207,7 +207,7 @@ export function editSelectedAllergy(allergyID, allergy, allergyType, allergies, 
             const token = await getToken()
             const { data } = await instance({
                 method: 'PUT',
-                url: `editAlergi/${allergyID}`,
+                url: `allergies/editAlergi/${allergyID}`,
                 headers: {
                     Authorization: token
                 },
@@ -291,7 +291,7 @@ export function deleteSelectedAllergy(allergyID, allergies, allergyType){
             const token = await getToken()
             const { data } = await instance({
                 method: 'PUT',
-                url: `alergies/${allergyID}`,
+                url: `allergies/${allergyID}`,
                 headers: {
                     Authorization: token
                 }
