@@ -27,7 +27,7 @@ export function getDrugs(patientID){
             const token = await getToken()
             let { data } = await instance({
                 method: 'GET',
-                url: `/getAllDrugs/${patientID}`,
+                url: `drugs/getAllDrugs/${patientID}`,
                 headers: {
                     authorization: token
                 },
@@ -69,7 +69,7 @@ export function searchDrugByName(query){
         try {
             let { data } = await instance({
                 method: 'GET',
-                url: `/drugs?name=${query}`,
+                url: `drugs?name=${query}`,
             })
             return data.data
         } catch (error) {
@@ -88,7 +88,7 @@ export function searchAllDrugs(){
             })
             let { data } = await instance({
                 method: 'GET',
-                url: `/drugs`,
+                url: `drugs`,
             })
 
             console.log(`Application found ${data.data.length} drugs from web`)
@@ -128,7 +128,7 @@ export function createNewDrugFromUser(newDrug, activeDrugs){
             const token = await getToken()
             let { data } = await instance({
                 method: 'POST',
-                url: `/createNewDrugFromUser`,
+                url: `drugs/createNewDrugFromUser`,
                 headers: {
                     authorization: token
                 },
@@ -158,7 +158,7 @@ export function changeDrugNotes(drugID, notes, activeDrugs){
             const token = await getToken()
             let { data } = await instance({
                 method: 'PATCH',
-                url: `changeDrugNotes/${drugID}`,
+                url: `drugs/changeDrugNotes/${drugID}`,
                 headers: {
                     authorization: token
                 },
@@ -188,7 +188,7 @@ export function changeAlarmBoolean(drugID){
             const token = await getToken()
             let { data } = await instance({
                 method: 'PATCH',
-                url: `changeAlarmBoolean/${drugID}`,
+                url: `drugs/changeAlarmBoolean/${drugID}`,
                 headers: {
                     authorization: token
                 },
@@ -210,7 +210,7 @@ export function updateDrugImageUrl(drugID, fileToUpload, navigateTo, destination
             const token = await getToken()
             let { data } = await instance({
                 method: 'PATCH',
-                url: `updateDrugImageUrl/${drugID}`,
+                url: `drugs/updateDrugImageUrl/${drugID}`,
                 headers: {
                     Accept: 'application/json',
                     Authorization: token,
@@ -248,7 +248,7 @@ export function deleteDrugImageUrl(drugID, activeDrugs){
             const token = await getToken()
             let { data } = await instance({
                 method: 'PATCH',
-                url: `deleteDrugImageUrl/${drugID}`,
+                url: `drugs/deleteDrugImageUrl/${drugID}`,
                 headers: {
                     authorization: token,
                 },
@@ -282,7 +282,7 @@ export function updateFinishStatus(drugID, activeDrugs, finishedDrug, finishedDr
             const token = await getToken()
             let { data } = await instance({
                 method: 'PATCH',
-                url: `/updateFinishStatus/${drugID}`,
+                url: `drugs/updateFinishStatus/${drugID}`,
                 headers: {
                     authorization: token
                 },

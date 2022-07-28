@@ -22,6 +22,7 @@ import { baseURL } from '../../../config';
 import { ActivityIndicator } from 'react-native-paper';
 import { BLUE_PRIMARY, WHITE_PRIMARY } from '../../../values/color';
 import { INTER_400 } from '../../../values/font';
+import getToken from '../../../helpers/localStorage/token';
 
 const ListFavDoctor = ({ data, navigation, deleteFav }) => {
   // console.log(navigation, 'ini navigation nya !')
@@ -111,10 +112,14 @@ const ListFavDoctor = ({ data, navigation, deleteFav }) => {
             onPress={() => {
               (async () => {
                 try {
+                  const token = await getToken()
                   setLoadingGetDoctor(true);
                   const { data } = await axios({
                     method: 'POST',
                     url: `${baseURL}/api/v1/members/detailDoctor/${send.doctorID}`,
+                    headers: {
+                      authorization: token
+                    }
                   });
                   navigation.navigate('DetailDoctor', {
                     data,
