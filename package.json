@@ -7,9 +7,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "codePush": "appcenter codepush release-react -a applimetis-parama-solusi/MedQCare -d Staging",
     "setLocalHostMac": "adb -s emulator-5554 reverse tcp:8080 tcp:8080",
-    "setJavaVersionMac": "export JAVA_HOME=`/usr/libexec/java_home -v 1.8`"
+    "setJavaVersionMac": "export JAVA_HOME=`/usr/libexec/java_home -v 1.8`",
+    "codePush": "appcenter codepush release-react -a applimetis-parama-solusi/MedQCare -d Staging"
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.5",
