@@ -1,24 +1,19 @@
-import axios from 'axios';
 import { ToastAndroid } from 'react-native';
-import { baseURL } from '../../config';
+import { instance } from '../../config';
 
-const reminderInstance = axios.create({
-  baseURL: `${baseURL}/api/v1/members`,
-  headers: {
-    'x-secret': 123456 
-  }
-});
 
 export function getReminders(patientID, token){
     return async dispatch => {
         try {
-            let { data } = await reminderInstance({
+            console.log('coba')
+            let { data } = await instance({
                 method: 'GET',
-                url: `/getAllReminders/${patientID}`,
+                url: `reminders/getAllReminders/${patientID}`,
                 headers: {
                     authorization: token
                 },
             })
+            console.log(`Application found ${data.data.length} reminders`)
             // await dispatch({
             //     type: 'GET_REMINDER_DATA',
             //     payload: data.data
@@ -33,9 +28,9 @@ export function getReminders(patientID, token){
 export function changeReminderAlarmTime(reminderID, alarmTime, token){
     return async dispatch => {
         try {
-            const { data } = await reminderInstance({
+            const { data } = await instance({
                 method: 'PATCH',
-                url: `/changeReminderAlarmTime/${reminderID}`,
+                url: `reminders/changeReminderAlarmTime/${reminderID}`,
                 headers: {
                     authorization: token
                 },
@@ -50,9 +45,9 @@ export function changeReminderAlarmTime(reminderID, alarmTime, token){
 export function changeReminderStatus(status, reminderID, token){
     return async dispatch => {
         try {
-            const { data } = await reminderInstance({
+            const { data } = await instance({
                 method: 'PATCH',
-                url: `/changeReminderStatus/${reminderID}`,
+                url: `reminders/changeReminderStatus/${reminderID}`,
                 headers: {
                     authorization: token,
                 },
