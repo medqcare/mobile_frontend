@@ -3,12 +3,14 @@ const {
     SET_USER_DATA,
     SET_USER_DATA_LOADING,
     SET_USER_DATA_ERROR,
-    DELETE_USER_DATA
+    DELETE_USER_DATA,
+    SET_DARKMODE
 } = keys.userDataKeys
 
 const initState = {
     userData: null,
     isLoading: false,
+    darkMode: false,
     error: null
 }
 
@@ -22,7 +24,9 @@ function userDataReducer(state = initState, action){
         case SET_USER_DATA_ERROR:
             return { ...state, error: payload, isLoading: false }
         case DELETE_USER_DATA:
-            return { userData: null, isLoading: false, error: null }
+            return { ...state, userData: null, isLoading: false, error: null }
+        case SET_DARKMODE: 
+            return { ...state, darkMode: payload }
         default:
             return state
     }

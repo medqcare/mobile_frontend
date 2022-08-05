@@ -8,7 +8,8 @@ const {
     SET_USER_DATA,
     SET_USER_DATA_LOADING,
     SET_USER_DATA_ERROR,
-    DELETE_USER_DATA
+    DELETE_USER_DATA,
+    SET_DARKMODE
 } = keys.userDataKeys
 
 const { 
@@ -20,6 +21,13 @@ export function setUserData(payload) {
     return {
         type: SET_USER_DATA,
         payload: payload
+    }
+}
+
+export function setDarkMode(payload) {
+    return {
+        type: SET_DARKMODE,
+        payload
     }
 }
 

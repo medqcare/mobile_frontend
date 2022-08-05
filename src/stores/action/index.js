@@ -215,6 +215,7 @@ import {
 	addFavoriteDoctor,
 	removeFavoriteDoctor,
 	deleteUserData,
+	setDarkMode
 } from './userData'
 
 export { 
@@ -230,5 +231,6 @@ export {
 	deleteFamilyData, 
 	addFavoriteDoctor, 
 	removeFavoriteDoctor, 
-	deleteUserData 
+	deleteUserData,
+	setDarkMode
 }

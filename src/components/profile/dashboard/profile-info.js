@@ -18,11 +18,11 @@ import ConfirmationModal from '../../modals/ConfirmationModal';
 import { deleteProfileImage } from '../../../stores/action';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FullImageModal from '../../modals/FullImageModal';
-import {
-  readDirectoryAsync,
-  cacheDirectory,
-  getInfoAsync,
-} from 'expo-file-system';
+// import {
+//   readDirectoryAsync,
+//   cacheDirectory,
+//   getInfoAsync,
+// } from 'expo-file-system';
 
 const mapStateToProps = (state) => {
   return state;
@@ -33,7 +33,7 @@ const mapDispatchToProps = {
 };
 
 const profileInfo = (props) => {
-  const { data: userData } = props
+  const { data: userData, darkMode } = props
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [fullImageModal, setFullImageModal] = useState(false);
 
@@ -101,35 +101,36 @@ const profileInfo = (props) => {
   }
 
   // Function to access cache storage. Not working yet
-  async function fileSystem() {
-    try {
-      // // Document
-      // const document = documentDirectory
-      // const docs = await readDirectoryAsync(document)
-      // console.log(docs)
+  // async function fileSystem() {
+  //   try {
+  //     // // Document
+  //     // const document = documentDirectory
+  //     // const docs = await readDirectoryAsync(document)
+  //     // console.log(docs)
 
-      // Cached
+  //     // Cached
 
-      // console.log(res)
-      // console.log(deleted)
-      const res = cacheDirectory;
-      const cached = await readDirectoryAsync(res);
-      // console.log(cached)
-      // const content = await getContentUriAsync('file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
-      // console.log(content)
-      const detail = await getInfoAsync(res + 'ImagePicker');
-      // const deleted = await deleteAsync(res + 'ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+  //     // console.log(res)
+  //     // console.log(deleted)
+  //     const res = cacheDirectory;
+  //     const cached = await readDirectoryAsync(res);
+  //     // console.log(cached)
+  //     // const content = await getContentUriAsync('file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+  //     // console.log(content)
+  //     const detail = await getInfoAsync(res + 'ImagePicker');
+  //     // const deleted = await deleteAsync(res + 'ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
 
-      console.log(detail);
-      // const read = await readAsStringAsync('content://host.exp.exponent.FileSystemFileProvider/cached_expo_files/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
-      // console.log(read, 'asdfasdfadsf')
-      // console.log('read');
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  //     console.log(detail);
+  //     // const read = await readAsStringAsync('content://host.exp.exponent.FileSystemFileProvider/cached_expo_files/ExperienceData/%2540rayendrasabandar%252FClient-Expo/ExponentAsset-b3263095df30cb7db78c613e73f9499a.ttf')
+  //     // console.log(read, 'asdfasdfadsf')
+  //     // console.log('read');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+  
   return (
-    <View style={styles.container}>
+    <View style={darkMode ? styles.container : styles.containerLight}>
       <View style={styles.profilePicture}>
         <TouchableOpacity
           onPress={() => setFullImageModal(!fullImageModal)}
@@ -186,16 +187,20 @@ const profileInfo = (props) => {
 
       <View style={styles.profileData}>
         <View style={styles.fullName}>
-          <Text style={styles.fullNameText}>{fullName()}</Text>
+          <Text style={darkMode ? styles.fullNameText : styles.fullNameTextLight}>{fullName()}</Text>
         </View>
         <View style={styles.phoneNumber}>
-          <Text style={styles.phoneNumberText}>{userData?.phoneNumber}</Text>
+          <Text style={darkMode ? styles.phoneNumberText : styles.phoneNumberTextLight}>{userData?.phoneNumber}</Text>
         </View>
-        <View style={styles.verified}>
-          <View style={styles.innerVerified}>
-            <Text style={styles.verifiedText}>Sudah Terverifikasi</Text>
+        <View style={darkMode ? styles.verified : styles.verifiedLight}>
+          <View style={darkMode ? styles.innerVerified : styles.innerVerifiedLight}>
+            <Text style={darkMode ? styles.verifiedText : styles.verifiedTextLight}>Sudah Terverifikasi</Text>
             <View style={styles.verifiedLogo}>
-              <Image source={require('../../../assets/png/VerifiedLogo.png')} />
+              {
+                darkMode ? 
+                <Image source={require('../../../assets/png/VerifiedLogo.png')} />
+                : <Image source={require('../../../assets/png/ic_check.png')} />
+              }
             </View>
           </View>
         </View>
@@ -212,6 +217,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: '#2F2F2F',
+    paddingLeft: 20,
+    paddingVertical: 20,
+  },
+  containerLight: {
+    width: wp('100%'),
+    height: hp('14%'),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: '#ffffff',
     paddingLeft: 20,
     paddingVertical: 20,
   },
@@ -245,6 +260,12 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
 
+  fullNameTextLight: {
+    color: '#333333',
+    fontSize: 16,
+    textTransform: 'capitalize',
+  },
+
   phoneNumber: {
     paddingVertical: 10,
   },
@@ -254,8 +275,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
+  phoneNumberTextLight: {
+    color: '#5A5A5A',
+    fontSize: 14,
+  },
+
   verified: {
     backgroundColor: '#3C3C3C',
+    alignSelf: 'flex-start',
+  },
+
+  verifiedLight: {
     alignSelf: 'flex-start',
   },
 
@@ -264,9 +294,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
 
+  innerVerifiedLight: {
+    flexDirection: 'row',
+  },
+
   verifiedText: {
     color: '#B5B5B5',
     fontSize: 14,
+    alignSelf: 'flex-start',
+  },
+
+  verifiedTextLight: {
+    color: '#4F4F4F',
+    fontSize: 14,
+    alignSelf: 'flex-start',
   },
 
   verifiedLogo: {

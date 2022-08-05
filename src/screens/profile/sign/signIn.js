@@ -5,8 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  CheckBox,
-  ImageBackground,
   KeyboardAvoidingView,
   BackHandler,
   ActivityIndicator,
