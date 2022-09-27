@@ -138,7 +138,7 @@ const profile = (props) => {
                 offColor="#767577"
                 size="medium"
                 animationSpeed={150}
-                onToggle={isOn => switchToogle()}
+                onToggle={() => switchToogle()}
                 // disabled={loadToggle}
             />
           </TouchableOpacity>

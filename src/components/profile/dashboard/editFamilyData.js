@@ -36,7 +36,7 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 import nikValidation from '../../../helpers/validationNIK';
 
 const editFamilyData = (props) => {
-  const { userData } = props.userDataReducer
+  const { userData, darkMode } = props.userDataReducer
   let dataFamily = props.navigation.state.params.data;
   const dateOfBirthDay = new Date(dataFamily.dob);
   const [load, setLoad] = useState(false);
@@ -238,7 +238,7 @@ const editFamilyData = (props) => {
     setChangeData({ ...changeData, dob: selectedDate });
   };
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAvoidingView style={darkMode ? styles.container : styles.containerLight}>
       <Header
         title={'Ubah Data'}
         navigate={props.navigation.navigate}
@@ -248,9 +248,9 @@ const editFamilyData = (props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* NIK Input Edit */}
         <View style={styles.inputTopContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'NIK'}
@@ -276,9 +276,9 @@ const editFamilyData = (props) => {
         {!changeData.firstName && <Text style={textStyle.start}>*</Text>}
         {/* First Name Input Edit */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Depan'}
@@ -293,9 +293,9 @@ const editFamilyData = (props) => {
 
         {/* Last Name Input Edit */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Belakang'}
@@ -330,9 +330,9 @@ const editFamilyData = (props) => {
               labelStyle={{
                 paddingRight: 10,
                 fontSize: 14,
-                color: '#DDDDDD',
+                color: darkMode ? '#DDDDDD' : '#212121',
               }}
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               buttonOuterSize={20}
             />
           </View>
@@ -341,14 +341,9 @@ const editFamilyData = (props) => {
         {/* DOB Input Edit */}
         <View style={styles.inputMiddleContainer}>
           <View
-            style={{
-              ...styles.input,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
+            style={darkMode ? styles.inputCalender : styles.inputCalenderLight}
           >
-            <Text style={styles.inputText}>{dateForShowingToUser}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{dateForShowingToUser}</Text>
             {showDatePicker && (
               <DateTimePicker
                 value={new Date()}
@@ -401,9 +396,9 @@ const editFamilyData = (props) => {
         )}
         {/* Phone Number Input Edit */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'Nomor Hp'}
@@ -424,12 +419,12 @@ const editFamilyData = (props) => {
         </View>
 
         {/* Bloodtype form */}
-        <View style={{ ...styles.inputMiddleContainer, flexDirection: 'row' }}>
+        <View style={{ ...styles.inputMiddleContainer, flexDirection: 'row', justifyContent: "space-between" }}>
           <TouchableOpacity
             onPress={() => setBloodTypeModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedBloodTypeLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedBloodTypeLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -445,9 +440,9 @@ const editFamilyData = (props) => {
           {/* Rhesus form */}
           <TouchableOpacity
             onPress={() => setRhesusModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedRhesusLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedRhesusLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -468,7 +463,7 @@ const editFamilyData = (props) => {
               onPress={() => setInsuranceStatusModal(true)}
               style={styles.button}
             >
-              <Text style={styles.inputText}>{selectedInsuranceLabel}</Text>
+              <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedInsuranceLabel}</Text>
               <Image source={require('../../../assets/png/ArrowDown.png')} />
             </TouchableOpacity>
 
@@ -488,9 +483,9 @@ const editFamilyData = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setStatusFamilyModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedStatusFamilyLabel} </Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedStatusFamilyLabel} </Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -509,9 +504,9 @@ const editFamilyData = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setProvinceModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedProvinceLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedProvinceLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -531,9 +526,9 @@ const editFamilyData = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setDistrictModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedDistrictLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedDistrictLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -552,7 +547,7 @@ const editFamilyData = (props) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={() => validation()}
-            style={styles.submitButton}
+            style={darkMode ? styles.submitButton : styles.submitButtonLight}
           >
             {load ? (
               <ActivityIndicator size={'small'} color="#FFF" />
@@ -588,6 +583,13 @@ const editFamilyData = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1f1f1f',
+    minHeight: hp('100%'),
+    width: wp('100%'),
+    flex: 1,
+  },
+
+  containerLight: {
+    backgroundColor: '#ffffff',
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,
@@ -629,8 +631,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  inputLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+  },
+  
+  inputCalender: {
+    height: 50,
+    borderWidth: 1,
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    backgroundColor: '#2F2F2F',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  inputCalenderLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
   inputText: {
     color: '#DDDDDD',
+  },
+  
+  inputTextLight: {
+    color: '#212121',
   },
 
   buttonContainer: {
@@ -642,7 +681,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    flex: 0.5,
+    flex: 0.48,
     height: 50,
     borderWidth: 1,
     paddingHorizontal: 20,
@@ -653,10 +692,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#2F2F2F',
   },
 
+  buttonLight: {
+    flex: 0.48,
+    height: 50,
+    borderWidth: 1,
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderColor: '#E0E0E0',
+    backgroundColor: '#ffffff',
+  },
+
   submitButton: {
     height: 50,
-    width: '85%',
+    width: '95%',
     backgroundColor: '#005ea2',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+
+  submitButtonLight: {
+    height: 50,
+    width: '95%',
+    backgroundColor: '#1090C5',
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -734,6 +796,7 @@ const container = StyleSheet.create({
     fontSize: 14,
     color: '#DDDDDD',
   },
+
   title: {
     flexDirection: 'row',
     color: '#DDDDDD',

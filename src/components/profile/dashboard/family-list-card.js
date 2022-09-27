@@ -41,7 +41,7 @@ const familyList = (props) => {
   const [load, setLoad] = useState(false);
   const [familyID, setFamilyID] = useState(null)
 
-  const { isLoading, userData } = props.userDataReducer
+  const { isLoading, userData, darkMode } = props.userDataReducer
   const families = userData.family;
 
   function iconProps(gender, props) {
@@ -78,7 +78,7 @@ const familyList = (props) => {
           // Family box
           <TouchableOpacity
             // onPress={() => props.navigateTo('EditFamilyForm', { data: family })}
-            onPress={() => props.navigateTo('FamilyDetail', { data: family })}
+            onPress={() => props.navigateTo('FamilyDetail', { data: family, darkMode })}
             key={index}
             onLongPress={async () => {
               setFamilyID(family._id)
@@ -87,7 +87,7 @@ const familyList = (props) => {
               }, 100);
               setVisible(false);
             }}
-            style={styles.container}
+            style={darkMode ? styles.container : styles.containerLight}
           >
             {/* Profile Picture */}
             <View style={styles.imageContainer}>
@@ -100,12 +100,12 @@ const familyList = (props) => {
                 style={styles.image}
               />
             </View>
-            <Text style={styles.fullNameText} numberOfLines={2}>
+            <Text style={darkMode ? styles.fullNameText : styles.fullNameTextLight} numberOfLines={2}>
               {fullName(family.firstName, family.lastName)}
             </Text>
 
             {/* Age */}
-            <Text style={styles.ageText}>{properAge(family.dob)}</Text>
+            <Text style={darkMode ? styles.ageText : styles.ageTextLight}>{properAge(family.dob)}</Text>
 
             {/* Gender Logo */}
             <View style={styles.genderLogoContainer}>
@@ -136,6 +136,26 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
     backgroundColor: '#2f2f2f',
+    width: '45%',
+    marginTop: 25,
+    marginHorizontal: 2,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 7,
+    },
+    borderRadius: 3,
+    shadowOpacity: 0.61,
+    shadowRadius: 9.11,
+    elevation: 14,
+  },
+  containerLight: {
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
     width: '45%',
     marginTop: 25,
     marginHorizontal: 2,
@@ -201,6 +221,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 
+  fullNameTextLight: {
+    color: '#212121',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+
   ageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -208,6 +234,10 @@ const styles = StyleSheet.create({
 
   ageText: {
     color: 'rgba(192, 192, 192, 1)',
+  },
+
+  ageTextLight: {
+    color: '#B5B5B5',
   },
 });
 

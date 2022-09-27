@@ -24,11 +24,10 @@ const mapDispatchToProps = {
 
 function ProfilePictureCamera({navigation, updateProfilePicture}){
     const { isLoading } = useSelector(state => state.userDataReducer)
-    const { destination, patientData } = navigation.state.params
+    const { destination, patientData, darkMode } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
-
     // Load
     // const [load, setLoad] = useState(false)
 
@@ -78,13 +77,13 @@ function ProfilePictureCamera({navigation, updateProfilePicture}){
     }
 
     return (
-        <View style={styles.container}>
+        <View style={darkMode ? styles.container : styles.containerLight}>
             <View style={styles.topContainer}>
                 <TouchableOpacity
                     style={styles.editTouchable}
                     onPress={() => takePicture()}
                 >
-                    <Text style={styles.text}>Edit foto profil</Text>
+                    <Text style={darkMode ? styles.text : styles.textLight}>Edit foto profil</Text>
                 </TouchableOpacity>
                     <Image 
                         source={{ uri: image || 'https://st.depositphotos.com/1052233/2815/v/600/depositphotos_28158459-stock-illustration-male-default-profile-picture.jpg' }} 
@@ -95,7 +94,7 @@ function ProfilePictureCamera({navigation, updateProfilePicture}){
                 <TouchableOpacity
                     onPress={() => navigation.navigate(destination)}
                 >
-                    <Text style={styles.text}>Kembali</Text>  
+                    <Text style={darkMode ? styles.text : styles.textLight}>Kembali</Text>  
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={() => saveImage()}
@@ -104,7 +103,7 @@ function ProfilePictureCamera({navigation, updateProfilePicture}){
                         {isLoading ? (
                             <ActivityIndicator size={"small"} color="#FFF" />
                             ) : (
-                                <Text style={styles.text}>Simpan</Text>
+                                <Text style={darkMode ? styles.text : styles.textLight}>Simpan</Text>
                             )}
                 </TouchableOpacity>
             </View>
@@ -120,11 +119,17 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
 
+    containerLight: {
+        backgroundColor: '#ffffff',
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+
     topContainer: {
         flex: 0.9,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'red',
         width: '100%',
         paddingBottom: 50
     },
@@ -150,6 +155,10 @@ const styles = StyleSheet.create({
 
     text: {
         color: '#DDDD'
+    },
+
+    textLight: {
+        color: '#333333',
     }
 })
 

@@ -46,7 +46,18 @@ export default function LightHeader({
                         />
                         <Text style={styles.text}>{title}</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity> 
+                {edit ? 
+                    <TouchableOpacity
+                        onPress={() => navigate(navigateTo, params)}>
+                        <Feather 
+                            name="edit" 
+                            color="#DDDDDD" 
+                            size={20} 
+                            style={styles.edit}
+                        />
+                    </TouchableOpacity>
+                : null}  
              </View>
              </LinearGradient>
         </View>
@@ -64,10 +75,11 @@ const styles = StyleSheet.create({
         flex: 1,
         height: hp('10%'),
         paddingTop: hp('5%'),
-        width: '100%'
+        width: '100%',
     },
     touchableContent: {
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     content: {
         flexDirection: 'row', 

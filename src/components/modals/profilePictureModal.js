@@ -8,6 +8,7 @@ export default function SetsModal({
   setModal,
   selection,
   setSelectedValue,
+  darkMode
 }) {
   return (
     <Modal
@@ -20,7 +21,7 @@ export default function SetsModal({
       onBackdropPress={() => setModal(false)}
       onBackButtonPress={() => setModal(false)}
     >
-      <View style={styles.container}>
+      <View style={darkMode ? styles.container : styles.containerLight}>
         <View style={styles.header}>
           <View style={styles.toogle} />
         </View>
@@ -36,7 +37,7 @@ export default function SetsModal({
                 style={{ alignItems: 'center' }}
               >
                 <Image source={item.url} style={styles.picture}></Image>
-                <Text style={styles.labelText}>{item.label}</Text>
+                <Text style={darkMode ? styles.labelText : styles.labelTextLight }>{item.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -55,6 +56,12 @@ const styles = StyleSheet.create({
   container: {
     maxHeight: '100%',
     backgroundColor: '#2F2F2F',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  containerLight: {
+    maxHeight: '100%',
+    backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -80,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'space-between',
-    marginHorizontal: 15,
+    marginHorizontal: 50,
     marginBottom: 20,
   },
 
@@ -101,5 +108,8 @@ const styles = StyleSheet.create({
 
   labelText: {
     color: '#DDDDDD',
+  },
+  labelTextLight: {
+    color: '#212121',
   },
 });

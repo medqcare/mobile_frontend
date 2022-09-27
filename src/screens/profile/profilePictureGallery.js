@@ -26,7 +26,7 @@ const mapDispatchToProps = {
 
 function ProfilePictureGallery({navigation, userDataReducer, updateProfilePicture }){
     const { isLoading } = userDataReducer
-    const { destination, patientData } = navigation.state.params
+    const { destination, patientData, darkMode } = navigation.state.params
     // Image
     const [image, setImage] = useState(null)
     const [imageToUpload, setImageToUpload] = useState(null)
@@ -80,13 +80,13 @@ function ProfilePictureGallery({navigation, userDataReducer, updateProfilePictur
     }
 
     return (
-        <View style={styles.container}>
+        <View style={darkMode ? styles.container : styles.containerLight}>
             <View style={styles.topContainer}>
                 <TouchableOpacity
                     style={styles.editTouchable}
                     onPress={() => pickImage()}
                 >
-                    <Text style={styles.text}>Edit foto profil</Text>
+                    <Text style={darkMode ? styles.text : styles.textLight}>Edit foto profil</Text>
                 </TouchableOpacity>
                     <Image 
                         source={{ uri: image || 'https://st.depositphotos.com/1052233/2815/v/600/depositphotos_28158459-stock-illustration-male-default-profile-picture.jpg' }} 
@@ -97,7 +97,7 @@ function ProfilePictureGallery({navigation, userDataReducer, updateProfilePictur
                 <TouchableOpacity
                     onPress={() => navigation.navigate(destination)}
                 >
-                    <Text style={styles.text}>Kembali</Text>  
+                    <Text style={darkMode ? styles.text : styles.textLight}>Kembali</Text>  
                 </TouchableOpacity>
                 {imageToUpload ? 
                     <TouchableOpacity
@@ -107,10 +107,10 @@ function ProfilePictureGallery({navigation, userDataReducer, updateProfilePictur
                         {isLoading ? (
                             <ActivityIndicator size={"small"} color="#FFF" />
                             ) : (
-                                <Text style={styles.text}>Simpan</Text>
+                                <Text style={darkMode ? styles.text : styles.textLight}>Simpan</Text>
                             )}
                     </TouchableOpacity> :
-                    <Text style={styles.text}>Pilih foto untuk melanjutkan</Text>
+                    <Text style={darkMode ? styles.text : styles.textLight}>Pilih foto untuk melanjutkan</Text>
                 }
             </View>
         </View>
@@ -120,6 +120,13 @@ function ProfilePictureGallery({navigation, userDataReducer, updateProfilePictur
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(31, 31, 31, 1)',
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+
+    containerLight: {
+        backgroundColor: '#ffffff',
         flex: 1,
         justifyContent: 'flex-end',
         alignItems: 'center'
@@ -155,6 +162,10 @@ const styles = StyleSheet.create({
 
     text: {
         color: '#DDDD'
+    },
+
+    textLight: {
+        color: '#333333',
     }
 })
 

@@ -35,7 +35,7 @@ import LocationModalPicker from '../../../components/modals/LocationModalPicker'
 import nikValidation from '../../../helpers/validationNIK';
 
 const familyForm = (props) => {
-  const { userData, isLoading, error } = props.userDataReducer
+  const { userData, isLoading, error, darkMode } = props.userDataReducer
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [chosenDate, setChosenDate] = useState('');
   const [load, setLoad] = useState(false);
@@ -234,7 +234,7 @@ const familyForm = (props) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAvoidingView style={darkMode ? styles.container : styles.containerLight}>
       <Header
         title={'Tambah Keluarga'}
         navigate={props.navigation.navigate}
@@ -243,9 +243,9 @@ const familyForm = (props) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* NIK Input */}
         <View style={styles.inputTopContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'NIK'}
@@ -284,9 +284,9 @@ const familyForm = (props) => {
         </View>
         {/* First Name Input */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Depan'}
@@ -301,9 +301,9 @@ const familyForm = (props) => {
 
         {/* Last Name Input */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Belakang'}
@@ -334,8 +334,8 @@ const familyForm = (props) => {
               formHorizontal={true}
               labelHorizontal={true}
               animation={false}
-              labelStyle={{ paddingRight: 10, fontSize: 14, color: '#DDDDDD' }}
-              style={styles.inputText}
+              labelStyle={{ paddingRight: 10, fontSize: 14, color: darkMode ? '#DDDDDD' : '#212121' }}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               buttonOuterSize={20}
             />
           </View>
@@ -344,14 +344,9 @@ const familyForm = (props) => {
         {/* DOB Form  */}
         <View style={styles.inputMiddleContainer}>
           <View
-            style={{
-              ...styles.input,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
+            style={darkMode ? styles.inputCalender : styles.inputCalenderLight}
           >
-            <Text style={styles.inputText}>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>
               {chosenDate
                 ? dateWithDDMMMYYYYFormat(chosenDate)
                 : 'Pilih Tanggal lahir'}
@@ -403,9 +398,9 @@ const familyForm = (props) => {
 
         {/* Phone Number Input */}
         <View style={styles.inputMiddleContainer}>
-          <View style={styles.input}>
+          <View style={darkMode ? styles.input : styles.inputLight}>
             <TextInput
-              style={styles.inputText}
+              style={darkMode ? styles.inputText : styles.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'Nomor Hp'}
@@ -426,12 +421,12 @@ const familyForm = (props) => {
         </View>
 
         {/* Blood Input */}
-        <View style={{ ...styles.inputMiddleContainer, flexDirection: 'row' }}>
+        <View style={{ ...styles.inputMiddleContainer, flexDirection: 'row', justifyContent: "space-between" }}>
           <TouchableOpacity
             onPress={() => setBloodTypeModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedBloodTypeLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedBloodTypeLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -447,9 +442,9 @@ const familyForm = (props) => {
           {/* Rhesus form */}
           <TouchableOpacity
             onPress={() => setRhesusModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedRhesusLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedRhesusLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -471,7 +466,7 @@ const familyForm = (props) => {
                             onPress={() => setInsuranceStatusModal(true)}
                             style={styles.button}
                         >
-                            <Text style={styles.inputText}>{selectedInsuranceLabel}</Text>
+                            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedInsuranceLabel}</Text>
                             <Image
                                 source={require('../../../assets/png/ArrowDown.png')}
                             />
@@ -495,9 +490,9 @@ const familyForm = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setStatusFamilyModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedStatusFamilyLabel} </Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedStatusFamilyLabel} </Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -516,9 +511,9 @@ const familyForm = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setProvinceModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedProvinceLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedProvinceLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -538,9 +533,9 @@ const familyForm = (props) => {
         <View style={styles.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setDistrictModal(true)}
-            style={styles.button}
+            style={darkMode ? styles.button : styles.buttonLight}
           >
-            <Text style={styles.inputText}>{selectedDistrictLabel}</Text>
+            <Text style={darkMode ? styles.inputText : styles.inputTextLight}>{selectedDistrictLabel}</Text>
             <Image source={require('../../../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -561,7 +556,7 @@ const familyForm = (props) => {
             onPress={() => {
               validation();
             }}
-            style={styles.submitButton}
+            style={darkMode ? styles.submitButton : styles.submitButtonLight}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -581,6 +576,13 @@ const familyForm = (props) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#1f1f1f',
+    minHeight: hp('100%'),
+    width: wp('100%'),
+    flex: 1,
+  },
+
+  containerLight: {
+    backgroundColor: '#ffffff',
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,
@@ -622,8 +624,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  inputLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+  },
+  
+  inputCalender: {
+    height: 50,
+    borderWidth: 1,
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    backgroundColor: '#2F2F2F',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  inputCalenderLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
   inputText: {
     color: '#DDDDDD',
+  },
+  
+  inputTextLight: {
+    color: '#212121',
   },
 
   buttonContainer: {
@@ -635,7 +674,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    flex: 0.5,
+    flex: 0.48,
     height: 50,
     borderWidth: 1,
     paddingHorizontal: 20,
@@ -646,10 +685,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#2F2F2F',
   },
 
+  buttonLight: {
+    flex: 0.48,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+  },
+
   submitButton: {
     height: 50,
-    width: '85%',
+    width: '95%',
     backgroundColor: '#005ea2',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+
+  submitButtonLight: {
+    height: 50,
+    width: '95%',
+    backgroundColor: '#1090C5',
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',

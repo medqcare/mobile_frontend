@@ -21,18 +21,19 @@ export default function GradientHeader({
   title = "Enter Title Here",
   params,
   option,
+  darkMode
 }) {
   const start = {
-    x: 0,
-    y: 0,
-  };
-
-  const end = {
     x: 1,
     y: 0,
   };
 
-  const colors = ["#073B88", "#048FBB"];
+  const end = {
+    x: 0,
+    y: 0,
+  };
+
+  const colors = darkMode ? ["#073B88", "#048FBB"] : ['#005EA2', '#009292'];
 
   return (
     <LinearGradient

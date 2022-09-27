@@ -23,8 +23,9 @@ export function searchAllDoctors(currentPage, location, doctors, filterQuery){
                 payload: true
             })
             
-            const lat = location?.lat
-            const lng = location?.lng
+            const lat =  -6.268809 ||location?.lat
+            const lng = 106.974705 || location?.lng
+            console.log(lat, lng);
             const { data } = await instance({
                 method: 'POST',
                 url: `searchDoctor?page=${currentPage}`,

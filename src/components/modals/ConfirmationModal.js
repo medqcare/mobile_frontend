@@ -17,20 +17,20 @@ export default function ConfirmationModal({
   optionRightText,
   warning,
   load,
+  darkMode
 }) {
   return (
     <Modal transparent={true} animationType={'slide'} visible={modal}>
       <View style={styles.container}>
         <View style={styles.base}>
-          <View style={styles.confirmationCard}>
+          <View style={darkMode ? styles.confirmationCard : styles.confirmationCardLight}>
             <View style={styles.warning}>
-              <Text style={styles.warningText}>{warning}</Text>
+              <Text style={darkMode ? styles.warningText : styles.warningTextLight}>{warning}</Text>
             </View>
 
             <View
               style={{
                 flexDirection: 'row',
-                // justifyContent: 'space-between',
                 width: '100%',
                 paddingHorizontal: 10,
                 minHeight: '15%',
@@ -111,11 +111,26 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     paddingBottom: 12,
   },
+  confirmationCardLight: {
+    width: '100%',
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 13,
+    paddingTop: 24,
+    paddingBottom: 12,
+  },
   warning: {
     width: '80%',
   },
   warningText: {
     color: '#DDDDDD',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  warningTextLight: {
+    color: '#212121',
     fontWeight: 'bold',
     textAlign: 'center',
     letterSpacing: 1,

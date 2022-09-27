@@ -80,14 +80,16 @@ const profileInfo = (props) => {
       case 'Kamera':
         await props.navigation.navigate('ProfilePictureCamera', {
           destination: props.destination,
-          patientData: userData
+          patientData: userData,
+          darkMode: darkMode
         });
         break;
 
       case 'Galeri':
         await props.navigation.navigate('ProfilePictureGallery', {
           destination: props.destination,
-          patientData: userData
+          patientData: userData,
+          darkMode: darkMode
         });
         break;
 
@@ -169,7 +171,9 @@ const profileInfo = (props) => {
           setModal={setProfilePictureModal}
           selection={profileStatusSelection}
           setSelectedValue={setSelectedValue}
-        ></PictureModal>
+          darkMode={darkMode}
+        />
+
         <ConfirmationModal
           modal={confirmationModal}
           optionLeftFunction={() => {
@@ -182,6 +186,7 @@ const profileInfo = (props) => {
           optionRightText="Hapus"
           warning="Apakah anda yakin ingin menghapus foto anda?"
           load={load}
+          darkMode={darkMode}
         />
       </View>
 

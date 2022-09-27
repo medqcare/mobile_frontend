@@ -35,226 +35,227 @@ import capitalFirst from '../helpers/capitalFirst';
 import DatePickerIcon from '../assets/svg/DatePickerIcon';
 import DatePicker from '@react-native-community/datetimepicker';
 import nikValidation from '../helpers/validationNIK';
-const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
-  	const { userData, isLoading } = userDataReducer
-	const { 
-		photo, 
-		nik, 
-		firstName, 
-		lastName, 
-		gender, 
-		dob, 
-		bloodType, 
-		resus, 
-		phoneNumber, 
-		location, 
-		insuranceStatus 
-	} = userData
-	const dateOfBirthDay = new Date(dob);
-	const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
-	const [showDatePicker, setShowDatePicker] = useState(false);
-	const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
-	const [dateForShowingToUser, setDateForShowingToUser] = useState(
-		dateWithDDMMMYYYYFormat(dateOfBirthDay)
-	);
-	const [currentUserData, setCurrentUserData] = useState({
-		photo: photo || '',
-		nik: nik.toString(),
-		firstName,
-		lastName,
-		gender: gender || 'Male',
-		dob: dateOfBirthDay,
-		bloodType: bloodType || 'A',
-		resus: resus || '+',
-		phoneNumber: phoneNumber,
-		location,
-		insuranceStatus: insuranceStatus || 'UMUM',
-	});
 
-	// Region
-	const region = require('../assets/Region/province');
+const editProfile = ({ navigation, userDataReducer, updateProfileData }) => {
+  const { userData, isLoading, darkMode } = userDataReducer
+  const {
+    photo,
+    nik,
+    firstName,
+    lastName,
+    gender,
+    dob,
+    bloodType,
+    resus,
+    phoneNumber,
+    location,
+    insuranceStatus
+  } = userData
+  const dateOfBirthDay = new Date(dob);
+  const [isErrorPhoneNumber, setIsErrorPhoneNumber] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [chosenDate, setChosenDate] = useState(dateOfBirthDay);
+  const [dateForShowingToUser, setDateForShowingToUser] = useState(
+    dateWithDDMMMYYYYFormat(dateOfBirthDay)
+  );
+  const [currentUserData, setCurrentUserData] = useState({
+    photo: photo || '',
+    nik: nik.toString(),
+    firstName,
+    lastName,
+    gender: gender || 'Male',
+    dob: dateOfBirthDay,
+    bloodType: bloodType || 'A',
+    resus: resus || '+',
+    phoneNumber: phoneNumber,
+    location,
+    insuranceStatus: insuranceStatus || 'UMUM',
+  });
 
-	// Province; 34 provinces
-	const [province, setProvince] = useState(region.province);
-	const [provinceModal, setProvinceModal] = useState(false);
-	const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
-		currentUserData.location.province
-	);
-	const provinceSelection = province;
+  // Region
+  const region = require('../assets/Region/province');
 
-	// District
-	const provinceObject = province.filter((el) => {
-		return el.name === selectedProvinceLabel;
-	});
-	const provinceId = provinceObject[0].id;
-	const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
-	const [districtModal, setDistrictModal] = useState(false);
-	const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
-		userData.location.city
-	);
+  // Province; 34 provinces
+  const [province, setProvince] = useState(region.province);
+  const [provinceModal, setProvinceModal] = useState(false);
+  const [selectedProvinceLabel, setSelectedProvinceLabel] = useState(
+    currentUserData.location.province
+  );
+  const provinceSelection = province;
 
-	// Loading animation for submit button
-	const [load, setLoad] = useState(false);
+  // District
+  const provinceObject = province.filter((el) => {
+    return el.name === selectedProvinceLabel;
+  });
+  const provinceId = provinceObject[0].id;
+  const [district, setDistrict] = useState(region.kabupatenkota(provinceId));
+  const [districtModal, setDistrictModal] = useState(false);
+  const [selectedDistrictLabel, setSelectedDistrictLabel] = useState(
+    userData.location.city
+  );
 
-	const [modalF, setModalF] = useState(false);
-	const [modalS, setModalS] = useState(false);
-	const [valid, setValid] = useState(false);
+  // Loading animation for submit button
+  const [load, setLoad] = useState(false);
 
-	// Gender radio
-	var radio_props = [
-		{ label: 'Laki-laki', value: 'Male' },
-		{ label: 'Perempuan', value: 'Female' },
-	];
+  const [modalF, setModalF] = useState(false);
+  const [modalS, setModalS] = useState(false);
+  const [valid, setValid] = useState(false);
 
-	// Bloodtype
-	const [bloodTypeModal, setBloodTypeModal] = useState(false);
-	const bloodTypeSelection = ['A', 'AB', 'B', 'O'];
-	const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
-		currentUserData.bloodType
-	);
+  // Gender radio
+  var radio_props = [
+    { label: 'Laki-laki', value: 'Male' },
+    { label: 'Perempuan', value: 'Female' },
+  ];
 
-	// Rhesus type
-	const [rhesusTypeModal, setRhesusModal] = useState(false);
-	const rhesusTypeSelection = ['+', '-'];
-	const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(
-		currentUserData.resus
-	);
+  // Bloodtype
+  const [bloodTypeModal, setBloodTypeModal] = useState(false);
+  const bloodTypeSelection = ['A', 'AB', 'B', 'O'];
+  const [selectedBloodTypeLabel, setselectedBloodTypeLabel] = useState(
+    currentUserData.bloodType
+  );
 
-	// Insurance status
-	const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
-	const insuranceStatusSelection = [
-		{
-			label: 'Umum',
-			value: 'UMUM',
-		},
-		{
-			label: 'BPJS',
-			value: 'BPJS',
-		},
-		{
-			label: 'Asuransi',
-			value: 'ASURANSI',
-		},
-	];
-	const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
-		capitalFirst(currentUserData.insuranceStatus)
-	);
+  // Rhesus type
+  const [rhesusTypeModal, setRhesusModal] = useState(false);
+  const rhesusTypeSelection = ['+', '-'];
+  const [selectedRhesusLabel, setSelectedRhesusLabel] = useState(
+    currentUserData.resus
+  );
 
-	useEffect(() => {
-		if (province.length && district.length) {
-		}
-	}, [district, selectedDistrictLabel, currentUserData]);
+  // Insurance status
+  const [insuranceStatusModal, setInsuranceStatusModal] = useState(false);
+  const insuranceStatusSelection = [
+    {
+      label: 'Umum',
+      value: 'UMUM',
+    },
+    {
+      label: 'BPJS',
+      value: 'BPJS',
+    },
+    {
+      label: 'Asuransi',
+      value: 'ASURANSI',
+    },
+  ];
+  const [selectedInsuranceLabel, setSelectedInsuranceLabel] = useState(
+    capitalFirst(currentUserData.insuranceStatus)
+  );
+
+  useEffect(() => {
+    if (province.length && district.length) {
+    }
+  }, [district, selectedDistrictLabel, currentUserData]);
 
   // Function for change data
-	function setSelectedValue(
-		value,
-		changeKey,
-		changeInnerKey,
-		name,
-		coordinatesKey
-	) {
-		if (changeKey === 'location') {
-		const firstIndex = region.kabupatenkota(value)[0];
-		coordinatesKey = coordinatesKey
-			? coordinatesKey
-			: [firstIndex.longitude, firstIndex.latitude];
-		if (changeInnerKey === 'province') {
-			setDistrict(region.kabupatenkota(value));
-			setSelectedDistrictLabel(firstIndex.name);
-			setCurrentUserData({
-			...currentUserData,
-			[changeKey]: {
-				...userData[changeKey],
-				[changeInnerKey]: name,
-				city: firstIndex.name,
-				coordinates: [coordinatesKey[0], coordinatesKey[1]],
-			},
-			});
-		} else {
-			setSelectedDistrictLabel(name);
-			setCurrentUserData({
-			...currentUserData,
-			[changeKey]: {
-				...currentUserData[changeKey],
-				[changeInnerKey]: name,
-				coordinates: [coordinatesKey[0], coordinatesKey[1]],
-			},
-			});
-		}
-		} else {
-		setCurrentUserData({
-			...currentUserData,
-			[changeKey]: value,
-		});
-		}
-	}
+  function setSelectedValue(
+    value,
+    changeKey,
+    changeInnerKey,
+    name,
+    coordinatesKey
+  ) {
+    if (changeKey === 'location') {
+      const firstIndex = region.kabupatenkota(value)[0];
+      coordinatesKey = coordinatesKey
+        ? coordinatesKey
+        : [firstIndex.longitude, firstIndex.latitude];
+      if (changeInnerKey === 'province') {
+        setDistrict(region.kabupatenkota(value));
+        setSelectedDistrictLabel(firstIndex.name);
+        setCurrentUserData({
+          ...currentUserData,
+          [changeKey]: {
+            ...userData[changeKey],
+            [changeInnerKey]: name,
+            city: firstIndex.name,
+            coordinates: [coordinatesKey[0], coordinatesKey[1]],
+          },
+        });
+      } else {
+        setSelectedDistrictLabel(name);
+        setCurrentUserData({
+          ...currentUserData,
+          [changeKey]: {
+            ...currentUserData[changeKey],
+            [changeInnerKey]: name,
+            coordinates: [coordinatesKey[0], coordinatesKey[1]],
+          },
+        });
+      }
+    } else {
+      setCurrentUserData({
+        ...currentUserData,
+        [changeKey]: value,
+      });
+    }
+  }
 
-	// Function for validation
-	function validation() {
-		if (!nikValidation(currentUserData.nik)) {
-			ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
-		return;
-		}
+  // Function for validation
+  function validation() {
+    if (!nikValidation(currentUserData.nik)) {
+      ToastAndroid.show('Invalid NIK', ToastAndroid.LONG);
+      return;
+    }
 
-		if (
-			!nikValidation(currentUserData.nik) ||
-			currentUserData.firstName == '' ||
-			currentUserData.firstName == null ||
-			currentUserData.dob == null ||
-			currentUserData.phoneNumber == null ||
-			isErrorPhoneNumber
-		) {
-			setValid(true);
-			setModalF(true);
-		} else {
-			setValid(false);
-			sendData();
-		}
-	}
+    if (
+      !nikValidation(currentUserData.nik) ||
+      currentUserData.firstName == '' ||
+      currentUserData.firstName == null ||
+      currentUserData.dob == null ||
+      currentUserData.phoneNumber == null ||
+      isErrorPhoneNumber
+    ) {
+      setValid(true);
+      setModalF(true);
+    } else {
+      setValid(false);
+      sendData();
+    }
+  }
 
-	// Function for data preparation
-	const _filterdataSend = () => {
-		let dataSend;
-		// Methode
-		Object.filter = (obj, predicate) =>
-		Object.keys(obj)
-			.filter((key) => predicate(obj[key]))
-			.reduce((res, key) => ((res[key] = obj[key]), res), {});
-		dataSend = Object.filter(currentUserData, (value) => value !== null);
-		dataSend = Object.filter(dataSend, (value) => value !== undefined);
-		dataSend = Object.filter(dataSend, (value) => value !== '');
-		sendData(dataSend);
-	};
+  // Function for data preparation
+  const _filterdataSend = () => {
+    let dataSend;
+    // Methode
+    Object.filter = (obj, predicate) =>
+      Object.keys(obj)
+        .filter((key) => predicate(obj[key]))
+        .reduce((res, key) => ((res[key] = obj[key]), res), {});
+    dataSend = Object.filter(currentUserData, (value) => value !== null);
+    dataSend = Object.filter(dataSend, (value) => value !== undefined);
+    dataSend = Object.filter(dataSend, (value) => value !== '');
+    sendData(dataSend);
+  };
 
 
-	// Function for sending data to server
-	async function sendData() {
-		try {
+  // Function for sending data to server
+  async function sendData() {
+    try {
       const patientID = userData._id
-			await updateProfileData(currentUserData, patientID, patientID, navigation.navigate, 'ProfileDetail', userData)
-		} catch (error) {
-			console.log(error)
-		}
-	}
+      await updateProfileData(currentUserData, patientID, patientID, navigation.navigate, 'ProfileDetail', userData)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
-	BackHandler.addEventListener('hardwareBackPress', () => {
-		navigation.pop();
-		return true;
-	});
+  BackHandler.addEventListener('hardwareBackPress', () => {
+    navigation.pop();
+    return true;
+  });
 
-	const onChange = (event, selectedDate) => {
-		setShowDatePicker(false);
-		if (event.type === 'dismissed') {
-		return;
-		}
-		setChosenDate(selectedDate);
-		setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
-		setCurrentUserData({ ...userData, dob: selectedDate });
-	};
+  const onChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (event.type === 'dismissed') {
+      return;
+    }
+    setChosenDate(selectedDate);
+    setDateForShowingToUser(dateWithDDMMMYYYYFormat(selectedDate));
+    setCurrentUserData({ ...userData, dob: selectedDate });
+  };
 
   return (
     <KeyboardAvoidingView
-      style={viewStyles.container}
+      style={darkMode ? viewStyles.container : viewStyles.containerLight}
       behavior={'padding'}
       enabled
     >
@@ -262,6 +263,7 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
         navigate={navigation.navigate}
         navigateBack={'ProfileDetail'}
         title="Ubah Data"
+        darkMode={darkMode}
       />
 
       {/* Starts here */}
@@ -269,9 +271,9 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* NIK */}
         <View style={style.inputTopContainer}>
-          <View style={style.input}>
+          <View style={darkMode ? style.input : style.inputLight}>
             <TextInput
-              style={style.inputText}
+              style={darkMode ? style.inputText : style.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'NIK'}
@@ -286,8 +288,8 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
         {currentUserData.nik !== null &&
           currentUserData.nik.length > 0 &&
           currentUserData.nik.length !== 16 && (
-            <Text style={{ color: 'red' }}>
-              NIK must contain at 16 characters
+            <Text style={{ color: 'red', paddingLeft: 10 }}>
+              NIK must contain 16 characters
             </Text>
           )}
 
@@ -309,9 +311,9 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
 
         {/* First name form */}
         <View style={style.inputMiddleContainer}>
-          <View style={style.input}>
+          <View style={darkMode ? style.input : style.inputLight}>
             <TextInput
-              style={style.inputText}
+              style={darkMode ? style.inputText : style.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Depan'}
@@ -326,9 +328,9 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
 
         {/* Last name form */}
         <View style={style.inputMiddleContainer}>
-          <View style={style.input}>
+          <View style={darkMode ? style.input : style.inputLight}>
             <TextInput
-              style={style.inputText}
+              style={darkMode ? style.inputText : style.inputTextLight}
               autoCapitalize={'sentences'}
               autoFocus={false}
               placeholder={'Nama Belakang'}
@@ -360,8 +362,8 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
               formHorizontal={true}
               labelHorizontal={true}
               animation={false}
-              labelStyle={{ paddingRight: 10, fontSize: 14, color: '#DDDDDD' }}
-              style={style.inputText}
+              labelStyle={{ paddingRight: 10, fontSize: 14, color: darkMode ? '#DDDDDD' : '#212121' }}
+              style={darkMode ? style.inputText : style.inputTextLight}
               buttonOuterSize={20}
             />
           </View>
@@ -386,14 +388,9 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
         {/* DOB Form */}
         <View style={style.inputMiddleContainer}>
           <View
-            style={{
-              ...style.input,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
+            style={ darkMode ? style.birthOfDate : style.birthOfDateLight }
           >
-            <Text style={style.inputText}>
+            <Text style={darkMode ? style.inputText : style.inputTextLight}>
               {dateWithDDMMMYYYYFormat(chosenDate)}
             </Text>
             {showDatePicker && (
@@ -408,43 +405,14 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
               <DatePickerIcon />
             </TouchableOpacity>
-            {/* <DatePicker
-              date={chosenDate} //initial date from state
-              mode="date" //The enum of date, datetime and time
-              format="DD/MMMM/YYYY"
-              maxDate={new Date()}
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              customStyles={{
-                dateIcon: {
-                  display: 'none',
-                  position: 'absolute',
-                  right: 0,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  shadowColor: 'black',
-                },
-                dateInput: {
-                  marginLeft: 0,
-                  borderWidth: 0,
-                  borderColor: '#D5EDE1',
-                },
-                dateText: {
-                  display: 'none',
-                },
-              }}
-              onDateChange={(date) => {
-                setCurrentUserData({ ...currentUserData, dob: date });
-              }}
-            /> */}
           </View>
         </View>
 
         {/* Phone number form */}
         <View style={style.inputMiddleContainer}>
-          <View style={style.input}>
+          <View style={darkMode ? style.input : style.inputLight}>
             <TextInput
-              style={style.inputText}
+              style={darkMode ? style.inputText : style.inputTextLight}
               autoCapitalize={'none'}
               autoFocus={false}
               placeholder={'Nomor Hp'}
@@ -465,12 +433,12 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
         </View>
 
         {/* Bloodtype form */}
-        <View style={{ ...style.inputMiddleContainer, flexDirection: 'row' }}>
+        <View style={{ ...style.inputMiddleContainer, flexDirection: 'row', justifyContent: "space-between" }}>
           <TouchableOpacity
             onPress={() => setBloodTypeModal(true)}
-            style={style.button}
+            style={darkMode ? style.button : style.buttonLight }
           >
-            <Text style={style.inputText}>{selectedBloodTypeLabel}</Text>
+            <Text style={darkMode ? style.inputText : style.inputTextLight}>{selectedBloodTypeLabel}</Text>
             <Image source={require('../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <SelectModal
@@ -482,27 +450,17 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
             setSelectedValue={setSelectedValue}
             setSelectedLabel={setselectedBloodTypeLabel}
             changeKey="bloodType"
+            darkMode={darkMode}
           />
           {/* Rhesus form */}
           <TouchableOpacity
             onPress={() => setRhesusModal(true)}
-            style={style.button}
+            style={darkMode ? style.button : style.buttonLight }
           >
-            <Text style={style.inputText}>{selectedRhesusLabel}</Text>
+            <Text style={darkMode ? style.inputText : style.inputTextLight}>{selectedRhesusLabel}</Text>
             <Image source={require('../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
-          {/* <Picker
-								selectedValue={currentUserData.resus}
-								placeholderTextColor="#DDDDDD"
-								style={style.inputText}
-								mode={'dropdown'}                                                                                                                                                                                                           
-								onValueChange={(itemValue, itemIndex) => {
-									setCurrentUserData({ ...currentUserData, resus: itemValue });
-								}}>
-								<Picker.Item label="Rhesus" value="Rhesus" key={0} text-color={'red'} />
-								<Picker.Item label="-" value="-" key={1}  />
-								<Picker.Item label="+" value="+" key={2} />
-							</Picker> */}
+         
           <SelectModal
             modal={rhesusTypeModal}
             setModal={setRhesusModal}
@@ -512,80 +470,20 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
             setSelectedValue={setSelectedValue}
             setSelectedLabel={setSelectedRhesusLabel}
             changeKey="resus"
+            darkMode={darkMode}
           />
         </View>
 
-        {/* Relation form */}
-        {/* <View style={style.inputMiddleContainer}>
-						<View style={style.input}>
-							<Picker
-								selectedValue={currentUserData.statusFamily}
-								style={{ color: '#DDDDDD', height: 45, width: '100%' }}
-								placeholderTextColor="#8b8b8b"
-								mode={'dropdown'}
-								onValueChange={(itemValue, itemIndex) => {
-									setCurrentUserData({ ...currentUserData, statusFamily: itemValue });
-								}}>
-								<Picker.Item label="Hubungan Keluarga" color="#DDDDDD" value="Status type" key={0}/>
-								<Picker.Item label="Adik" value="Adik" key={1}/>
-								<Picker.Item label="Kakak" value="Kakak" key={2}/>
-								<Picker.Item label="Paman" value="Paman" key={3}/>
-								<Picker.Item label="Bibi" value="Bibi" key={4}/>
-								<Picker.Item label="Ayah" value="Ayah" key={5}/>
-								<Picker.Item label="Ibu" value="Ibu" key={6}/>
-								<Picker.Item label="Kakek" value="Kakek" key={7}/>
-								<Picker.Item label="Nenek" value="Nenek" key={8}/>
-								<Picker.Item label="Anak" value="Anak" key={9}/>
-								<Picker.Item label="Sepupu" value="sepupu" key={10}/>
-						`        <Picker.Item label="Suami" value="suami" key={11}/>
-								<Picker.Item label="Istri" value="istri" key={12}/>
-							</Picker>
-						</View>
-					</View> */}
-
         <View style={style.inputMiddleContainer}>
-          {/* Insurance Status */}
-
-          {/* <TouchableOpacity
-            onPress={() => setInsuranceStatusModal(true)}
-            style={style.button}
-          >
-            <Text style={style.inputText}>{selectedInsuranceLabel}</Text>
-            <Image source={require('../assets/png/ArrowDown.png')} />
-          </TouchableOpacity> */}
-
-          {/* <Picker
-								mode="dropdown"
-								selectedValue={currentUserData.InsuranceStatus}
-								// style={style.inputText}
-								style={{ height: 45, color: '#DDDDDD' }}
-								placeholderTextColor="#DDDDDD"
-								onValueChange={(itemValue, itemIndex) => {
-									setCurrentUserData({ ...currentUserData, InsuranceStatus: itemValue })
-								}}>
-								<Picker.Item label={'Umum'} value={'UMUM'} key={0} />
-								<Picker.Item label={'BPJS'} value={'BPJS'} key={0} />
-								<Picker.Item label={'Asuransi'} value={'ASURANSI'} key={0} />
-							</Picker> */}
-          {/* Imsurance Status Modal */}
-          {/* <SelectModal
-            modal={insuranceStatusModal}
-            setModal={setInsuranceStatusModal}
-            selection={insuranceStatusSelection}
-            title="Silahkan pilih tipe asuransi anda"
-            subtitle="Pilihan yang tersedia"
-            setSelectedValue={setSelectedValue}
-            setSelectedLabel={setSelectedInsuranceLabel}
-            changeKey="insuranceStatus"
-          /> */}
+          
         </View>
 
         <View style={style.inputMiddleContainer}>
           <TouchableOpacity
             onPress={() => setProvinceModal(true)}
-            style={style.button}
+            style={darkMode ? style.button : style.buttonLight}
           >
-            <Text style={style.inputText}>{selectedProvinceLabel}</Text>
+            <Text style={darkMode ? style.inputText : style.inputTextLight}>{selectedProvinceLabel}</Text>
             <Image source={require('../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -598,51 +496,17 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
             setSelectedLabel={setSelectedProvinceLabel}
             changeKey="location"
             changeInnerKey="province"
+            darkMode={darkMode}
           />
-          {/* {province.length > 0 ? (
-				<View style={style.input}>
-				<Picker
-					selectedValue={currentUserData.location.province}
-					style={style.inputText}
-					onValueChange={(itemValue, itemIndex) => {
-					setCurrentUserData({
-						...currentUserData,
-						location: { 
-							...currentUserData.location, 
-							province: itemValue,
-							city: region.kabupatenkota(province[itemIndex].id)[0].name,
-							coordinates: [
-								region.kabupatenkota(province[itemIndex].id)[0].longitude,
-								region.kabupatenkota(province[itemIndex].id)[0].latitude,
-							],
-						},
-					});
-					setDistrict(region.kabupatenkota(province[itemIndex].id));
-					}}
-				>
-					{province.length !== 0 &&
-					province.map((item, index) => {
-						return (
-						<Picker.Item
-							label={capitalFirst(item.name)}
-							value={capitalFirst(item.name)}
-							key={index}
-						/>
-						);
-					})}
-				</Picker>
-				</View>
-			) : (
-				<ActivityIndicator size={"small"} color={"blue"} />
-			)} */}
+          
         </View>
 
         <View style={style.inputBottomContainer}>
           <TouchableOpacity
             onPress={() => setDistrictModal(true)}
-            style={style.button}
+            style={darkMode ? style.button : style.buttonLight}
           >
-            <Text style={style.inputText}>{selectedDistrictLabel}</Text>
+            <Text style={darkMode ? style.inputText : style.inputTextLight}>{selectedDistrictLabel}</Text>
             <Image source={require('../assets/png/ArrowDown.png')} />
           </TouchableOpacity>
           <LocationModalPicker
@@ -656,66 +520,33 @@ const editProfile = ({navigation, userDataReducer, updateProfileData}) => {
             changeKey="location"
             changeInnerKey="city"
           />
-          {/* {district.length > 0 ? (
-				<View style={style.input}>
-				<Picker
-					selectedValue={currentUserData.location.city}
-					style={style.inputText}
-					onValueChange={(itemValue, itemIndex) => {
-					setCurrentUserData({
-						...currentUserData,
-						location: {
-						...currentUserData.location,
-						city: itemValue,
-						coordinates: [
-							district[itemIndex].longitude,
-							district[itemIndex].latitude,
-						],
-						},
-					});
-					}}
-				>
-					{district.length &&
-					district.map((item, index) => {
-						return (
-						<Picker.Item
-							label={capitalFirst(item.name)}
-							value={capitalFirst(item.name)}
-							key={index}
-						/>
-						);
-					})}
-				</Picker>
-				</View>
-			) : (
-				<ActivityIndicator size={"small"} color={"blue"} />
-			)} */}
+          
         </View>
 
-        <View style={{ paddingHorizontal: 12}}>
-            <View style={style.input}>
-              <TextInput
-                autoCapitalize={'sentences'}
-                style={style.inputText}
-                autoFocus={false}
-                placeholder={'Detail Alamat'}
-                placeholderTextColor="#8b8b8b"
-                onChangeText={(text) => {
-                  const { location } = currentUserData;
-                  const newLocation = { ...location, address: text };
-                  setCurrentUserData({ ...currentUserData, location: newLocation });
-                }}
-                value={currentUserData.location.address}
-              />
-            </View>
+        <View style={{ paddingHorizontal: 12 }}>
+          <View style={darkMode ? style.input : style.inputLight}>
+            <TextInput
+              autoCapitalize={'sentences'}
+              style={darkMode ? style.inputText : style.inputTextLight}
+              autoFocus={false}
+              placeholder={'Detail Alamat'}
+              placeholderTextColor="#8b8b8b"
+              onChangeText={(text) => {
+                const { location } = currentUserData;
+                const newLocation = { ...location, address: text };
+                setCurrentUserData({ ...currentUserData, location: newLocation });
+              }}
+              value={currentUserData.location.address}
+            />
           </View>
+        </View>
 
         <View style={style.buttonContainer}>
           <TouchableOpacity
             onPress={() => {
               validation();
             }}
-            style={container.button}
+            style={darkMode ? container.button : container.buttonLight}
           >
             {isLoading ? (
               <ActivityIndicator size={'small'} color="#FFF" />
@@ -742,7 +573,6 @@ const style = StyleSheet.create({
 
   inputBottomContainer: {
     paddingTop: 10,
-    // paddingBottom: 20,
     marginBottom: 10,
     paddingHorizontal: 10,
   },
@@ -751,17 +581,54 @@ const style = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     paddingHorizontal: 20,
-    borderRadius: 3,
+    borderRadius: 5,
     backgroundColor: '#2F2F2F',
     justifyContent: 'center',
+  },
+
+  inputLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+  },
+
+  birthOfDate: {
+    height: 50,
+    borderWidth: 1,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#2F2F2F',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  birthOfDateLight: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: '#ffffff',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 
   inputText: {
     color: '#DDDDDD',
   },
 
+  inputTextLight: {
+    color: '#212121',
+  },
+
   button: {
-    flex: 0.5,
+    flex: 0.48,
     height: 50,
     borderWidth: 1,
     paddingHorizontal: 20,
@@ -770,6 +637,19 @@ const style = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#2F2F2F',
+  },
+
+  buttonLight: {
+    flex: 0.48,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingHorizontal: 20,
+    borderRadius: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
   },
 
   buttonText: {
@@ -793,7 +673,6 @@ const style = StyleSheet.create({
 const container = StyleSheet.create({
   base: {
     flex: 1,
-    // backgroundColor: '#CCEDBF',
     alignItems: 'center',
     paddingVertical: 20,
   },
@@ -846,13 +725,22 @@ const container = StyleSheet.create({
   },
   button: {
     height: 50,
-    width: '85%',
+    width: '95%',
     backgroundColor: '#005ea2',
-    borderRadius: 10,
+    borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 10,
   },
+  buttonLight: {
+    height: 50,
+    width: '95%',
+    backgroundColor: '#1090C5',
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10,
+  }
 });
 const textStyle = StyleSheet.create({
   editphoto: {
@@ -868,6 +756,12 @@ const textStyle = StyleSheet.create({
 const viewStyles = StyleSheet.create({
   container: {
     backgroundColor: '#1f1f1f',
+    minHeight: hp('100%'),
+    width: wp('100%'),
+    flex: 1,
+  },
+  containerLight: {
+    backgroundColor: '#ffffff',
     minHeight: hp('100%'),
     width: wp('100%'),
     flex: 1,

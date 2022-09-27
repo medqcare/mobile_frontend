@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 
 
-export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeInnerKey, changeV} ){
+export default function SelectModal({ modal, setModal, selection, title, subtitle, setSelectedValue, setSelectedLabel, changeKey, changeInnerKey, darkMode} ){
 
     return(
         <Modal
@@ -24,15 +24,15 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
             onSwipeComplete={() => setModal(false)}
             onRequestClose={() => setModal(false)}   
         >
-            <View style={styles.container}>
+            <View style={darkMode ? styles.container : styles.containerLight }>
                 <View style={styles.header}>
-                    <View style={styles.toogle}/>
-                    <Text style={styles.title}>
+                    <View style={darkMode ? styles.toogle : styles.toogleLight}/>
+                    <Text style={darkMode ? styles.title : styles.titleLight}>
                         {title}
                     </Text>
                 </View>
                 <View style={styles.subtitleContainer}>
-                    <Text style={styles.subtitleText}>
+                    <Text style={darkMode ? styles.subtitleText : styles.subtitleTextLight}>
                         {subtitle}
                     </Text>
                     <SafeAreaView>
@@ -50,9 +50,9 @@ export default function SelectModal({ modal, setModal, selection, title, subtitl
                                                     setModal(false)
                                                 }}
                                             >
-                                                <View style={styles.selectionContainer}>
+                                                <View style={darkMode ? styles.selectionContainer : styles.selectionContainerLight}>
                                                     <View style={styles.selectionTextContainer}>
-                                                        <Text style={styles.selectionText}> {item.label || item}</Text>
+                                                        <Text style={darkMode ? styles.selectionText : styles.selectionTextLight}> {item.label || item}</Text>
                                                     </View>
                                                 </View>
                                             </TouchableOpacity>    
@@ -83,6 +83,12 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20
     },
+    containerLight: {
+        maxHeight: '100%',
+        backgroundColor: '#ffffff',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20
+    },
     header: {
         marginTop:20,
         flexDirection:'row',
@@ -97,9 +103,22 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         marginBottom:20
     },
+    toogleLight: {
+        position:'absolute',
+        borderWidth:2,
+        width:50,
+        borderColor: '#E0E0E0',
+        alignContent: 'center',
+        marginBottom:20
+    },
     title: {
         marginTop:10,
         color:'white',
+        fontSize:12
+    },
+    titleLight: {
+        marginTop:10,
+        color:'#212121',
         fontSize:12
     },
     subtitleContainer: {
@@ -110,10 +129,25 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 12,
     },
+    subtitleTextLight: {
+        color: '#212121',
+        fontSize: 12,
+    },
     
     selectionContainer: {
         marginTop:10,
         borderColor: '#757575',
+        borderWidth:1,
+        borderRadius: 3,
+        minHeight:50,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10
+    },
+
+    selectionContainerLight: {
+        marginTop:10,
+        borderColor: '#E0E0E0',
         borderWidth:1,
         borderRadius: 3,
         minHeight:50,
@@ -128,6 +162,9 @@ const styles = StyleSheet.create({
     },
     selectionText: {
         color:'#DDDDDD'
+    },
+    selectionTextLight: {
+        color:'#212121'
     },
    
    

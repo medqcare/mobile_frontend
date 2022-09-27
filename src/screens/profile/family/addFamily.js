@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  ImageBackground,
   BackHandler,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -17,8 +14,7 @@ import {
 
 import Header from '../../../components/headers/GradientHeader';
 import IconFont5 from 'react-native-vector-icons/FontAwesome5';
-import Icon from 'react-native-vector-icons/Ionicons';
-import ArrowBack from '../../../assets/svg/ArrowBack';
+
 //component
 import FamilyList from '../../../components/profile/dashboard/family-list-card';
 
@@ -28,14 +24,14 @@ const mapStateToProps = (state) => {
 };
 
 const addFamily = (props) => {
-  const { family } = props.userDataReducer.userData;
+  const { darkMode } = props.userDataReducer
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     props.navigation.pop();
     return true;
   });
   return (
-    <View style={style.container}>
+    <View style={darkMode ? style.container : style.containerLight}>
       <Header
         title={'Daftar Keluarga'}
         navigate={props.navigation.navigate}
@@ -45,10 +41,9 @@ const addFamily = (props) => {
         <View style={style.familyMember}>
           <TouchableOpacity
             onPress={() => {
-              // console.log('menuju formnya')
               props.navigation.navigate('AddFamilyForm');
             }}
-            style={viewStyles.outer}
+            style={darkMode ? viewStyles.outer : viewStyles.outerLight}
           >
             <View style={viewStyles.toAdd}>
               <IconFont5
@@ -60,7 +55,6 @@ const addFamily = (props) => {
           </TouchableOpacity>
           <FamilyList navigateTo={props.navigation.navigate} />
         </View>
-        {/* <Text style={style.footer}>{JSON.stringify(family,null,2)}</Text> */}
       </ScrollView>
     </View>
   );
@@ -70,6 +64,20 @@ const viewStyles = StyleSheet.create({
   outer: {
     borderRadius: 6,
     backgroundColor: '#1F1F1F',
+    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 3,
+    width: '97%',
+    height: 95,
+    marginTop: 25,
+    marginHorizontal: 7,
+    alignItems: 'center',
+    paddingTop: 30,
+  },
+  outerLight: {
+    borderRadius: 6,
+    backgroundColor: '#ffffff',
     borderStyle: 'dashed',
     borderWidth: 1,
     borderColor: 'grey',
@@ -94,9 +102,12 @@ const viewStyles = StyleSheet.create({
 
 const style = StyleSheet.create({
   container: {
-    // backgroundColor: '#BAFFDC',
     minHeight: '100%',
     backgroundColor: '#1F1F1F',
+  },
+  containerLight: {
+    minHeight: '100%',
+    backgroundColor: '#ffffff',
   },
   content: {
     height: 85,
@@ -118,8 +129,6 @@ const style = StyleSheet.create({
     justifyContent: 'center',
   },
   familyMember: {
-    // alignItems: 'center',
-    // borderWidth: 2,
     justifyContent: 'space-between',
     flexWrap: 'wrap',
     flexDirection: 'row',
@@ -127,7 +136,6 @@ const style = StyleSheet.create({
     paddingBottom: 15,
     width: '100%',
     height: '100%',
-    backgroundColor: '#1F1F1F',
   },
   title: {
     fontSize: 30,

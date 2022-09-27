@@ -19,7 +19,7 @@ import IconLock from '../../../assets/svg/IconLock';
 import { verirfyPassword } from '../../../stores/action'
 
 function VerifyPassword(props) {
-  const { userData, isLoading } = props.userDataReducer
+  const { userData, isLoading, darkMode } = props.userDataReducer
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(true);
 
@@ -50,7 +50,7 @@ function VerifyPassword(props) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={darkMode ? styles.container : styles.containerLight}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.topSection}>
@@ -58,8 +58,8 @@ function VerifyPassword(props) {
           <View style={styles.iconLockWrapper}>
             <IconLock />
           </View>
-          <Text style={styles.textTitle}>Masukkan Password</Text>
-          <Text style={styles.textDescription}>
+          <Text style={darkMode ? styles.textTitle : styles.textTitleLight}>Masukkan Password</Text>
+          <Text style={darkMode ? styles.textDescription : styles.textDescriptionLight}>
             Gunakan password MedQCare Anda
           </Text>
         </View>
@@ -118,6 +118,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
+  containerLight: {
+    paddingHorizontal: 36,
+    paddingTop: '20%',
+    backgroundColor: '#ffffff',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
   topSection: {
     flex: 0.8,
     width: '100%',
@@ -148,7 +155,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 6,
   },
+  textTitleLight: {
+    color: '#212121',
+    fontSize: 20,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginBottom: 6,
+  },
   textDescription: {
+    color: '#B5B5B5',
+    fontSize: 12,
+    fontWeight: '400',
+    textAlign: 'center',
+  },
+  textDescriptionLight: {
     color: '#B5B5B5',
     fontSize: 12,
     fontWeight: '400',
