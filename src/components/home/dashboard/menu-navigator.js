@@ -11,68 +11,68 @@ import { connect } from 'react-redux';
 import Stethoscope from '../../../assets/svg/home-blue/stethoscope-blue';
 import DokFavorit from '../../../assets/svg/DokFavorit';
 import Penunjang from '../../../assets/svg/Penunjang';
+import Klinik from '../../../assets/svg/Klinik';
 
 const heightDim = Dimensions.get('screen').height;
 
-function MenuNavigator({ navigation, data }) {
+function MenuNavigator({ navigation, data, darkMode }) {
   return (
-    <View style={style.container}>
+    <View style={darkMode ? style.container : style.containerLight}>
       <TouchableOpacity
         style={style.borderIcon}
         onPress={() => navigation.navigate('Doctor')}
       >
-        <Stethoscope />
-        <Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
+        <Stethoscope darkMode={darkMode}/>
+        <Text style={{ marginTop: 10, fontSize: 12, color: darkMode ? '#B5B5B5' : '#ffffff' }}>
           Dokter
         </Text>
       </TouchableOpacity>
-      	<View
-			style={{
-				backgroundColor: '#0C6292',
-				height: '80%',
-				width: 1,
-			}}
-		/>
-	  	<TouchableOpacity
-			style={style.borderIcon}
-			onPress={() =>
-        navigation.navigate('PenunjangStack')
-			}
-      	>
-        	<Penunjang />
-			<Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
-				Penunjang
-			</Text>
-      	</TouchableOpacity>
-      
-		<View
-			style={{
-				backgroundColor: '#0C6292',
-				height: '80%',
-				width: 1,
-				backgroundColor: '#0C6292',
-			}}
-		/>
-		<TouchableOpacity
-			style={style.borderIcon}
-			onPress={() => navigation.navigate('Hospital', { facility: 'Clinic' })}
-		>
-			<Image
-				navigation={navigation}
-				source={require('../../../assets/png/ic_klinik.png')}
-				style={{ width: 24, height: 24 }}
-			/>
-			<Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
-				Klinik
-			</Text>
-		</TouchableOpacity>
-      
       <View
         style={{
-          backgroundColor: '#0C6292',
-          height: '80%',
+          backgroundColor: darkMode ? '#0C6292' : '#40A1C9',
+          height: '60%',
           width: 1,
-          backgroundColor: '#0C6292',
+        }}
+      />
+      <TouchableOpacity
+        style={style.borderIcon}
+        onPress={() =>
+          navigation.navigate('PenunjangStack')
+        }
+      >
+        <Penunjang darkMode={darkMode}/>
+        <Text style={{ marginTop: 10, fontSize: 12, color: darkMode ? '#B5B5B5' : '#ffffff' }}>
+          Penunjang
+        </Text>
+      </TouchableOpacity>
+
+      <View
+        style={{
+          backgroundColor: darkMode ? '#0C6292' : '#40A1C9',
+          height: '60%',
+          width: 1,
+        }}
+      />
+      <TouchableOpacity
+        style={style.borderIcon}
+        onPress={() => navigation.navigate('Hospital', { facility: 'Clinic' })}
+      >
+        {/* <Image
+          navigation={navigation}
+          source={require('../../../assets/png/ic_klinik.png')}
+          style={{ width: 24, height: 24 }}
+        /> */}
+        <Klinik darkMode={darkMode}/>
+        <Text style={{ marginTop: 10, fontSize: 12, color: darkMode ? '#B5B5B5' : '#ffffff' }}>
+          Klinik
+        </Text>
+      </TouchableOpacity>
+
+      <View
+        style={{
+          backgroundColor: darkMode ? '#0C6292' : '#40A1C9',
+          height: '60%',
+          width: 1,
         }}
       ></View>
       <TouchableOpacity
@@ -81,8 +81,8 @@ function MenuNavigator({ navigation, data }) {
           data ? navigation.navigate('Filter') : navigation.navigate('Sign')
         }
       >
-        <DokFavorit />
-        <Text style={{ marginTop: 10, fontSize: 12, color: '#B5B5B5' }}>
+        <DokFavorit darkMode={darkMode}/>
+        <Text style={{ marginTop: 10, fontSize: 12, color: darkMode ? '#B5B5B5' : '#ffffff' }}>
           Favorit
         </Text>
       </TouchableOpacity>
@@ -93,11 +93,27 @@ function MenuNavigator({ navigation, data }) {
 const style = StyleSheet.create({
   container: {
     backgroundColor: 'rgba(17, 39, 82, 0.66)',
-    // position: 'absolute',
     width: '100%',
     paddingHorizontal: 10,
     height: heightDim * 0.11,
-    // top: heightDim * 0.18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    alignItems: 'center',
+    shadowOffset: {
+      width: 4,
+      height: 7,
+    },
+    borderRadius: 15,
+    shadowOpacity: 0.61,
+    shadowRadius: 9.11,
+    zIndex: 99,
+  },
+  containerLight: {
+    backgroundColor: 'rgba(17, 39, 82, 0.1)',
+    width: '100%',
+    paddingHorizontal: 10,
+    height: heightDim * 0.11,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignSelf: 'center',

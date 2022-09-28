@@ -12,6 +12,7 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'
 import { connect, useDispatch } from 'react-redux';
 import CardDoctor from '../../../components/home/doctor/card-doctor';
 import {
@@ -47,6 +48,7 @@ function SearchDoctorPage(props) {
   } = props.userLocationReducer;
 
   const { specialists } = props.specialistReducer;
+  const { darkMode } = props.userDataReducer;
 
   const [availableLocations, setAvalaibleLocations] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -69,7 +71,7 @@ function SearchDoctorPage(props) {
     if (params == DEFAULT_SPESIALIS) {
       props.searchAllDoctors(currentPageReducer, userLocation, doctors);
     }
-    else if(filterQuery){
+    else if (filterQuery) {
       props.searchAllDoctors(currentPageReducer, userLocation, doctors, filterQuery)
     } else {
       props.searchDoctorBySpecialist(currentPageReducer, null, doctors);
@@ -129,7 +131,7 @@ function SearchDoctorPage(props) {
   return (
     <>
       <KeyboardAvoidingView
-        style={styles.Container}
+        style={darkMode ? styles.Container : styles.ContainerLight}
         behavior="height"
         enabled={false}
       >
@@ -139,64 +141,123 @@ function SearchDoctorPage(props) {
             marginBottom: heightPercentageToDP('4%'),
           }}
         >
-          <ImageBackground
-            source={require('../../../assets/background/RectangleHeader.png')}
-            style={{
-              flex: 1,
-              paddingTop: heightPercentageToDP('5%'),
-            }}
-          >
-            <View style={{ marginHorizontal: 20, flex: 1 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  dispatch({
-                    type: SET_CURRENT_PAGE,
-                    payload: 0,
-                  });
-                  props.navigation.pop();
+          {
+            darkMode ? (
+              <ImageBackground
+                source={require('../../../assets/background/RectangleHeader.png')}
+                style={{
+                  flex: 1,
+                  paddingTop: heightPercentageToDP('5%'),
                 }}
               >
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ marginTop: 3 }}>
-                    <ArrowBack />
-                  </View>
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      color: '#ffff',
-                      position: 'relative',
-                      marginLeft: 10,
+                <View style={{ marginHorizontal: 20, flex: 1 }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      dispatch({
+                        type: SET_CURRENT_PAGE,
+                        payload: 0,
+                      });
+                      props.navigation.pop();
                     }}
                   >
-                    Pilih Dokter
-                  </Text>
+                    <View style={{ flexDirection: 'row' }}>
+                      <View style={{ marginTop: 3 }}>
+                        <ArrowBack />
+                      </View>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          color: '#ffff',
+                          position: 'relative',
+                          marginLeft: 10,
+                        }}
+                      >
+                        Pilih Dokter
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <View style={{ width: '90%' }}>
+                      <SearchBar
+                        autoFocus={true}
+                        placeholder={'cari dokter atau spesialis'}
+                        onChangeText={(text) => _textChange(text)}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        console.log('terpanggil');
+                        setModalFilterIsActive(true);
+                      }}
+                    >
+                      <IconFilter />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </TouchableOpacity>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <View style={{ width: '90%' }}>
-                  <SearchBar
-                    autoFocus={true}
-                    placeholder={'cari dokter atau spesialis'}
-                    onChangeText={(text) => _textChange(text)}
-                  />
+              </ImageBackground>
+            ) : (
+              <LinearGradient colors={['#005EA2', '#009292']} start={{ x: 1, y: 0 }} end={{ x: 0, y: 0 }} style={styles.linearGradient}>
+                <View style={{ marginHorizontal: 20, flex: 1 }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      dispatch({
+                        type: SET_CURRENT_PAGE,
+                        payload: 0,
+                      });
+                      props.navigation.pop();
+                    }}
+                  >
+                    <View style={{ flexDirection: 'row' }}>
+                      <View style={{ marginTop: 3 }}>
+                        <ArrowBack />
+                      </View>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          color: '#ffff',
+                          position: 'relative',
+                          marginLeft: 10,
+                        }}
+                      >
+                        Pilih Dokter
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <View style={{ width: '90%' }}>
+                      <SearchBar
+                        autoFocus={true}
+                        placeholder={'cari dokter atau spesialis'}
+                        onChangeText={(text) => _textChange(text)}
+                        darkMode={darkMode}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        console.log('terpanggil');
+                        setModalFilterIsActive(true);
+                      }}
+                    >
+                      <IconFilter />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    console.log('terpanggil');
-                    setModalFilterIsActive(true);
-                  }}
-                >
-                  <IconFilter />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ImageBackground>
+              </LinearGradient>
+            )
+          }
+
         </View>
         {isloadingDoctor ? (
           <View
@@ -236,7 +297,7 @@ function SearchDoctorPage(props) {
                     renderItem={({ item }) => {
                       let humanReadable = 'Turn on location'
                       const { distance, doctors } = item;
-                      if(distance) {
+                      if (distance) {
                         humanReadable = distance.humanReadable
                       }
                       return doctors.map((el) => {
@@ -255,6 +316,7 @@ function SearchDoctorPage(props) {
                               <CardDoctor
                                 data={el}
                                 distance={humanReadable}
+                                darkMode={darkMode}
                               />
                             </View>
                           </TouchableOpacity>
@@ -291,6 +353,7 @@ function SearchDoctorPage(props) {
         close={() => {
           setModalFilterIsActive(false)
         }}
+        darkMode={darkMode}
       />
     </>
   );
@@ -305,6 +368,18 @@ const styles = StyleSheet.create({
     marginTop: 0,
     flex: 1,
     backgroundColor: '#181818',
+  },
+  linearGradient: {
+    flex: 1,
+    height: heightPercentageToDP('5%'),
+    paddingTop: heightPercentageToDP('5%'),
+    width: '100%',
+  },
+  ContainerLight: {
+    marginHorizontal: 0,
+    marginTop: 0,
+    flex: 1,
+    backgroundColor: '#ffffff',
   },
   Icon: {
     flexDirection: 'column',

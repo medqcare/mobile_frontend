@@ -22,6 +22,7 @@ export default function SelectPatient({
   family,
   setSelectedValue,
   navigateTo,
+  darkMode = true
 }) {
   function smallLengthText(string) {
     let result = '';
@@ -52,10 +53,10 @@ export default function SelectPatient({
       onSwipeComplete={() => setModal(false)}
       onRequestClose={() => setModal(false)}
     >
-      <View style={styles.container}>
+      <View style={darkMode ? styles.container : styles.containerLight}>
         <View style={styles.header}>
           <View style={styles.toogle} />
-          <Text style={styles.title}>{title}</Text>
+          <Text style={darkMode ? styles.title : styles.titleLight}>{title}</Text>
         </View>
         <View style={styles.patient}>
           <FlatList
@@ -81,7 +82,7 @@ export default function SelectPatient({
                             : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
                         }}
                       />
-                      <Text style={styles.name}>
+                      <Text style={darkMode ? styles.name : styles.nameLight}>
                         {smallLengthText(fullName(lang))}
                       </Text>
                     </View>
@@ -91,35 +92,11 @@ export default function SelectPatient({
             }}
             keyExtractor={(item, index) => index}
           />
-          {/* {family.map((lang, itemIndex) => {
-            console.log(lang.imageUrl, 'this is image url');
-            return (
-              <View key={itemIndex}>
-                <TouchableOpacity
-                  style={styles.touchable}
-                  onPress={() => {
-                    setSelectedValue(lang);
-                    setModal(false);
-                  }}
-                >
-                  <View>
-                    <Image
-                      style={styles.photo}
-                      source={{
-                        uri: lang.imageUrl
-                          ? `${lang.imageUrl}?time=${new Date()}`
-                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRH_WRg1exMTZ0RdW3Rs76kCOb9ZKrXddtQL__kEBbrS2lRWL3r',
-                      }}
-                    />
-                    <Text style={styles.name}>
-                      {smallLengthText(fullName(lang))}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          })} */}
         </View>
+        {
+          !darkMode && 
+          <View style={styles.thinBorder}></View> 
+        }
         <TouchableOpacity
           style={styles.buttonAdd}
           onPress={() => navigateTo('AddFamilyForm')}
@@ -145,6 +122,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
+  containerLight: {
+    maxHeight: '100%',
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
   header: {
     marginTop: 20,
     flexDirection: 'row',
@@ -161,6 +144,12 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'white',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  titleLight: {
+    color: '#4B4B4B',
     fontSize: 13,
     textAlign: 'center',
     marginTop: 20,
@@ -187,6 +176,12 @@ const styles = StyleSheet.create({
     color: '#DDDDDD',
     alignSelf: "center",
   },
+  
+  nameLight: {
+    marginTop: 15,
+    color: '#4B4B4B',
+    alignSelf: "center",
+  },
 
   vector: {
     marginVertical: 20,
@@ -206,4 +201,9 @@ const styles = StyleSheet.create({
   addTitle: {
     color: '#4398D1',
   },
+
+  thinBorder: {
+    borderColor: "#F5F5F5",
+    borderWidth: 1
+  }
 });

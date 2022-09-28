@@ -12,7 +12,7 @@ import {
 
 const mapStateToProps = (state) => state;
 
-function CardDoctor({ data, distance, userLocationReducer }) {
+function CardDoctor({ data, distance, userLocationReducer, darkMode }) {
   const { userLocation } = userLocationReducer;
 
   const renderDoctorName = () => {
@@ -43,7 +43,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
   };
 
   return (
-    <View style={styles.Container}>
+    <View style={darkMode ? styles.Container : styles.ContainerLight}>
       <View style={styles.Photo}>
         <Image
           style={{ width: 55, height: 55, borderRadius: 55 }}
@@ -55,21 +55,13 @@ function CardDoctor({ data, distance, userLocationReducer }) {
         />
       </View>
       <View style={styles.DetailDokter}>
-        <Text style={{ fontSize: 16, color: WHITE_PRIMARY, fontFamily: INTER_500 }}>
+        <Text style={{ fontSize: 16, color: darkMode ? WHITE_PRIMARY : "#4B4B4B", fontFamily: INTER_500 }}>
           {renderDoctorName()}
         </Text>
         <View
-          style={{
-            paddingVertical: 2,
-            paddingHorizontal: 6,
-            backgroundColor: BLACK_SECONDARY,
-            alignSelf: 'flex-start',
-            alignItems: 'center',
-            marginTop: 4,
-            marginBottom: 10,
-          }}
+          style={darkMode ? styles.Specialist : styles.SpecialistLight}
         >
-          <Text style={styles.textSpecailist}>{renderDoctorSpecialist()}</Text>
+          <Text style={darkMode ? styles.textSpecialist : styles.textSpecialistLight}>{renderDoctorSpecialist()}</Text>
         </View>
         <View>
           <View
@@ -85,7 +77,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
               <Text
                 style={{
                   ...styles.TextContent,
-                  color: WHITE_PRIMARY,
+                  color: darkMode ? WHITE_PRIMARY : "#F16420",
                   fontFamily: INTER_500,
                 }}
               >
@@ -104,7 +96,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
             <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
             </Text>
           :
-            <Text style={{ color: WHITE_PRIMARY }}>
+            <Text style={{ color: darkMode ? WHITE_PRIMARY : "#4B4B4B" }}>
               &#177; <Text style={{ fontFamily: INTER_400 }}>{distance}</Text>
             </Text>
           }
@@ -122,6 +114,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#2F2F2F',
+  },
+  ContainerLight: {
+    minWidth: 300,
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9E9E9',
   },
   Photo: {
     borderRadius: 100,
@@ -141,14 +141,36 @@ const styles = StyleSheet.create({
     flex: 4,
     marginRight: 5,
   },
+  Specialist: {
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    backgroundColor: BLACK_SECONDARY,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    marginTop: 4,
+    marginBottom: 10,
+  },
+  SpecialistLight: {
+    paddingVertical: 2,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    marginTop: 4,
+    marginBottom: 10,
+  },
   TextContent: {
     fontSize: 13,
     color: WHITE_PRIMARY,
     fontFamily: INTER_500,
   },
-  textSpecailist: {
+  textSpecialist: {
     fontFamily: INTER_300,
     color: GREY_SECONDARY,
+    fontSize: 12,
+    textTransform: 'capitalize',
+  },
+  textSpecialistLight: {
+    fontFamily: INTER_300,
+    color: "#4B4B4B",
     fontSize: 12,
     textTransform: 'capitalize',
   },

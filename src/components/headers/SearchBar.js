@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput } from 'react-native';
 
 import Search from '../../assets/svg/Search';
 
-export default function GradientHeader({ onChangeText, onFocus, placeholder, autoFocus }) {
+export default function SearchBar({ onChangeText, onFocus, placeholder, autoFocus, darkMode }) {
   return (
     <View style={styles.container}>
       <View style={styles.searcharea}>
@@ -15,7 +15,7 @@ export default function GradientHeader({ onChangeText, onFocus, placeholder, aut
           <Search />
         </View>
         <TextInput
-          style={styles.textinput}
+          style={darkMode ? styles.textinput : styles.textinputLight}
           placeholder={placeholder}
           placeholderTextColor="#A2A2A2"
           onChangeText={onChangeText || null}
@@ -23,9 +23,6 @@ export default function GradientHeader({ onChangeText, onFocus, placeholder, aut
           autoFocus={autoFocus}
         />
       </View>
-      {/* <View style={{ marginTop: 28 }}>
-        <IcFilter />
-      </View> */}
     </View>
   );
 }
@@ -45,7 +42,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     flexDirection: 'row',
     width: '100%',
-    // backgroundColor: "blue",
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
@@ -56,8 +52,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     color: '#A2A2A2',
-    // borderColor: "red",
-    // borderWidth: 1,
+    width: '100%',
+  },
+
+  textinputLight: {
+    marginStart: 10,
+    fontSize: 14,
+    flex: 1,
+    color: '#FFFFFF',
     width: '100%',
   },
 });

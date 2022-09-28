@@ -41,7 +41,7 @@ const mapStateToProps = (state) => {
 };
 
 const buatJanji = (props) => {
-  const { userData, error } = props.userDataReducer
+  const { userData, error, darkMode } = props.userDataReducer
   const { isLoading } = props.doctorReducer
   const { allergies: reducerAllergies } = props.allergiesReducer
   const { doctorData: datadoctor } = props.navigation.state.params;
@@ -391,7 +391,7 @@ const buatJanji = (props) => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
+    <View style={{ flex: 1, backgroundColor: darkMode ? '#1F1F1F' : "#ffffff" }}>
       <ScrollView>
         <Header
           title={'Detail Pemesanan'}
@@ -399,7 +399,7 @@ const buatJanji = (props) => {
           navigateBack={'DetailDoctor'}
         />
 
-        <View style={cardStyle.container}>
+        <View style={darkMode ? cardStyle.container : cardStyle.containerLight}>
           <View style={cardStyle.card}>
             <View style={{ flex: 0.2, alignItems: 'center' }}>
               <Image
@@ -412,20 +412,20 @@ const buatJanji = (props) => {
               />
             </View>
             <View style={cardStyle.detail}>
-              <Text style={{ color: '#DDDDDD', fontSize: 16 }}>
+              <Text style={{ color: darkMode ? '#DDDDDD' : '#4B4B4B', fontSize: 16 }}>
                 {datadoctor.title} {datadoctor.doctorName}
               </Text>
-              <Text style={{ color: '#B5B5B5', fontSize: 14, marginTop: 2 }}>
+              <Text style={{ color: darkMode ? '#B5B5B5' : '#4B4B4B', fontSize: 14, marginTop: 2 }}>
                 {datadoctor.specialist}
               </Text>
-              <Text style={{ color: '#DDDDDD', fontSize: 15, marginTop: 5 }}>
+              <Text style={{ color: darkMode ? '#DDDDDD' : '#4B4B4B', fontSize: 15, marginTop: 5 }}>
                 {datadoctor.healthFacility.facilityName}
               </Text>
               <View style={cardStyle.line} />
               <View style={cardStyle.patient}>
                 <View style={{ flexDirection: 'row' }}>
-                  <Text style={{ color: '#B5B5B5' }}>Pasien :</Text>
-                  <Text style={{ color: '#DDDDDD', marginLeft: 5 }}>
+                  <Text style={{ color: darkMode ? '#B5B5B5' : '#4B4B4B' }}>Pasien :</Text>
+                  <Text style={{ color: darkMode ? '#DDDDDD' : '#4B4B4B', marginLeft: 5, fontWeight: "bold" }}>
                     {displayName}
                   </Text>
                 </View>
@@ -435,14 +435,14 @@ const buatJanji = (props) => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <Text style={{ color: '#B5B5B5', marginTop: 2 }}>
+              <Text style={{ color: darkMode ? '#B5B5B5' : '#4B4B4B', marginTop: 2 }}>
                 {datadoctor.bookingSchedule.split('-').reverse().join('-')} -{' '}
                 {datadoctor.bookingTime}
               </Text>
               {datadoctor.estPrice && (
                 <View style={cardStyle.patient}>
-                  <Text style={{ color: '#DDDDDD' }}>Biaya Konsultasi</Text>
-                  <Text style={{ color: '#DDDDDD' }}>
+                  <Text style={{ color: darkMode ? '#DDDDDD' : '#4B4B4B' }}>Biaya Konsultasi</Text>
+                  <Text style={{ color: darkMode ? '#DDDDDD' : '#009292' }}>
                     {formatRP(datadoctor.estPrice, 'RP')}
                   </Text>
                 </View>
@@ -450,16 +450,16 @@ const buatJanji = (props) => {
             </View>
           </View>
         </View>
-        <View style={cardStyle.container}>
+        <View style={darkMode ? cardStyle.container : cardStyle.containerLight}>
           <TouchableOpacity onPress={() => setModalL(true)}>
             <View style={cardStyle.pembayaran}>
               <Text
-                style={{ color: '#DDDDDD', marginHorizontal: 15, fontSize: 14 }}
+                style={{ color: darkMode ? '#DDDDDD' : "#4B4B4B", marginHorizontal: 15, fontSize: 14 }}
               >
                 Pembayaran - {patient.patient.insuranceStatus}
               </Text>
-              <View style={{ marginTop: 8 }}>
-                <ArrowDownWhite />
+              <View style={{ marginTop: 5 }}>
+                <ArrowDownWhite darkMode={darkMode}/>
               </View>
             </View>
           </TouchableOpacity>
@@ -620,19 +620,14 @@ const buatJanji = (props) => {
               </TouchableOpacity>
             </View> */}
 
-            <View style={cardStyle.dompet}>
+            <View style={darkMode ? cardStyle.dompet : cardStyle.dompetLight}>
               <TouchableOpacity
                 style={cardStyle.pembayaran}
                 onPress={() => setDompet('Tunai')}
               >
                 <View style={{ flexDirection: 'row', marginLeft: 15 }}>
-                  {/* <Image
-                    source={require('../../../assets/png/ic_tunai.png')}
-                    height={20}
-                    width={20}
-                  /> */}
                   <IcTunai />
-                  <Text style={{ color: '#DDDDDD', marginLeft: 15 }}>
+                  <Text style={{ color: darkMode ? '#DDDDDD' : "#4B4B4B", marginLeft: 15 }}>
                     Tunai
                   </Text>
                 </View>
@@ -867,7 +862,7 @@ const buatJanji = (props) => {
         <View
           style={{
             padding: 10,
-            backgroundColor: '#1F1F1F',
+            backgroundColor: darkMode ? '#1F1F1F' : '#ffffff',
             height: 65,
             justifyContent: 'center',
             alignContent: 'center',
@@ -875,7 +870,7 @@ const buatJanji = (props) => {
         >
           <TouchableOpacity
             onPress={() => validation()}
-            style={viewStyle.button}
+            style={darkMode ? viewStyle.button : viewStyle.buttonLight}
             disabled={isLoading}
           >
             {isLoading ? (
@@ -927,14 +922,14 @@ const buatJanji = (props) => {
             </View>
             <View
               style={{
-                backgroundColor: '#2F2F2F',
+                backgroundColor: darkMode ? '#2F2F2F' : '#F5F5F5',
                 width: '80%',
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 5,
               }}
             >
-              <Text style={{ marginVertical: 20, color: '#DDDDDD' }}>
+              <Text style={{ marginVertical: 20, color: darkMode ? '#DDDDDD' : '#4B4B4B' }}>
                 Reservasi berhasil
               </Text>
             </View>
@@ -964,6 +959,7 @@ const buatJanji = (props) => {
         patient={patient}
         setPatient={setPatient}
         navigateTo={props.navigation.navigate}
+        darkMode={darkMode}
       />
       {
         // modal Pilih Insurance
@@ -978,10 +974,10 @@ const buatJanji = (props) => {
           animationType="slide"
           onRequestClose={() => setModalP(false)}
         >
-          <View style={viewModalP.container}>
+          <View style={darkMode ? viewModalP.container : viewModalP.containerLight}>
             <View style={viewModalP.header}>
               <View style={viewModalP.toogle} />
-              <Text style={viewModalP.title}>Pilih Pembayaran</Text>
+              <Text style={darkMode ? viewModalP.title : viewModalP.titleLight}>Pilih Pembayaran</Text>
             </View>
             <View style={viewModalP.patient}>
               <TouchableOpacity
@@ -998,7 +994,7 @@ const buatJanji = (props) => {
               >
                 <View style={viewModalP.cardName}>
                   <View style={viewModalP.familyName}>
-                    <Text style={viewModalP.name}>Umum</Text>
+                    <Text style={darkMode ? viewModalP.name : viewModalP.nameLight}>Umum</Text>
                   </View>
                   <View style={viewModalP.vector}>
                     <Vector />
@@ -1084,6 +1080,14 @@ const viewStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonLight: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#1090C5',
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   pickerContainer: {
     maxWidth: '94%',
     height: 45,
@@ -1145,6 +1149,12 @@ const viewModalP = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
+  containerLight: {
+    maxHeight: '100%',
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
   header: {
     marginTop: 20,
     flexDirection: 'row',
@@ -1165,13 +1175,15 @@ const viewModalP = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  titleLight: {
+    color: '#4B4B4B',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 20,
+  },
   patient: {
     marginHorizontal: 15,
     marginBottom: 20,
-  },
-  titleP: {
-    color: 'white',
-    fontSize: 12,
   },
   cardName: {
     marginTop: 10,
@@ -1210,6 +1222,11 @@ const viewModalP = StyleSheet.create({
     marginLeft: 15,
     color: '#DDDDDD',
   },
+  nameLight: {
+    marginTop: 15,
+    marginLeft: 15,
+    color: '#4B4B4B',
+  },
   vector: {
     marginVertical: 20,
   },
@@ -1234,10 +1251,25 @@ const cardStyle = StyleSheet.create({
     backgroundColor: '#2F2F2F',
     borderRadius: 5,
   },
+  containerLight: {
+    marginHorizontal: 15,
+    marginTop: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#E0E0E0"
+  },
   dompet: {
     margin: 15,
     backgroundColor: '#2F2F2F',
     borderRadius: 5,
+  },
+  dompetLight: {
+    margin: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#E0E0E0"
   },
   card: {
     margin: 10,

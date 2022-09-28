@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
 import CloseButton from '../../assets/svg/CloseButton';
 import { dateWithDDMMMYYYYFormat } from '../../helpers/dateFormat';
@@ -16,16 +16,24 @@ function NotificationCard ({
   onCardPress,
   onButtonClosePress,
   notification,
+  darkMode
 }) {
   const { isViewed } = notification
+
+  function getStyles(isView){
+    let result
+    if (darkMode) {
+      isView ? result = styles.containerViewed : result = styles.container
+    } else {
+      isView ? result = styles.containerLightViewed : result = styles.containerLight
+    }
+    return result
+  }
+
+
   return (
     <TouchableOpacity
-      style={{
-        borderRadius: 4,
-        backgroundColor: isViewed ? BLACK_SECONDARY : GREY_BORDER_LINE,
-        paddingHorizontal: 12,
-        paddingVertical: 12,
-      }}
+      style={getStyles(isViewed)}
 
       onPress={() => {
         if (typeof onCardPress === 'function') {
@@ -69,7 +77,7 @@ function NotificationCard ({
       <View>
         <Text
           style={{
-            color: WHITE_PRIMARY,
+            color: darkMode ? WHITE_PRIMARY : "#4B4B4B",
             fontSize: 16,
             fontFamily: INTER_700,
             fontWeight: isViewed ? 'normal' : 'bold'
@@ -81,7 +89,7 @@ function NotificationCard ({
         <Gap height={4} />
         <Text
           style={{
-            color: WHITE_SECONDARY,
+            color: darkMode ? WHITE_SECONDARY : "#4B4B4B",
             fontSize: 14,
             fontFamily: INTER_400,
             fontWeight: isViewed ? 'normal' : 'bold'
@@ -94,5 +102,33 @@ function NotificationCard ({
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: 4,
+    backgroundColor: GREY_BORDER_LINE,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  containerViewed: {
+    borderRadius: 4,
+    backgroundColor: BLACK_SECONDARY,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  containerLight: {
+    borderRadius: 4,
+    backgroundColor: "#E8E8E8",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  containerLightViewed: {
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  }
+})
 
 export default NotificationCard;

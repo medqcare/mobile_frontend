@@ -70,6 +70,7 @@ export default function ModalFilterDoctor({
   searchByFilter,
   onCancel,
   close,
+  darkMode
 }) {
   const dispatch = useDispatch();
   const [selectedSpecialist, setSelectedSpecialist] = useState();
@@ -168,7 +169,7 @@ export default function ModalFilterDoctor({
             ) : null}
           </View>
           <Gap width={18} />
-          <Text style={styles.radioLabel}>{text}</Text>
+          <Text style={darkMode ? styles.radioLabel : styles.radioLabelLight}>{text}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -201,7 +202,7 @@ export default function ModalFilterDoctor({
             ) : null}
           </View>
           <Gap width={19.5} />
-          <Text style={styles.radioLabel}>{text}</Text>
+          <Text style={darkMode ? styles.radioLabel : styles.radioLabelLight}>{text}</Text>
         </TouchableOpacity>
         {EXPERIENCES_KEYS.length - 1 !== index ? <Gap height={16} /> : null}
       </View>
@@ -222,7 +223,7 @@ export default function ModalFilterDoctor({
         >
           <Text
             style={{
-              color: WHITE_PRIMARY,
+              color: darkMode ? WHITE_PRIMARY : "#4B4B4B",
               fontFamily: INTER_400,
               fontSize: 13,
             }}
@@ -254,7 +255,7 @@ export default function ModalFilterDoctor({
       }}
       style={styles.modal}
     >
-      <View style={styles.wrapper}>
+      <View style={darkMode ? styles.wrapper : styles.wrapperLight}>
         <>
           <View style={styles.toggleModal}></View>
           <Gap height={28} />
@@ -262,7 +263,7 @@ export default function ModalFilterDoctor({
             <View>
               <View>
                 <View style={styles.row}>
-                  <Text style={styles.modalTextTitle}>Filter Dokter</Text>
+                  <Text style={darkMode ? styles.modalTextTitle : styles.modalTextTitleLight}>Filter Dokter</Text>
                   <TouchableOpacity
                     style={styles.buttonResetFilter}
                     onPress={resetFilterHandler}
@@ -280,17 +281,17 @@ export default function ModalFilterDoctor({
                       setListSpecialistIsActive(true);
                     }}
                   >
-                    <Text style={styles.filterTextTitle}>
+                    <Text style={darkMode ? styles.filterTextTitle : styles.filterTextTitleLight}>
                       {selectedSpecialist == null
                         ? 'Pilih Spesialisasi'
                         : `Spesialis ${selectedSpecialist.name}`}
                     </Text>
-                    <RightArrow />
+                    <RightArrow darkMode={darkMode}/>
                   </TouchableOpacity>
                 </View>
                 <Gap height={25} />
                 <View style={[styles.sectionFilter]}>
-                  <Text style={styles.filterTextTitle}>Jenis Kelamin</Text>
+                  <Text style={darkMode ? styles.filterTextTitle : styles.filterTextTitleLight}>Jenis Kelamin</Text>
                   <Gap height={17}></Gap>
                   <View style={[styles.row, { justifyContent: 'flex-start' }]}>
                     {GENDER_KEYS.map(renderGender)}
@@ -298,7 +299,7 @@ export default function ModalFilterDoctor({
                 </View>
                 <Gap height={25} />
                 <View style={[styles.sectionFilter]}>
-                  <Text style={styles.filterTextTitle}>Pengalaman</Text>
+                  <Text style={darkMode ? styles.filterTextTitle : styles.filterTextTitleLight}>Pengalaman</Text>
                   <Gap height={16} />
                   <View>{EXPERIENCES_KEYS.map(renderExperiences)}</View>
                 </View>
@@ -306,7 +307,7 @@ export default function ModalFilterDoctor({
               <Gap height={32} />
               <View style={[styles.row]}>
                 <TouchableOpacity style={styles.buttonCancelFilter} onPress={onPressButtonCancelHandler}>
-                  <Text style={styles.buttonTextLabel}>Batal</Text>
+                  <Text style={darkMode ? styles.buttonTextLabel : styles.buttonTextLabelLight}>Batal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.buttonApplyFilter}
@@ -322,7 +323,7 @@ export default function ModalFilterDoctor({
                 <TouchableOpacity
                   onPress={() => setListSpecialistIsActive(false)}
                 >
-                  <ArrowLeft />
+                  <ArrowLeft darkMode={darkMode}/>
                 </TouchableOpacity>
                 <Gap width={13.64} />
                 <View
@@ -338,15 +339,15 @@ export default function ModalFilterDoctor({
                     borderRadius: 99,
                   }}
                 >
-                  <SearchIcon />
+                  <SearchIcon darkMode={darkMode}/>
                   <Gap width={9.4} />
                   <TextInput
                     placeholder="Cari spesialisasi"
-                    placeholderTextColor={WHITE_PRIMARY}
+                    placeholderTextColor={darkMode ? WHITE_PRIMARY : "#4B4B4B"}
                     style={{
                       flex: 1,
                       paddingVertical: 4,
-                      color: WHITE_PRIMARY,
+                      color: darkMode ? WHITE_PRIMARY : "#4B4B4B",
                       fontFamily: INTER_400,
                     }}
                     onChangeText={onChangeTextInputSpecialistHandler}
@@ -385,6 +386,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20.8,
     flex: 0.8,
   },
+  wrapperLight: {
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 12,
+    paddingTop: 18,
+    paddingBottom: 24,
+    justifyContent: 'space-between',
+    borderTopLeftRadius: 20.8,
+    borderTopRightRadius: 20.8,
+    flex: 0.8,
+  },
   toggleModal: {
     width: 55,
     borderWidth: 2,
@@ -394,6 +405,11 @@ const styles = StyleSheet.create({
   },
   modalTextTitle: {
     color: WHITE_PRIMARY,
+    fontFamily: INTER_400,
+    fontSize: 16,
+  },
+  modalTextTitleLight: {
+    color: "#4B4B4B",
     fontFamily: INTER_400,
     fontSize: 16,
   },
@@ -421,6 +437,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
+  filterTextTitleLight: {
+    color: "#4B4B4B",
+    fontFamily: INTER_700,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   sectionFilter: {
     paddingBottom: 19,
     borderBottomWidth: 1,
@@ -440,6 +462,11 @@ const styles = StyleSheet.create({
   },
   radioLabel: {
     color: WHITE_PRIMARY,
+    fontFamily: INTER_400,
+    fontSize: 15,
+  },
+  radioLabelLight: {
+    color: "#4B4B4B",
     fontFamily: INTER_400,
     fontSize: 15,
   },
@@ -476,6 +503,11 @@ const styles = StyleSheet.create({
   },
   buttonTextLabel: {
     color: WHITE_PRIMARY,
+    fontSize: 14,
+    fontFamily: INTER_500,
+  },
+  buttonTextLabelLight: {
+    color: "#4B4B4B",
     fontSize: 14,
     fontFamily: INTER_500,
   },

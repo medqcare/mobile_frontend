@@ -49,7 +49,7 @@ const dimHeight = Dimensions.get('window').height;
 function HomePage(props) {
   const dispatch = useDispatch();
   const { SET_USER_LOCATION } = keys.userLocationKeys;
-  const { userData, isLoading, error } = props.userDataReducer;
+  const { userData, isLoading, error, darkMode } = props.userDataReducer;
   const { userLocation } = props.userLocationReducer;
   const { showInstruction } = props.showInstructionReducer;
   const [load, setload] = useState(true);
@@ -169,7 +169,7 @@ function HomePage(props) {
     <View
       style={{
         flex: 1,
-        backgroundColor: '#1F1F1F',
+        backgroundColor: darkMode ? '#1F1F1F' : "#ffffff",
       }}
     >
       <StatusBar
@@ -188,11 +188,11 @@ function HomePage(props) {
           <View style={style.topMenu}>
             <ImageBackground
               imageStyle={{
-                height: hp('25%'),
+                height: darkMode ? hp('25%') : hp('33%'),
                 width: '100%',
                 resizeMode: 'stretch',
               }}
-              source={require('../../../assets/background/RectangleHeader.png')}
+              source={darkMode ? require('../../../assets/background/RectangleHeader.png') : require('../../../assets/background/gradient.png')}
               style={style.headerImage}
             >
               <View
@@ -283,21 +283,21 @@ function HomePage(props) {
 
           <View style={style.container}>
             <View style={{ marginBottom: hp('2%') }}>
-              <MenuNavigator navigation={props.navigation} data={userData} />
+              <MenuNavigator navigation={props.navigation} data={userData} darkMode={darkMode}/>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {userData && (
-                <View style={{ marginBottom: hp('4%') }}>
+                <View style={{ marginBottom: hp('4%'), marginTop: 10 }}>
                   <Text
                     style={[
                       style.tagTitle,
-                      { color: '#DDDDDD', marginBottom: 12 },
+                      { color: darkMode ? '#DDDDDD' : '#4B4B4B', marginBottom: 12 },
                     ]}
                   >
-                    Aktifitas
+                    Aktifitas Kesehatan
                   </Text>
                   <View>
-                    <RecentActivity navigation={props.navigation} />
+                    <RecentActivity navigation={props.navigation} darkMode={darkMode} />
                   </View>
                 </View>
               )}

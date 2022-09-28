@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import ActiveCard from '../../../assets/svg/home-blue/activecard-blue';
 import MedicalStats from '../../../assets/svg/home-blue/medicalstats-blue';
 
-const ActivityAction = ({ navigation, data }) => {
+const ActivityAction = ({ navigation, data, darkMode }) => {
   return (
     <View style={style.container}>
       <TouchableOpacity
@@ -26,13 +26,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_biayaNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_biayaNav.png') : require('../../../assets/png/iclight_tagihan.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color: darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -51,13 +51,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_riwayatNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_riwayatNav.png') : require('../../../assets/png/iclight_riwayat.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color:  darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -75,7 +75,7 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_statusNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_statusNav.png') : require('../../../assets/png/iclight_dokumen.png')}
         />
         <View
           style={{
@@ -88,7 +88,7 @@ const ActivityAction = ({ navigation, data }) => {
             style={{
               marginTop: 10,
               textAlign: 'center',
-              color: 'white',
+              color:  darkMode ? 'white' : '#4B4B4B',
               fontSize: 12,
             }}
           >
@@ -107,13 +107,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_rujukanNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_rujukanNav.png') : require('../../../assets/png/iclight_rujukan.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color:  darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -129,13 +129,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_alergiNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_alergiNav.png') : require('../../../assets/png/iclight_alergi.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color:  darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -154,13 +154,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/Reminder.png')}
+          source={darkMode ? require('../../../assets/png/Reminder.png') : require('../../../assets/png/iclight_pengingat.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color:  darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -179,13 +179,13 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/Resep.png')}
+          source={darkMode ? require('../../../assets/png/Resep.png') : require('../../../assets/png/iclight_resep.png')}
         />
         <Text
           style={{
             marginTop: 10,
             textAlign: 'center',
-            color: 'white',
+            color:  darkMode ? 'white' : '#4B4B4B',
             fontSize: 12,
           }}
         >
@@ -202,7 +202,7 @@ const ActivityAction = ({ navigation, data }) => {
       >
         <Image
           style={style.image}
-          source={require('../../../assets/png/ic_dokterNav.png')}
+          source={darkMode ? require('../../../assets/png/ic_dokterNav.png') : require('../../../assets/png/iclight_homecare.png')}
         />
         <View
           style={{
@@ -215,7 +215,7 @@ const ActivityAction = ({ navigation, data }) => {
             style={{
               marginTop: 10,
               textAlign: 'center',
-              color: 'white',
+              color:  darkMode ? 'white' : '#4B4B4B',
               fontSize: 12,
             }}
           >
@@ -235,6 +235,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingTop: 15,
   },
   rowContent: {
     flexDirection: 'row',
@@ -247,7 +248,7 @@ const style = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: widthPercentageToDP('20%'),
-    marginBottom: heightPercentageToDP('3.5%'),
+    marginBottom: heightPercentageToDP('1.5%'),
   },
   image: {
     height: 50,

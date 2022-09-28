@@ -32,7 +32,7 @@ const dimWidth = dimension.width;
 function Notification({ navigation, ...props }) {
   const dispatch = useDispatch();
 
-  const { userData } = props.userDataReducer;
+  const { userData, darkMode } = props.userDataReducer;
   const {
     notifications: reducerNotifications,
     notificationsCount,
@@ -115,6 +115,7 @@ function Notification({ navigation, ...props }) {
           notification={item}
           onButtonClosePress={() => onButtonClosePressHandler(item._id)}
           onCardPress={() => onButtonSeeDetailPressHandler(item)}
+          darkMode={darkMode}
         />
       </View>
     );
@@ -128,7 +129,7 @@ function Notification({ navigation, ...props }) {
   return (
     <View style={{ flex: 1 }}>
       <GradientHeader title="Notifikasi" navigate={navigation.navigate} />
-      <View style={styles.container}>
+      <View style={darkMode ? styles.container : styles.containerLight}>
         {isLoading ? (
           <LottieLoader
             source={require('../../animation/loading.json')}
@@ -148,14 +149,14 @@ function Notification({ navigation, ...props }) {
                 <View style={styles.noDataContainer}>
                   <EmptyNotificationLogo />
                   <Text
-                    style={[textStyles.ligthText, styles.noNotificationText]}
+                    style={darkMode ? [textStyles.ligthText, styles.noNotificationText] : [textStyles.darkText, styles.noNotificationText]}
                   >
                     Belum ada Notifikasi
                   </Text>
                 </View>
                 <View style={styles.bottomContainer}>
                   <TouchableOpacity
-                    style={styles.backToHomeButton}
+                    style={darkMode ? styles.backToHomeButton : styles.backToHomeButtonLight}
                     onPress={() => navigation.navigate('Home')}
                   >
                     <Text style={textStyles.ligthText}>Kembali ke Home</Text>
@@ -204,12 +205,23 @@ const textStyles = StyleSheet.create({
   ligthText: {
     color: '#DDDDDD',
   },
+  darkText: {
+    color: '#4B4B4B',
+  },
 });
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1F1F1F',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+
+  containerLight: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -238,6 +250,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#545454',
+  },
+
+  backToHomeButtonLight: {
+    paddingVertical: 20,
+    paddingHorizontal: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: "#005ea2",
+    borderRadius: 5,
   },
 });
 

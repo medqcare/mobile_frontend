@@ -10,10 +10,12 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'
 import { connect } from 'react-redux';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import formatRP from '../../../helpers/rupiah';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 import {
   addFavoriteDoctor,
@@ -40,7 +42,7 @@ const dimHeight = Dimensions.get('screen').height;
 const dimWidth = Dimensions.get('screen').width;
 
 function DetailDoctorPage(props) {
-  const { userData, isLoading, error } = props.userDataReducer;
+  const { userData, isLoading, error, darkMode } = props.userDataReducer;
   const calendarRef = useRef(null);
   const months = [
     'Januari',
@@ -292,70 +294,146 @@ function DetailDoctorPage(props) {
     }
   };
 
-  const getBackgroundColorDateContainer = (date) => {
-    if (chooseDate == date) {
-      return BLUE_PRIMARY;
-    }
+  const isPreviousMonthDisabled = () => {
+    return bookingDate.getMonth() === new Date().getMonth()
+  }
 
-    return BLACK_THIRD;
+  const getBackgroundColorDateContainer = (date) => {
+    if (darkMode){
+      if (chooseDate == date) {
+        return BLUE_PRIMARY;
+      } else {
+        return BLACK_THIRD;
+      }
+    } else {
+      if (chooseDate == date) {
+        return "#1090C5";
+      } else {
+        return "#ffffff";
+      }
+    }
   };
 
+  const getTextColor = (date, isAvailable) => {
+    if (chooseDate == date) {
+      return '#ffffff'
+    } else {
+      return isAvailable > 0 ? '#212121' : '#929292'
+    }
+  }
+
   return (
-    <View style={containerStyle.container}>
-      <View style={containerStyle.container}>
-        <ImageBackground
-          source={require('../../../assets/background/RectangleHeader.png')}
-          style={{ height: 100 }}
+    <View style={darkMode ? containerStyle.container : containerStyle.containerLight}>
+      <View
+          style={{
+            height: heightPercentageToDP('13%'),
+          }}
         >
-          <View
-            style={{
-              height: 40,
-              marginTop: 32,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: 20,
-            }}
-          >
-            <TouchableOpacity onPress={() => props.navigation.navigate(back)}>
+        {
+          darkMode ? (
+            <ImageBackground
+              source={require('../../../assets/background/RectangleHeader.png')}
+              style={{ height: 100 }}
+            >
               <View
                 style={{
+                  height: 40,
+                  marginTop: 32,
                   flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 20,
                 }}
               >
-                <ArrowBack />
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: '#ffff',
-                    position: 'relative',
-                    marginLeft: 20,
-                  }}
-                >
-                  Profil Dokter
-                </Text>
-              </View>
-            </TouchableOpacity>
-            {userData && (
-              <TouchableOpacity
-                onPress={() => {
-                  changeTapLove();
-                }}
-              >
-                {thisFavorite ? (
-                  <Icon name="ios-heart" color="#F37335" size={20} />
-                ) : (
-                  <Icon name="ios-heart" color="#CACACA" size={20} />
+                <TouchableOpacity onPress={() => props.navigation.navigate(back)}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <ArrowBack />
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: '#ffff',
+                        position: 'relative',
+                        marginLeft: 20,
+                      }}
+                    >
+                      Profil Dokter
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                {userData && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      changeTapLove();
+                    }}
+                  >
+                    {thisFavorite ? (
+                      <Icon name="ios-heart" color="#F37335" size={20} />
+                    ) : (
+                      <Icon name="ios-heart" color="#CACACA" size={20} />
+                    )}
+                  </TouchableOpacity>
                 )}
-              </TouchableOpacity>
-            )}
-          </View>
-        </ImageBackground>
+              </View>
+            </ImageBackground>
+          ) : (
+            <LinearGradient colors={['#005EA2', '#009292']} start={{ x: 1, y: 0 }} end={{ x: 0, y: 0 }} style={styles.linearGradient}>
+              <View
+                style={{
+                  height: 40,
+                  marginTop: 32,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 20,
+                }}
+              >
+                <TouchableOpacity onPress={() => props.navigation.navigate(back)}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <ArrowBack />
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        color: '#ffff',
+                        position: 'relative',
+                        marginLeft: 20,
+                      }}
+                    >
+                      Profil Dokter
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                {userData && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      changeTapLove();
+                    }}
+                  >
+                    {thisFavorite ? (
+                      <Icon name="ios-heart" color="#F37335" size={20} />
+                    ) : (
+                      <Icon name="ios-heart" color="#CACACA" size={20} />
+                    )}
+                  </TouchableOpacity>
+                )}
+              </View>
+            </LinearGradient>
+          )
+        }
+        </View>
 
         <View style={{ flex: 1 }}>
           <View>
-            <View style={containerStyle.dataDoctor}>
+            <View style={{...containerStyle.dataDoctor, backgroundColor: darkMode ? "" : "#F8F8F8"}}>
               <View style={containerStyle.spesialis}>
                 <View style={styles.borderAvatar}>
                   <Image
@@ -369,10 +447,10 @@ function DetailDoctorPage(props) {
                 </View>
               </View>
               <View style={containerStyle.personalData}>
-                <Text style={fontStyles.name}>
+                <Text style={darkMode ? fontStyles.name : fontStyles.nameLight}>
                   {title} {doctorName}
                 </Text>
-                <Text style={fontStyles.titleSp}>Spesialis {specialist}</Text>
+                <Text style={darkMode ? fontStyles.titleSp : fontStyles.titleSpLight}>Spesialis {specialist}</Text>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -381,31 +459,35 @@ function DetailDoctorPage(props) {
                   }}
                 />
                 <View>
-                  <Text style={fontStyles.titleSp}>
+                  <Text style={darkMode ? fontStyles.titleSp : fontStyles.titleSpLight}>
                     Jasa Konsultasi Mulai Dari
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row' }}>
-                  <View style={{ marginRight: 12 }}>
+                  <View style={{ marginRight: 12, marginTop: 2 }}>
                     <Money />
                   </View>
-                  <Text style={{ color: '#B2B2B2' }}>
+                  <Text style={{ color: darkMode ? '#B2B2B2' : "#009292" }}>
                     {' '}
                     {formatRP(estPrice || 0, 'Rp')}{' '}
                   </Text>
                 </View>
               </View>
             </View>
-            <View
-              style={{
-                marginVertical: 10,
-                marginHorizontal: 15,
-                height: 0,
-                borderWidth: 1,
-                borderColor: '#353535',
-              }}
-            />
-            <Text style={{ color: '#DDDDDD', marginLeft: 15, marginBottom: 5 }}>
+            {
+              darkMode && (
+                <View
+                  style={{
+                    marginBottom: 10,
+                    marginHorizontal: 15,
+                    height: 0,
+                    borderWidth: 1,
+                    borderColor: '#353535',
+                  }}
+                />
+              )
+            }
+            <Text style={{ color: darkMode ? '#DDDDDD' : "#4B4B4B", marginLeft: 15, marginVertical: 10 }}>
               Lokasi {'&'} Jadwal Praktik
             </Text>
           </View>
@@ -442,13 +524,15 @@ function DetailDoctorPage(props) {
                 <View
                   key={facilityIndex}
                   style={{
-                    backgroundColor: '#2F2F2F',
+                    backgroundColor: darkMode ? '#2F2F2F' : "#ffffff",
                     marginVertical: 5,
                     paddingLeft: 10,
                     paddingVertical: 10,
                     paddingRight: 10,
                     borderRadius: 5,
                     marginHorizontal: 15,
+                    borderWidth: darkMode ? 0 : 1,
+                    borderColor: "#E8E8E8"
                   }}
                 >
                   <View>
@@ -462,8 +546,10 @@ function DetailDoctorPage(props) {
                         style={styles.imageRS}
                       />
                       <View style={containerStyle.detRS}>
-                        <Text style={fontStyles.name}>{facilityName}</Text>
-                        <Text style={fontStyles.address}>{googleAddress}</Text>
+                        <Text style={darkMode ? fontStyles.name : fontStyles.nameLight}>{facilityName}</Text>
+                        <View style={{paddingTop: 5, width: "95%"}}>
+                          <Text style={darkMode ? fontStyles.address : fontStyles.addressLight}>{googleAddress}</Text>
+                        </View>
                         {props.myLocation && (
                           <Text style={fontStyles.address}>
                             <Text style={{ textTransform: 'capitalize' }}>
@@ -522,9 +608,9 @@ function DetailDoctorPage(props) {
                           setCurrentSchedules(schedules);
                         }}
                       >
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
                           <Text style={{ color: '#F37335' }}>Pilih Jadwal</Text>
-                          <View style={{ marginLeft: 8, marginTop: 5 }}>
+                          <View style={{ marginLeft: 8, marginTop: 7 }}>
                             <ArrowDown />
                           </View>
                         </View>
@@ -536,12 +622,11 @@ function DetailDoctorPage(props) {
                             style={{
                               flexDirection: 'row',
                               justifyContent: 'space-between',
+                              paddingTop: 10
                             }}
                           >
                             <TouchableOpacity
-                              disabled={
-                                bookingDate.getMonth() === new Date().getMonth()
-                              }
+                              disabled={isPreviousMonthDisabled()}
                               onPress={() => {
                                 bookingSchedule.setMonth(
                                   bookingSchedule.getMonth() - 1
@@ -569,11 +654,7 @@ function DetailDoctorPage(props) {
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    color:
-                                      bookingDate.getMonth() ===
-                                      new Date().getMonth()
-                                        ? '#2F2F2F'
-                                        : '#DDDFDD',
+                                    color: darkMode ? (isPreviousMonthDisabled() ? '#2F2F2F' : '#DDDFDD') : (isPreviousMonthDisabled() ? "#DDDFDD" : "#2F2F2F"),
                                     marginTop: -2,
                                   }}
                                 >
@@ -584,7 +665,7 @@ function DetailDoctorPage(props) {
                             <Text
                               style={{
                                 fontSize: 14,
-                                color: '#DDDDDD',
+                                color: darkMode ? '#DDDDDD' : "#212121",
                                 marginBottom: 10,
                               }}
                             >
@@ -614,9 +695,7 @@ function DetailDoctorPage(props) {
                                 <Text
                                   style={{
                                     fontSize: 16,
-                                    color: isNextMonthDisabled()
-                                      ? '#2f2f2f'
-                                      : '#DDDDDD',
+                                    color: darkMode ? (isNextMonthDisabled() ? '#2f2f2f' : '#DDDDDD') : ((isNextMonthDisabled() ? '#DDDDDD' : '#2f2f2f')),
                                     marginTop: -2,
                                   }}
                                 >
@@ -642,8 +721,8 @@ function DetailDoctorPage(props) {
                               Array(
                                 month === new Date().getMonth()
                                   ? bookingDate.getDaysInMonth() -
-                                      bookingDate.getDate() +
-                                      1
+                                  bookingDate.getDate() +
+                                  1
                                   : bookingDate.getDaysInMonth()
                               ).keys()
                             ).map((key, index) => {
@@ -689,6 +768,8 @@ function DetailDoctorPage(props) {
                                       height: 75,
                                       width: 55,
                                       borderRadius: 12,
+                                      borderWidth: darkMode ? 0 : 1,
+                                      borderColor: darkMode ? "" : "#E8E8E8",
                                       backgroundColor:
                                         getBackgroundColorDateContainer(
                                           calcDate(key)
@@ -700,10 +781,12 @@ function DetailDoctorPage(props) {
                                         fontSize: 14,
                                         marginVertical: 10,
                                         textAlign: 'center',
-                                        color:
+                                        color: darkMode ? (
                                           availableSchedules.length > 0
                                             ? WHITE_PRIMARY
-                                            : '#727272',
+                                            : '#727272' ) : (
+                                              getTextColor(calcDate(key), availableSchedules.length)
+                                          ),
                                       }}
                                     >
                                       {displayDay}
@@ -713,10 +796,12 @@ function DetailDoctorPage(props) {
                                         fontSize: 14,
                                         marginBottom: 15,
                                         textAlign: 'center',
-                                        color:
+                                        color: darkMode ? (
                                           availableSchedules.length > 0
                                             ? WHITE_PRIMARY
-                                            : '#727272',
+                                            : '#727272' ) : (
+                                            getTextColor(calcDate(key), availableSchedules.length)
+                                          ),
                                       }}
                                     >
                                       {calcDate(key)}
@@ -772,16 +857,22 @@ function DetailDoctorPage(props) {
                                           width: 120,
                                           marginRight: 10,
                                           borderRadius: 5,
-                                          backgroundColor:
-                                            bookingTime === scheduleTime
+                                          borderWidth: darkMode ? 0 : 1,
+                                          borderColor: darkMode ? "" : "#E8E8E8",
+                                          backgroundColor: darkMode ? 
+                                            ( bookingTime === scheduleTime
                                               ? '#005EA2'
-                                              : '#3F3F3F',
+                                              : '#3F3F3F' ) : (
+                                              bookingTime === scheduleTime
+                                              ? '#1090C5'
+                                              : '#ffffff'
+                                            ),
                                         }}
                                       >
                                         <Text
                                           style={{
                                             color: !disabled
-                                              ? '#DDDDDD'
+                                              ? darkMode ? '#DDDDDD' : bookingTime === scheduleTime ? "#ffffff" : "#4B4B4B"
                                               : '#727272',
                                             textAlign: 'center',
                                             marginTop: 10,
@@ -823,7 +914,7 @@ function DetailDoctorPage(props) {
           <View
             style={{
               height: 50,
-              backgroundColor: '#005EA2',
+              backgroundColor: darkMode ? '#005EA2' : "#1090C5",
               alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 5,
@@ -840,12 +931,15 @@ function DetailDoctorPage(props) {
             </View>
           </View>
         </TouchableOpacity>
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  linearGradient: {
+    flex: 1,
+    width: '100%',
+  },
   borderAvatar: {
     borderRadius: 70,
     borderColor: '#5FFCA5',
@@ -872,8 +966,8 @@ const styles = StyleSheet.create({
   },
   imageRS: {
     borderRadius: 5,
-    height: 60,
-    width: 60,
+    height: 65,
+    width: 65,
   },
 
   name: {
@@ -885,7 +979,6 @@ const styles = StyleSheet.create({
   body: {
     marginTop: 0,
   },
-
   info: {
     fontSize: 16,
     color: '#52de97',
@@ -893,7 +986,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    // color: "#696969",
     marginTop: 10,
     textAlign: 'center',
     textTransform: 'capitalize',
@@ -928,14 +1020,19 @@ const containerStyle = StyleSheet.create({
     flexDirection: 'column',
     backgroundColor: '#1F1F1F',
   },
+  containerLight: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: '#ffffff',
+  },
   bodyContent: {
     flex: 1,
     marginHorizontal: 15,
-    // borderBottomWidth: 1,
     borderRadius: 5,
   },
   dataDoctor: {
     flexDirection: 'row',
+    paddingBottom: 15
   },
   spesialis: {
     marginTop: -15,
@@ -982,13 +1079,24 @@ const fontStyles = StyleSheet.create({
     textAlign: 'center',
   },
   name: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#DDDDDD',
+  },
+  nameLight: {
+    fontSize: 16,
+    color: '#4B4B4B',
   },
   titleSp: {
     fontSize: 12,
     color: '#B2B2B2',
     marginBottom: 7,
+    marginTop: 5
+  },
+  titleSpLight: {
+    fontSize: 12,
+    color: '#4B4B4B',
+    marginBottom: 7,
+    marginTop: 5
   },
   price: {
     fontSize: 14,
@@ -1017,8 +1125,12 @@ const fontStyles = StyleSheet.create({
     marginRight: 20,
   },
   address: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#A5A5A5',
+  },
+  addressLight: {
+    fontSize: 12,
+    color: '#4B4B4B',
   },
   aktif: {
     color: 'red',
