@@ -302,7 +302,7 @@ function HomePage(props) {
                 </View>
               )}
               <View style={{ marginBottom: hp('4%') }}>
-                <ActivityAction navigation={props.navigation} data={userData} />
+                <ActivityAction navigation={props.navigation} data={userData} darkMode={darkMode}/>
               </View>
               <View style={{ marginBottom: hp('2%') }}>
                 <FlatList

@@ -25,6 +25,7 @@ import Qrcode from '../../../assets/svg/Qrcode';
 const ListApointment = (props) => {
   const [dataPatient, setPatient] = useState(null);
   const [modal, setmodal] = useState(false);
+  const darkMode = props.darkMode
 
   var moment = require('moment');
 
@@ -108,13 +109,15 @@ const ListApointment = (props) => {
             <View
               style={{
                 flexDirection: 'row',
-                backgroundColor: '#2F2F2F',
+                backgroundColor: darkMode ? '#2F2F2F' : '#ffffff',
+                borderWidth: darkMode ? 0 : 1,
+                borderColor: '#E8E8E8',
                 padding: 14,
                 borderTopStartRadius: 5,
                 borderTopEndRadius: 5,
               }}
             >
-              <View style={styles.borderImage}>
+              <View style={darkMode ? styles.borderImage : styles.borderImageLight}>
                 <Image
                   style={styles.image}
                   source={
@@ -135,13 +138,13 @@ const ListApointment = (props) => {
                   }}
                 >
                   <View>
-                    <Text style={styles.name}>
+                    <Text style={darkMode ? styles.poli : styles.poliLight}>
+                      Spesialis {dataPatient.doctor.doctorSpecialist}
+                    </Text>
+                    <Text style={darkMode ? styles.name : styles.nameLight}>
                       {dataPatient.doctor.title} {dataPatient.doctor.doctorName}{' '}
                     </Text>
-                    <Text style={styles.poli}>
-                      {dataPatient.doctor.doctorSpecialist}
-                    </Text>
-                    <Text style={{ fontWeight: 'bold', color: '#DDDDDD' }}>
+                    <Text style={darkMode ? styles.poli : styles.poliLight}>
                       {dataPatient.healthFacility.facilityName}
                     </Text>
                   </View>
@@ -167,7 +170,7 @@ const ListApointment = (props) => {
                   </TouchableOpacity>
                 </View>
 
-                <View style={styles.line}></View>
+                <View style={darkMode ? styles.line : styles.lineLight}></View>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -176,28 +179,28 @@ const ListApointment = (props) => {
                 >
                   <View>
                     <View style={styles.time}>
-                      <Text style={{ color: '#B5B5B5' }}>Nama Pasien : </Text>
-                      <Text style={{ color: '#DDDDDD' }}>
+                      <Text style={{ color: darkMode ? '#B5B5B5' : '#212121' }}>Nama Pasien : </Text>
+                      <Text style={darkMode ? { color: '#DDDDDD'} : { color: '#212121', fontWeight: 'bold' }}>
                         {dataPatient.patient.patientName}
                       </Text>
                     </View>
                     <View style={styles.time}>
-                      <Text style={styles.date}>
+                      <Text style={darkMode ? styles.date : styles.dateLight}>
                         {dataPatient.bookingSchedule}
                       </Text>
-                      <Text style={styles.date}> - </Text>
-                      <Text style={styles.clock}>
+                      <Text style={darkMode ? styles.date : styles.dateLight}> - </Text>
+                      <Text style={darkMode ? styles.date : styles.dateLight}>
                         {dataPatient.bookingTime}
                       </Text>
                     </View>
                     <View style={styles.time}>
-                      <Text style={{ color: '#B5B5B5' }}>Jumlah Antrian : </Text>
-                      <Text style={{ color: '#DDDDDD' }}>
+                      <Text style={{ color: darkMode ? '#B5B5B5' : '#4B4B4B' }}>Jumlah Antrian : </Text>
+                      <Text style={darkMode ? { color: '#DDDDDD' } : { color: '#4B4B4B', fontWeight: 'bold' }}>
                         {dataPatient.totalQueue}
                       </Text>
                     </View><View style={styles.time}>
-                      <Text style={{ color: '#B5B5B5' }}>Antrian Saat Ini : </Text>
-                      <Text style={{ color: '#DDDDDD' }}>
+                      <Text style={{ color: darkMode ? '#B5B5B5' : '#4B4B4B' }}>Antrian Saat Ini : </Text>
+                      <Text style={darkMode ? { color: '#DDDDDD' } : { color: '#4B4B4B', fontWeight: 'bold' }}>
                       {dataPatient.currentQueue}
                       </Text>
                     </View>
@@ -209,7 +212,7 @@ const ListApointment = (props) => {
               style={{
                 width: '100%',
                 padding: 14,
-                backgroundColor: '#4D4D4D',
+                backgroundColor: darkMode ? '#4D4D4D' : '#E8E8E8',
                 borderBottomStartRadius: 5,
                 borderBottomEndRadius: 5,
                 flexDirection: 'row',
@@ -234,7 +237,7 @@ const ListApointment = (props) => {
               </TouchableOpacity>
               <TouchableOpacity onPress={openScannerHandler}>
                 <Text
-                  style={{ color: '#4BE395', fontWeight: 'bold', fontSize: 14 }}
+                  style={{ color: darkMode ? '#4BE395' : '#02954A', fontWeight: 'bold', fontSize: 14 }}
                 >
                   Check-In
                 </Text>
@@ -252,7 +255,7 @@ const ListApointment = (props) => {
       >
         <View
           style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.4)',
             flex: 1,
             justifyContent: 'center',
             padding: 20,
@@ -399,6 +402,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 10,
   },
+  borderImageLight: {
+    height: 55,
+    width: 55,
+    borderRadius: 55,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
   image: {
     height: 50,
     width: 50,
@@ -410,11 +422,24 @@ const styles = StyleSheet.create({
     height: 1,
     marginVertical: 10,
   },
+  lineLight: {
+    backgroundColor: '#EAEAEA',
+    height: 1,
+    marginVertical: 10,
+  },
   name: {
     fontSize: 16,
     fontWeight: 'bold',
     marginRight: 15,
+    marginVertical: 5,
     color: '#DDDDDD',
+  },
+  nameLight: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 15,
+    marginVertical: 5,
+    color: '#212121',
   },
   hospital: {
     fontSize: 16,
@@ -426,8 +451,11 @@ const styles = StyleSheet.create({
   },
   poli: {
     fontSize: 14,
-    fontWeight: 'bold',
     color: '#B5B5B5',
+  },
+  poliLight: {
+    fontSize: 14,
+    color: '#4B4B4B',
   },
   time: {
     flexDirection: 'row',
@@ -438,9 +466,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#B5B5B5',
   },
-  clock: {
+  dateLight: {
     fontSize: 14,
-    color: '#B5B5B5',
+    color: '#4B4B4B',
   },
   dot: {
     backgroundColor: '#33E204',

@@ -25,14 +25,14 @@ const {
   SET_APPOINTMENT_ORDER_TYPE
 } = keys.appointmentsKeys
 
-function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
+function SelectType({ types = [], onTypeSelected, defaultType = types[0], darkMode }) {
   const [typeSelected, setTypeSelected] = useState(defaultType);
   const typeStyleBehavior = (type) => {
     return {
       container: {
-        backgroundColor: type === typeSelected ? '#212D3D' : '#2F2F2F',
+        backgroundColor: darkMode ? (type === typeSelected ? '#212D3D' : '#2F2F2F') : (type === typeSelected ? '#E4EDFC' : '#ffffff'),
         borderWidth: 1,
-        borderColor: type === typeSelected ? '#77BFF4' : 'transparent',
+        borderColor: darkMode ? (type === typeSelected ? '#77BFF4' : 'transparent') : (type === typeSelected ? '#8EC7F1' : '#E8E8E8'),
         paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 99,
@@ -42,7 +42,7 @@ function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
         marginRight: 8,
       },
       text: {
-        color: type === typeSelected ? '#77BFF4' : '#B5B5B5',
+        color: darkMode ? (type === typeSelected ? '#77BFF4' : '#B5B5B5') : (type === typeSelected ? '#005EA2' : '#4B4B4B'),
         fontSize: 12,
         textTransform: 'capitalize',
       },
@@ -82,6 +82,7 @@ function SelectType({ types = [], onTypeSelected, defaultType = types[0] }) {
 const Appointment = (props) => {
   const dispatch = useDispatch()
   const { doctorAppointments, medicalServiceAppointments, orderType, isLoading, error } = props.appointmentsReducer
+  const { darkMode } = props.userDataReducer
   // console.log(props.navigation.state, "state")
   // console.log(paramOrderType, "param")
   const [reservations, setReservations] = useState([]);
@@ -101,103 +102,105 @@ const Appointment = (props) => {
         props.searchAllReservations('booked')
       } catch (error) {
         console.log(`Error Axios: ${error.message}`);
-      } 
+      }
     })();
   }, [orderType]);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-	await props.searchAllReservations('booked')
+    await props.searchAllReservations('booked')
     setRefreshing(false);
   }, [refreshing]);
 
-	const renderDoctorsAppointment = ({item}) => {
-		return (
-			<ListAppointment
-				data={item}
-				route={props.navigation}
-				setModalDelete={setShowModalDelete}
-				onCancelReservation={(id, orderType) => {
-          if(orderType ==='doctor'){
+  const renderDoctorsAppointment = ({ item }) => {
+    return (
+      <ListAppointment
+        data={item}
+        route={props.navigation}
+        setModalDelete={setShowModalDelete}
+        onCancelReservation={(id, orderType) => {
+          if (orderType === 'doctor') {
             setCancelReservationData({
               appointmentList: doctorAppointments,
               keyToDispatch: SET_DOCTOR_APPOINTMENTS,
-              
+
             })
           } else {
             setCancelReservationData({
               appointmentList: medicalServiceAppointments,
               keyToDispatch: SET_MEDICAL_SERVICE_APPOINTMENTS,
-              
+
             })
           }
-					setReservationID(id);
-					setShowModalDelete(true);
-				}}
-			/>
-		)
-	}
+          setReservationID(id);
+          setShowModalDelete(true);
+        }}
+        darkMode={darkMode}
+      />
+    )
+  }
 
-	const renderMedicalServiceAppointment = ({item}) => {
-		return (
-			<View style={{ marginHorizontal: 12, marginBottom: 12 }}>
-				<CardMedicalService reservation={item} {...props} />
-			</View>
-		)
-	}
-	const RenderReservations = () => {
-		const data = orderType === 'Konsultasi Dokter' ? doctorAppointments : medicalServiceAppointments
-		const renderFunction = orderType === 'Konsultasi Dokter' ? renderDoctorsAppointment : renderMedicalServiceAppointment
-		if(data.length) {
-			return (
-				<FlatList
-					data={data}
-					keyExtractor={(item) => item._id}
-					renderItem={renderFunction}
-					refreshControl={
-						<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-					}
-				/>
-			)
-		}
-		return (
-			<View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
-				<Text style={{ color: '#FFFFFF' }}>Tidak ada Daftar Janji</Text>
-			</View>
-		)
-	};
+  const renderMedicalServiceAppointment = ({ item }) => {
+    return (
+      <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
+        <CardMedicalService reservation={item} {...props} />
+      </View>
+    )
+  }
+  const RenderReservations = () => {
+    const data = orderType === 'Konsultasi Dokter' ? doctorAppointments : medicalServiceAppointments
+    const renderFunction = orderType === 'Konsultasi Dokter' ? renderDoctorsAppointment : renderMedicalServiceAppointment
+    if (data.length) {
+      return (
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item._id}
+          renderItem={renderFunction}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )
+    }
+    return (
+      <View style={{ flex: 1, alignItems: 'center', padding: 20 }}>
+        <Text style={{ color: darkMode ? '#FFFFFF' : '#4B4B4B' }}>Tidak ada Daftar Janji</Text>
+      </View>
+    )
+  };
 
-	function setOrderType(){
-		dispatch({
-			type: SET_APPOINTMENT_ORDER_TYPE,
-			payload: 'Konsultasi Dokter'
-		})
-	}
+  function setOrderType() {
+    dispatch({
+      type: SET_APPOINTMENT_ORDER_TYPE,
+      payload: 'Konsultasi Dokter'
+    })
+  }
 
-	const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
+  const navigateBack = props.navigation.state?.params?.navigateBack ? props.navigation.state?.params?.navigateBack : 'Home'
 
 
   BackHandler.addEventListener('hardwareBackPress', () => {
     setOrderType()
     const backAction = NavigationActions.back();
-    props.navigation.dispatch(backAction)     
+    props.navigation.dispatch(backAction)
     return true
   });
   return (
-    <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-      <Header 
-	  	title={'Daftar Janji'} 
-		navigate={props.navigation.navigate} 
-    navigateBack={navigateBack}
-		/>
+    <View style={{ flex: 1, backgroundColor: darkMode ? '#1F1F1F' : '#ffffff' }}>
+      <Header
+        title={'Daftar Janji'}
+        navigate={props.navigation.navigate}
+        navigateBack={navigateBack}
+      />
       <View style={{ marginVertical: 14, paddingLeft: 12 }}>
         <SelectType
           types={types}
+          darkMode={darkMode}
           onTypeSelected={(item) => {
-			dispatch({
-				type: SET_APPOINTMENTS_LOADING,
-				payload: true
-			})
+            dispatch({
+              type: SET_APPOINTMENTS_LOADING,
+              payload: true
+            })
             dispatch({
               type: SET_APPOINTMENT_ORDER_TYPE,
               payload: item
@@ -214,7 +217,7 @@ const Appointment = (props) => {
           loop
         />
       ) : (
-		<RenderReservations/>
+        <RenderReservations />
       )}
 
       <DeleteAppointmentModal
@@ -222,7 +225,7 @@ const Appointment = (props) => {
         setIsVisible={setShowModalDelete}
         onButtonCancelPress={() => {
           const { appointmentList, keyToDispatch } = cancelReservationData
-          props.cancelSelectedReservation(reservationID,  appointmentList, keyToDispatch)
+          props.cancelSelectedReservation(reservationID, appointmentList, keyToDispatch)
           onRefresh();
           setShowModalDelete(false);
         }}
@@ -237,7 +240,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  searchAllReservations, 
+  searchAllReservations,
   cancelSelectedReservation
 };
 

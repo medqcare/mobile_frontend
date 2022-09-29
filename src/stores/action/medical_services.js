@@ -103,6 +103,8 @@ export function createMedicalServiceReservation(bookData, setModal){
 					payload: error.response.data.message
 				})
 				ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
+			} else {
+				console.log(error);
 			}
 		}
 	}
