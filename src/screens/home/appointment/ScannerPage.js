@@ -23,7 +23,7 @@ import LottieLoader from 'lottie-react-native';
 import InformationIcon from '../../../assets/svg/information';
 import { widthPercentageToDP } from 'react-native-responsive-screen';
 import BarcodeSvg from '../../../assets/svg/Barcode';
-import { 
+import {
   setHealthFacility,
   checkIn,
 } from '../../../stores/action/'
@@ -32,6 +32,7 @@ import * as Location from 'expo-location';
 //action
 const Assistant_scan = (props) => {
   const { healthFacility } = props.appointmentsReducer
+  const { darkMode } = props.userDataReducer
   const reservationParam = props.navigation.getParam('reservationData');
   const isToday = props.navigation.getParam('isToday');
   const [reservationData, setReservationData] = useState(reservationParam);
@@ -162,12 +163,23 @@ const Assistant_scan = (props) => {
 
   if (!isToday) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-        <GreyHeader
-          title="Check-In"
-          navigate={props.navigation.navigate}
-          navigateBack="AppointmentList"
-        />
+      <View style={{ flex: 1, backgroundColor: darkMode ? '#1F1F1F' : '#ffffff' }}>
+        {
+          darkMode ? (
+            <GreyHeader
+              title="Check-In"
+              navigate={props.navigation.navigate}
+              navigateBack="AppointmentList"
+            />
+
+          ) : (
+            <GradientHeader
+              title="Check-In"
+              navigate={props.navigation.navigate}
+              navigateBack="AppointmentList"
+            />
+          )
+        }
         <View
           style={{
             padding: widthPercentageToDP('7'),
@@ -180,7 +192,7 @@ const Assistant_scan = (props) => {
               <Text
                 style={{
                   fontSize: 18,
-                  color: '#DDDDDD',
+                  color: darkMode ? '#DDDDDD' : '#212121',
                   fontWeight: '500',
                 }}
               >
@@ -190,17 +202,17 @@ const Assistant_scan = (props) => {
             <View
               style={{
                 alignItems: 'center',
-                backgroundColor: '#3B340B',
-                paddingVertical: 6,
-                paddingHorizontal: 8,
+                backgroundColor: darkMode ? '#3B340B' : '#DFF3F3',
+                paddingVertical: 10,
+                paddingHorizontal: 15,
                 flexDirection: 'row',
                 borderRadius: 4,
               }}
             >
-              <InformationIcon />
+              <InformationIcon darkMode={darkMode} />
               <Text
                 style={{
-                  color: '#B5B5B5',
+                  color: darkMode ? '#B5B5B5' : '#4B4B4B',
                   fontSize: 11,
                   marginLeft: 8,
                   fontStyle: 'italic',
@@ -218,14 +230,14 @@ const Assistant_scan = (props) => {
               paddingVertical: 12,
               paddingHorizontal: 20,
               borderWidth: 1,
-              borderColor: '#DDDDDD',
+              borderColor: darkMode ? '#DDDDDD' : '#4B4B4B',
               borderRadius: 4,
             }}
             onPress={() => {
               props.navigation.pop();
             }}
           >
-            <Text style={{ color: '#DDDDDD' }}>Coba lagi nanti</Text>
+            <Text style={{ color: darkMode ? '#DDDDDD' : '#4B4B4B' }}>Coba lagi nanti</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -234,11 +246,22 @@ const Assistant_scan = (props) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#1F1F1F' }}>
-      <GreyHeader
-        title="Check-In"
-        navigate={props.navigation.navigate}
-        navigateBack="AppointmentList"
-      />
+      {
+          darkMode ? (
+            <GreyHeader
+              title="Check-In"
+              navigate={props.navigation.navigate}
+              navigateBack="AppointmentList"
+            />
+
+          ) : (
+            <GradientHeader
+              title="Check-In"
+              navigate={props.navigation.navigate}
+              navigateBack="AppointmentList"
+            />
+          )
+        }
       {loading ? (
         <LottieLoader
           source={require('../../animation/loading.json')}

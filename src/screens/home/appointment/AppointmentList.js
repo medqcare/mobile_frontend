@@ -143,7 +143,7 @@ const Appointment = (props) => {
   const renderMedicalServiceAppointment = ({ item }) => {
     return (
       <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
-        <CardMedicalService reservation={item} {...props} />
+        <CardMedicalService reservation={item} {...props} darkMode={darkMode}/>
       </View>
     )
   }
@@ -229,7 +229,7 @@ const Appointment = (props) => {
           onRefresh();
           setShowModalDelete(false);
         }}
-
+        darkMode={darkMode}
       />
     </View>
   );

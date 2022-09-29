@@ -5,6 +5,7 @@ export default function DeleteAppointmentModal({
   isVisible = false,
   setIsVisible,
   onButtonCancelPress,
+  darkMode
 }) {
   return (
     <Modal
@@ -24,13 +25,13 @@ export default function DeleteAppointmentModal({
       onRequestClose={() => setIsVisible(false)}
       transparent
     >
-      <View style={viewModalDelete.container}>
+      <View style={darkMode ? viewModalDelete.container : viewModalDelete.containerLight}>
         <View style={viewModalDelete.header}>
           <View style={viewModalDelete.toogle} />
-          <Text style={viewModalDelete.title}>Batalkan Konsultasi</Text>
+          <Text style={darkMode ? viewModalDelete.title : viewModalDelete.titleLight}>Batalkan Konsultasi</Text>
         </View>
         <View style={viewModalDelete.header}>
-          <Text style={viewModalDelete.subtitle}>
+          <Text style={darkMode ? viewModalDelete.subtitle : viewModalDelete.subtitleLight}>
             Apakah anda yakin ingin membatalkan konsultasi ini?
           </Text>
         </View>
@@ -40,8 +41,8 @@ export default function DeleteAppointmentModal({
               setIsVisible(false);
             }}
           >
-            <View style={viewModalDelete.lanjutkan}>
-              <Text style={viewModalDelete.name}>Lanjutkan Konsultasi</Text>
+            <View style={darkMode ? viewModalDelete.lanjutkan : viewModalDelete.lanjutkanLight}>
+              <Text style={darkMode ? viewModalDelete.name : viewModalDelete.nameLight}>Lanjutkan Konsultasi</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -51,8 +52,8 @@ export default function DeleteAppointmentModal({
               }
             }}
           >
-            <View style={viewModalDelete.cardName}>
-              <Text style={viewModalDelete.name}>Batalkan Janji</Text>
+            <View style={darkMode ? viewModalDelete.cardName : viewModalDelete.cardNameLight}>
+              <Text style={darkMode ? viewModalDelete.name : viewModalDelete.batalkan}>Batalkan Janji</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -65,6 +66,12 @@ const viewModalDelete = StyleSheet.create({
   container: {
     maxHeight: '100%',
     backgroundColor: '#2F2F2F',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  containerLight: {
+    maxHeight: '100%',
+    backgroundColor: '#ffffff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -88,6 +95,13 @@ const viewModalDelete = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  titleLight: {
+    color: '#4B4B4B',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 20,
+    fontWeight: 'bold'
+  },
   option: {
     marginHorizontal: 15,
     marginBottom: 20,
@@ -100,9 +114,21 @@ const viewModalDelete = StyleSheet.create({
     color: '#B5B5B5',
     fontSize: 12,
   },
+  subtitleLight: {
+    color: '#212121',
+    fontSize: 12,
+  },
   cardName: {
     marginTop: 10,
     borderColor: '#757575',
+    borderWidth: 1,
+    borderRadius: 3,
+    minHeight: 50,
+    justifyContent: 'center',
+  },
+  cardNameLight: {
+    marginTop: 10,
+    borderColor: '#E8E8E8',
     borderWidth: 1,
     borderRadius: 3,
     minHeight: 50,
@@ -115,8 +141,23 @@ const viewModalDelete = StyleSheet.create({
     minHeight: 50,
     justifyContent: 'center',
   },
+  lanjutkanLight: {
+    marginTop: 10,
+    backgroundColor: '#1090C5',
+    borderRadius: 3,
+    minHeight: 50,
+    justifyContent: 'center',
+  },
   name: {
     color: '#DDDDDD',
+    textAlign: 'center',
+  },
+  nameLight: {
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  batalkan: {
+    color: '#4B4B4B',
     textAlign: 'center',
   },
   buttonAdd: {

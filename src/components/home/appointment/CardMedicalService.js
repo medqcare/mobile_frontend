@@ -5,7 +5,9 @@ import { FontAwesome } from '@expo/vector-icons';
 import ButtonMap from '../../../assets/svg/buttonMap';
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM';
 import openMap from '../../../helpers/openMap';
-function CardMedicalService({ reservation, ...props }) {
+
+
+function CardMedicalService({ reservation, darkMode, ...props }) {
   // const distance
   const moment = require('moment');
   const {
@@ -40,24 +42,21 @@ function CardMedicalService({ reservation, ...props }) {
 
   return (
     <View>
-      <View style={styles.topWrapper}>
+      <View style={darkMode ? styles.topWrapper : styles.topWrapperLight}>
         <View style={styles.serviceImage}>
-          <FontAwesome name="hospital-o" size={70} color="#dddddd" />
+          <FontAwesome name="hospital-o" size={70} color={darkMode ? "#dddddd" : "#4B4B4B"} />
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row' }}>
             <View style={styles.infoServiceWrapper}>
-              <Text style={styles.textServiceName} numberOfLines={2}>
+              <Text style={darkMode ? styles.textServiceName : styles.textServiceNameLight} numberOfLines={2}>
                 {reservation.services.name}
               </Text>
-              <Text style={styles.textGreyServiceInfo}>
+              <Text style={darkMode ? styles.textGreyServiceInfo : styles.textGreyServiceInfoLight}>
                 {reservation.healthFacility.facilityName}
               </Text>
-              {/* <Text style={styles.textGreyServiceInfo}>
-              Jl. Meranti Utara III Blok D 98
-            </Text> */}
               {props.myLocation && (
-                <Text style={styles.textGreyServiceInfo}>
+                <Text style={darkMode ? styles.textGreyServiceInfo : styles.textGreyServiceInfoLight}>
                   {getDistance()} KM dari Anda
                 </Text>
               )}
@@ -73,7 +72,7 @@ function CardMedicalService({ reservation, ...props }) {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.borderLine} />
+          <View style={darkMode ? styles.borderLine : styles.borderLineLight} />
           <View
             style={{
               flexDirection: 'row',
@@ -82,25 +81,25 @@ function CardMedicalService({ reservation, ...props }) {
           >
             <View>
               <View style={styles.rowCenterWrap}>
-                <Text style={styles.textSmallGrey}>Nama Pasien : </Text>
-                <Text style={styles.textSmallWhite}>
+                <Text style={darkMode ? styles.textSmallGrey : styles.textSmallGreyLight}>Nama Pasien : </Text>
+                <Text style={darkMode ? styles.textSmallWhite : styles.textSmallWhiteLight}>
                   {reservation.patient.patientName}
                 </Text>
               </View>
               <View style={styles.rowCenterWrap}>
-                <Text style={styles.textSmallGrey}>
+                <Text style={darkMode ? styles.textSmallGrey : styles.textSmallGreyLight}>
                   {reservation.bookingSchedule}
                 </Text>
               </View>
               <View style={styles.rowCenterWrap}>
-                <Text style={styles.textSmallGrey}>Jumlah Antrian : </Text>
-                <Text style={styles.textSmallWhite}>
+                <Text style={darkMode ? styles.textSmallGrey : styles.textSmallGreyLight}>Jumlah Antrian : </Text>
+                <Text style={darkMode ? styles.textSmallWhite : styles.textSmallWhiteLight}>
                   {reservation.totalQueue}
                 </Text>
               </View>
               <View style={styles.rowCenterWrap}>
-                <Text style={styles.textSmallGrey}>Antrian Saat Ini : </Text>
-                <Text style={styles.textSmallWhite}>
+                <Text style={darkMode ? styles.textSmallGrey : styles.textSmallGreyLight}>Antrian Saat Ini : </Text>
+                <Text style={darkMode ? styles.textSmallWhite : styles.textSmallWhiteLight}>
                   {reservation.totalQueue}
                 </Text>
               </View>
@@ -108,9 +107,9 @@ function CardMedicalService({ reservation, ...props }) {
           </View>
         </View>
       </View>
-      <View style={styles.bottomWrapper}>
+      <View style={darkMode ? styles.bottomWrapper : styles.bottomWrapperLight}>
         <TouchableOpacity onPress={openScannerHandler}>
-          <Text style={styles.textCheckIn}>Check-In</Text>
+          <Text style={darkMode ? styles.textCheckIn : styles.textCheckInLight}>Check-In</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -125,6 +124,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 12,
     flexDirection: 'row',
+  },
+  topWrapperLight: {
+    backgroundColor: '#ffffff',
+    borderTopRightRadius: 4,
+    borderTopLeftRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#E8E8E8'
   },
   infoServiceWrapper: {
     flex: 0.85,
@@ -150,10 +159,25 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     marginBottom: 6,
   },
+  textServiceNameLight: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4B4B4B',
+    textTransform: 'capitalize',
+    marginBottom: 6,
+    fontWeight: 'bold'
+  },
   textGreyServiceInfo: {
     fontWeight: '400',
     fontSize: 12,
     color: '#A5A5A5',
+    maxWidth: '90%',
+    marginBottom: 4,
+  },
+  textGreyServiceInfoLight: {
+    fontWeight: '400',
+    fontSize: 12,
+    color: '#4B4B4B',
     maxWidth: '90%',
     marginBottom: 4,
   },
@@ -177,8 +201,23 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 4,
     paddingVertical: 10,
   },
+  bottomWrapperLight: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    backgroundColor: '#ECECEC',
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+    paddingVertical: 10,
+  },
   textCheckIn: {
     color: '#4BE395',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  textCheckInLight: {
+    color: '#02954A',
     fontSize: 14,
     fontWeight: '600',
   },
@@ -191,13 +230,21 @@ const styles = StyleSheet.create({
     color: '#B5B5B5',
     fontSize: 12,
   },
+  textSmallGreyLight: {
+    color: '#4B4B4B',
+    fontSize: 12,
+  },
   textSmallWhite: {
     color: '#DDDDDD',
     fontSize: 12,
   },
-  borderLine: {
+  textSmallWhiteLight: {
+    color: '#212121',
+    fontSize: 12,
+  },
+  borderLineLight: {
     height: 0.5,
-    backgroundColor: '#515151',
+    backgroundColor: '#EAEAEA',
     marginVertical: 10,
   },
   rowCenterWrap: {
