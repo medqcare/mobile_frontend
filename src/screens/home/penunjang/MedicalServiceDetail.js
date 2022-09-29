@@ -120,10 +120,10 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
                     bookingSchedule,
                     healthFacility,
                     clinic,
-                    doctor: {
-                        doctorName: doctor.doctorName,
-                        dokterIdWeb: doctor.doctorId
-                    }
+                    // doctor: {
+                    //     doctorName: doctor.doctorName,
+                    //     dokterIdWeb: doctor.doctorId
+                    // }
                 })
                 : navigation.navigate('SignIn')
         }
