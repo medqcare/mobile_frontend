@@ -24,6 +24,7 @@ import BuatJanji from '../../../assets/svg/BuatJanji';
 import getDistanceFromLatLonInKm from '../../../helpers/latlongToKM'
 import { GREY_BORDER_LINE, WHITE_PRIMARY } from '../../../values/color';
 import { INTER_400 } from '../../../values/font';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const dimHeight = Dimensions.get('window').height;
 const dimWidth = Dimensions.get('window').width;
@@ -261,6 +262,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
                             >
                                 Paket termasuk:{' '}
                             </Text>
+                            <ScrollView style={{padding: 10, height: '35%', backgroundColor: '#303030', paddingBottom: 50}} scrollP>
                             {itemCheck.map((el, itemCheckIndex) => {
                                 return (
                                     <Text
@@ -274,6 +276,7 @@ function MedicalServiceDetail({navigation, userDataReducer, userLocationReducer}
                                     </Text>
                                 );
                             })}
+                            </ScrollView>
                         </View>
 
                     <View style={{ paddingLeft: 12 }}>

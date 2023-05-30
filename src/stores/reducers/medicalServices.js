@@ -12,7 +12,7 @@ const {
 const initState = {
     medicalServices: [],
     currentPage: 1,
-    type: 'UMUM',
+    type: 'MOBILE',
     status: true,
     isLoading: false,
     error: null
