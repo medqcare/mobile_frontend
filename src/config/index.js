@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let baseURL = 'https://api-medqcare.applimetis.id';
+let baseURL = 'https://api-dev-mobile.medqcare.id';
 
 const instance = axios.create({
     baseURL: `${baseURL}/api/v1/members/`,
