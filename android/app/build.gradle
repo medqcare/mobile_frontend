@@ -159,10 +159,10 @@ android {
         }
         signingConfigs {
             release {
-                storeFile file('medqcare_dev.keystore')
-                storePassword 'medqcare_dev_aps.,.'
-                keyAlias 'medqcare_dev'
-                keyPassword 'medqcare_dev_aps.,.'
+                storeFile file('medqcare-dev.keystore')
+                storePassword 'medqcare_dev_aps'
+                keyAlias 'medqcare-dev'
+                keyPassword 'medqcare_dev_aps'
             }
         }
     }
