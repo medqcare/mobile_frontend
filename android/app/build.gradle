@@ -161,7 +161,7 @@ android {
             release {
                 storeFile file('medqcare_dev.keystore')
                 storePassword 'medqcare_dev_aps.,.'
-                keyAlias 'medqcare_dev_aps'
+                keyAlias 'medqcare_dev'
                 keyPassword 'medqcare_dev_aps.,.'
             }
         }
