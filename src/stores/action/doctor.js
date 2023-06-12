@@ -37,8 +37,6 @@ export function searchAllDoctors(currentPage, location, doctors, filterQuery){
                 timeout: 4000
             })
 
-            // console.log(data.data)
-
             if(currentPage == 0 ) {
                 await dispatch({
                     type: SET_DOCTORS,
