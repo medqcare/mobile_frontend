@@ -7,12 +7,57 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:321341079795:android:86fb1264915fb1e6333786",
+        "mobilesdk_app_id": "1:321341079795:android:afecf653bb5fa7e8333786",
         "android_client_info": {
-          "package_name": "com.medqcare.dev"
+          "package_name": "com.dev_medqcare.id"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "321341079795-36n1f1rvqnc8ojn831mer0u6akjnkoti.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev_medqcare.id",
+            "certificate_hash": "d59963e0720da2f8ae7fd7230df44b5d3b66a955"
+          }
+        },
+        {
+          "client_id": "321341079795-pu6pvh00jrtvkju34spg3evabqrb8gti.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCq8Jk_UsIpE5bOPYfJF1dTnnYWYVnzU8Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321341079795-pu6pvh00jrtvkju34spg3evabqrb8gti.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321341079795:android:86fb1264915fb1e6333786",
+        "android_client_info": {
+          "package_name": "com.dev_medqcare.id"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321341079795-2kapcu06hobso3bc9g4fl41q8clpel8i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev_medqcare.id",
+            "certificate_hash": "134e63ca6bd71bcb8524e86cbc36955b3aefed04"
+          }
+        },
         {
           "client_id": "321341079795-pu6pvh00jrtvkju34spg3evabqrb8gti.apps.googleusercontent.com",
           "client_type": 3

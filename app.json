@@ -23,7 +23,7 @@
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
       },
-      "bundleIdentifier": "com.medqcare.dev"
+      "bundleIdentifier": "com.dev_medqcare.id"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +36,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.medqcare.app"
+      "package": "com.dev_medqcare.id"
     },
     "web": {
       "favicon": "./assets/favicon.png"
