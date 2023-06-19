@@ -16,7 +16,7 @@ function CardDoctor({ data, distance, userLocationReducer }) {
   const { userLocation } = userLocationReducer;
 
   const renderDoctorName = () => {
-    let name = `${data.title} ${data.doctorName}`;
+    let name = `${data.doctorName}`;
     if (data.specialistId !== null && data.specialistId.length !== 0) {
       if (distance === "Turn on location" ) {
         name += `, ${data.specialistId.alias}`;
