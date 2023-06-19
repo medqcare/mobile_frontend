@@ -1783,19 +1783,19 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-appcenter-analytics@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.npmjs.org/appcenter-analytics/-/appcenter-analytics-4.4.3.tgz"
-  integrity sha512-fcVuxl/swf5LMmt95AlDdP2gMyvHTUGZODrl1FFpWYo8Np5mWBvTEQr0mEIOilDToCa4NljQHID+3PeBK+Asqg==
+appcenter-analytics@4.4.5:
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/appcenter-analytics/-/appcenter-analytics-4.4.5.tgz#08328f4cdc1722d7e2aa2a210191e8518b23e979"
+  integrity sha512-zqDrI1zmjrrQFTrOyZXTmEu8ZKNkvPfI+lGG2TY94mpABB5HLqytdnZFs9hUJijXgfCHZ0bEpGm+MP3yanWpcg==
   dependencies:
-    appcenter "4.4.3"
+    appcenter "4.4.5"
 
-appcenter-crashes@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.npmjs.org/appcenter-crashes/-/appcenter-crashes-4.4.3.tgz"
-  integrity sha512-vroN9XvsEzkVXsidO9F0h+lALR5+YIVrt2TqbeTTAUHEQBemJMp3V1wudw/3xPKRm7D+UaOrEf1t0xoQZi52SA==
+appcenter-crashes@4.4.5:
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/appcenter-crashes/-/appcenter-crashes-4.4.5.tgz#56f42072279967d36ff7fe277f8b0b3cd68cf9f4"
+  integrity sha512-B1kgD9U0SFtnrO9RRV4GmFAs5ZfU2mepnobSlzrmm2Gw2y+U55JXsf0TaQozEBBWrM1wf1COZgRr4em578dNlg==
   dependencies:
-    appcenter "4.4.3"
+    appcenter "4.4.5"
 
 appcenter-file-upload-client@0.0.24:
   version "0.0.24"
@@ -1806,25 +1806,24 @@ appcenter-file-upload-client@0.0.24:
     superagent "5.1.0"
     url-parse "^1.4.7"
 
-appcenter-link-scripts@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.npmjs.org/appcenter-link-scripts/-/appcenter-link-scripts-4.4.3.tgz"
-  integrity sha512-9rp4bqni8SxyFHdYCesWZaHDl2eK07DdKPXABsTHIo0a07yq2eo99FlkSxEHpu3TQNwjnTQRObQ+FtlABYcveQ==
+appcenter-link-scripts@4.4.5:
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/appcenter-link-scripts/-/appcenter-link-scripts-4.4.5.tgz#0d2550b15b5828df904ee0ce76d5fca1e4edd206"
+  integrity sha512-bs++S1eFm2+noAYC7+5lZESg2IvRJ1rl2o41Re3L+dg6UtKrIf/34LgIsnOM7Ufn+pophkmqkO5GRapVDGTO4Q==
   dependencies:
     debug "4.1.1"
     glob "5.0.15"
-    minimist "1.2.5"
     mkdirp "0.5.3"
     plist "^3.0.2"
     which "1.2.11"
     xcode "2.0.0"
 
-appcenter@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.npmjs.org/appcenter/-/appcenter-4.4.3.tgz"
-  integrity sha512-4AnVZnjh0oJvnW466Tk8DK7Fn0ZkMYC4G5aJn7j3yKc2kWAfnNHAOF8V9BAGpIOAZCTyEQy8Wx3iCqrR0rSBEg==
+appcenter@4.4.5:
+  version "4.4.5"
+  resolved "https://registry.yarnpkg.com/appcenter/-/appcenter-4.4.5.tgz#800008cc5566f5092dba4797f6d7940d5ae65203"
+  integrity sha512-3OPM8yOgwYyd1pBLVxra9+rAscCTEEySyxYhJYwzPw8ZjnGIJNTgDQ+YwuajoYG8vPJRbl8ZmG16wcdcMYk14g==
   dependencies:
-    appcenter-link-scripts "4.4.3"
+    appcenter-link-scripts "4.4.5"
 
 appdirsjs@^1.2.4:
   version "1.2.6"
@@ -5020,7 +5019,7 @@ mimic-fn@^2.1.0:
   dependencies:
     brace-expansion "^1.1.7"
 
-minimist@1.2.5, minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
+minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
   version "1.2.5"
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
