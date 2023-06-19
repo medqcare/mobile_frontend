@@ -121,7 +121,7 @@ function Transaksi(props) {
                       <>
                         <View>
                           <Text style={styles.title}>
-                            Layanan Medis {item.services.name}
+                            Layanan Medis {item.services?.name}
                           </Text>
                         </View>
                       </>
