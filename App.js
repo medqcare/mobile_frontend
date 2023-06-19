@@ -6,12 +6,13 @@ import reducer from './src/stores/reducers';
 import store from './src/stores';
 import Navigation from './src/navigation';
 import { View } from 'react-native';
-import codePush, { InstallMode, sync, CheckFrequency } from 'react-native-code-push'
+import CodePush, { InstallMode, sync, CheckFrequency } from 'react-native-code-push'
 import { ToastAndroid } from 'react-native';
 
 // const store = createStore(reducer, applyMiddleware(thunk));
 
 function App() {
+  ToastAndroid.show("Checking update data", ToastAndroid.LONG)
   const installModeOptions = { 
     installMode: InstallMode.ON_NEXT_RESUME, 
     minimumBackgroundDuration: 60
@@ -20,11 +21,12 @@ function App() {
   .then(result => {
     if(result) {
       ToastAndroid.show("App Updated", ToastAndroid.LONG)
-      console.log("App Updated")
     } else {
-      ToastAndroid.show("No Updates avalable", ToastAndroid.SHORT)
-      console.log("No Updates avalable")
+      ToastAndroid.show("No Updates available", ToastAndroid.SHORT)
     }
+  })
+  .catch(err => {
+    ToastAndroid.show(err, ToastAndroid.LONG)
   })
   return (
     <Provider store={store}>
@@ -36,11 +38,11 @@ function App() {
 }
 
 const codePushOptions = { 
-  checkFrequency: codePush.CheckFrequency.ON_APP_START,
+  checkFrequency: CheckFrequency.ON_APP_START,
   installMode: InstallMode.ON_NEXT_RESUME, 
   minimumBackgroundDuration: 60
 };
 
 export default 
-  codePush(codePushOptions)
+  CodePush(codePushOptions)
   (App)
